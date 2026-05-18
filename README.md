@@ -1,6 +1,7 @@
 # ToolsRift — 1600+ Free Online Tools
 
 > **Website:** [toolsrift.com](https://toolsrift.com)
+> **Deploy trigger:** 2026-05-18 (Phase 1 launch — dark-only theme, /tools page, nav dropdown)
 
 ## 🚀 Quick Start (Local Development)
 
