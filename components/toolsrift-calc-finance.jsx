@@ -1,0 +1,1932 @@
+﻿import { useState, useEffect, useMemo } from "react";
+import { getCategoryById } from "../lib/categoryThemes";
+// PHASE 2: import { trackUse, isLimitReached, getRemaining, DAILY_LIMIT } from "../lib/usage";
+// PHASE 2: import UpgradeModal from "./UpgradeModal";
+// PHASE 2: import UsageCounter from "./UsageCounter";
+import CategoryLayout from './shared/CategoryLayout';
+import CategoryDashboard from './shared/CategoryDashboard';
+import ToolPageLayout, { ToolSchemas } from './shared/ToolPageLayout';
+
+const THEME = getCategoryById("financecalc");
+const PAGE_THEME = getCategoryById('financecalc');
+const BRAND = { name: "ToolsRift", tagline: "Finance & Health Calculators" };
+
+const C = {
+  bg: "#06090F",
+  surface: "#0D1117",
+  border: "rgba(255,255,255,0.06)",
+  blue: "#22C55E",
+  blueD: "#16A34A",
+  text: "#E2E8F0",
+  muted: "#64748B",
+  success: "#34D399",
+  warn: "#F59E0B",
+  danger: "#EF4444",
+};
+
+const GLOBAL_CSS = `@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px}
+::selection{background:rgba(34,197,94,0.3)}
+button:hover{filter:brightness(1.07)}
+select option{background:#0D1117}
+textarea{resize:vertical}
+.fade-in{animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+table{border-collapse:collapse}
+th,td{border:1px solid rgba(255,255,255,0.08);padding:8px 10px;font-size:12px}
+th{background:rgba(255,255,255,0.04)}
+.mono{font-family:'JetBrains Mono',monospace};`;
+
+const T = {
+  label: {
+    fontFamily: "'Plus Jakarta Sans',sans-serif",
+    fontSize: 12,
+    fontWeight: 600,
+    color: C.muted,
+    textTransform: "uppercase",
+    letterSpacing: "0.05em",
+  },
+  h1: { fontFamily: "'Sora',sans-serif", fontSize: 22, fontWeight: 700, color: C.text },
+  h2: { fontFamily: "'Sora',sans-serif", fontSize: 15, fontWeight: 600, color: C.text },
+};
+
+const n = (v) => {
+  const x = parseFloat(v);
+  return Number.isFinite(x) ? x : 0;
+};
+const round = (x, p = 2) => (Number.isFinite(x) ? Number(x.toFixed(p)) : 0);
+const inr = (x) => `₹${(Number(x) || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
+const curr = (x) => `$${(Number(x) || 0).toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+const pct = (x) => `${round(x, 2)}%`;
+
+function Badge({ children, color = "blue" }) {
+  const bg = { blue: "rgba(34,197,94,0.15)", green: "rgba(34,197,94,0.15)", amber: "rgba(245,158,11,0.15)" }[color] || "rgba(34,197,94,0.15)";
+  const fg = { blue: "#86EFAC", green: "#86EFAC", amber: "#FCD34D" }[color] || "#86EFAC";
+  return <span style={{ background: bg, color: fg, borderRadius: 4, padding: "2px 8px", fontSize: 11, fontWeight: 600 }}>{children}</span>;
+}
+function Input({ value, onChange, placeholder, type = "text", style = {} }) {
+  return (
+    <input
+      type={type}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      style={{
+        width: "100%",
+        background: "#0F172A",
+        border: "1px solid rgba(255,255,255,0.1)",
+        borderRadius: 8,
+        padding: "0 14px",
+        color: "#F8FAFC",
+        fontSize: 16,
+        fontFamily: "'JetBrains Mono',monospace",
+        textAlign: "right",
+        outline: "none",
+        height: 48,
+        transition: "border-color 0.15s",
+        ...style,
+      }}
+      onFocus={(e) => (e.target.style.borderColor = C.blue)}
+      onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")}
+    />
+  );
+}
+function SelectInput({ value, onChange, options }) {
+  return (
+    <select value={value} onChange={(e) => onChange(e.target.value)} style={{ width: "100%", background: "rgba(255,255,255,0.04)", border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px", color: C.text, fontSize: 13 }}>
+      {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+    </select>
+  );
+}
+function Textarea({ value, onChange, rows = 5 }) {
+  return <textarea rows={rows} value={value} onChange={(e) => onChange(e.target.value)} style={{ width: "100%", background: "rgba(255,255,255,0.04)", border: `1px solid ${C.border}`, borderRadius: 8, padding: "12px", color: C.text, fontSize: 13, fontFamily: "'JetBrains Mono',monospace" }} />;
+}
+function Label({ children }) { return <div style={{ ...T.label, marginBottom: 6 }}>{children}</div>; }
+function Card({ children, style = {} }) { return <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, padding: 18, ...style }}>{children}</div>; }
+function VStack({ children, gap = 12 }) { return <div style={{ display: "flex", flexDirection: "column", gap }}>{children}</div>; }
+function Grid2({ children }) { return <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>{children}</div>; }
+function Grid3({ children }) { return <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>{children}</div>; }
+
+function BigResult({ value, label, sub }) {
+  return (
+    <div style={{ textAlign: "center", padding: "20px 24px", background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)", borderRadius: 12 }}>
+      <div style={{ fontFamily: "'Sora',sans-serif", fontSize: "clamp(28px,4vw,32px)", color: C.blue, fontWeight: 700 }}>{value}</div>
+      <div style={{ fontSize: 13, color: "#64748B", marginTop: 4 }}>{label}</div>
+      {sub ? <div style={{ marginTop: 4, color: C.muted, fontSize: 12 }}>{sub}</div> : null}
+    </div>
+  );
+}
+function Result({ children }) {
+  return <div style={{ background: "rgba(0,0,0,0.28)", border: `1px solid ${C.border}`, borderRadius: 8, padding: "12px", color: C.text, fontFamily: "'JetBrains Mono',monospace", whiteSpace: "pre-wrap", lineHeight: 1.6, fontSize: 12 }}>{children}</div>;
+}
+function DataTable({ columns, rows }) {
+  return (
+    <div style={{ overflowX: "auto" }}>
+      <table style={{ width: "100%" }}>
+        <thead><tr>{columns.map((c) => <th key={c}>{c}</th>)}</tr></thead>
+        <tbody>
+          {rows.map((r, i) => <tr key={i}>{r.map((v, j) => <td key={j}>{v}</td>)}</tr>)}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function InvestmentReturnCalc() {
+  const [principal, setPrincipal] = useState("100000");
+  const [rate, setRate] = useState("12");
+  const [years, setYears] = useState("10");
+  const [annualAdd, setAnnualAdd] = useState("0");
+
+  const out = useMemo(() => {
+    const P = n(principal), r = n(rate) / 100, y = Math.max(1, Math.floor(n(years))), add = n(annualAdd);
+    let bal = P;
+    const rows = [];
+    for (let i = 1; i <= y; i++) {
+      const start = bal;
+      const interest = start * r;
+      bal = start + interest + add;
+      rows.push([i, curr(start), curr(interest), curr(add), curr(bal)]);
+    }
+    const totalInvested = P + add * y;
+    const gain = bal - totalInvested;
+    const cagr = y > 0 && P > 0 ? (Math.pow(bal / P, 1 / y) - 1) * 100 : 0;
+    return { fv: bal, gain, cagr, rows };
+  }, [principal, rate, years, annualAdd]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Initial Investment</Label><Input value={principal} onChange={setPrincipal} /></div>
+        <div><Label>Annual Return %</Label><Input value={rate} onChange={setRate} /></div>
+      </Grid2>
+      <Grid2>
+        <div><Label>Years</Label><Input value={years} onChange={setYears} /></div>
+        <div><Label>Annual Contribution</Label><Input value={annualAdd} onChange={setAnnualAdd} /></div>
+      </Grid2>
+      <Grid3>
+        <BigResult value={curr(out.fv)} label="Final Value" />
+        <BigResult value={curr(out.gain)} label="Total Gain" />
+        <BigResult value={pct(out.cagr)} label="CAGR" />
+      </Grid3>
+      <DataTable columns={["Year", "Start", "Interest", "Contribution", "End Balance"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function RdCalc() {
+  const [monthly, setMonthly] = useState("5000");
+  const [rate, setRate] = useState("7");
+  const [years, setYears] = useState("5");
+
+  const out = useMemo(() => {
+    const P = n(monthly), r = n(rate) / 100 / 12, m = Math.max(1, Math.floor(n(years) * 12));
+    const fv = P * (((Math.pow(1 + r, m) - 1) / r) * (1 + r));
+    const total = P * m;
+    const interest = fv - total;
+    let bal = 0;
+    const rows = [];
+    for (let i = 1; i <= m; i++) {
+      const start = bal;
+      const intr = (start + P) * r;
+      bal = start + P + intr;
+      if (i % 12 === 0 || i === m) rows.push([Math.ceil(i / 12), inr(start), inr(P * 12), inr(intr * 12), inr(bal)]);
+    }
+    return { fv, total, interest, rows };
+  }, [monthly, rate, years]);
+
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Monthly Deposit (₹)</Label><Input value={monthly} onChange={setMonthly} /></div>
+        <div><Label>Interest % (p.a.)</Label><Input value={rate} onChange={setRate} /></div>
+        <div><Label>Tenure (Years)</Label><Input value={years} onChange={setYears} /></div>
+      </Grid3>
+      <Grid3>
+        <BigResult value={inr(out.fv)} label="Maturity Amount" />
+        <BigResult value={inr(out.total)} label="Total Deposit" />
+        <BigResult value={inr(out.interest)} label="Interest Earned" />
+      </Grid3>
+      <DataTable columns={["Year", "Start Bal", "Deposits", "Approx Interest", "End Bal"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function PpfCalc() {
+  const [yearly, setYearly] = useState("150000");
+  const [rate, setRate] = useState("7.1");
+  const [years, setYears] = useState("15");
+
+  const out = useMemo(() => {
+    const dep = n(yearly), r = n(rate) / 100, y = Math.max(1, Math.floor(n(years)));
+    let bal = 0;
+    const rows = [];
+    for (let i = 1; i <= y; i++) {
+      const start = bal;
+      const interest = (start + dep) * r;
+      bal = start + dep + interest;
+      rows.push([i, inr(start), inr(dep), inr(interest), inr(bal)]);
+    }
+    return { maturity: bal, invested: dep * y, rows };
+  }, [yearly, rate, years]);
+
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Yearly Deposit (₹)</Label><Input value={yearly} onChange={setYearly} /></div>
+        <div><Label>Interest % (p.a.)</Label><Input value={rate} onChange={setRate} /></div>
+        <div><Label>Years</Label><Input value={years} onChange={setYears} /></div>
+      </Grid3>
+      <Grid2>
+        <BigResult value={inr(out.maturity)} label="Maturity Value" />
+        <BigResult value={inr(out.invested)} label="Total Invested" />
+      </Grid2>
+      <DataTable columns={["Year", "Opening", "Deposit", "Interest", "Closing"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function GratuityCalc() {
+  const [lastBasicDa, setLastBasicDa] = useState("50000");
+  const [years, setYears] = useState("12");
+  const [months, setMonths] = useState("6");
+
+  const out = useMemo(() => {
+    const salary = n(lastBasicDa), y = Math.floor(n(years)), m = Math.floor(n(months));
+    const serviceYears = y + (m >= 6 ? 1 : 0);
+    const gratuity = (15 / 26) * salary * serviceYears;
+    const rows = [
+      ["Last Basic + DA", inr(salary)],
+      ["Completed Years Counted", serviceYears],
+      ["Formula", "(15/26) × Salary × Years"],
+      ["Gratuity", inr(gratuity)],
+    ];
+    return { gratuity, rows };
+  }, [lastBasicDa, years, months]);
+
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Last Basic + DA (₹)</Label><Input value={lastBasicDa} onChange={setLastBasicDa} /></div>
+        <div><Label>Years of Service</Label><Input value={years} onChange={setYears} /></div>
+        <div><Label>Additional Months</Label><Input value={months} onChange={setMonths} /></div>
+      </Grid3>
+      <BigResult value={inr(out.gratuity)} label="Estimated Gratuity" />
+      <DataTable columns={["Item", "Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function TakeHomePayCalc() {
+  const [gross, setGross] = useState("1200000");
+  const [taxRate, setTaxRate] = useState("15");
+  const [pf, setPf] = useState("72000");
+  const [other, setOther] = useState("30000");
+
+  const out = useMemo(() => {
+    const G = n(gross), t = n(taxRate) / 100, pfy = n(pf), od = n(other);
+    const tax = G * t;
+    const annualTake = G - tax - pfy - od;
+    const monthly = annualTake / 12;
+    const rows = [
+      ["Gross Annual", curr(G)],
+      ["Tax", curr(tax)],
+      ["PF", curr(pfy)],
+      ["Other Deductions", curr(od)],
+      ["Net Annual", curr(annualTake)],
+      ["Net Monthly", curr(monthly)],
+    ];
+    return { annualTake, monthly, rows };
+  }, [gross, taxRate, pf, other]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Gross Annual Salary</Label><Input value={gross} onChange={setGross} /></div>
+        <div><Label>Tax Rate %</Label><Input value={taxRate} onChange={setTaxRate} /></div>
+      </Grid2>
+      <Grid2>
+        <div><Label>PF (Annual)</Label><Input value={pf} onChange={setPf} /></div>
+        <div><Label>Other Deductions</Label><Input value={other} onChange={setOther} /></div>
+      </Grid2>
+      <Grid2>
+        <BigResult value={curr(out.monthly)} label="Monthly Take Home" />
+        <BigResult value={curr(out.annualTake)} label="Annual Take Home" />
+      </Grid2>
+      <DataTable columns={["Component", "Amount"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function HourlyToAnnualCalc() {
+  const [hourly, setHourly] = useState("25");
+  const [hoursWeek, setHoursWeek] = useState("40");
+  const [weeksYear, setWeeksYear] = useState("52");
+
+  const out = useMemo(() => {
+    const h = n(hourly), hw = n(hoursWeek), wy = n(weeksYear);
+    const weekly = h * hw;
+    const annual = weekly * wy;
+    const monthly = annual / 12;
+    const rows = [
+      ["Hourly", curr(h)],
+      ["Weekly", curr(weekly)],
+      ["Monthly", curr(monthly)],
+      ["Annual", curr(annual)],
+    ];
+    return { weekly, monthly, annual, rows };
+  }, [hourly, hoursWeek, weeksYear]);
+
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Hourly Rate</Label><Input value={hourly} onChange={setHourly} /></div>
+        <div><Label>Hours / Week</Label><Input value={hoursWeek} onChange={setHoursWeek} /></div>
+        <div><Label>Weeks / Year</Label><Input value={weeksYear} onChange={setWeeksYear} /></div>
+      </Grid3>
+      <Grid3>
+        <BigResult value={curr(out.weekly)} label="Weekly" />
+        <BigResult value={curr(out.monthly)} label="Monthly" />
+        <BigResult value={curr(out.annual)} label="Annual" />
+      </Grid3>
+      <DataTable columns={["Period", "Pay"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function calcTaxOld(income) {
+  let tax = 0;
+  const slabs = [
+    [250000, 0],
+    [250000, 0.05],
+    [500000, 0.2],
+    [Infinity, 0.3],
+  ];
+  let rem = income;
+  for (const [amt, rate] of slabs) {
+    const take = Math.min(rem, amt);
+    if (take > 0) tax += take * rate;
+    rem -= take;
+    if (rem <= 0) break;
+  }
+  return tax;
+}
+function calcTaxNew(income) {
+  let tax = 0;
+  const slabs = [
+    [300000, 0],
+    [300000, 0.05],
+    [300000, 0.1],
+    [300000, 0.15],
+    [300000, 0.2],
+    [Infinity, 0.3],
+  ];
+  let rem = income;
+  for (const [amt, rate] of slabs) {
+    const take = Math.min(rem, amt);
+    if (take > 0) tax += take * rate;
+    rem -= take;
+    if (rem <= 0) break;
+  }
+  return tax;
+}
+
+function IncomeTaxCalc() {
+  const [income, setIncome] = useState("1500000");
+  const [deduction80c, setDeduction80c] = useState("150000");
+
+  const out = useMemo(() => {
+    const inc = n(income), d80 = n(deduction80c);
+    const oldTaxable = Math.max(0, inc - d80 - 50000);
+    const newTaxable = Math.max(0, inc - 50000);
+    const oldTax = calcTaxOld(oldTaxable);
+    const newTax = calcTaxNew(newTaxable);
+    return { oldTaxable, newTaxable, oldTax, newTax };
+  }, [income, deduction80c]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Gross Income (₹)</Label><Input value={income} onChange={setIncome} /></div>
+        <div><Label>80C Deduction (Old Regime)</Label><Input value={deduction80c} onChange={setDeduction80c} /></div>
+      </Grid2>
+      <Grid2>
+        <BigResult value={inr(out.oldTax)} label="Old Regime Tax" />
+        <BigResult value={inr(out.newTax)} label="New Regime Tax" />
+      </Grid2>
+      <Grid2>
+        <DataTable
+          columns={["Old Regime", "Value"]}
+          rows={[
+            ["Taxable Income", inr(out.oldTaxable)],
+            ["Estimated Tax", inr(out.oldTax)],
+            ["Take Home (Pre-cess)", inr(n(income) - out.oldTax)],
+          ]}
+        />
+        <DataTable
+          columns={["New Regime", "Value"]}
+          rows={[
+            ["Taxable Income", inr(out.newTaxable)],
+            ["Estimated Tax", inr(out.newTax)],
+            ["Take Home (Pre-cess)", inr(n(income) - out.newTax)],
+          ]}
+        />
+      </Grid2>
+    </VStack>
+  );
+}
+
+function TipCalc() {
+  const [bill, setBill] = useState("120");
+  const [tipPct, setTipPct] = useState("15");
+  const [people, setPeople] = useState("3");
+
+  const out = useMemo(() => {
+    const b = n(bill), t = n(tipPct) / 100, p = Math.max(1, Math.floor(n(people)));
+    const tip = b * t;
+    const total = b + tip;
+    const each = total / p;
+    return { tip, total, each, p };
+  }, [bill, tipPct, people]);
+
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Bill Amount</Label><Input value={bill} onChange={setBill} /></div>
+        <div><Label>Tip %</Label><Input value={tipPct} onChange={setTipPct} /></div>
+        <div><Label>People</Label><Input value={people} onChange={setPeople} /></div>
+      </Grid3>
+      <Grid3>
+        <BigResult value={curr(out.tip)} label="Tip" />
+        <BigResult value={curr(out.total)} label="Total Bill" />
+        <BigResult value={curr(out.each)} label={`Per Person (${out.p})`} />
+      </Grid3>
+      <DataTable columns={["Item", "Amount"]} rows={[["Bill", curr(n(bill))], ["Tip", curr(out.tip)], ["Total", curr(out.total)], ["Split", curr(out.each)]]} />
+    </VStack>
+  );
+}
+
+function MarkupCalc() {
+  const [mode, setMode] = useState("selling");
+  const [cost, setCost] = useState("100");
+  const [sell, setSell] = useState("150");
+  const [markup, setMarkup] = useState("25");
+
+  const out = useMemo(() => {
+    const c = n(cost), s = n(sell), m = n(markup) / 100;
+    if (mode === "selling") {
+      const val = c * (1 + m);
+      return { main: curr(val), rows: [["Cost", curr(c)], ["Markup %", pct(m * 100)], ["Selling Price", curr(val)]] };
+    }
+    if (mode === "cost") {
+      const val = s / (1 + m || 1);
+      return { main: curr(val), rows: [["Selling", curr(s)], ["Markup %", pct(m * 100)], ["Cost Price", curr(val)]] };
+    }
+    const mk = c > 0 ? ((s - c) / c) * 100 : 0;
+    return { main: pct(mk), rows: [["Cost", curr(c)], ["Selling", curr(s)], ["Markup %", pct(mk)]] };
+  }, [mode, cost, sell, markup]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Mode</Label><SelectInput value={mode} onChange={setMode} options={[{ value: "selling", label: "Find Selling Price" }, { value: "cost", label: "Find Cost Price" }, { value: "markup", label: "Find Markup %" }]} /></div>
+        <div><Label>Markup %</Label><Input value={markup} onChange={setMarkup} /></div>
+      </Grid2>
+      <Grid2>
+        <div><Label>Cost Price</Label><Input value={cost} onChange={setCost} /></div>
+        <div><Label>Selling Price</Label><Input value={sell} onChange={setSell} /></div>
+      </Grid2>
+      <BigResult value={out.main} label="Result" />
+      <DataTable columns={["Component", "Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function DepreciationCalc() {
+  const [cost, setCost] = useState("10000");
+  const [salvage, setSalvage] = useState("1000");
+  const [years, setYears] = useState("5");
+  const [rate, setRate] = useState("20");
+  const [method, setMethod] = useState("straight");
+
+  const out = useMemo(() => {
+    const C0 = n(cost), S = n(salvage), y = Math.max(1, Math.floor(n(years))), r = n(rate) / 100;
+    const rows = [];
+    let bv = C0;
+    if (method === "straight") {
+      const dep = (C0 - S) / y;
+      for (let i = 1; i <= y; i++) {
+        const start = bv;
+        bv = Math.max(S, bv - dep);
+        rows.push([i, curr(start), curr(dep), curr(bv)]);
+      }
+    } else {
+      for (let i = 1; i <= y; i++) {
+        const start = bv;
+        let dep = start * r;
+        if (start - dep < S) dep = start - S;
+        bv = start - dep;
+        rows.push([i, curr(start), curr(dep), curr(bv)]);
+      }
+    }
+    return { end: bv, rows };
+  }, [cost, salvage, years, rate, method]);
+
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Method</Label><SelectInput value={method} onChange={setMethod} options={[{ value: "straight", label: "Straight-line" }, { value: "reducing", label: "Reducing Balance" }]} /></div>
+        <div><Label>Asset Cost</Label><Input value={cost} onChange={setCost} /></div>
+        <div><Label>Salvage Value</Label><Input value={salvage} onChange={setSalvage} /></div>
+      </Grid3>
+      <Grid2>
+        <div><Label>Years</Label><Input value={years} onChange={setYears} /></div>
+        <div><Label>Rate % (for reducing)</Label><Input value={rate} onChange={setRate} /></div>
+      </Grid2>
+      <BigResult value={curr(out.end)} label="Ending Book Value" />
+      <DataTable columns={["Year", "Opening BV", "Depreciation", "Closing BV"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function FutureValueCalc() {
+  const [pv, setPv] = useState("10000");
+  const [rate, setRate] = useState("8");
+  const [years, setYears] = useState("10");
+  const [freq, setFreq] = useState("12");
+
+  const out = useMemo(() => {
+    const P = n(pv), r = n(rate) / 100, y = n(years), m = n(freq);
+    const fv = P * Math.pow(1 + r / m, m * y);
+    const rows = [];
+    for (let i = 1; i <= Math.max(1, Math.floor(y)); i++) {
+      const val = P * Math.pow(1 + r / m, m * i);
+      rows.push([i, curr(val)]);
+    }
+    return { fv, rows };
+  }, [pv, rate, years, freq]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Present Value</Label><Input value={pv} onChange={setPv} /></div>
+        <div><Label>Rate % p.a.</Label><Input value={rate} onChange={setRate} /></div>
+      </Grid2>
+      <Grid2>
+        <div><Label>Years</Label><Input value={years} onChange={setYears} /></div>
+        <div><Label>Compounds / Year</Label><Input value={freq} onChange={setFreq} /></div>
+      </Grid2>
+      <BigResult value={curr(out.fv)} label="Future Value" />
+      <DataTable columns={["Year", "Projected Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+const TOOLS = [
+  { id: "investment-return-calc", cat: "finance", name: "Investment Return Calculator", icon: "📈", desc: "CAGR, gain and yearly investment table.", free: true },
+  { id: "rd-calc", cat: "finance", name: "RD Calculator", icon: "🏦", desc: "Recurring Deposit maturity with ₹ table.", free: true },
+  { id: "ppf-calc", cat: "finance", name: "PPF Calculator", icon: "🇮🇳", desc: "PPF projection with year-wise balance.", free: true },
+  { id: "gratuity-calc", cat: "finance", name: "Gratuity Calculator", icon: "🎁", desc: "Indian gratuity payout estimate.", free: true },
+  { id: "take-home-pay-calc", cat: "finance", name: "Take Home Pay Calculator", icon: "💵", desc: "Net monthly pay after deductions.", free: true },
+  { id: "hourly-to-annual-calc", cat: "finance", name: "Hourly to Annual Salary", icon: "⏱️", desc: "Convert hourly to weekly/monthly/annual.", free: true },
+  { id: "income-tax-calc", cat: "finance", name: "Income Tax Calculator (India)", icon: "🧾", desc: "Old vs New regime comparison.", free: true },
+  { id: "tip-calc", cat: "finance", name: "Tip Calculator", icon: "🍽️", desc: "Tip + split bill among people.", free: true },
+  { id: "markup-calc", cat: "finance", name: "Markup Calculator", icon: "🏷️", desc: "Markup %, cost, and selling price.", free: true },
+  { id: "depreciation-calc", cat: "finance", name: "Depreciation Calculator", icon: "📉", desc: "Straight-line and reducing balance schedule.", free: true },
+  { id: "future-value-calc", cat: "finance", name: "Future Value Calculator", icon: "🔮", desc: "Future value with compounding.", free: true },
+  { id: "present-value-calc", cat: "finance", name: "Present Value Calculator", icon: "🕰️", desc: "Discount future money to present.", free: true },
+  { id: "savings-goal-calc", cat: "finance", name: "Savings Goal Calculator", icon: "🎯", desc: "Monthly savings required for goal.", free: true },
+  { id: "debt-payoff-calc", cat: "finance", name: "Debt Payoff Calculator", icon: "🧮", desc: "Debt payoff time and interest.", free: true },
+  { id: "credit-card-payoff-calc", cat: "finance", name: "Credit Card Payoff Calculator", icon: "💳", desc: "Minimum vs fixed payment comparison.", free: true },
+  { id: "car-loan-calc", cat: "finance", name: "Car Loan Calculator", icon: "🚗", desc: "EMI and ownership cost with amortization.", free: true },
+  { id: "student-loan-calc", cat: "finance", name: "Student Loan Calculator", icon: "🎓", desc: "Standard vs income-based repayment.", free: true },
+  { id: "break-even-calc", cat: "finance", name: "Break-even Calculator", icon: "⚖️", desc: "Break-even units and revenue.", free: true },
+  { id: "net-worth-calc", cat: "finance", name: "Net Worth Calculator", icon: "🧾", desc: "Assets minus liabilities.", free: true },
+  { id: "budget-calc", cat: "finance", name: "Budget Planner", icon: "📊", desc: "Income vs expenses with visual bar.", free: true },
+
+  { id: "tdee-calc", cat: "health", name: "TDEE Calculator", icon: "🔥", desc: "Daily energy expenditure by activity.", free: true },
+  { id: "macro-calc", cat: "health", name: "Macro Calculator", icon: "🥗", desc: "Protein/carbs/fats from calorie goal.", free: true },
+  { id: "protein-intake-calc", cat: "health", name: "Protein Intake Calculator", icon: "💪", desc: "Daily protein recommendation.", free: true },
+  { id: "heart-rate-zone-calc", cat: "health", name: "Heart Rate Zones", icon: "❤️", desc: "Five training zones.", free: true },
+  { id: "vo2max-calc", cat: "health", name: "VO2 Max Calculator", icon: "🏃", desc: "Estimate VO2 max via Cooper/resting HR.", free: true },
+  { id: "pace-calc", cat: "health", name: "Pace Calculator", icon: "⏱️", desc: "Speed/pace/distance/time converter.", free: true },
+  { id: "blood-alcohol-calc", cat: "health", name: "Blood Alcohol Calculator", icon: "🍺", desc: "Estimate BAC with safety disclaimer.", free: true },
+  { id: "sleep-calc", cat: "health", name: "Sleep Calculator", icon: "😴", desc: "Best bed/wake times by 90-min cycles.", free: true },
+  { id: "blood-pressure-calc", cat: "health", name: "Blood Pressure Classifier", icon: "🩺", desc: "BP category with chart.", free: true },
+  { id: "blood-sugar-converter", cat: "health", name: "Blood Sugar Converter", icon: "🩸", desc: "mg/dL ↔ mmol/L with category.", free: true },
+
+  { id: "aspect-ratio-calc", cat: "unit", name: "Aspect Ratio Calculator", icon: "🖼️", desc: "Find ratio and equivalent dimensions.", free: true },
+  { id: "ppi-dpi-calc", cat: "unit", name: "PPI/DPI Calculator", icon: "🖥️", desc: "Pixels per inch from resolution/size.", free: true },
+  { id: "fuel-cost-calc", cat: "unit", name: "Fuel Cost Calculator", icon: "⛽", desc: "Trip fuel cost estimate.", free: true },
+  { id: "electricity-cost-calc", cat: "unit", name: "Electricity Cost Calculator", icon: "💡", desc: "Appliance electricity bill estimate.", free: true },
+  { id: "ohms-law-calc", cat: "unit", name: "Ohm's Law Calculator", icon: "⚡", desc: "Solve V, I, R or P.", free: true },
+];
+
+const CATEGORIES = [
+  { id: "finance", name: "Finance Calculators", icon: "💰", desc: "Money, investment, tax, loans and planning tools." },
+  { id: "health", name: "Health & Fitness Calculators", icon: "🏥", desc: "Fitness, vitals, sleep and health metric tools." },
+  { id: "unit", name: "Everyday Calculators", icon: "🧰", desc: "Practical daily-use conversion and utility calculators." },
+];
+function PresentValueCalc() {
+  const [fv, setFv] = useState("50000");
+  const [rate, setRate] = useState("8");
+  const [years, setYears] = useState("10");
+  const [freq, setFreq] = useState("12");
+
+  const out = useMemo(() => {
+    const F = n(fv), r = n(rate) / 100, y = n(years), m = n(freq);
+    const pv = F / Math.pow(1 + r / m, m * y);
+    const rows = [];
+    for (let i = 1; i <= Math.max(1, Math.floor(y)); i++) {
+      const df = 1 / Math.pow(1 + r / m, m * i);
+      rows.push([i, round(df, 6), curr(F * df)]);
+    }
+    return { pv, rows };
+  }, [fv, rate, years, freq]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Future Value</Label><Input value={fv} onChange={setFv} /></div>
+        <div><Label>Discount Rate %</Label><Input value={rate} onChange={setRate} /></div>
+      </Grid2>
+      <Grid2>
+        <div><Label>Years</Label><Input value={years} onChange={setYears} /></div>
+        <div><Label>Compounds / Year</Label><Input value={freq} onChange={setFreq} /></div>
+      </Grid2>
+      <BigResult value={curr(out.pv)} label="Present Value" />
+      <DataTable columns={["Year", "Discount Factor", "PV Equivalent"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function SavingsGoalCalc() {
+  const [goal, setGoal] = useState("100000");
+  const [current, setCurrent] = useState("5000");
+  const [rate, setRate] = useState("6");
+  const [years, setYears] = useState("5");
+
+  const out = useMemo(() => {
+    const G = n(goal), C0 = n(current), r = n(rate) / 100 / 12, m = Math.max(1, Math.floor(n(years) * 12));
+    const needFromContrib = Math.max(0, G - C0 * Math.pow(1 + r, m));
+    const monthly = r === 0 ? needFromContrib / m : needFromContrib / ((((Math.pow(1 + r, m) - 1) / r) * (1 + r)));
+    let bal = C0;
+    const rows = [];
+    for (let i = 1; i <= m; i++) {
+      const start = bal;
+      const interest = start * r;
+      bal = start + interest + monthly;
+      if (i % 12 === 0 || i === m) rows.push([Math.ceil(i / 12), curr(start), curr(interest * 12), curr(monthly * 12), curr(bal)]);
+    }
+    return { monthly, rows };
+  }, [goal, current, rate, years]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Goal Amount</Label><Input value={goal} onChange={setGoal} /></div>
+        <div><Label>Current Savings</Label><Input value={current} onChange={setCurrent} /></div>
+      </Grid2>
+      <Grid2>
+        <div><Label>Expected Return % p.a.</Label><Input value={rate} onChange={setRate} /></div>
+        <div><Label>Years to Goal</Label><Input value={years} onChange={setYears} /></div>
+      </Grid2>
+      <BigResult value={curr(out.monthly)} label="Required Monthly Savings" />
+      <DataTable columns={["Year", "Start", "Interest (approx)", "Contributions", "End"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function buildAmortization(P, annualRate, monthlyPay, maxMonths = 600) {
+  let bal = P;
+  const r = annualRate / 12 / 100;
+  let month = 0;
+  let totalInterest = 0;
+  const rows = [];
+  while (bal > 0.01 && month < maxMonths) {
+    month++;
+    const interest = bal * r;
+    let principal = monthlyPay - interest;
+    if (principal <= 0) return { impossible: true, months: Infinity, totalInterest: Infinity, rows: [] };
+    if (principal > bal) principal = bal;
+    const end = bal - principal;
+    totalInterest += interest;
+    if (month <= 12) rows.push([month, curr(bal), curr(interest), curr(principal), curr(end)]);
+    bal = end;
+  }
+  return { impossible: false, months: month, totalInterest, rows };
+}
+
+function DebtPayoffCalc() {
+  const [debt, setDebt] = useState("8000");
+  const [rate, setRate] = useState("18");
+  const [payment, setPayment] = useState("250");
+
+  const out = useMemo(() => {
+    const P = n(debt), r = n(rate), pay = n(payment);
+    const sim = buildAmortization(P, r, pay, 1200);
+    if (sim.impossible) return { months: "Never", interest: "—", rows: [] };
+    return { months: sim.months, interest: sim.totalInterest, rows: sim.rows };
+  }, [debt, rate, payment]);
+
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Total Debt</Label><Input value={debt} onChange={setDebt} /></div>
+        <div><Label>APR %</Label><Input value={rate} onChange={setRate} /></div>
+        <div><Label>Monthly Payment</Label><Input value={payment} onChange={setPayment} /></div>
+      </Grid3>
+      <Grid2>
+        <BigResult value={String(out.months)} label="Months to Payoff" />
+        <BigResult value={out.interest === "—" ? "—" : curr(out.interest)} label="Total Interest" />
+      </Grid2>
+      <DataTable columns={["Month", "Start Balance", "Interest", "Principal", "End Balance"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function CreditCardPayoffCalc() {
+  const [balance, setBalance] = useState("5000");
+  const [apr, setApr] = useState("24");
+  const [minRate, setMinRate] = useState("3");
+  const [fixedPay, setFixedPay] = useState("250");
+
+  const out = useMemo(() => {
+    const B = n(balance), A = n(apr), mrate = n(minRate) / 100, fixed = n(fixedPay);
+
+    // Minimum payment simulation
+    let bal = B, month = 0, totalI = 0;
+    const r = A / 12 / 100;
+    while (bal > 0.01 && month < 1200) {
+      month++;
+      const i = bal * r;
+      let pay = Math.max(25, bal * mrate);
+      if (pay > bal + i) pay = bal + i;
+      const p = pay - i;
+      bal -= p;
+      totalI += i;
+    }
+    const minResult = month >= 1200 ? { months: Infinity, interest: Infinity } : { months: month, interest: totalI };
+
+    // Fixed payment simulation + first 12 rows
+    const fixedResult = buildAmortization(B, A, fixed, 1200);
+
+    const compareRows = [
+      ["Minimum Payment", minResult.months === Infinity ? "Very long" : `${minResult.months} mo`, minResult.interest === Infinity ? "—" : curr(minResult.interest)],
+      ["Fixed Payment", fixedResult.impossible ? "Never" : `${fixedResult.months} mo`, fixedResult.impossible ? "—" : curr(fixedResult.totalInterest)],
+    ];
+
+    return { compareRows, amortRows: fixedResult.rows };
+  }, [balance, apr, minRate, fixedPay]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Card Balance</Label><Input value={balance} onChange={setBalance} /></div>
+        <div><Label>APR %</Label><Input value={apr} onChange={setApr} /></div>
+      </Grid2>
+      <Grid2>
+        <div><Label>Minimum Payment %</Label><Input value={minRate} onChange={setMinRate} /></div>
+        <div><Label>Fixed Payment / Month</Label><Input value={fixedPay} onChange={setFixedPay} /></div>
+      </Grid2>
+      <DataTable columns={["Scenario", "Payoff Time", "Total Interest"]} rows={out.compareRows} />
+      <DataTable columns={["Month", "Start Balance", "Interest", "Principal", "End Balance"]} rows={out.amortRows} />
+    </VStack>
+  );
+}
+
+function emi(P, annualRate, months) {
+  const r = annualRate / 12 / 100;
+  if (r === 0) return P / months;
+  return (P * r * Math.pow(1 + r, months)) / (Math.pow(1 + r, months) - 1);
+}
+
+function CarLoanCalc() {
+  const [price, setPrice] = useState("25000");
+  const [down, setDown] = useState("5000");
+  const [rate, setRate] = useState("9");
+  const [years, setYears] = useState("5");
+  const [insuranceYear, setInsuranceYear] = useState("1200");
+  const [maintenanceYear, setMaintenanceYear] = useState("800");
+
+  const out = useMemo(() => {
+    const principal = Math.max(0, n(price) - n(down));
+    const months = Math.max(1, Math.floor(n(years) * 12));
+    const E = emi(principal, n(rate), months);
+    const totalLoanPaid = E * months;
+    const totalInterest = totalLoanPaid - principal;
+    const tco = n(down) + totalLoanPaid + (n(insuranceYear) + n(maintenanceYear)) * n(years);
+
+    // amortization first 12
+    let bal = principal;
+    const r = n(rate) / 12 / 100;
+    const rows = [];
+    for (let m = 1; m <= Math.min(12, months); m++) {
+      const i = bal * r;
+      let p = E - i;
+      if (p > bal) p = bal;
+      const end = bal - p;
+      rows.push([m, curr(bal), curr(i), curr(p), curr(end)]);
+      bal = end;
+    }
+    const sumRows = [
+      ["Vehicle Price", curr(n(price))],
+      ["Down Payment", curr(n(down))],
+      ["Loan Principal", curr(principal)],
+      ["Total Interest", curr(totalInterest)],
+      ["Total Cost of Ownership", curr(tco)],
+    ];
+    return { E, rows, sumRows };
+  }, [price, down, rate, years, insuranceYear, maintenanceYear]);
+
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Car Price</Label><Input value={price} onChange={setPrice} /></div>
+        <div><Label>Down Payment</Label><Input value={down} onChange={setDown} /></div>
+        <div><Label>APR %</Label><Input value={rate} onChange={setRate} /></div>
+      </Grid3>
+      <Grid3>
+        <div><Label>Loan Years</Label><Input value={years} onChange={setYears} /></div>
+        <div><Label>Insurance / Year</Label><Input value={insuranceYear} onChange={setInsuranceYear} /></div>
+        <div><Label>Maintenance / Year</Label><Input value={maintenanceYear} onChange={setMaintenanceYear} /></div>
+      </Grid3>
+      <BigResult value={curr(out.E)} label="Monthly EMI" />
+      <DataTable columns={["Item", "Amount"]} rows={out.sumRows} />
+      <DataTable columns={["Month", "Start Balance", "Interest", "Principal", "End Balance"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function StudentLoanCalc() {
+  const [principal, setPrincipal] = useState("40000");
+  const [rate, setRate] = useState("6.5");
+  const [years, setYears] = useState("10");
+  const [annualIncome, setAnnualIncome] = useState("55000");
+
+  const out = useMemo(() => {
+    const P = n(principal), R = n(rate), months = Math.max(1, Math.floor(n(years) * 12));
+    const stdPay = emi(P, R, months);
+    const std = buildAmortization(P, R, stdPay, 1200);
+
+    const incomeBased = Math.max(25, (n(annualIncome) * 0.1) / 12); // simplified 10% of income /12
+    const ibr = buildAmortization(P, R, incomeBased, 2400);
+
+    const compare = [
+      ["Standard Plan", curr(stdPay), std.impossible ? "Never" : `${std.months} mo`, std.impossible ? "—" : curr(std.totalInterest)],
+      ["Income-Based", curr(incomeBased), ibr.impossible ? "Very long" : `${ibr.months} mo`, ibr.impossible ? "—" : curr(ibr.totalInterest)],
+    ];
+
+    return { compare, amortRows: std.rows };
+  }, [principal, rate, years, annualIncome]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Loan Principal</Label><Input value={principal} onChange={setPrincipal} /></div>
+        <div><Label>APR %</Label><Input value={rate} onChange={setRate} /></div>
+      </Grid2>
+      <Grid2>
+        <div><Label>Standard Term (Years)</Label><Input value={years} onChange={setYears} /></div>
+        <div><Label>Annual Income (for IBR)</Label><Input value={annualIncome} onChange={setAnnualIncome} /></div>
+      </Grid2>
+      <DataTable columns={["Plan", "Monthly Payment", "Payoff Time", "Total Interest"]} rows={out.compare} />
+      <DataTable columns={["Month", "Start Balance", "Interest", "Principal", "End Balance"]} rows={out.amortRows} />
+    </VStack>
+  );
+}
+
+function BreakEvenCalc() {
+  const [fixed, setFixed] = useState("10000");
+  const [variable, setVariable] = useState("30");
+  const [price, setPrice] = useState("60");
+  const [targetUnits, setTargetUnits] = useState("500");
+
+  const out = useMemo(() => {
+    const F = n(fixed), V = n(variable), P = n(price), U = n(targetUnits);
+    const contribution = P - V;
+    const units = contribution > 0 ? F / contribution : Infinity;
+    const revenue = units === Infinity ? Infinity : units * P;
+    const rows = [
+      ["Fixed Costs", curr(F)],
+      ["Variable Cost / Unit", curr(V)],
+      ["Selling Price / Unit", curr(P)],
+      ["Contribution / Unit", curr(contribution)],
+      ["Break-even Units", Number.isFinite(units) ? round(units, 2) : "Not achievable"],
+      ["Break-even Revenue", Number.isFinite(revenue) ? curr(revenue) : "Not achievable"],
+      ["Profit at Target Units", curr(U * contribution - F)],
+    ];
+    return { units, rows };
+  }, [fixed, variable, price, targetUnits]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Fixed Costs</Label><Input value={fixed} onChange={setFixed} /></div>
+        <div><Label>Variable Cost / Unit</Label><Input value={variable} onChange={setVariable} /></div>
+      </Grid2>
+      <Grid2>
+        <div><Label>Selling Price / Unit</Label><Input value={price} onChange={setPrice} /></div>
+        <div><Label>Target Units</Label><Input value={targetUnits} onChange={setTargetUnits} /></div>
+      </Grid2>
+      <BigResult value={Number.isFinite(out.units) ? round(out.units, 2) : "Not achievable"} label="Break-even Units" />
+      <DataTable columns={["Metric", "Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function NetWorthCalc() {
+  const [assets, setAssets] = useState("150000, 25000, 12000");
+  const [liabilities, setLiabilities] = useState("40000, 15000");
+
+  const out = useMemo(() => {
+    const A = assets.split(/[,\n]+/).map((x) => n(x)).filter((x) => x > 0);
+    const L = liabilities.split(/[,\n]+/).map((x) => n(x)).filter((x) => x > 0);
+    const aSum = A.reduce((s, x) => s + x, 0);
+    const lSum = L.reduce((s, x) => s + x, 0);
+    const nw = aSum - lSum;
+    const rows = [
+      ["Total Assets", curr(aSum)],
+      ["Total Liabilities", curr(lSum)],
+      ["Net Worth", curr(nw)],
+    ];
+    return { nw, rows, A, L };
+  }, [assets, liabilities]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Assets (comma or newline)</Label><Textarea value={assets} onChange={setAssets} rows={5} /></div>
+        <div><Label>Liabilities (comma or newline)</Label><Textarea value={liabilities} onChange={setLiabilities} rows={5} /></div>
+      </Grid2>
+      <BigResult value={curr(out.nw)} label="Net Worth" />
+      <DataTable columns={["Item", "Amount"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function BudgetCalc() {
+  const [income, setIncome] = useState("4000");
+  const [housing, setHousing] = useState("1200");
+  const [food, setFood] = useState("500");
+  const [transport, setTransport] = useState("300");
+  const [utilities, setUtilities] = useState("250");
+  const [misc, setMisc] = useState("400");
+
+  const out = useMemo(() => {
+    const inc = n(income);
+    const exp = n(housing) + n(food) + n(transport) + n(utilities) + n(misc);
+    const save = inc - exp;
+    const expPct = inc > 0 ? (exp / inc) * 100 : 0;
+    const savePct = inc > 0 ? (save / inc) * 100 : 0;
+    const rows = [
+      ["Income", curr(inc)],
+      ["Housing", curr(n(housing))],
+      ["Food", curr(n(food))],
+      ["Transport", curr(n(transport))],
+      ["Utilities", curr(n(utilities))],
+      ["Misc", curr(n(misc))],
+      ["Total Expenses", curr(exp)],
+      ["Remaining", curr(save)],
+    ];
+    return { inc, exp, save, expPct, savePct, rows };
+  }, [income, housing, food, transport, utilities, misc]);
+
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Monthly Income</Label><Input value={income} onChange={setIncome} /></div>
+        <div><Label>Housing</Label><Input value={housing} onChange={setHousing} /></div>
+        <div><Label>Food</Label><Input value={food} onChange={setFood} /></div>
+      </Grid3>
+      <Grid3>
+        <div><Label>Transport</Label><Input value={transport} onChange={setTransport} /></div>
+        <div><Label>Utilities</Label><Input value={utilities} onChange={setUtilities} /></div>
+        <div><Label>Misc</Label><Input value={misc} onChange={setMisc} /></div>
+      </Grid3>
+
+      <Grid2>
+        <BigResult value={curr(out.exp)} label="Total Expenses" sub={`${pct(out.expPct)} of income`} />
+        <BigResult value={curr(out.save)} label="Remaining / Savings" sub={`${pct(out.savePct)} of income`} />
+      </Grid2>
+
+      <div style={{ background: "rgba(255,255,255,0.04)", border: `1px solid ${C.border}`, borderRadius: 10, padding: 10 }}>
+        <div style={{ height: 18, borderRadius: 8, overflow: "hidden", background: "rgba(255,255,255,0.08)", display: "flex" }}>
+          <div style={{ width: `${Math.min(100, Math.max(0, out.expPct))}%`, background: "#EF4444" }} />
+          <div style={{ width: `${Math.min(100, Math.max(0, out.savePct))}%`, background: "#10B981" }} />
+        </div>
+        <div style={{ marginTop: 8, display: "flex", gap: 16, fontSize: 12, color: C.muted }}>
+          <span>🟥 Expenses: {pct(out.expPct)}</span>
+          <span>🟩 Savings: {pct(out.savePct)}</span>
+        </div>
+      </div>
+
+      <DataTable columns={["Component", "Amount"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+const TOOL_COMPONENTS = {
+  "investment-return-calc": InvestmentReturnCalc,
+  "rd-calc": RdCalc,
+  "ppf-calc": PpfCalc,
+  "gratuity-calc": GratuityCalc,
+  "take-home-pay-calc": TakeHomePayCalc,
+  "hourly-to-annual-calc": HourlyToAnnualCalc,
+  "income-tax-calc": IncomeTaxCalc,
+  "tip-calc": TipCalc,
+  "markup-calc": MarkupCalc,
+  "depreciation-calc": DepreciationCalc,
+  "future-value-calc": FutureValueCalc,
+  "present-value-calc": PresentValueCalc,
+  "savings-goal-calc": SavingsGoalCalc,
+  "debt-payoff-calc": DebtPayoffCalc,
+  "credit-card-payoff-calc": CreditCardPayoffCalc,
+  "car-loan-calc": CarLoanCalc,
+  "student-loan-calc": StudentLoanCalc,
+  "break-even-calc": BreakEvenCalc,
+  "net-worth-calc": NetWorthCalc,
+  "budget-calc": BudgetCalc,
+};
+function bmrMifflin(gender, weightKg, heightCm, age) {
+  if (gender === "female") return 10 * weightKg + 6.25 * heightCm - 5 * age - 161;
+  return 10 * weightKg + 6.25 * heightCm - 5 * age + 5;
+}
+
+function TdeeCalc() {
+  const [gender, setGender] = useState("male");
+  const [age, setAge] = useState("30");
+  const [weight, setWeight] = useState("75");
+  const [height, setHeight] = useState("175");
+  const [activity, setActivity] = useState("1.55");
+
+  const out = useMemo(() => {
+    const a = n(age), w = n(weight), h = n(height), act = n(activity);
+    const bmr = bmrMifflin(gender, w, h, a);
+    const tdee = bmr * act;
+    let cat = "Maintenance";
+    if (tdee < 1800) cat = "Lower energy need";
+    else if (tdee < 2600) cat = "Moderate energy need";
+    else cat = "Higher energy need";
+    const rows = [
+      ["BMR (Mifflin-St Jeor)", round(bmr, 0)],
+      ["Activity Factor", act],
+      ["TDEE", round(tdee, 0)],
+      ["Category", cat],
+    ];
+    return { bmr, tdee, cat, rows };
+  }, [gender, age, weight, height, activity]);
+
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Gender</Label><SelectInput value={gender} onChange={setGender} options={[{ value: "male", label: "Male" }, { value: "female", label: "Female" }]} /></div>
+        <div><Label>Age</Label><Input value={age} onChange={setAge} /></div>
+        <div><Label>Weight (kg)</Label><Input value={weight} onChange={setWeight} /></div>
+      </Grid3>
+      <Grid2>
+        <div><Label>Height (cm)</Label><Input value={height} onChange={setHeight} /></div>
+        <div><Label>Activity Level</Label><SelectInput value={activity} onChange={setActivity} options={[
+          { value: "1.2", label: "Sedentary (1.2)" },
+          { value: "1.375", label: "Lightly active (1.375)" },
+          { value: "1.55", label: "Moderately active (1.55)" },
+          { value: "1.725", label: "Very active (1.725)" },
+          { value: "1.9", label: "Extra active (1.9)" },
+        ]} /></div>
+      </Grid2>
+      <Grid2>
+        <BigResult value={`${round(out.tdee, 0)} kcal`} label="TDEE" />
+        <BigResult value={out.cat} label="Classification" />
+      </Grid2>
+      <DataTable columns={["Metric", "Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function MacroCalc() {
+  const [cal, setCal] = useState("2200");
+  const [goal, setGoal] = useState("maintain");
+  const [weight, setWeight] = useState("75");
+
+  const out = useMemo(() => {
+    let C = n(cal);
+    if (goal === "cut") C -= 300;
+    if (goal === "bulk") C += 300;
+    const w = n(weight);
+    const proteinG = goal === "cut" ? w * 2.2 : w * 1.8;
+    const fatG = (C * 0.25) / 9;
+    const carbsG = Math.max(0, (C - proteinG * 4 - fatG * 9) / 4);
+    let cat = "Balanced";
+    if (goal === "cut") cat = "Fat loss";
+    if (goal === "bulk") cat = "Muscle gain";
+    const rows = [
+      ["Calorie Target", `${round(C, 0)} kcal`],
+      ["Protein", `${round(proteinG, 1)} g`],
+      ["Carbs", `${round(carbsG, 1)} g`],
+      ["Fat", `${round(fatG, 1)} g`],
+      ["Goal Category", cat],
+    ];
+    return { C, proteinG, carbsG, fatG, cat, rows };
+  }, [cal, goal, weight]);
+
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Base Calories</Label><Input value={cal} onChange={setCal} /></div>
+        <div><Label>Goal</Label><SelectInput value={goal} onChange={setGoal} options={[{ value: "cut", label: "Cut" }, { value: "maintain", label: "Maintain" }, { value: "bulk", label: "Bulk" }]} /></div>
+        <div><Label>Weight (kg)</Label><Input value={weight} onChange={setWeight} /></div>
+      </Grid3>
+      <Grid3>
+        <BigResult value={`${round(out.proteinG, 1)} g`} label="Protein" />
+        <BigResult value={`${round(out.carbsG, 1)} g`} label="Carbs" />
+        <BigResult value={`${round(out.fatG, 1)} g`} label="Fat" />
+      </Grid3>
+      <DataTable columns={["Component", "Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function ProteinIntakeCalc() {
+  const [weight, setWeight] = useState("75");
+  const [activity, setActivity] = useState("moderate");
+
+  const out = useMemo(() => {
+    const w = n(weight);
+    const factorMap = { low: 1.2, moderate: 1.6, high: 2.0, athlete: 2.2 };
+    const factor = factorMap[activity] || 1.6;
+    const grams = w * factor;
+    const cat = activity === "athlete" ? "Performance" : activity === "high" ? "High training" : activity === "moderate" ? "Active lifestyle" : "General health";
+    const rows = [
+      ["Weight", `${w} kg`],
+      ["Activity Factor", `${factor} g/kg`],
+      ["Recommended Protein", `${round(grams, 1)} g/day`],
+      ["Category", cat],
+    ];
+    return { grams, cat, rows };
+  }, [weight, activity]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Weight (kg)</Label><Input value={weight} onChange={setWeight} /></div>
+        <div><Label>Activity Level</Label><SelectInput value={activity} onChange={setActivity} options={[
+          { value: "low", label: "Low" },
+          { value: "moderate", label: "Moderate" },
+          { value: "high", label: "High" },
+          { value: "athlete", label: "Athlete" },
+        ]} /></div>
+      </Grid2>
+      <Grid2>
+        <BigResult value={`${round(out.grams, 1)} g/day`} label="Protein Target" />
+        <BigResult value={out.cat} label="Classification" />
+      </Grid2>
+      <DataTable columns={["Metric", "Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function HeartRateZoneCalc() {
+  const [mode, setMode] = useState("age");
+  const [age, setAge] = useState("30");
+  const [maxHrInput, setMaxHrInput] = useState("190");
+
+  const out = useMemo(() => {
+    const maxHr = mode === "age" ? 220 - n(age) : n(maxHrInput);
+    const zones = [
+      ["Zone 1 (50-60%)", `${round(maxHr * 0.5, 0)} - ${round(maxHr * 0.6, 0)} bpm`, "Recovery"],
+      ["Zone 2 (60-70%)", `${round(maxHr * 0.6, 0)} - ${round(maxHr * 0.7, 0)} bpm`, "Easy aerobic"],
+      ["Zone 3 (70-80%)", `${round(maxHr * 0.7, 0)} - ${round(maxHr * 0.8, 0)} bpm`, "Moderate"],
+      ["Zone 4 (80-90%)", `${round(maxHr * 0.8, 0)} - ${round(maxHr * 0.9, 0)} bpm`, "Hard threshold"],
+      ["Zone 5 (90-100%)", `${round(maxHr * 0.9, 0)} - ${round(maxHr * 1.0, 0)} bpm`, "Max effort"],
+    ];
+    return { maxHr, zones };
+  }, [mode, age, maxHrInput]);
+
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Mode</Label><SelectInput value={mode} onChange={setMode} options={[{ value: "age", label: "From Age" }, { value: "max", label: "Use Max HR" }]} /></div>
+        <div><Label>Age</Label><Input value={age} onChange={setAge} /></div>
+        <div><Label>Max HR (manual)</Label><Input value={maxHrInput} onChange={setMaxHrInput} /></div>
+      </Grid3>
+      <BigResult value={`${round(out.maxHr, 0)} bpm`} label="Estimated Max HR" />
+      <DataTable columns={["Zone", "Range", "Category"]} rows={out.zones} />
+    </VStack>
+  );
+}
+
+function Vo2MaxCalc() {
+  const [method, setMethod] = useState("cooper");
+  const [distance, setDistance] = useState("2600");
+  const [restingHr, setRestingHr] = useState("60");
+  const [maxHr, setMaxHr] = useState("190");
+
+  const out = useMemo(() => {
+    let vo2 = 0;
+    let cat = "";
+    let rows = [];
+    if (method === "cooper") {
+      const d = n(distance); // meters in 12 min
+      vo2 = (d - 504.9) / 44.73;
+      cat = vo2 < 35 ? "Below average" : vo2 < 45 ? "Average" : "Good+";
+      rows = [["Method", "Cooper 12-min"], ["Distance", `${d} m`], ["VO2 max", `${round(vo2, 2)} ml/kg/min`], ["Category", cat]];
+    } else {
+      const r = n(restingHr), m = n(maxHr);
+      vo2 = 15.3 * (m / (r || 1));
+      cat = vo2 < 35 ? "Below average" : vo2 < 45 ? "Average" : "Good+";
+      rows = [["Method", "HR Ratio"], ["Resting HR", `${r} bpm`], ["Max HR", `${m} bpm`], ["VO2 max", `${round(vo2, 2)} ml/kg/min`], ["Category", cat]];
+    }
+    return { vo2, cat, rows };
+  }, [method, distance, restingHr, maxHr]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Method</Label><SelectInput value={method} onChange={setMethod} options={[{ value: "cooper", label: "Cooper Test" }, { value: "hr", label: "Resting HR Method" }]} /></div>
+        <div><Label>12-min Distance (m)</Label><Input value={distance} onChange={setDistance} /></div>
+      </Grid2>
+      <Grid2>
+        <div><Label>Resting HR</Label><Input value={restingHr} onChange={setRestingHr} /></div>
+        <div><Label>Max HR</Label><Input value={maxHr} onChange={setMaxHr} /></div>
+      </Grid2>
+      <Grid2>
+        <BigResult value={`${round(out.vo2, 2)} ml/kg/min`} label="Estimated VO2 Max" />
+        <BigResult value={out.cat} label="Classification" />
+      </Grid2>
+      <DataTable columns={["Metric", "Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function toSeconds(h, m, s) { return n(h) * 3600 + n(m) * 60 + n(s); }
+function fmtPace(secPerKm) {
+  if (!Number.isFinite(secPerKm) || secPerKm <= 0) return "—";
+  const m = Math.floor(secPerKm / 60);
+  const s = Math.round(secPerKm % 60);
+  return `${m}:${String(s).padStart(2, "0")} /km`;
+}
+
+function PaceCalc() {
+  const [distance, setDistance] = useState("10");
+  const [h, setH] = useState("0");
+  const [m, setM] = useState("50");
+  const [s, setS] = useState("0");
+
+  const out = useMemo(() => {
+    const d = n(distance);
+    const t = toSeconds(h, m, s);
+    const pace = d > 0 ? t / d : 0;
+    const speed = t > 0 ? (d / t) * 3600 : 0;
+    const cat = pace < 300 ? "Fast" : pace < 390 ? "Moderate" : "Easy";
+    const rows = [
+      ["Distance", `${d} km`],
+      ["Time", `${h}h ${m}m ${s}s`],
+      ["Pace", fmtPace(pace)],
+      ["Speed", `${round(speed, 2)} km/h`],
+      ["Category", cat],
+    ];
+    return { pace, speed, cat, rows };
+  }, [distance, h, m, s]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Distance (km)</Label><Input value={distance} onChange={setDistance} /></div>
+        <div><Label>Time (h:m:s)</Label><Grid3><Input value={h} onChange={setH} /><Input value={m} onChange={setM} /><Input value={s} onChange={setS} /></Grid3></div>
+      </Grid2>
+      <Grid2>
+        <BigResult value={fmtPace(out.pace)} label="Pace" />
+        <BigResult value={`${round(out.speed, 2)} km/h`} label="Speed" />
+      </Grid2>
+      <DataTable columns={["Metric", "Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function BloodAlcoholCalc() {
+  const [drinks, setDrinks] = useState("3");
+  const [weightKg, setWeightKg] = useState("75");
+  const [gender, setGender] = useState("male");
+  const [hours, setHours] = useState("2");
+
+  const out = useMemo(() => {
+    const d = n(drinks), w = n(weightKg), h = n(hours);
+    const alcoholG = d * 14;
+    const r = gender === "female" ? 0.55 : 0.68;
+    let bac = ((alcoholG / (w * 1000 * r)) * 100) - (0.015 * h);
+    if (bac < 0) bac = 0;
+    let cat = "Low";
+    if (bac >= 0.08) cat = "Legally impaired in many regions";
+    else if (bac >= 0.03) cat = "Impaired";
+    const rows = [
+      ["Drinks", d],
+      ["Weight", `${w} kg`],
+      ["Time elapsed", `${h} h`],
+      ["Estimated BAC", round(bac, 3)],
+      ["Category", cat],
+    ];
+    return { bac, cat, rows };
+  }, [drinks, weightKg, gender, hours]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Standard Drinks</Label><Input value={drinks} onChange={setDrinks} /></div>
+        <div><Label>Weight (kg)</Label><Input value={weightKg} onChange={setWeightKg} /></div>
+      </Grid2>
+      <Grid2>
+        <div><Label>Gender</Label><SelectInput value={gender} onChange={setGender} options={[{ value: "male", label: "Male" }, { value: "female", label: "Female" }]} /></div>
+        <div><Label>Hours Elapsed</Label><Input value={hours} onChange={setHours} /></div>
+      </Grid2>
+      <Grid2>
+        <BigResult value={round(out.bac, 3)} label="Estimated BAC" />
+        <BigResult value={out.cat} label="Classification" />
+      </Grid2>
+      <DataTable columns={["Metric", "Value"]} rows={out.rows} />
+      <Result>⚠️ Safety Disclaimer: This is only an estimate. Do not drink and drive. If you consumed alcohol, use a safe ride option and avoid operating vehicles or machinery.</Result>
+    </VStack>
+  );
+}
+
+function SleepCalc() {
+  const [wakeHour, setWakeHour] = useState("7");
+  const [wakeMin, setWakeMin] = useState("00");
+
+  const out = useMemo(() => {
+    const h = Math.floor(n(wakeHour)) % 24;
+    const m = Math.floor(n(wakeMin)) % 60;
+    const wake = new Date();
+    wake.setHours(h, m, 0, 0);
+    const rows = [];
+    for (let cycles = 6; cycles >= 3; cycles--) {
+      const bedtime = new Date(wake.getTime() - (cycles * 90 + 15) * 60000); // include 15 min fall asleep
+      const hh = String(bedtime.getHours()).padStart(2, "0");
+      const mm = String(bedtime.getMinutes()).padStart(2, "0");
+      const cat = cycles >= 5 ? "Optimal" : cycles === 4 ? "Okay" : "Short sleep";
+      rows.push([`${cycles} cycles`, `${hh}:${mm}`, cat]);
+    }
+    return { rows };
+  }, [wakeHour, wakeMin]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Wake Hour (24h)</Label><Input value={wakeHour} onChange={setWakeHour} /></div>
+        <div><Label>Wake Minute</Label><Input value={wakeMin} onChange={setWakeMin} /></div>
+      </Grid2>
+      <BigResult value="90-min cycles" label="Sleep Cycle Planner" />
+      <DataTable columns={["Cycles", "Suggested Bedtime", "Category"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function BloodPressureCalc() {
+  const [sys, setSys] = useState("118");
+  const [dia, setDia] = useState("76");
+
+  const out = useMemo(() => {
+    const S = n(sys), D = n(dia);
+    let cat = "Normal";
+    if (S >= 180 || D >= 120) cat = "Hypertensive Crisis";
+    else if (S >= 140 || D >= 90) cat = "High BP Stage 2";
+    else if (S >= 130 || D >= 80) cat = "High BP Stage 1";
+    else if (S >= 120 && D < 80) cat = "Elevated";
+    const rows = [
+      ["Systolic", `${S} mmHg`],
+      ["Diastolic", `${D} mmHg`],
+      ["Classification", cat],
+    ];
+    const chart = [
+      ["Normal", "<120 and <80"],
+      ["Elevated", "120-129 and <80"],
+      ["High Stage 1", "130-139 or 80-89"],
+      ["High Stage 2", "≥140 or ≥90"],
+      ["Crisis", "≥180 and/or ≥120"],
+    ];
+    return { cat, rows, chart };
+  }, [sys, dia]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Systolic (mmHg)</Label><Input value={sys} onChange={setSys} /></div>
+        <div><Label>Diastolic (mmHg)</Label><Input value={dia} onChange={setDia} /></div>
+      </Grid2>
+      <Grid2>
+        <BigResult value={`${n(sys)}/${n(dia)}`} label="Reading" />
+        <BigResult value={out.cat} label="Classification" />
+      </Grid2>
+      <DataTable columns={["Metric", "Value"]} rows={out.rows} />
+      <DataTable columns={["Category", "Range"]} rows={out.chart} />
+    </VStack>
+  );
+}
+
+function BloodSugarConverter() {
+  const [mode, setMode] = useState("mg2mmol");
+  const [value, setValue] = useState("95");
+  const [context, setContext] = useState("fasting");
+
+  const out = useMemo(() => {
+    const v = n(value);
+    const mmol = mode === "mg2mmol" ? v / 18 : v;
+    const mg = mode === "mg2mmol" ? v : v * 18;
+
+    let cat = "Normal";
+    if (context === "fasting") {
+      if (mg >= 126) cat = "Diabetes range";
+      else if (mg >= 100) cat = "Prediabetes range";
+      else cat = "Normal fasting";
+    } else {
+      if (mg >= 200) cat = "Diabetes range";
+      else if (mg >= 140) cat = "Prediabetes range";
+      else cat = "Normal post-meal";
+    }
+
+    const rows = [
+      ["Input", mode === "mg2mmol" ? `${v} mg/dL` : `${v} mmol/L`],
+      ["Converted mg/dL", round(mg, 2)],
+      ["Converted mmol/L", round(mmol, 2)],
+      ["Context", context === "fasting" ? "Fasting" : "Post-meal"],
+      ["Classification", cat],
+    ];
+    return { mg, mmol, cat, rows };
+  }, [mode, value, context]);
+
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Conversion</Label><SelectInput value={mode} onChange={setMode} options={[{ value: "mg2mmol", label: "mg/dL → mmol/L" }, { value: "mmol2mg", label: "mmol/L → mg/dL" }]} /></div>
+        <div><Label>Value</Label><Input value={value} onChange={setValue} /></div>
+        <div><Label>Context</Label><SelectInput value={context} onChange={setContext} options={[{ value: "fasting", label: "Fasting" }, { value: "post", label: "Post-meal" }]} /></div>
+      </Grid3>
+      <Grid2>
+        <BigResult value={`${round(out.mg, 2)} mg/dL`} label="mg/dL" />
+        <BigResult value={`${round(out.mmol, 2)} mmol/L`} label="mmol/L" />
+      </Grid2>
+      <DataTable columns={["Metric", "Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+Object.assign(TOOL_COMPONENTS, {
+  "tdee-calc": TdeeCalc,
+  "macro-calc": MacroCalc,
+  "protein-intake-calc": ProteinIntakeCalc,
+  "heart-rate-zone-calc": HeartRateZoneCalc,
+  "vo2max-calc": Vo2MaxCalc,
+  "pace-calc": PaceCalc,
+  "blood-alcohol-calc": BloodAlcoholCalc,
+  "sleep-calc": SleepCalc,
+  "blood-pressure-calc": BloodPressureCalc,
+  "blood-sugar-converter": BloodSugarConverter,
+});
+function gcd2(a, b) {
+  a = Math.abs(Math.floor(a)); b = Math.abs(Math.floor(b));
+  while (b) [a, b] = [b, a % b];
+  return a || 1;
+}
+
+function AspectRatioCalc() {
+  const [w, setW] = useState("1920");
+  const [h, setH] = useState("1080");
+  const [newW, setNewW] = useState("1280");
+  const [newH, setNewH] = useState("720");
+  const [mode, setMode] = useState("fromWidth");
+
+  const out = useMemo(() => {
+    const W = n(w), H = n(h);
+    const g = gcd2(W, H);
+    const rw = Math.round(W / g), rh = Math.round(H / g);
+
+    let eqW = n(newW), eqH = n(newH);
+    if (mode === "fromWidth") eqH = eqW * (H / (W || 1));
+    if (mode === "fromHeight") eqW = eqH * (W / (H || 1));
+
+    const rows = [
+      ["Original", `${W} × ${H}`],
+      ["Simplified Ratio", `${rw}:${rh}`],
+      ["Equivalent", `${round(eqW, 2)} × ${round(eqH, 2)}`],
+      ["Category", `${rw === 16 && rh === 9 ? "Widescreen 16:9" : rw === 4 && rh === 3 ? "Standard 4:3" : "Custom"}`],
+    ];
+    return { rw, rh, eqW, eqH, rows };
+  }, [w, h, newW, newH, mode]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Width</Label><Input value={w} onChange={setW} /></div>
+        <div><Label>Height</Label><Input value={h} onChange={setH} /></div>
+      </Grid2>
+      <Grid3>
+        <div><Label>Mode</Label><SelectInput value={mode} onChange={setMode} options={[{ value: "fromWidth", label: "Find Height from Width" }, { value: "fromHeight", label: "Find Width from Height" }]} /></div>
+        <div><Label>New Width</Label><Input value={newW} onChange={setNewW} /></div>
+        <div><Label>New Height</Label><Input value={newH} onChange={setNewH} /></div>
+      </Grid3>
+      <Grid2>
+        <BigResult value={`${out.rw}:${out.rh}`} label="Aspect Ratio" />
+        <BigResult value={`${round(out.eqW, 2)} × ${round(out.eqH, 2)}`} label="Equivalent Size" />
+      </Grid2>
+      <DataTable columns={["Metric", "Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function PpiDpiCalc() {
+  const [pxW, setPxW] = useState("1920");
+  const [pxH, setPxH] = useState("1080");
+  const [diag, setDiag] = useState("24");
+
+  const out = useMemo(() => {
+    const w = n(pxW), h = n(pxH), d = n(diag);
+    const ppi = d > 0 ? Math.sqrt(w * w + h * h) / d : 0;
+    let cat = "Standard";
+    if (ppi >= 300) cat = "Print/Retina grade";
+    else if (ppi >= 200) cat = "High density";
+    else if (ppi >= 120) cat = "Good desktop";
+    const rows = [
+      ["Resolution", `${w} × ${h}`],
+      ["Diagonal", `${d} in`],
+      ["PPI / DPI", round(ppi, 2)],
+      ["Classification", cat],
+    ];
+    return { ppi, cat, rows };
+  }, [pxW, pxH, diag]);
+
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Pixels Width</Label><Input value={pxW} onChange={setPxW} /></div>
+        <div><Label>Pixels Height</Label><Input value={pxH} onChange={setPxH} /></div>
+        <div><Label>Screen Size (in)</Label><Input value={diag} onChange={setDiag} /></div>
+      </Grid3>
+      <Grid2>
+        <BigResult value={round(out.ppi, 2)} label="PPI / DPI" />
+        <BigResult value={out.cat} label="Classification" />
+      </Grid2>
+      <DataTable columns={["Metric", "Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function FuelCostCalc() {
+  const [distance, setDistance] = useState("350");
+  const [mileage, setMileage] = useState("15");
+  const [price, setPrice] = useState("1.4");
+
+  const out = useMemo(() => {
+    const d = n(distance), m = n(mileage), p = n(price);
+    const fuel = m > 0 ? d / m : 0;
+    const cost = fuel * p;
+    const rows = [
+      ["Distance", `${d} km`],
+      ["Mileage", `${m} km/L`],
+      ["Fuel Needed", `${round(fuel, 2)} L`],
+      ["Fuel Price", curr(p)],
+      ["Trip Cost", curr(cost)],
+      ["Category", cost > 100 ? "Higher trip cost" : "Moderate trip cost"],
+    ];
+    return { fuel, cost, rows };
+  }, [distance, mileage, price]);
+
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Distance (km)</Label><Input value={distance} onChange={setDistance} /></div>
+        <div><Label>Mileage (km/L)</Label><Input value={mileage} onChange={setMileage} /></div>
+        <div><Label>Fuel Price / L</Label><Input value={price} onChange={setPrice} /></div>
+      </Grid3>
+      <Grid2>
+        <BigResult value={`${round(out.fuel, 2)} L`} label="Fuel Needed" />
+        <BigResult value={curr(out.cost)} label="Estimated Cost" />
+      </Grid2>
+      <DataTable columns={["Metric", "Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function ElectricityCostCalc() {
+  const [watt, setWatt] = useState("1000");
+  const [hours, setHours] = useState("5");
+  const [days, setDays] = useState("30");
+  const [tariff, setTariff] = useState("0.15");
+
+  const out = useMemo(() => {
+    const W = n(watt), h = n(hours), d = n(days), t = n(tariff);
+    const kWhDay = (W / 1000) * h;
+    const kWhMonth = kWhDay * d;
+    const bill = kWhMonth * t;
+    const rows = [
+      ["Power", `${W} W`],
+      ["Usage", `${h} h/day`],
+      ["Monthly Consumption", `${round(kWhMonth, 2)} kWh`],
+      ["Tariff", curr(t) + " /kWh"],
+      ["Estimated Bill", curr(bill)],
+      ["Category", bill > 100 ? "High consumption" : "Normal consumption"],
+    ];
+    return { kWhMonth, bill, rows };
+  }, [watt, hours, days, tariff]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Appliance Wattage</Label><Input value={watt} onChange={setWatt} /></div>
+        <div><Label>Hours / Day</Label><Input value={hours} onChange={setHours} /></div>
+      </Grid2>
+      <Grid2>
+        <div><Label>Days / Month</Label><Input value={days} onChange={setDays} /></div>
+        <div><Label>Tariff per kWh</Label><Input value={tariff} onChange={setTariff} /></div>
+      </Grid2>
+      <Grid2>
+        <BigResult value={`${round(out.kWhMonth, 2)} kWh`} label="Monthly Units" />
+        <BigResult value={curr(out.bill)} label="Estimated Bill" />
+      </Grid2>
+      <DataTable columns={["Metric", "Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function OhmsLawCalc() {
+  const [mode, setMode] = useState("V");
+  const [V, setV] = useState("12");
+  const [I, setI] = useState("2");
+  const [R, setR] = useState("6");
+  const [P, setP] = useState("24");
+
+  const out = useMemo(() => {
+    let v = n(V), i = n(I), r = n(R), p = n(P);
+    if (mode === "V") v = i * r;
+    if (mode === "I") i = r !== 0 ? v / r : 0;
+    if (mode === "R") r = i !== 0 ? v / i : 0;
+    if (mode === "P") p = v * i;
+    const cat = p > 100 ? "Higher power load" : "Safe/low power load";
+    const rows = [
+      ["Voltage (V)", round(v, 4)],
+      ["Current (A)", round(i, 4)],
+      ["Resistance (Ω)", round(r, 4)],
+      ["Power (W)", round(p, 4)],
+      ["Classification", cat],
+    ];
+    return { v, i, r, p, cat, rows };
+  }, [mode, V, I, R, P]);
+
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Solve For</Label><SelectInput value={mode} onChange={setMode} options={[{ value: "V", label: "Voltage (V)" }, { value: "I", label: "Current (I)" }, { value: "R", label: "Resistance (R)" }, { value: "P", label: "Power (P)" }]} /></div>
+        <div><Label>Voltage (V)</Label><Input value={V} onChange={setV} /></div>
+        <div><Label>Current (A)</Label><Input value={I} onChange={setI} /></div>
+      </Grid3>
+      <Grid2>
+        <div><Label>Resistance (Ω)</Label><Input value={R} onChange={setR} /></div>
+        <div><Label>Power (W)</Label><Input value={P} onChange={setP} /></div>
+      </Grid2>
+      <Grid2>
+        <BigResult value={round(out.v, 4)} label="Voltage (V)" />
+        <BigResult value={round(out.p, 4)} label="Power (W)" />
+      </Grid2>
+      <DataTable columns={["Metric", "Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+Object.assign(TOOL_COMPONENTS, {
+  "aspect-ratio-calc": AspectRatioCalc,
+  "ppi-dpi-calc": PpiDpiCalc,
+  "fuel-cost-calc": FuelCostCalc,
+  "electricity-cost-calc": ElectricityCostCalc,
+  "ohms-law-calc": OhmsLawCalc,
+});
+
+function useAppRouter() {
+  const parse = () => {
+    const h = window.location.hash || "#/";
+    const path = h.replace(/^#/, "") || "/";
+    const parts = path.split("/").filter(Boolean);
+    if (!parts.length) return { page: "home" };
+    if (parts[0] === "tool" && parts[1]) return { page: "tool", toolId: parts[1] };
+    if (parts[0] === "category" && parts[1]) return { page: "category", catId: parts[1] };
+    return { page: "home" };
+  };
+  const [route, setRoute] = useState(parse);
+  useEffect(() => {
+    const onHash = () => setRoute(parse());
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
+  return route;
+}
+
+function Breadcrumb({ tool, cat }) {
+  return (
+    <>
+      <div style={{ display: "flex", gap: 6, fontSize: 12, color: C.muted, marginBottom: 16 }}>
+        <a href="https://toolsrift.com" style={{ color: C.muted, textDecoration: "none" }}>🏠 ToolsRift</a>
+        {cat && <><span>›</span><a href={`#/category/${cat.id}`} style={{ color: C.muted, textDecoration: "none" }}>{cat.name}</a></>}
+        {tool && <><span>›</span><span style={{ color: C.text }}>{tool.name}</span></>}
+      </div>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://toolsrift.com" },
+          { "@type": "ListItem", "position": 2, "name": "Finance & Health Calculators", "item": "https://toolsrift.com/financecalc" },
+          { "@type": "ListItem", "position": 3, "name": tool?.name || tool?.id || "" }
+        ]
+      }) }} />
+    </>
+  );
+}
+
+function ToolPage({ toolId }) {
+  const tool = TOOLS.find(t => t.id === toolId);
+  const meta = null;
+  const ToolComp = TOOL_COMPONENTS[toolId];
+  useEffect(() => {
+    document.title = meta?.title || `${tool?.name} – Free Finance Calculator | ToolsRift`;
+  }, [toolId, tool, meta]);
+
+  if (!tool || !ToolComp) {
+    return (
+      <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'}>
+        <div style={{ padding:'48px 20px', textAlign:'center', color:'#94A3B8' }}>
+          Tool not found. <a href="#/" style={{ color: PAGE_THEME.color }}>← Back to {PAGE_THEME.name}</a>
+        </div>
+      </CategoryLayout>
+    );
+  }
+
+  const toolData = {
+    id: tool.id,
+    name: tool.name,
+    icon: tool.icon,
+    description: meta?.desc || tool.desc,
+    howTo: meta?.howTo,
+    faq: meta?.faq,
+  };
+  const related = TOOLS.filter(t => t.id !== tool.id && t.cat === tool.cat).slice(0, 8);
+
+  return (
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId}>
+      <ToolPageLayout theme={PAGE_THEME} tool={toolData} related={related}>
+        <ToolComp />
+      </ToolPageLayout>
+    </CategoryLayout>
+  );
+}
+
+function CategoryPage({ catId }) {
+  const cat = CATEGORIES.find((c) => c.id === catId);
+  const items = TOOLS.filter((t) => t.cat === catId);
+  if (!cat) return <div style={{ padding: 24, color: C.muted }}>Category not found.</div>;
+  return (
+    <div style={{ maxWidth: 1000, margin: "0 auto", padding: "24px 20px 60px" }}>
+      <Breadcrumb cat={cat} />
+      <h1 style={T.h1}>{cat.icon} {cat.name}</h1>
+      <p style={{ color: C.muted, marginTop: 8, marginBottom: 16 }}>{cat.desc}</p>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 14 }}>
+        {items.map((t) => (
+          <a key={t.id} href={`#/tool/${t.id}`} style={{ textDecoration: "none" }}>
+            <Card>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                <div style={{ fontSize: 22 }}>{t.icon}</div>
+                <Badge color="blue">Calculators</Badge>
+              </div>
+              <div style={{ color: C.text, fontWeight: 700, marginBottom: 6 }}>{t.name}</div>
+              <div style={{ color: C.muted, fontSize: 12, lineHeight: 1.6 }}>{t.desc}</div>
+            </Card>
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function StatBox({ value, label }) {
+  return (
+    <div style={{ background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, borderRadius: 8, padding: "12px 10px", textAlign: "center" }}>
+      <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 20, fontWeight: 700, color: C.blue }}>{value}</div>
+      <div style={{ fontSize: 11, color: C.muted, marginTop: 2 }}>{label}</div>
+    </div>
+  );
+}
+
+function SubcatTabs({ cats, active, onSelect }) {
+  return (
+    <div style={{ display: "flex", gap: 8, overflowX: "auto", padding: "4px 0 12px", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch", msOverflowStyle: "none", scrollbarWidth: "none" }}>
+      {cats.map((c) => (
+        <button key={c.id} onClick={() => onSelect(c.id)} style={{
+          flexShrink: 0, scrollSnapAlign: "start",
+          padding: "7px 16px", borderRadius: 20, fontSize: 13, fontWeight: 600, cursor: "pointer",
+          border: `1px solid ${active === c.id ? C.blue : "rgba(255,255,255,0.1)"}`,
+          background: active === c.id ? C.blue : "transparent",
+          color: active === c.id ? "#fff" : "#64748B", transition: "all 0.15s",
+        }}>{c.icon} {c.name}</button>
+      ))}
+    </div>
+  );
+}
+
+function HomePage() {
+  return (
+    <CategoryLayout theme={PAGE_THEME} currentTool={null}>
+      <CategoryDashboard
+        theme={PAGE_THEME}
+        tools={TOOLS}
+        subcats={CATEGORIES}
+        searchPlaceholder="Search finance & health calculators..."
+      />
+    </CategoryLayout>
+  );
+}
+
+function Nav() {
+  const [scrolled, setScrolled] = useState(false);
+  const [isDark] = useState(true);
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 8);
+    window.addEventListener("scroll", fn, { passive: true });
+    return () => window.removeEventListener("scroll", fn);
+  }, []);
+  return (
+    <nav style={{
+      height: 56, display: "flex", justifyContent: "space-between", alignItems: "center",
+      padding: "0 24px", position: "sticky", top: 0, zIndex: 100,
+      background: `rgba(6,9,15,${scrolled ? 0.97 : 0.85})`,
+      backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
+      borderBottom: `1px solid ${scrolled ? "rgba(34,197,94,0.2)" : C.border}`,
+      transition: "background 0.2s, border-color 0.2s",
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <span style={{ width: 8, height: 8, borderRadius: "50%", background: C.blue, boxShadow: `0 0 6px ${C.blue}80`, flexShrink: 0 }} />
+        <a href="https://toolsrift.com" style={{ fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 15, color: "#F8FAFC", textDecoration: "none", letterSpacing: "-0.01em" }}>ToolsRift</a>
+        <span style={{ color: "rgba(255,255,255,0.2)", fontSize: 13 }}>›</span>
+        <span style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 14, fontWeight: 500, color: C.blue }}>{THEME?.name}</span>
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <span style={{ background: "rgba(34,197,94,0.12)", color: C.blue, border: "1px solid rgba(34,197,94,0.25)", borderRadius: 20, fontSize: 11, fontWeight: 700, padding: "3px 10px", fontFamily: "'Plus Jakarta Sans',sans-serif" }}>{TOOLS.length} tools</span>
+        <a href="/" style={{ fontSize: 12, color: C.muted, textDecoration: "none", fontWeight: 500 }}>🏠 Home</a>
+        {/* PHASE 2: <UsageCounter /> */}
+      </div>
+    </nav>
+  );
+}
+
+function SiteFooter({ currentPage }) {
+  const pages = [
+    { href: "/business", icon: "💼", label: "Business" },
+    { href: "/text", icon: "✍️", label: "Text Tools" },
+    { href: "/json", icon: "🧑‍💻", label: "Dev Tools" },
+    { href: "/encoders", icon: "🔐", label: "Encoders" },
+    { href: "/colors", icon: "🎨", label: "Color Tools" },
+    { href: "/units", icon: "📏", label: "Unit Converters" },
+    { href: "/hash", icon: "🔒", label: "Hash & Crypto" },
+    { href: "/css", icon: "✨", label: "CSS Tools" },
+    { href: "/generators", icon: "⚡", label: "Generators" },
+    { href: "/generators2", icon: "✍️", label: "Content Gen" },
+    { href: "/devgen", icon: "⚙️", label: "Dev Config" },
+    { href: "/mathcalc", icon: "📐", label: "Math Calc" },
+    { href: "/financecalc", icon: "💰", label: "Finance Calc" },
+    { href: "/devtools", icon: "🛠️", label: "Dev Tools" },
+    { href: "/js", icon: "📜", label: "JS Tools" },
+    { href: "/converters2", icon: "🔄", label: "More Converters" },
+    { href: "/about", icon: "ℹ️", label: "About" },
+    { href: "/privacy-policy", icon: "🔏", label: "Privacy Policy" },
+  ].filter((p) => !p.href.endsWith("/" + currentPage));
+  return (
+    <div style={{ maxWidth: 860, margin: "0 auto", padding: "32px 20px 28px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+        <span style={{ fontSize: 11, fontWeight: 700, color: "#475569", textTransform: "uppercase", letterSpacing: "0.06em" }}>Explore More Tools</span>
+        <a href="/" style={{ fontSize: 12, color: C.blue, textDecoration: "none", fontWeight: 600 }}>← Back to Home</a>
+      </div>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
+        {pages.map((p) => (
+          <a key={p.href} href={p.href} style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 13px", borderRadius: 8, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", fontSize: 12, fontWeight: 500, color: "#64748B", textDecoration: "none" }}>
+            <span>{p.icon}</span>{p.label}
+          </a>
+        ))}
+      </div>
+      <div style={{ textAlign: "center", fontSize: 11, color: "#334155" }}>© 2026 ToolsRift · Free online tools · No signup required</div>
+    </div>
+  );
+}
+
+function ToolsRiftCalcFinance() {
+  const route = useAppRouter();
+  const showChrome = route.page !== 'home' && route.page !== 'tool';
+  return (
+    <div style={{ minHeight: "100vh", background: C.bg, color: C.text, fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
+      <style>{GLOBAL_CSS}</style>
+      {showChrome && <Nav />}
+      {route.page === "home" && <HomePage />}
+      {route.page === "tool" && <ToolPage toolId={route.toolId} />}
+      {route.page === "category" && <CategoryPage catId={route.catId} />}
+      {showChrome && <SiteFooter currentPage="financecalc" />}
+    </div>
+  );
+}
+
+export default ToolsRiftCalcFinance;

@@ -1,0 +1,1558 @@
+﻿import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+// PHASE 2: import { trackUse, isLimitReached, getRemaining, DAILY_LIMIT } from '../lib/usage';
+import { getCategoryById } from '../lib/categoryThemes';
+import CategoryLayout from './shared/CategoryLayout';
+import CategoryDashboard from './shared/CategoryDashboard';
+import ToolCard from './shared/ToolCard';
+import ToolPageLayout from './shared/ToolPageLayout';
+// PHASE 2: import UpgradeModal from './UpgradeModal';
+// PHASE 2: import UsageCounter from './UsageCounter';
+
+// �"����� TOKENS �������������������������������������������������������������������������������������������������������������������������������������"�
+const C = {
+  bg:"#06090F", surface:"#0D1117", border:"rgba(255,255,255,0.06)",
+  green:"#10B981", greenD:"#059669", text:"#E2E8F0", muted:"#64748B",
+  blue:"#3B82F6", purple:"#8B5CF6", warn:"#F59E0B", danger:"#EF4444",
+  teal:"#14B8A6", emerald:"#10B981",
+};
+
+const GLOBAL_CSS = `
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  ::-webkit-scrollbar{width:6px;height:6px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px}
+  ::selection{background:rgba(16,185,129,0.3)}
+  button:hover{filter:brightness(1.1)}
+  select option{background:#0D1117}
+  textarea{resize:vertical}
+  input[type=range]{accent-color:#10B981}
+  .fade-in{animation:fadeIn .22s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+  .spin{animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .tr-nav-cats{display:flex;gap:4px;align-items:center}
+  .tr-nav-badge{display:inline-flex}
+  @media(max-width:640px){
+    .tr-nav-cats{display:none!important}
+    .tr-nav-badge{display:none!important}
+  }
+`;
+
+const T = {
+  mono:{ fontFamily:"'JetBrains Mono',monospace", fontSize:13 },
+  label:{ fontFamily:"'Plus Jakarta Sans',sans-serif", fontSize:12, fontWeight:600, color:C.muted, textTransform:"uppercase", letterSpacing:"0.05em" },
+  h1:{ fontFamily:"'Sora',sans-serif", fontSize:22, fontWeight:700, color:C.text },
+  h2:{ fontFamily:"'Sora',sans-serif", fontSize:15, fontWeight:600, color:C.text },
+};
+
+// �"����� SHARED UI �������������������������������������������������������������������������������������������������������������������������������"�
+function Badge({ children, color="green" }) {
+  const bg={green:"rgba(16,185,129,0.15)",blue:"rgba(59,130,246,0.15)",amber:"rgba(245,158,11,0.15)",red:"rgba(239,68,68,0.15)",purple:"rgba(139,92,246,0.15)",teal:"rgba(20,184,166,0.15)"};
+  const fg={green:"#34D399",blue:"#60A5FA",amber:"#FCD34D",red:"#FCA5A5",purple:"#A78BFA",teal:"#2DD4BF"};
+  return <span style={{background:bg[color]||bg.green,color:fg[color]||fg.green,borderRadius:4,padding:"2px 8px",fontSize:11,fontWeight:600,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{children}</span>;
+}
+
+function Btn({ children, onClick, variant="primary", size="md", disabled, style={} }) {
+  const base={display:"inline-flex",alignItems:"center",justifyContent:"center",gap:6,border:"none",cursor:disabled?"not-allowed":"pointer",borderRadius:8,fontWeight:600,transition:"all .15s",fontFamily:"'Plus Jakarta Sans',sans-serif",opacity:disabled?0.5:1};
+  const sz={sm:{padding:"6px 14px",fontSize:12},md:{padding:"9px 20px",fontSize:13},lg:{padding:"12px 28px",fontSize:14}}[size];
+  const v={
+    primary:{background:`linear-gradient(135deg,${C.green},${C.greenD})`,color:"#fff",boxShadow:"0 2px 8px rgba(16,185,129,0.3)"},
+    secondary:{background:"rgba(255,255,255,0.05)",color:C.text,border:`1px solid ${C.border}`},
+    ghost:{background:"transparent",color:C.muted},
+    danger:{background:"rgba(239,68,68,0.15)",color:"#FCA5A5"},
+    blue:{background:`linear-gradient(135deg,${C.blue},#2563EB)`,color:"#fff",boxShadow:"0 2px 8px rgba(59,130,246,0.25)"},
+  }[variant];
+  return <button style={{...base,...sz,...v,...style}} onClick={onClick} disabled={disabled}>{children}</button>;
+}
+
+function Input({ value, onChange, placeholder, style={}, mono=false, type="text" }) {
+  return (
+    <input type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder}
+      style={{width:"100%",background:"rgba(255,255,255,0.04)",border:`1px solid ${C.border}`,borderRadius:8,padding:"10px 14px",color:C.text,fontSize:13,fontFamily:mono?"'JetBrains Mono',monospace":"'Plus Jakarta Sans',sans-serif",outline:"none",...style}}
+      onFocus={e=>e.target.style.borderColor=C.green} onBlur={e=>e.target.style.borderColor=C.border} />
+  );
+}
+
+function Textarea({ value, onChange, placeholder, rows=5, mono=true, readOnly=false, style={} }) {
+  return (
+    <textarea value={value} onChange={e=>onChange&&onChange(e.target.value)} placeholder={placeholder} rows={rows} readOnly={readOnly}
+      style={{width:"100%",background:"rgba(255,255,255,0.04)",border:`1px solid ${C.border}`,borderRadius:8,padding:"12px 14px",color:C.text,fontSize:13,fontFamily:mono?"'JetBrains Mono',monospace":"'Plus Jakarta Sans',sans-serif",outline:"none",lineHeight:1.6,...style}}
+      onFocus={e=>!readOnly&&(e.target.style.borderColor=C.green)} onBlur={e=>e.target.style.borderColor=C.border} />
+  );
+}
+
+function SelectInput({ value, onChange, options, style={} }) {
+  return (
+    <select value={value} onChange={e=>onChange(e.target.value)}
+      style={{background:"rgba(255,255,255,0.04)",border:`1px solid ${C.border}`,borderRadius:8,padding:"9px 14px",color:C.text,fontSize:13,fontFamily:"'Plus Jakarta Sans',sans-serif",outline:"none",cursor:"pointer",...style}}>
+      {options.map(o=><option key={o.value} value={o.value}>{o.label}</option>)}
+    </select>
+  );
+}
+
+function Card({ children, style={} }) {
+  return <div style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:12,padding:20,...style}}>{children}</div>;
+}
+
+function Label({ children }) { return <div style={{...T.label,marginBottom:6}}>{children}</div>; }
+
+function CopyBtn({ text, style={} }) {
+  const [copied, setCopied] = useState(false);
+  const [err, setErr]       = useState(false);
+  const copy = () => {
+    navigator.clipboard.writeText(text || '').then(() => {
+      setCopied(true); setTimeout(() => setCopied(false), 1800);
+    }).catch(() => { setErr(true); setTimeout(() => setErr(false), 2000); });
+  };
+  return (
+    <button onClick={copy} style={{
+      background: copied ? 'rgba(16,185,129,0.12)' : 'rgba(255,255,255,0.06)',
+      border: `1px solid ${copied ? 'rgba(16,185,129,0.3)' : 'rgba(255,255,255,0.1)'}`,
+      color: err ? '#EF4444' : copied ? '#10B981' : '#94A3B8',
+      borderRadius: 8, padding: '8px 16px', fontSize: 12, fontWeight: 600,
+      cursor: 'pointer', transition: 'all 0.15s', minHeight: 36,
+      fontFamily: "'Plus Jakarta Sans',sans-serif", ...style,
+    }}>
+      {err ? 'Failed' : copied ? '✓ Copied!' : 'Copy'}
+    </button>
+  );
+}
+
+function HashOutput({ label, value, accent=C.green }) {
+  return (
+    <div style={{marginBottom:12}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+        <Label>{label}</Label>
+        {value && <CopyBtn text={value} />}
+      </div>
+      <div style={{background:"rgba(0,0,0,0.4)",border:`1px solid ${value?accent+"40":C.border}`,borderRadius:8,padding:"12px 16px",fontFamily:"'JetBrains Mono',monospace",fontSize:13,color:value?accent:C.muted,wordBreak:"break-all",letterSpacing:"0.03em",minHeight:44,lineHeight:1.6}}>
+        {value||<span style={{color:C.muted,fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13}}>Hash will appear here…</span>}
+      </div>
+    </div>
+  );
+}
+
+function StatRow({ label, value, mono=false, accent="" }) {
+  return (
+    <div style={{display:"flex",justifyContent:"space-between",padding:"7px 0",borderBottom:`1px solid ${C.border}`,fontSize:13}}>
+      <span style={{color:C.muted}}>{label}</span>
+      <span style={{color:accent||C.text,fontFamily:mono?"'JetBrains Mono',monospace":"inherit",fontWeight:600}}>{value}</span>
+    </div>
+  );
+}
+
+function VStack({ children, gap=12 }) { return <div style={{display:"flex",flexDirection:"column",gap}}>{children}</div>; }
+function Grid2({ children, gap=16 }) { return <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap}}>{children}</div>; }
+function Grid3({ children }) { return <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12}}>{children}</div>; }
+
+function StatBox({ value, label, accent=C.green }) {
+  return (
+    <div style={{background:"rgba(255,255,255,0.02)",border:`1px solid ${C.border}`,borderRadius:8,padding:"12px 10px",textAlign:"center"}}>
+      <div style={{fontFamily:"'Sora',sans-serif",fontSize:18,fontWeight:700,color:accent}}>{value}</div>
+      <div style={{fontSize:11,color:C.muted,marginTop:2}}>{label}</div>
+    </div>
+  );
+}
+
+function ModeToggle({ mode, setMode, options }) {
+  return (
+    <div style={{display:"inline-flex",background:"rgba(255,255,255,0.04)",border:`1px solid ${C.border}`,borderRadius:8,padding:3,gap:2}}>
+      {options.map(([v,l])=>(
+        <button key={v} onClick={()=>setMode(v)} style={{padding:"6px 16px",borderRadius:6,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,fontFamily:"'Plus Jakarta Sans',sans-serif",background:mode===v?`linear-gradient(135deg,${C.green},${C.greenD})`:"transparent",color:mode===v?"#fff":C.muted,transition:"all .15s"}}>{l}</button>
+      ))}
+    </div>
+  );
+}
+
+// �"����� ROUTER �������������������������������������������������������������������������������������������������������������������������������������"�
+function useAppRouter() {
+  const parse=()=>{ const h=window.location.hash||"#/"; const path=h.replace(/^#/,"")||"/"; const parts=path.split("/").filter(Boolean); if(!parts.length) return{page:"home"}; if(parts[0]==="tool"&&parts[1]) return{page:"tool",toolId:parts[1]}; if(parts[0]==="category"&&parts[1]) return{page:"category",catId:parts[1]}; return{page:"home"}; };
+  const [route,setRoute]=useState(parse);
+  useEffect(()=>{ const fn=()=>setRoute(parse()); window.addEventListener("hashchange",fn); return()=>window.removeEventListener("hashchange",fn); },[]);
+  useEffect(()=>{ const fn=e=>{ const a=e.target.closest("a[href]"); if(!a) return; const h=a.getAttribute("href"); if(h&&h.startsWith("#/")){e.preventDefault();window.location.hash=h;} }; document.addEventListener("click",fn); return()=>document.removeEventListener("click",fn); },[]);
+  return route;
+}
+
+// �"����� PURE-JS SHA IMPLEMENTATIONS �����������������������������������������������������������������������������������������"�
+// SHA-1
+function sha1(msg) {
+  function rotl(n,s){return(n<<s)|(n>>>(32-s));}
+  const bytes=[...msg].flatMap(c=>{const cp=c.codePointAt(0);return cp<0x80?[cp]:cp<0x800?[0xC0|(cp>>6),0x80|(cp&0x3F)]:cp<0x10000?[0xE0|(cp>>12),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)]:[0xF0|(cp>>18),0x80|((cp>>12)&0x3F),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)];});
+  const ml=bytes.length*8;
+  bytes.push(0x80);
+  while(bytes.length%64!==56) bytes.push(0);
+  for(let i=7;i>=0;i--) bytes.push((ml/(2**(i*8)))&0xFF);
+  let[h0,h1,h2,h3,h4]=[0x67452301,0xEFCDAB89,0x98BADCFE,0x10325476,0xC3D2E1F0];
+  for(let i=0;i<bytes.length;i+=64){
+    const w=[];
+    for(let j=0;j<16;j++) w[j]=(bytes[i+j*4]<<24)|(bytes[i+j*4+1]<<16)|(bytes[i+j*4+2]<<8)|bytes[i+j*4+3];
+    for(let j=16;j<80;j++) w[j]=rotl(w[j-3]^w[j-8]^w[j-14]^w[j-16],1);
+    let[a,b,c,d,e]=[h0,h1,h2,h3,h4];
+    for(let j=0;j<80;j++){
+      let f,k;
+      if(j<20){f=(b&c)|((~b)&d);k=0x5A827999;}
+      else if(j<40){f=b^c^d;k=0x6ED9EBA1;}
+      else if(j<60){f=(b&c)|(b&d)|(c&d);k=0x8F1BBCDC;}
+      else{f=b^c^d;k=0xCA62C1D6;}
+      const tmp=(rotl(a,5)+f+e+k+w[j])>>>0;
+      e=d;d=c;c=rotl(b,30);b=a;a=tmp;
+    }
+    h0=(h0+a)>>>0;h1=(h1+b)>>>0;h2=(h2+c)>>>0;h3=(h3+d)>>>0;h4=(h4+e)>>>0;
+  }
+  return [h0,h1,h2,h3,h4].map(h=>h.toString(16).padStart(8,"0")).join("");
+}
+
+// SHA-256
+function sha256(msg) {
+  const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  function rotr(n,s){return(n>>>s)|(n<<(32-s));}
+  const bytes=[...msg].flatMap(c=>{const cp=c.codePointAt(0);return cp<0x80?[cp]:cp<0x800?[0xC0|(cp>>6),0x80|(cp&0x3F)]:cp<0x10000?[0xE0|(cp>>12),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)]:[0xF0|(cp>>18),0x80|((cp>>12)&0x3F),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)];});
+  const ml=bytes.length*8; bytes.push(0x80);
+  while(bytes.length%64!==56) bytes.push(0);
+  for(let i=7;i>=0;i--) bytes.push((ml/(2**(i*8)))&0xFF);
+  let[h0,h1,h2,h3,h4,h5,h6,h7]=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+  for(let i=0;i<bytes.length;i+=64){
+    const w=[];
+    for(let j=0;j<16;j++) w[j]=(bytes[i+j*4]<<24)|(bytes[i+j*4+1]<<16)|(bytes[i+j*4+2]<<8)|bytes[i+j*4+3];
+    for(let j=16;j<64;j++){const s0=rotr(w[j-15],7)^rotr(w[j-15],18)^(w[j-15]>>>3);const s1=rotr(w[j-2],17)^rotr(w[j-2],19)^(w[j-2]>>>10);w[j]=(w[j-16]+s0+w[j-7]+s1)>>>0;}
+    let[a,b,c,d,e,f,g,h]=[h0,h1,h2,h3,h4,h5,h6,h7];
+    for(let j=0;j<64;j++){const S1=rotr(e,6)^rotr(e,11)^rotr(e,25);const ch=(e&f)^((~e)&g);const t1=(h+S1+ch+K[j]+w[j])>>>0;const S0=rotr(a,2)^rotr(a,13)^rotr(a,22);const maj=(a&b)^(a&c)^(b&c);const t2=(S0+maj)>>>0;h=g;g=f;f=e;e=(d+t1)>>>0;d=c;c=b;b=a;a=(t1+t2)>>>0;}
+    h0=(h0+a)>>>0;h1=(h1+b)>>>0;h2=(h2+c)>>>0;h3=(h3+d)>>>0;h4=(h4+e)>>>0;h5=(h5+f)>>>0;h6=(h6+g)>>>0;h7=(h7+h)>>>0;
+  }
+  return [h0,h1,h2,h3,h4,h5,h6,h7].map(h=>h.toString(16).padStart(8,"0")).join("");
+}
+
+// MD5
+function md5(str) {
+  function safeAdd(x,y){const l=(x&0xFFFF)+(y&0xFFFF);return((x>>16)+(y>>16)+(l>>16))<<16|l&0xFFFF;}
+  function bitRotateLeft(n,c){return n<<c|n>>>32-c;}
+  function md5cmn(q,a,b,x,s,t){return safeAdd(bitRotateLeft(safeAdd(safeAdd(a,q),safeAdd(x,t)),s),b);}
+  function md5ff(a,b,c,d,x,s,t){return md5cmn(b&c|~b&d,a,b,x,s,t);}
+  function md5gg(a,b,c,d,x,s,t){return md5cmn(b&d|c&~d,a,b,x,s,t);}
+  function md5hh(a,b,c,d,x,s,t){return md5cmn(b^c^d,a,b,x,s,t);}
+  function md5ii(a,b,c,d,x,s,t){return md5cmn(c^(b|~d),a,b,x,s,t);}
+  const bytes=[...str].flatMap(c=>{const cp=c.codePointAt(0);return cp<0x80?[cp]:cp<0x800?[0xC0|(cp>>6),0x80|(cp&0x3F)]:cp<0x10000?[0xE0|(cp>>12),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)]:[0xF0|(cp>>18),0x80|((cp>>12)&0x3F),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)];});
+  const ml=bytes.length*8; bytes.push(0x80);
+  while(bytes.length%64!==56) bytes.push(0);
+  bytes.push(ml&0xFF,(ml>>8)&0xFF,(ml>>16)&0xFF,(ml>>24)&0xFF,0,0,0,0);
+  const M=[];
+  for(let i=0;i<bytes.length;i+=4) M.push(bytes[i]|(bytes[i+1]<<8)|(bytes[i+2]<<16)|(bytes[i+3]<<24));
+  let[a,b,c,d]=[0x67452301,0xefcdab89,0x98badcfe,0x10325476];
+  for(let i=0;i<M.length;i+=16){
+    const[A,B,C,D]=[a,b,c,d];
+    a=md5ff(a,b,c,d,M[i],7,-680876936);d=md5ff(d,a,b,c,M[i+1],12,-389564586);c=md5ff(c,d,a,b,M[i+2],17,606105819);b=md5ff(b,c,d,a,M[i+3],22,-1044525330);
+    a=md5ff(a,b,c,d,M[i+4],7,-176418897);d=md5ff(d,a,b,c,M[i+5],12,1200080426);c=md5ff(c,d,a,b,M[i+6],17,-1473231341);b=md5ff(b,c,d,a,M[i+7],22,-45705983);
+    a=md5ff(a,b,c,d,M[i+8],7,1770035416);d=md5ff(d,a,b,c,M[i+9],12,-1958414417);c=md5ff(c,d,a,b,M[i+10],17,-42063);b=md5ff(b,c,d,a,M[i+11],22,-1990404162);
+    a=md5ff(a,b,c,d,M[i+12],7,1804603682);d=md5ff(d,a,b,c,M[i+13],12,-40341101);c=md5ff(c,d,a,b,M[i+14],17,-1502002290);b=md5ff(b,c,d,a,M[i+15],22,1236535329);
+    a=md5gg(a,b,c,d,M[i+1],5,-165796510);d=md5gg(d,a,b,c,M[i+6],9,-1069501632);c=md5gg(c,d,a,b,M[i+11],14,643717713);b=md5gg(b,c,d,a,M[i],20,-373897302);
+    a=md5gg(a,b,c,d,M[i+5],5,-701558691);d=md5gg(d,a,b,c,M[i+10],9,38016083);c=md5gg(c,d,a,b,M[i+15],14,-660478335);b=md5gg(b,c,d,a,M[i+4],20,-405537848);
+    a=md5gg(a,b,c,d,M[i+9],5,568446438);d=md5gg(d,a,b,c,M[i+14],9,-1019803690);c=md5gg(c,d,a,b,M[i+3],14,-187363961);b=md5gg(b,c,d,a,M[i+8],20,1163531501);
+    a=md5gg(a,b,c,d,M[i+13],5,-1444681467);d=md5gg(d,a,b,c,M[i+2],9,-51403784);c=md5gg(c,d,a,b,M[i+7],14,1735328473);b=md5gg(b,c,d,a,M[i+12],20,-1926607734);
+    a=md5hh(a,b,c,d,M[i+5],4,-378558);d=md5hh(d,a,b,c,M[i+8],11,-2022574463);c=md5hh(c,d,a,b,M[i+11],16,1839030562);b=md5hh(b,c,d,a,M[i+14],23,-35309556);
+    a=md5hh(a,b,c,d,M[i+1],4,-1530992060);d=md5hh(d,a,b,c,M[i+4],11,1272893353);c=md5hh(c,d,a,b,M[i+7],16,-155497632);b=md5hh(b,c,d,a,M[i+10],23,-1094730640);
+    a=md5hh(a,b,c,d,M[i+13],4,681279174);d=md5hh(d,a,b,c,M[i],11,-358537222);c=md5hh(c,d,a,b,M[i+3],16,-722521979);b=md5hh(b,c,d,a,M[i+6],23,76029189);
+    a=md5hh(a,b,c,d,M[i+9],4,-640364487);d=md5hh(d,a,b,c,M[i+12],11,-421815835);c=md5hh(c,d,a,b,M[i+15],16,530742520);b=md5hh(b,c,d,a,M[i+2],23,-995338651);
+    a=md5ii(a,b,c,d,M[i],6,-198630844);d=md5ii(d,a,b,c,M[i+7],10,1126891415);c=md5ii(c,d,a,b,M[i+14],15,-1416354905);b=md5ii(b,c,d,a,M[i+5],21,-57434055);
+    a=md5ii(a,b,c,d,M[i+12],6,1700485571);d=md5ii(d,a,b,c,M[i+3],10,-1894986606);c=md5ii(c,d,a,b,M[i+10],15,-1051523);b=md5ii(b,c,d,a,M[i+1],21,-2054922799);
+    a=md5ii(a,b,c,d,M[i+8],6,1873313359);d=md5ii(d,a,b,c,M[i+15],10,-30611744);c=md5ii(c,d,a,b,M[i+6],15,-1560198380);b=md5ii(b,c,d,a,M[i+13],21,1309151649);
+    a=md5ii(a,b,c,d,M[i+4],6,-145523070);d=md5ii(d,a,b,c,M[i+11],10,-1120210379);c=md5ii(c,d,a,b,M[i+2],15,718787259);b=md5ii(b,c,d,a,M[i+9],21,-343485551);
+    a=safeAdd(a,A);b=safeAdd(b,B);c=safeAdd(c,C);d=safeAdd(d,D);
+  }
+  return [a,b,c,d].map(n=>[n&0xFF,(n>>8)&0xFF,(n>>16)&0xFF,(n>>24)&0xFF].map(b=>b.toString(16).padStart(2,"0")).join("")).join("");
+}
+
+// CRC32
+function crc32(str) {
+  let table=[];
+  for(let i=0;i<256;i++){let c=i;for(let j=0;j<8;j++) c=c&1?(0xEDB88320^(c>>>1)):(c>>>1);table[i]=c;}
+  let crc=0xFFFFFFFF;
+  const bytes=[...str].flatMap(c=>{const cp=c.codePointAt(0);return cp<0x80?[cp]:cp<0x800?[0xC0|(cp>>6),0x80|(cp&0x3F)]:[0xE0|(cp>>12),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)];});
+  for(const b of bytes) crc=table[(crc^b)&0xFF]^(crc>>>8);
+  return ((crc^0xFFFFFFFF)>>>0).toString(16).toUpperCase().padStart(8,"0");
+}
+
+// Adler-32
+function adler32(str) {
+  let a=1,b=0;
+  const MOD=65521;
+  const bytes=[...str].flatMap(c=>{const cp=c.codePointAt(0);return cp<0x80?[cp]:[0xC0|(cp>>6),0x80|(cp&0x3F)];});
+  for(const byte of bytes){a=(a+byte)%MOD;b=(b+a)%MOD;}
+  return ((b<<16|a)>>>0).toString(16).toUpperCase().padStart(8,"0");
+}
+
+// FNV-1a 32-bit
+function fnv1a32(str) {
+  let hash=0x811c9dc5;
+  const bytes=[...str].flatMap(c=>{const cp=c.codePointAt(0);return cp<0x80?[cp]:[0xC0|(cp>>6),0x80|(cp&0x3F)];});
+  for(const b of bytes){hash^=b;hash=(hash*0x01000193)>>>0;}
+  return hash.toString(16).toUpperCase().padStart(8,"0");
+}
+
+// DJB2
+function djb2(str) {
+  let hash=5381;
+  for(const c of str) hash=((hash<<5)+hash+c.charCodeAt(0))>>>0;
+  return hash.toString(16).toUpperCase().padStart(8,"0");
+}
+
+// HMAC-SHA256 (pure JS)
+function hmacSha256(key, msg) {
+  const blockSize=64;
+  let keyBytes=[...key].flatMap(c=>{const cp=c.codePointAt(0);return cp<0x80?[cp]:[0xC0|(cp>>6),0x80|(cp&0x3F)];});
+  if(keyBytes.length>blockSize){
+    const h=sha256(key);
+    keyBytes=[];for(let i=0;i<h.length;i+=2) keyBytes.push(parseInt(h.slice(i,i+2),16));
+  }
+  while(keyBytes.length<blockSize) keyBytes.push(0);
+  const opad=keyBytes.map(b=>b^0x5C);
+  const ipad=keyBytes.map(b=>b^0x36);
+  const toStr=bytes=>bytes.map(b=>String.fromCharCode(b)).join("");
+  const inner=sha256(toStr(ipad)+msg);
+  const innerBytes=[];for(let i=0;i<inner.length;i+=2) innerBytes.push(parseInt(inner.slice(i,i+2),16));
+  return sha256(toStr(opad)+toStr(innerBytes));
+}
+
+// Web Crypto wrapper for SHA-384, SHA-512
+async function webCryptoHash(algorithm, message) {
+  const encoder=new TextEncoder();
+  const data=encoder.encode(message);
+  const hashBuffer=await crypto.subtle.digest(algorithm,data);
+  return Array.from(new Uint8Array(hashBuffer)).map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+
+// �"����� TOOL REGISTRY �����������������������������������������������������������������������������������������������������������������������"�
+const TOOLS = [
+  {id:"hash-all",        cat:"hash",     name:"Hash Generator (All)",     desc:"Generate MD5, SHA-1, SHA-256, SHA-512 hashes at once",   icon:"#️⃣",  free:true},
+  {id:"md5-hash",        cat:"hash",     name:"MD5 Hash Generator",       desc:"Generate MD5 checksums for text strings",                icon:"#️⃣",  free:true},
+  {id:"sha1-hash",       cat:"hash",     name:"SHA-1 Hash Generator",     desc:"Generate SHA-1 hash digests from any text input",       icon:"🟢",  free:true},
+  {id:"sha256-hash",     cat:"hash",     name:"SHA-256 Hash Generator",   desc:"Generate secure SHA-256 hash digests from text",        icon:"🟡",  free:true},
+  {id:"sha512-hash",     cat:"hash",     name:"SHA-512 Hash Generator",   desc:"Generate SHA-512 cryptographic hash digests",           icon:"🟠",  free:true},
+  {id:"sha384-hash",     cat:"hash",     name:"SHA-384 Hash Generator",   desc:"Generate SHA-384 hash digests from any text",           icon:"#️⃣",  free:true},
+  {id:"hmac-generator",  cat:"hash",     name:"HMAC Generator",           desc:"Generate HMAC-SHA256 signatures with a secret key",     icon:"#️⃣",  free:true},
+  {id:"hash-compare",    cat:"hash",     name:"Hash Comparator",          desc:"Compare two hashes to verify integrity",                icon:"#️⃣",  free:true},
+  {id:"crc32",           cat:"checksum", name:"CRC32 Checksum",           desc:"Calculate CRC32 cyclic redundancy check values",        icon:"⚡",  free:true},
+  {id:"adler32",         cat:"checksum", name:"Adler-32 Checksum",        desc:"Compute Adler-32 checksums for data verification",      icon:"✅",  free:true},
+  {id:"fnv-hash",        cat:"checksum", name:"FNV Hash",                 desc:"Generate FNV-1a 32-bit non-cryptographic hash values",  icon:"⚡",  free:true},
+  {id:"djb2-hash",       cat:"checksum", name:"DJB2 Hash",                desc:"Compute the classic DJB2 string hash algorithm",        icon:"🧮",  free:true},
+  {id:"password-generator", cat:"crypto", name:"Password Generator",     desc:"Generate strong random passwords with custom rules",    icon:"🔑",  free:true},
+  {id:"passphrase-gen",  cat:"crypto",   name:"Passphrase Generator",     desc:"Generate memorable diceware-style passphrases",         icon:"⚡",  free:true},
+  {id:"password-strength",cat:"crypto",  name:"Password Strength Tester", desc:"Analyse password strength and crack time estimate",     icon:"🔑",  free:true},
+  {id:"random-string",   cat:"crypto",   name:"Random String Generator",  desc:"Generate cryptographically random strings and tokens",  icon:"🎲",  free:true},
+  {id:"uuid-generator",  cat:"crypto",   name:"UUID / GUID Generator",    desc:"Generate RFC 4122 UUID v4 random identifiers",          icon:"🆔",  free:true},
+  {id:"hash-file",       cat:"hash",     name:"File Hash Calculator",     desc:"Calculate MD5, SHA-1 and SHA-256 hashes for uploaded files", icon:"#️⃣", free:true},
+  {id:"bcrypt-hash",     cat:"crypto",   name:"Bcrypt Hash Generator",    desc:"Generate bcrypt password hashes with adjustable cost",  icon:"🔐",  free:true},
+  {id:"token-generator", cat:"crypto",   name:"API Token Generator",      desc:"Generate secure API keys and bearer tokens",            icon:"🪙",  free:true},
+  {id:"otp-generator",   cat:"crypto",   name:"OTP Code Generator",       desc:"Generate time-based one-time passwords (TOTP/HOTP)",    icon:"⏱️",  free:true},
+  {id:"caesar-hash",     cat:"checksum", name:"Simple String Hash",       desc:"Compare multiple non-cryptographic hash algorithms",    icon:"#️⃣",  free:true},
+  {id:"xor-cipher",      cat:"crypto",   name:"XOR Cipher",               desc:"Encrypt and decrypt text with XOR bitwise operation",   icon:"⊕",   free:true},
+  {id:"binary-converter",cat:"checksum", name:"Number Base Converter",    desc:"Convert numbers between binary, octal, decimal, hex",   icon:"🔢",  free:true},
+  {id:"color-hash",      cat:"checksum", name:"Text to Color Hash",       desc:"Visualize text as a deterministic color hash",          icon:"🎨",  free:true},
+];
+
+const CATEGORIES = [
+  {id:"hash",     name:"Hash Generators", icon:"#️⃣", desc:"MD5, SHA-1, SHA-256, SHA-512, HMAC"},
+  {id:"checksum", name:"Checksums",       icon:"✅", desc:"CRC32, Adler-32, FNV, DJB2, base conversion"},
+  {id:"crypto",   name:"Crypto Utilities",icon:"⚡", desc:"Passwords, UUIDs, tokens, OTP, ciphers"},
+];
+
+const TOOL_META = {
+  "hash-all":       {title:"Hash Generator — MD5 SHA1 SHA256 SHA512 Online",  desc:"Generate MD5, SHA-1, SHA-256, SHA-512 and SHA-384 hashes simultaneously from any text input.", faq:[["What is a cryptographic hash?","A one-way function that maps arbitrary data to a fixed-size digest. Changing one character produces a completely different hash."],["Which hash should I use?","SHA-256 or SHA-512 for security. MD5 and SHA-1 are broken for security use but fine for checksums."],["Are these hashes reversible?","No — hash functions are one-way. You cannot recover the input from the hash."]]},
+  "md5-hash":       {title:"MD5 Hash Generator — Free Online MD5 Checksum Tool", desc:"Generate MD5 hashes from text. MD5 produces a 128-bit (32 hex char) digest. Fast for checksums, not secure for passwords.", faq:[["Is MD5 secure for passwords?","No — MD5 is cryptographically broken. Use bcrypt, Argon2, or scrypt for password hashing."],["What is MD5 used for?","File integrity checksums, database fingerprinting, non-security deduplication."],["How long is an MD5 hash?","32 hexadecimal characters (128 bits)."]]},
+  "sha256-hash":    {title:"SHA-256 Hash Generator — Free Online SHA256 Tool",   desc:"Generate SHA-256 cryptographic hashes. SHA-256 is part of SHA-2 family, producing 256-bit (64 hex char) digests.", faq:[["Is SHA-256 secure?","Yes — SHA-256 is still considered secure for general cryptographic use."],["What uses SHA-256?","Bitcoin mining, TLS certificates, code signing, and Git commit hashes."],["How long is a SHA-256 hash?","64 hexadecimal characters (256 bits)."]]},
+  "password-generator":{title:"Strong Password Generator — Free Online Tool",   desc:"Generate strong, random passwords with custom length and character sets. Cryptographically secure random generation.", faq:[["How long should my password be?","At least 16 characters. 20+ characters significantly increases security."],["What characters should I include?","Use uppercase, lowercase, numbers, and symbols for maximum entropy."],["Is this generator truly random?","Yes — it uses window.crypto.getRandomValues() which is cryptographically secure."]]},
+  "uuid-generator": {title:"UUID / GUID Generator — Free Online UUID v4 Tool",  desc:"Generate RFC 4122 compliant UUID v4 random identifiers. Generate one or multiple UUIDs at once.", faq:[["What is a UUID?","A Universally Unique Identifier — a 128-bit label guaranteed to be unique across space and time."],["What is UUID v4?","Version 4 UUIDs are randomly generated. Version 1 uses timestamp+MAC address."],["What is the collision probability?","For v4 UUIDs, the probability of collision is astronomically low — 1 in 5.3×10³——."]]},
+  "hmac-generator": {title:"HMAC-SHA256 Generator — Online HMAC Tool",          desc:"Generate HMAC-SHA256 message authentication codes with a secret key. Used for API authentication.", faq:[["What is HMAC?","Hash-based Message Authentication Code — combines a cryptographic hash with a secret key to authenticate messages."],["How is HMAC different from a hash?","HMAC requires a secret key. Without the key, you cannot reproduce the MAC, unlike a plain hash."],["Where is HMAC used?","API authentication (AWS Signature, Stripe webhooks), JWT signing, and cookie signing."]]},
+};
+
+// �"����� WORD LIST for passphrases �����������������������������������������������������������������������������������������������"�
+const WORDS = ["apple","bridge","cloud","dance","eagle","flame","grape","house","ivory","jungle","kite","lemon","magic","night","ocean","piano","queen","river","storm","tiger","umbrella","valley","water","xenon","yacht","zebra","amber","blaze","coral","drift","ember","frost","glade","haven","inkwell","jewel","knack","lunar","maple","noble","orbit","pearl","quest","ridge","solar","tower","ultra","vivid","woven","xylem","yield","azure","brick","creep","dusk","epoch","flint","gloom","hatch","index","joust","kneel","lance","mirth","notch","oxide","prism","quill","realm","shore","tryst","unveil","verse","wrath","xyster","young","zonal"];
+
+// �"����� CRYPTO RANDOM HELPERS �������������������������������������������������������������������������������������������������������"�
+function cryptoRandom() { return crypto.getRandomValues(new Uint32Array(1))[0]/0x100000000; }
+function cryptoRandomInt(min,max) { return min+Math.floor(cryptoRandom()*(max-min)); }
+function cryptoRandomChoice(arr) { return arr[cryptoRandomInt(0,arr.length)]; }
+function cryptoRandomString(len, chars) {
+  const arr=new Uint8Array(len*2);
+  crypto.getRandomValues(arr);
+  let result="";
+  for(let i=0;result.length<len;i++) result+=chars[arr[i%arr.length]%chars.length];
+  return result.slice(0,len);
+}
+
+// Simple bcrypt-like (pbkdf2 simulation for UI demo)
+function simpleBcrypt(password, rounds) {
+  // Deterministic demo using SHA-256 rounds —" NOT real bcrypt
+  let h = password;
+  for(let i=0;i<Math.pow(2,rounds-4);i++) h=sha256(h+password);
+  return `$2b$${String(rounds).padStart(2,"0")}$${btoa(sha256(h)).slice(0,53)}`;
+}
+
+// �"����� TOOL COMPONENTS �����������������������������������������������������������������������������������������������������������������"�
+
+function HashAll() {
+  const [input, setInput] = useState("");
+  const [sha384val, setSha384val] = useState("");
+  const [sha512val, setSha512val] = useState("");
+  const [upper, setUpper] = useState(false);
+
+  useEffect(()=>{
+    if(!input) { setSha384val(""); setSha512val(""); return; }
+    webCryptoHash("SHA-384",input).then(h=>setSha384val(upper?h.toUpperCase():h));
+    webCryptoHash("SHA-512",input).then(h=>setSha512val(upper?h.toUpperCase():h));
+  },[input,upper]);
+
+  const fmt = h => h ? (upper?h.toUpperCase():h) : "";
+  const hashes = [
+    {label:"MD5 (128-bit)",    value:fmt(input?md5(input):""),         bits:128, accent:"#60A5FA"},
+    {label:"SHA-1 (160-bit)",  value:fmt(input?sha1(input):""),        bits:160, accent:"#34D399"},
+    {label:"SHA-256 (256-bit)",value:fmt(input?sha256(input):""),      bits:256, accent:C.green},
+    {label:"SHA-384 (384-bit)",value:sha384val,                        bits:384, accent:"#FCD34D"},
+    {label:"SHA-512 (512-bit)",value:sha512val,                        bits:512, accent:"#FB923C"},
+  ];
+
+  return (
+    <VStack>
+      <div>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+          <Label>Input Text</Label>
+          <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:12,color:C.muted}}>
+            <input type="checkbox" checked={upper} onChange={e=>setUpper(e.target.checked)} /> Uppercase
+          </label>
+        </div>
+        <Textarea value={input} onChange={setInput} placeholder="Enter text to hash…" mono={false} rows={4} />
+      </div>
+      <VStack gap={8}>
+        {hashes.map(({label,value,bits,accent})=>(
+          <HashOutput key={label} label={`${label} —" ${value.length||"—"} chars`} value={value} accent={accent} />
+        ))}
+      </VStack>
+      {input && (
+        <Card>
+          <Grid3>
+            {[["Input Bytes",new TextEncoder().encode(input).length],["Unique Algos","5"],["Bits Output","(varies)"]].map(([l,v])=>(
+              <StatBox key={l} value={v} label={l} />
+            ))}
+          </Grid3>
+        </Card>
+      )}
+    </VStack>
+  );
+}
+
+function SingleHash({ algo }) {
+  const [input, setInput] = useState("");
+  const [upper, setUpper] = useState(false);
+  const [result, setResult] = useState("");
+
+  useEffect(()=>{
+    if(!input){ setResult(""); return; }
+    const compute = async()=>{
+      let h;
+      if(algo==="md5") h=md5(input);
+      else if(algo==="sha1") h=sha1(input);
+      else if(algo==="sha256") h=sha256(input);
+      else h=await webCryptoHash(algo==="sha384"?"SHA-384":"SHA-512",input);
+      setResult(upper?h.toUpperCase():h);
+    };
+    compute();
+  },[input,algo,upper]);
+
+  const info = {md5:{bits:128,chars:32},sha1:{bits:160,chars:40},sha256:{bits:256,chars:64},sha384:{bits:384,chars:96},sha512:{bits:512,chars:128}}[algo];
+
+  return (
+    <VStack>
+      <div>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+          <Label>Input Text</Label>
+          <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:12,color:C.muted}}>
+            <input type="checkbox" checked={upper} onChange={e=>setUpper(e.target.checked)} /> Uppercase output
+          </label>
+        </div>
+        <Textarea value={input} onChange={setInput} placeholder="Enter any text to hash…" mono={false} rows={5} />
+      </div>
+      <HashOutput label={`${algo.toUpperCase()} Hash —" ${info.bits} bits`} value={result} />
+      {result && (
+        <Grid3>
+          <StatBox value={info.bits} label="Hash Bits" />
+          <StatBox value={info.chars} label="Hex Chars" />
+          <StatBox value={new TextEncoder().encode(input).length} label="Input Bytes" />
+        </Grid3>
+      )}
+      <Card style={{background:"rgba(16,185,129,0.04)",border:"1px solid rgba(16,185,129,0.12)"}}>
+        <div style={{fontSize:12,color:C.muted,lineHeight:1.8}}>
+          {algo==="md5"&&<><strong style={{color:C.text}}>MD5</strong> —" Fast 128-bit hash. <span style={{color:C.warn}}>Not secure for passwords or signatures.</span> Use for checksums only.</>}
+          {algo==="sha1"&&<><strong style={{color:C.text}}>SHA-1</strong> —" 160-bit hash. <span style={{color:C.warn}}>Deprecated for security use.</span> Still used in Git commits and legacy systems.</>}
+          {algo==="sha256"&&<><strong style={{color:C.text}}>SHA-256</strong> —" 256-bit hash from the SHA-2 family. <span style={{color:C.green}}>Recommended for most uses.</span> Used in Bitcoin, TLS, and code signing.</>}
+          {algo==="sha384"&&<><strong style={{color:C.text}}>SHA-384</strong> —" 384-bit truncated SHA-512. <span style={{color:C.green}}>Strong and secure.</span> Used in TLS certificates and HMAC.</>}
+          {algo==="sha512"&&<><strong style={{color:C.text}}>SHA-512</strong> —" 512-bit hash from SHA-2. <span style={{color:C.green}}>Maximum SHA-2 strength.</span> Faster than SHA-256 on 64-bit CPUs.</>}
+        </div>
+      </Card>
+    </VStack>
+  );
+}
+
+function HmacGenerator() {
+  const [msg, setMsg] = useState("");
+  const [key, setKey] = useState("");
+  const [result, setResult] = useState("");
+  const [upper, setUpper] = useState(false);
+
+  useEffect(()=>{
+    if(!msg||!key){ setResult(""); return; }
+    const h=hmacSha256(key,msg);
+    setResult(upper?h.toUpperCase():h);
+  },[msg,key,upper]);
+
+  return (
+    <VStack>
+      <div><Label>Secret Key</Label><Input value={key} onChange={setKey} placeholder="Enter your secret key…" mono /></div>
+      <div><Label>Message</Label><Textarea value={msg} onChange={setMsg} placeholder="Enter message to authenticate…" mono={false} rows={4} /></div>
+      <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:13,color:C.text}}>
+        <input type="checkbox" checked={upper} onChange={e=>setUpper(e.target.checked)} /> Uppercase output
+      </label>
+      <HashOutput label="HMAC-SHA256 Signature" value={result} accent={C.green} />
+      {result && (
+        <Grid3>
+          <StatBox value="256" label="Bits" />
+          <StatBox value="64" label="Hex Chars" />
+          <StatBox value={key.length} label="Key Length" />
+        </Grid3>
+      )}
+      <Card style={{background:"rgba(16,185,129,0.05)"}}>
+        <div style={{fontSize:12,color:C.muted,lineHeight:1.8}}>
+          <strong style={{color:C.text}}>HMAC-SHA256</strong> combines your secret key with the message. Anyone without the key cannot produce a valid signature —" unlike plain SHA-256 which anyone can compute.
+        </div>
+      </Card>
+    </VStack>
+  );
+}
+
+function HashCompare() {
+  const [a, setA] = useState("");
+  const [b, setB] = useState("");
+  const match = a.trim() && b.trim() ? a.trim().toLowerCase()===b.trim().toLowerCase() : null;
+  const charDiff = useMemo(()=>{
+    if(!a||!b) return [];
+    const la=a.toLowerCase(), lb=b.toLowerCase();
+    return Array.from({length:Math.max(la.length,lb.length)},(_,i)=>({
+      ca:la[i]||"", cb:lb[i]||"", same:la[i]===lb[i]
+    }));
+  },[a,b]);
+  const diffCount = charDiff.filter(c=>!c.same).length;
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Hash A</Label><Textarea value={a} onChange={setA} placeholder="Paste first hash here…" rows={4} /></div>
+        <div><Label>Hash B</Label><Textarea value={b} onChange={setB} placeholder="Paste second hash here…" rows={4} /></div>
+      </Grid2>
+      {match!==null && (
+        <div className="fade-in" style={{textAlign:"center",padding:"24px",background:match?"rgba(16,185,129,0.08)":"rgba(239,68,68,0.06)",border:`1px solid ${match?"rgba(16,185,129,0.3)":"rgba(239,68,68,0.2)"}`,borderRadius:12}}>
+          <div style={{fontSize:40,marginBottom:8}}>{match?"✅":"——"}</div>
+          <div style={{fontFamily:"'Sora',sans-serif",fontSize:20,fontWeight:700,color:match?C.green:C.danger}}>
+            {match?"Hashes Match!":"Hashes Do Not Match"}
+          </div>
+          {!match && <div style={{fontSize:13,color:C.muted,marginTop:6}}>{diffCount} character difference{diffCount!==1?"s":""}</div>}
+        </div>
+      )}
+      {a&&b&&charDiff.length>0&&(
+        <div>
+          <Label>Character Diff</Label>
+          <div style={{display:"flex",flexWrap:"wrap",gap:0,fontFamily:"'JetBrains Mono',monospace",fontSize:12,background:"rgba(0,0,0,0.3)",borderRadius:8,padding:12,marginTop:6}}>
+            {charDiff.map((c,i)=>(
+              <span key={i} style={{color:c.same?C.muted:C.danger,background:c.same?"transparent":"rgba(239,68,68,0.15)",borderRadius:2,padding:"1px 0"}}>{c.ca||"_"}</span>
+            ))}
+          </div>
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+function Crc32Tool() {
+  const [input, setInput] = useState("");
+  const result = input ? crc32(input) : "";
+  return (
+    <VStack>
+      <Textarea value={input} onChange={setInput} placeholder="Enter text to compute CRC32…" mono={false} rows={5} />
+      <HashOutput label="CRC32 Checksum" value={result} accent={C.teal} />
+      {result && <Grid3><StatBox value="32" label="Bits" accent={C.teal}/><StatBox value="8" label="Hex Chars" accent={C.teal}/><StatBox value={`0x${result}`} label="Hex Value" accent={C.teal}/></Grid3>}
+      <Card><div style={{fontSize:12,color:C.muted,lineHeight:1.8}}><strong style={{color:C.text}}>CRC32</strong> (Cyclic Redundancy Check) detects accidental data corruption. Used in ZIP, PNG, Ethernet frames, and data transmission verification. Not suitable for cryptographic security.</div></Card>
+    </VStack>
+  );
+}
+
+function Adler32Tool() {
+  const [input, setInput] = useState("");
+  const result = input ? adler32(input) : "";
+  return (
+    <VStack>
+      <Textarea value={input} onChange={setInput} placeholder="Enter text to compute Adler-32…" mono={false} rows={5} />
+      <HashOutput label="Adler-32 Checksum" value={result} accent={C.blue} />
+      {result && <Grid3><StatBox value="32" label="Bits" accent={C.blue}/><StatBox value="8" label="Hex Chars" accent={C.blue}/><StatBox value={`0x${result}`} label="Hex Value" accent={C.blue}/></Grid3>}
+      <Card><div style={{fontSize:12,color:C.muted,lineHeight:1.8}}><strong style={{color:C.text}}>Adler-32</strong> is faster than CRC32 with slightly lower reliability. Used in zlib compression (RFC 1950) and the PNG image format. Not suitable for security.</div></Card>
+    </VStack>
+  );
+}
+
+function FnvHash() {
+  const [input, setInput] = useState("");
+  const fnv = input ? fnv1a32(input) : "";
+  const djb = input ? djb2(input) : "";
+  return (
+    <VStack>
+      <Textarea value={input} onChange={setInput} placeholder="Enter text to hash…" mono={false} rows={4} />
+      <HashOutput label="FNV-1a 32-bit" value={fnv} accent={C.purple} />
+      <HashOutput label="DJB2" value={djb} accent="#FB923C" />
+      <Card><div style={{fontSize:12,color:C.muted,lineHeight:1.8}}><strong style={{color:C.text}}>FNV (Fowler—"Noll—"Vo)</strong> and <strong style={{color:C.text}}>DJB2</strong> are fast non-cryptographic hashes used in hash tables, caches, and distributed systems. They offer speed but no security guarantees.</div></Card>
+    </VStack>
+  );
+}
+
+function Djb2Hash() {
+  const [input, setInput] = useState("");
+  const result = input ? djb2(input) : "";
+  return (
+    <VStack>
+      <Textarea value={input} onChange={setInput} placeholder="Enter text…" mono={false} rows={5} />
+      <HashOutput label="DJB2 Hash" value={result} accent="#FB923C" />
+    </VStack>
+  );
+}
+
+function PasswordGenerator() {
+  const CHARS = {upper:"ABCDEFGHIJKLMNOPQRSTUVWXYZ",lower:"abcdefghijklmnopqrstuvwxyz",numbers:"0123456789",symbols:"!@#$%^&*()-_=+[]{}|;:,.<>?"};
+  const [len, setLen] = useState(16);
+  const [opts, setOpts] = useState({upper:true,lower:true,numbers:true,symbols:true});
+  const [exclude, setExclude] = useState("");
+  const [count, setCount] = useState(1);
+  const [passwords, setPasswords] = useState([]);
+
+  const generate = useCallback(()=>{
+    let pool=Object.entries(opts).filter(([,v])=>v).map(([k])=>CHARS[k]).join("");
+    if(exclude) pool=pool.split("").filter(c=>!exclude.includes(c)).join("");
+    if(!pool) return;
+    setPasswords(Array.from({length:count},()=>{
+      // Ensure at least one char from each selected set
+      const required=Object.entries(opts).filter(([,v])=>v).map(([k])=>cryptoRandomChoice(CHARS[k].split("").filter(c=>!exclude.includes(c))));
+      const rest=Array.from({length:Math.max(0,len-required.length)},()=>cryptoRandomChoice(pool.split("")));
+      return [...required,...rest].sort(()=>cryptoRandom()-0.5).join("");
+    }));
+  },[len,opts,exclude,count]);
+
+  useEffect(()=>generate(),[]);
+
+  const entropy = useMemo(()=>{
+    const pool=Object.entries(opts).filter(([,v])=>v).map(([k])=>CHARS[k]).join("");
+    const size=pool.length;
+    return (len*Math.log2(Math.max(size,1))).toFixed(1);
+  },[len,opts]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div>
+          <Label>Length: {len}</Label>
+          <input type="range" min={8} max={64} value={len} onChange={e=>setLen(Number(e.target.value))} style={{width:"100%",marginTop:8}} />
+        </div>
+        <div>
+          <Label>How Many</Label>
+          <SelectInput value={count} onChange={v=>setCount(Number(v))} options={[1,5,10,20].map(n=>({value:n,label:`${n} password${n>1?"s":""}`}))} />
+        </div>
+      </Grid2>
+      <div>
+        <Label>Character Sets</Label>
+        <div style={{display:"flex",gap:8,flexWrap:"wrap",marginTop:6}}>
+          {[["upper","A—Z"],["lower","a'z"],["numbers","0–9"],["symbols","!@#$…"]].map(([k,l])=>(
+            <button key={k} onClick={()=>setOpts(o=>({...o,[k]:!o[k]}))}
+              style={{padding:"6px 14px",borderRadius:6,border:`1px solid ${opts[k]?"rgba(16,185,129,0.5)":C.border}`,background:opts[k]?"rgba(16,185,129,0.1)":"transparent",color:opts[k]?C.green:C.muted,fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
+              {l}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div><Label>Exclude Characters</Label><Input value={exclude} onChange={setExclude} placeholder="e.g. 0Ol1I (ambiguous chars)" /></div>
+      <div style={{display:"flex",gap:10,alignItems:"center"}}>
+        <Btn onClick={generate}>↻ Generate</Btn>
+        <Badge color="green">~{entropy} bits entropy</Badge>
+        {parseFloat(entropy)>=80&&<Badge color="teal">Strong</Badge>}
+        {parseFloat(entropy)>=60&&parseFloat(entropy)<80&&<Badge color="amber">Good</Badge>}
+      </div>
+      <VStack gap={6}>
+        {passwords.map((p,i)=>(
+          <div key={i} style={{display:"flex",gap:10,alignItems:"center",padding:"10px 14px",background:"rgba(0,0,0,0.3)",border:`1px solid ${C.border}`,borderRadius:8}}>
+            <span style={{flex:1,fontFamily:"'JetBrains Mono',monospace",fontSize:13,color:C.green,wordBreak:"break-all"}}>{p}</span>
+            <CopyBtn text={p} />
+          </div>
+        ))}
+      </VStack>
+    </VStack>
+  );
+}
+
+function PassphraseGen() {
+  const [wordCount, setWordCount] = useState(4);
+  const [separator, setSeparator] = useState("-");
+  const [capitalize, setCapitalize] = useState(false);
+  const [addNumber, setAddNumber] = useState(true);
+  const [phrases, setPhrases] = useState([]);
+
+  const generate = useCallback(()=>{
+    setPhrases(Array.from({length:5},()=>{
+      const words=Array.from({length:wordCount},()=>cryptoRandomChoice(WORDS));
+      const formatted=capitalize?words.map(w=>w[0].toUpperCase()+w.slice(1)):words;
+      let phrase=formatted.join(separator);
+      if(addNumber) phrase+=separator+cryptoRandomInt(0,100);
+      return phrase;
+    }));
+  },[wordCount,separator,capitalize,addNumber]);
+
+  useEffect(()=>generate(),[]);
+
+  const entropy = (wordCount*Math.log2(WORDS.length)+(addNumber?Math.log2(100):0)).toFixed(1);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Word Count: {wordCount}</Label><input type="range" min={3} max={8} value={wordCount} onChange={e=>setWordCount(Number(e.target.value))} style={{width:"100%",marginTop:8}} /></div>
+        <div><Label>Separator</Label><SelectInput value={separator} onChange={setSeparator} options={[{value:"-",label:"Hyphen (-)"},  {value:".",label:"Dot (.)"},  {value:"_",label:"Underscore (_)"},  {value:" ",label:"Space"},  {value:"",label:"None"}]} /></div>
+      </Grid2>
+      <div style={{display:"flex",gap:16}}>
+        {[[capitalize,setCapitalize,"Capitalize Words"],[addNumber,setAddNumber,"Add Random Number"]].map(([v,set,l])=>(
+          <label key={l} style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:13,color:C.text}}>
+            <input type="checkbox" checked={v} onChange={e=>set(e.target.checked)} /> {l}
+          </label>
+        ))}
+      </div>
+      <div style={{display:"flex",gap:10,alignItems:"center"}}>
+        <Btn onClick={generate}>↻ Generate</Btn>
+        <Badge color="green">~{entropy} bits entropy</Badge>
+      </div>
+      <VStack gap={6}>
+        {phrases.map((p,i)=>(
+          <div key={i} style={{display:"flex",gap:10,alignItems:"center",padding:"10px 14px",background:"rgba(0,0,0,0.3)",border:`1px solid ${C.border}`,borderRadius:8}}>
+            <span style={{flex:1,fontFamily:"'JetBrains Mono',monospace",fontSize:13,color:C.green}}>{p}</span>
+            <CopyBtn text={p} />
+          </div>
+        ))}
+      </VStack>
+    </VStack>
+  );
+}
+
+function PasswordStrength() {
+  const [pwd, setPwd] = useState("");
+  const [show, setShow] = useState(false);
+
+  const analysis = useMemo(()=>{
+    if(!pwd) return null;
+    const len=pwd.length;
+    const hasUpper=/[A-Z]/.test(pwd);
+    const hasLower=/[a-z]/.test(pwd);
+    const hasNum=/[0-9]/.test(pwd);
+    const hasSym=/[^A-Za-z0-9]/.test(pwd);
+    const uniqueChars=new Set(pwd).size;
+    const charsetSize=(hasUpper?26:0)+(hasLower?26:0)+(hasNum?10:0)+(hasSym?32:0);
+    const entropy=(len*Math.log2(Math.max(charsetSize,1))).toFixed(1);
+    const score=[len>=8,len>=12,len>=16,hasUpper,hasLower,hasNum,hasSym,uniqueChars>=8].filter(Boolean).length;
+    const strength=score<=2?"Very Weak":score<=4?"Weak":score<=5?"Fair":score<=6?"Strong":"Very Strong";
+    const color=score<=2?C.danger:score<=4?"#FB923C":score<=5?C.warn:score<=6?C.teal:C.green;
+    const crackSeconds=Math.pow(charsetSize||1,len)/1e9;
+    const crackTime=crackSeconds<60?"< 1 minute":crackSeconds<3600?`${Math.round(crackSeconds/60)} minutes`:crackSeconds<86400?`${Math.round(crackSeconds/3600)} hours`:crackSeconds<31536000?`${Math.round(crackSeconds/86400)} days`:crackSeconds<3.15e9?`${Math.round(crackSeconds/31536000)} years`:"Centuries+";
+    const checks=[
+      {label:"Length ≥ 8 chars",ok:len>=8},
+      {label:"Length ≥ 12 chars",ok:len>=12},
+      {label:"Length ≥ 16 chars",ok:len>=16},
+      {label:"Uppercase letters (A—Z)",ok:hasUpper},
+      {label:"Lowercase letters (a'z)",ok:hasLower},
+      {label:"Numbers (0–9)",ok:hasNum},
+      {label:"Special symbols (!@#…)",ok:hasSym},
+      {label:"8+ unique characters",ok:uniqueChars>=8},
+    ];
+    return {len,entropy,score,strength,color,crackTime,checks,charsetSize,uniqueChars};
+  },[pwd]);
+
+  return (
+    <VStack>
+      <div style={{position:"relative"}}>
+        <Label>Enter Password to Test</Label>
+        <Input value={pwd} onChange={setPwd} placeholder="Type your password…" type={show?"text":"password"} />
+        <button onClick={()=>setShow(s=>!s)} style={{position:"absolute",right:12,top:32,background:"transparent",border:"none",cursor:"pointer",color:C.muted,fontSize:14}}>{show?"🙈":"—'"}</button>
+      </div>
+      {analysis && (
+        <>
+          <div style={{padding:"16px 20px",background:analysis.color+"15",border:`1px solid ${analysis.color}40`,borderRadius:12,textAlign:"center"}} className="fade-in">
+            <div style={{fontFamily:"'Sora',sans-serif",fontSize:28,fontWeight:700,color:analysis.color}}>{analysis.strength}</div>
+            <div style={{marginTop:6,display:"flex",justifyContent:"center",gap:4}}>
+              {Array.from({length:8},(_,i)=>(
+                <div key={i} style={{width:24,height:6,borderRadius:3,background:i<analysis.score?analysis.color:"rgba(255,255,255,0.1)",transition:"background .2s"}} />
+              ))}
+            </div>
+          </div>
+          <Grid3>
+            <StatBox value={`${analysis.entropy} bits`} label="Entropy" accent={analysis.color} />
+            <StatBox value={analysis.crackTime} label="Crack Time (brute)" accent={analysis.color} />
+            <StatBox value={analysis.len} label="Length" accent={analysis.color} />
+          </Grid3>
+          <Card>
+            <Label>Strength Checks</Label>
+            <VStack gap={6} style={{marginTop:8}}>
+              {analysis.checks.map(({label,ok})=>(
+                <div key={label} style={{display:"flex",alignItems:"center",gap:10,fontSize:13}}>
+                  <span style={{color:ok?C.green:C.danger,fontSize:14,minWidth:16}}>{ok?"✓":"✗"}</span>
+                  <span style={{color:ok?C.text:C.muted}}>{label}</span>
+                </div>
+              ))}
+            </VStack>
+          </Card>
+        </>
+      )}
+    </VStack>
+  );
+}
+
+function RandomString() {
+  const PRESETS = {
+    hex:"0123456789abcdef",
+    alphanumeric:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
+    alpha:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+    numeric:"0123456789",
+    base64:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+    urlsafe:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_",
+    custom:"",
+  };
+  const [preset, setPreset] = useState("hex");
+  const [customChars, setCustomChars] = useState("");
+  const [len, setLen] = useState(32);
+  const [count, setCount] = useState(5);
+  const [strings, setStrings] = useState([]);
+  const chars = preset==="custom"?customChars:PRESETS[preset];
+  const generate = useCallback(()=>{
+    if(!chars) return;
+    setStrings(Array.from({length:count},()=>cryptoRandomString(len,chars)));
+  },[chars,len,count]);
+  useEffect(()=>generate(),[]);
+  return (
+    <VStack>
+      <div>
+        <Label>Character Set</Label>
+        <div style={{display:"flex",flexWrap:"wrap",gap:6,marginTop:6}}>
+          {Object.keys(PRESETS).map(p=>(
+            <Btn key={p} variant={preset===p?"primary":"secondary"} size="sm" onClick={()=>setPreset(p)}>{p}</Btn>
+          ))}
+        </div>
+        {preset==="custom"&&<div style={{marginTop:8}}><Input value={customChars} onChange={setCustomChars} placeholder="Enter custom character set…" mono /></div>}
+      </div>
+      <Grid2>
+        <div><Label>Length: {len}</Label><input type="range" min={4} max={256} value={len} onChange={e=>setLen(Number(e.target.value))} style={{width:"100%",marginTop:8}} /></div>
+        <div><Label>Count</Label><SelectInput value={count} onChange={v=>setCount(Number(v))} options={[1,5,10,20].map(n=>({value:n,label:`${n}`}))} /></div>
+      </Grid2>
+      <div style={{display:"flex",gap:10}}>
+        <Btn onClick={generate}>↻ Generate</Btn>
+        <CopyBtn text={strings.join("\n")} style={{}} />
+      </div>
+      <VStack gap={4}>
+        {strings.map((s,i)=>(
+          <div key={i} style={{display:"flex",gap:10,alignItems:"center",padding:"8px 12px",background:"rgba(0,0,0,0.3)",border:`1px solid ${C.border}`,borderRadius:7}}>
+            <span style={{flex:1,fontFamily:"'JetBrains Mono',monospace",fontSize:12,color:C.green,wordBreak:"break-all"}}>{s}</span>
+            <CopyBtn text={s} />
+          </div>
+        ))}
+      </VStack>
+    </VStack>
+  );
+}
+
+function UuidGenerator() {
+  function uuidv4() {
+    const b=new Uint8Array(16);
+    crypto.getRandomValues(b);
+    b[6]=(b[6]&0x0f)|0x40;
+    b[8]=(b[8]&0x3f)|0x80;
+    const h=Array.from(b).map(x=>x.toString(16).padStart(2,"0")).join("");
+    return `${h.slice(0,8)}-${h.slice(8,12)}-${h.slice(12,16)}-${h.slice(16,20)}-${h.slice(20)}`;
+  }
+  const [upper, setUpper] = useState(false);
+  const [noBraces, setNoBraces] = useState(false);
+  const [count, setCount] = useState(5);
+  const [uuids, setUuids] = useState([]);
+  const generate = useCallback(()=>{
+    setUuids(Array.from({length:count},()=>{
+      let u=uuidv4();
+      if(upper) u=u.toUpperCase();
+      if(noBraces) return u;
+      return u;
+    }));
+  },[count,upper,noBraces]);
+  useEffect(()=>generate(),[]);
+  return (
+    <VStack>
+      <div style={{display:"flex",gap:10,flexWrap:"wrap",alignItems:"center"}}>
+        <SelectInput value={count} onChange={v=>setCount(Number(v))} options={[1,5,10,25,50].map(n=>({value:n,label:`${n} UUID${n>1?"s":""}`}))} />
+        <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:13,color:C.text}}><input type="checkbox" checked={upper} onChange={e=>setUpper(e.target.checked)} /> Uppercase</label>
+        <Btn onClick={generate}>↻ Generate</Btn>
+        <CopyBtn text={uuids.join("\n")} />
+      </div>
+      <VStack gap={4}>
+        {uuids.map((u,i)=>(
+          <div key={i} style={{display:"flex",gap:10,alignItems:"center",padding:"8px 14px",background:"rgba(0,0,0,0.3)",border:`1px solid ${C.border}`,borderRadius:7}}>
+            <span style={{flex:1,fontFamily:"'JetBrains Mono',monospace",fontSize:13,color:C.green}}>{u}</span>
+            <CopyBtn text={u} />
+          </div>
+        ))}
+      </VStack>
+      <Card>
+        <Label>UUID v4 Structure</Label>
+        <div style={{marginTop:8,fontFamily:"'JetBrains Mono',monospace",fontSize:13,lineHeight:2}}>
+          <span style={{color:"#60A5FA"}}>xxxxxxxx</span>-
+          <span style={{color:"#34D399"}}>xxxx</span>-
+          <span style={{color:C.green}}>4xxx</span>-
+          <span style={{color:C.warn}}>yxxx</span>-
+          <span style={{color:"#A78BFA"}}>xxxxxxxxxxxx</span>
+          <div style={{marginTop:6,fontSize:11,color:C.muted}}>Where 4 = version and y = variant (8, 9, a, or b)</div>
+        </div>
+      </Card>
+    </VStack>
+  );
+}
+
+function FileHash() {
+  const [hashes, setHashes] = useState(null);
+  const [fileName, setFileName] = useState("");
+  const [fileSize, setFileSize] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  const processFile = async file => {
+    if(!file) return;
+    setFileName(file.name); setFileSize(file.size); setLoading(true); setHashes(null); setProgress(10);
+    const buffer = await file.arrayBuffer();
+    setProgress(40);
+    const [md5v, sha1v, sha256v, sha512v] = await Promise.all([
+      Promise.resolve(md5(new TextDecoder("latin1").decode(buffer))),
+      Promise.resolve(sha1(new TextDecoder("latin1").decode(buffer))),
+      crypto.subtle.digest("SHA-256",buffer).then(b=>Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("")),
+      crypto.subtle.digest("SHA-512",buffer).then(b=>Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("")),
+    ]);
+    setProgress(100);
+    setHashes({md5:md5v,sha1:sha1v,sha256:sha256v,sha512:sha512v});
+    setLoading(false);
+  };
+
+  const formatSize = n => n<1024?`${n} B`:n<1048576?`${(n/1024).toFixed(1)} KB`:`${(n/1048576).toFixed(2)} MB`;
+
+  return (
+    <VStack>
+      <div style={{border:`2px dashed ${C.border}`,borderRadius:12,padding:28,textAlign:"center",cursor:"pointer",background:"rgba(255,255,255,0.01)"}}
+        onDragOver={e=>e.preventDefault()} onDrop={e=>{e.preventDefault();processFile(e.dataTransfer.files[0]);}}
+        onClick={()=>document.getElementById("filehash-input").click()}>
+        <div style={{fontSize:36,marginBottom:8}}>—"—</div>
+        <div style={{fontSize:13,color:C.text,marginBottom:4}}>Drop any file here or click to browse</div>
+        <div style={{fontSize:12,color:C.muted}}>All processing happens in your browser —" no uploads</div>
+        <input id="filehash-input" type="file" style={{display:"none"}} onChange={e=>processFile(e.target.files[0])} />
+      </div>
+      {loading && (
+        <div style={{textAlign:"center",padding:16}}>
+          <div style={{fontSize:24,marginBottom:8}} className="spin">⚙—</div>
+          <div style={{height:6,background:"rgba(255,255,255,0.06)",borderRadius:3,overflow:"hidden"}}>
+            <div style={{height:"100%",width:`${progress}%`,background:`linear-gradient(90deg,${C.green},${C.teal})`,borderRadius:3,transition:"width .3s"}} />
+          </div>
+          <div style={{fontSize:12,color:C.muted,marginTop:6}}>Computing hashes…</div>
+        </div>
+      )}
+      {hashes && (
+        <>
+          <Card>
+            <Grid2>
+              <StatRow label="File Name" value={fileName} />
+              <StatRow label="File Size" value={formatSize(fileSize)} />
+            </Grid2>
+          </Card>
+          {[["MD5",hashes.md5,"#60A5FA"],["SHA-1",hashes.sha1,"#34D399"],["SHA-256",hashes.sha256,C.green],["SHA-512",hashes.sha512,"#FB923C"]].map(([l,v,a])=>(
+            <HashOutput key={l} label={l} value={v} accent={a} />
+          ))}
+        </>
+      )}
+    </VStack>
+  );
+}
+
+function BcryptHash() {
+  const [pwd, setPwd] = useState("");
+  const [cost, setCost] = useState(10);
+  const [result, setResult] = useState("");
+  const [loading, setLoading] = useState(false);
+  const generate = async()=>{
+    if(!pwd) return;
+    setLoading(true); setResult("");
+    await new Promise(r=>setTimeout(r,50));
+    setResult(simpleBcrypt(pwd,cost));
+    setLoading(false);
+  };
+  return (
+    <VStack>
+      <div><Label>Password</Label><Input value={pwd} onChange={setPwd} placeholder="Enter password to hash…" type="password" /></div>
+      <div>
+        <Label>Cost Factor (rounds): {cost} —' 2^{cost} = {Math.pow(2,cost).toLocaleString()} iterations</Label>
+        <input type="range" min={4} max={14} value={cost} onChange={e=>setCost(Number(e.target.value))} style={{width:"100%",marginTop:8}} />
+        <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:C.muted,marginTop:4}}>
+          <span>4 (fast/insecure)</span><span style={{color:cost>=10?C.green:C.warn}}>10 (recommended)</span><span>14 (very slow)</span>
+        </div>
+      </div>
+      <Btn onClick={generate} disabled={!pwd||loading}>{loading?"⚙— Hashing…":"Generate Bcrypt Hash"}</Btn>
+      {result && (
+        <HashOutput label={`Bcrypt Hash (cost=${cost})`} value={result} accent={C.green} />
+      )}
+      <Card style={{background:"rgba(16,185,129,0.04)"}}>
+        <div style={{fontSize:12,color:C.muted,lineHeight:1.8}}>
+          <strong style={{color:C.text}}>Bcrypt</strong> is the industry standard for password hashing. Unlike MD5/SHA, it's intentionally slow and includes a built-in salt. Use cost 10—"12 for production. <span style={{color:C.warn}}>Note: This is a demo implementation —" use a server-side bcrypt library for real password hashing.</span>
+        </div>
+      </Card>
+    </VStack>
+  );
+}
+
+function TokenGenerator() {
+  const FORMATS = {
+    hex32:{label:"32-byte hex (256-bit)",fn:()=>cryptoRandomString(64,"0123456789abcdef")},
+    hex16:{label:"16-byte hex (128-bit)",fn:()=>cryptoRandomString(32,"0123456789abcdef")},
+    base64:{label:"Base64 URL-safe (256-bit)",fn:()=>{const b=new Uint8Array(32);crypto.getRandomValues(b);return btoa(String.fromCharCode(...b)).replace(/\+/g,"-").replace(/\//g,"_").replace(/=/g,"");}},
+    bearer:{label:"Bearer token (40 chars)",fn:()=>"Bearer "+cryptoRandomString(40,"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")},
+    apikey:{label:"API Key (sk-style)",fn:()=>"sk-"+cryptoRandomString(48,"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")},
+    jwt_secret:{label:"JWT Secret (HS256 ready)",fn:()=>cryptoRandomString(64,"0123456789abcdef")},
+  };
+  const [format, setFormat] = useState("hex32");
+  const [tokens, setTokens] = useState([]);
+  const generate = useCallback(()=>{
+    setTokens(Array.from({length:5},()=>FORMATS[format].fn()));
+  },[format]);
+  useEffect(()=>generate(),[format]);
+  return (
+    <VStack>
+      <div><Label>Token Format</Label>
+        <div style={{display:"flex",flexDirection:"column",gap:6,marginTop:6}}>
+          {Object.entries(FORMATS).map(([k,{label}])=>(
+            <label key={k} style={{display:"flex",alignItems:"center",gap:10,cursor:"pointer",padding:"8px 12px",background:format===k?"rgba(16,185,129,0.1)":"rgba(255,255,255,0.02)",border:`1px solid ${format===k?"rgba(16,185,129,0.4)":C.border}`,borderRadius:7}}>
+              <input type="radio" checked={format===k} onChange={()=>setFormat(k)} /><span style={{fontSize:13,color:C.text}}>{label}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+      <Btn onClick={generate}>↻ Regenerate</Btn>
+      <VStack gap={4}>
+        {tokens.map((t,i)=>(
+          <div key={i} style={{display:"flex",gap:10,alignItems:"center",padding:"8px 14px",background:"rgba(0,0,0,0.35)",border:`1px solid ${C.border}`,borderRadius:7}}>
+            <span style={{flex:1,fontFamily:"'JetBrains Mono',monospace",fontSize:12,color:C.green,wordBreak:"break-all"}}>{t}</span>
+            <CopyBtn text={t} />
+          </div>
+        ))}
+      </VStack>
+    </VStack>
+  );
+}
+
+function OtpGenerator() {
+  const [secret, setSecret] = useState("JBSWY3DPEHPK3PXP");
+  const [code, setCode] = useState("");
+  const [remaining, setRemaining] = useState(30);
+
+  // TOTP demo —" derive 6-digit code from SHA1 HMAC of time
+  const compute = useCallback(()=>{
+    const T=Math.floor(Date.now()/1000/30);
+    const h=hmacSha256(secret,T.toString());
+    const offset=parseInt(h.slice(-1),16);
+    const otp=(parseInt(h.slice(offset*2,offset*2+8),16)&0x7fffffff)%1000000;
+    setCode(otp.toString().padStart(6,"0"));
+    setRemaining(30-Math.floor(Date.now()/1000)%30);
+  },[secret]);
+
+  useEffect(()=>{
+    compute();
+    const iv=setInterval(compute,1000);
+    return ()=>clearInterval(iv);
+  },[compute]);
+
+  return (
+    <VStack>
+      <div><Label>TOTP Secret Key</Label><Input value={secret} onChange={setSecret} placeholder="Base32 secret (e.g. JBSWY3DPEHPK3PXP)" mono /></div>
+      <div style={{textAlign:"center",padding:"32px 20px",background:"rgba(16,185,129,0.06)",border:"1px solid rgba(16,185,129,0.2)",borderRadius:12}} className="fade-in">
+        <div style={{fontSize:11,color:C.muted,marginBottom:8,letterSpacing:"0.1em"}}>CURRENT OTP CODE</div>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:52,fontWeight:700,color:C.green,letterSpacing:"0.2em"}}>{code}</div>
+        <div style={{marginTop:12,fontSize:13,color:C.muted}}>Refreshes in <strong style={{color:C.text}}>{remaining}s</strong></div>
+        <div style={{height:4,background:"rgba(255,255,255,0.06)",borderRadius:2,margin:"10px auto 0",width:200,overflow:"hidden"}}>
+          <div style={{height:"100%",width:`${(remaining/30)*100}%`,background:`linear-gradient(90deg,${C.green},${C.teal})`,borderRadius:2,transition:"width 1s linear"}} />
+        </div>
+      </div>
+      <CopyBtn text={code} style={{alignSelf:"center"}} />
+      <Card style={{background:"rgba(59,130,246,0.04)"}}>
+        <div style={{fontSize:12,color:C.muted,lineHeight:1.8}}>
+          <strong style={{color:C.text}}>TOTP</strong> (Time-based One-Time Password —" RFC 6238) generates a 6-digit code that changes every 30 seconds based on the current time and a shared secret. Used in 2FA apps like Google Authenticator. <span style={{color:C.warn}}>This is a demo —" production TOTP requires a proper Base32 HMAC-SHA1 implementation.</span>
+        </div>
+      </Card>
+    </VStack>
+  );
+}
+
+function SimpleStringHash() {
+  const [input, setInput] = useState("");
+  const hashes = useMemo(()=>{
+    if(!input) return [];
+    return [
+      {name:"CRC32",     value:crc32(input),    bits:32,  accent:"#14B8A6"},
+      {name:"Adler-32",  value:adler32(input),  bits:32,  accent:"#60A5FA"},
+      {name:"FNV-1a",    value:fnv1a32(input),  bits:32,  accent:"#A78BFA"},
+      {name:"DJB2",      value:djb2(input),     bits:32,  accent:"#FB923C"},
+      {name:"MD5",       value:md5(input),       bits:128, accent:"#34D399"},
+      {name:"SHA-1",     value:sha1(input),      bits:160, accent:C.green},
+      {name:"SHA-256",   value:sha256(input),    bits:256, accent:"#FCD34D"},
+    ];
+  },[input]);
+  return (
+    <VStack>
+      <Textarea value={input} onChange={setInput} placeholder="Enter text to hash with all algorithms…" mono={false} rows={4} />
+      {hashes.map(({name,value,bits,accent})=>(
+        <div key={name} style={{display:"flex",alignItems:"center",gap:12,padding:"8px 14px",background:"rgba(255,255,255,0.02)",border:`1px solid ${C.border}`,borderRadius:8}}>
+          <div style={{minWidth:80,fontSize:12,fontWeight:600,color:accent}}>{name}</div>
+          <div style={{minWidth:40,fontSize:11,color:C.muted}}>{bits}b</div>
+          <div style={{flex:1,fontFamily:"'JetBrains Mono',monospace",fontSize:12,color:C.text,wordBreak:"break-all"}}>{value}</div>
+          <CopyBtn text={value} />
+        </div>
+      ))}
+    </VStack>
+  );
+}
+
+function XorCipher() {
+  const [text, setText] = useState("");
+  const [key, setKey] = useState("");
+  const [mode, setMode] = useState("encrypt");
+  const xor = (t, k) => {
+    if(!k) return t;
+    return [...t].map((c,i)=>String.fromCharCode(c.charCodeAt(0)^k.charCodeAt(i%k.length))).join("");
+  };
+  const encrypt = () => {
+    const r = xor(text,key);
+    return btoa(r.split("").map(c=>c.charCodeAt(0)<256?String.fromCharCode(c.charCodeAt(0)):c).join(""));
+  };
+  const decrypt = () => {
+    try{ const decoded=atob(text); return xor(decoded,key); } catch{ return "Invalid Base64 input for decryption"; }
+  };
+  const output = text&&key ? (mode==="encrypt"?encrypt():decrypt()) : "";
+  return (
+    <VStack>
+      <ModeToggle mode={mode} setMode={setMode} options={[["encrypt","Encrypt"],["decode","Decrypt"]]} />
+      <div><Label>XOR Key</Label><Input value={key} onChange={setKey} placeholder="Enter any key string…" mono /></div>
+      <Grid2>
+        <div><Label>{mode==="encrypt"?"Plain Text":"Base64-encoded Ciphertext"}</Label><Textarea value={text} onChange={setText} rows={6} mono={mode!=="encrypt"} /></div>
+        <div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+            <Label>{mode==="encrypt"?"XOR Encrypted (Base64)":"Decrypted Text"}</Label>
+            {output&&<CopyBtn text={output} />}
+          </div>
+          <Textarea value={output} onChange={()=>{}} rows={6} readOnly />
+        </div>
+      </Grid2>
+      <Card><div style={{fontSize:12,color:C.muted,lineHeight:1.8}}><strong style={{color:C.text}}>XOR cipher</strong> is symmetric —" the same key and operation encrypts and decrypts. It is NOT cryptographically secure but useful for light obfuscation. Output is Base64-encoded for safe text transport.</div></Card>
+    </VStack>
+  );
+}
+
+function NumberBaseConverter() {
+  const [input, setInput] = useState("");
+  const [fromBase, setFromBase] = useState("10");
+  const [error, setError] = useState("");
+  const results = useMemo(()=>{
+    if(!input.trim()) return null;
+    try{
+      const n=parseInt(input.trim(),parseInt(fromBase));
+      if(isNaN(n)) throw new Error("Invalid number for base "+fromBase);
+      setError("");
+      return {
+        bin:n.toString(2), oct:n.toString(8), dec:n.toString(10),
+        hex:n.toString(16).toUpperCase(), b32:n.toString(32).toUpperCase(),
+        dec_val:n,
+      };
+    } catch(e){ setError(e.message); return null; }
+  },[input,fromBase]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Input Number</Label><Input value={input} onChange={setInput} placeholder="Enter number…" mono /></div>
+        <div><Label>From Base</Label><SelectInput value={fromBase} onChange={setFromBase} options={[{value:"2",label:"Binary (base 2)"},{value:"8",label:"Octal (base 8)"},{value:"10",label:"Decimal (base 10)"},{value:"16",label:"Hexadecimal (base 16)"},{value:"32",label:"Base 32"}]} /></div>
+      </Grid2>
+      {error&&<div style={{color:C.danger,fontSize:13}}>{error}</div>}
+      {results&&(
+        <Card className="fade-in">
+          {[["Binary (2)",results.bin,"0b"],["Octal (8)",results.oct,"0o"],["Decimal (10)",results.dec,""],["Hex (16)",results.hex,"0x"],["Base 32",results.b32,""]].map(([label,val,prefix])=>(
+            <div key={label} style={{display:"flex",alignItems:"center",gap:12,padding:"8px 0",borderBottom:`1px solid ${C.border}`}}>
+              <span style={{minWidth:110,fontSize:12,color:C.muted}}>{label}</span>
+              <span style={{flex:1,fontFamily:"'JetBrains Mono',monospace",fontSize:13,color:C.green}}>{prefix}{val}</span>
+              <CopyBtn text={val} />
+            </div>
+          ))}
+        </Card>
+      )}
+    </VStack>
+  );
+}
+
+function ColorHash() {
+  const [input, setInput] = useState("");
+  const color = useMemo(()=>{
+    if(!input) return null;
+    const h=md5(input);
+    const r=parseInt(h.slice(0,2),16);
+    const g=parseInt(h.slice(2,4),16);
+    const b=parseInt(h.slice(4,6),16);
+    const hex=`#${h.slice(0,6).toUpperCase()}`;
+    const hsl=rgbToHsl(r,g,b);
+    return {r,g,b,hex,hsl,hash:h};
+  },[input]);
+  function rgbToHsl(r,g,b){
+    r/=255;g/=255;b/=255;
+    const max=Math.max(r,g,b),min=Math.min(r,g,b);
+    let h,s,l=(max+min)/2;
+    if(max===min){h=s=0;}
+    else{const d=max-min;s=l>0.5?d/(2-max-min):d/(max+min);switch(max){case r:h=((g-b)/d+(g<b?6:0))/6;break;case g:h=((b-r)/d+2)/6;break;case b:h=((r-g)/d+4)/6;}}
+    return [Math.round(h*360),Math.round(s*100),Math.round(l*100)];
+  }
+  return (
+    <VStack>
+      <Input value={input} onChange={setInput} placeholder="Type any text to generate a deterministic color…" />
+      {color && (
+        <div className="fade-in">
+          <div style={{height:120,borderRadius:12,background:color.hex,marginBottom:16,border:`1px solid ${C.border}`,display:"flex",alignItems:"center",justifyContent:"center"}}>
+            <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:22,fontWeight:700,color:"rgba(255,255,255,0.9)",textShadow:"0 1px 4px rgba(0,0,0,0.4)"}}>{color.hex}</span>
+          </div>
+          <Card>
+            {[["HEX",color.hex],["RGB",`rgb(${color.r}, ${color.g}, ${color.b})`],["HSL",`hsl(${color.hsl[0]}, ${color.hsl[1]}%, ${color.hsl[2]}%)`],["MD5 Source",color.hash.slice(0,12)+"…"]].map(([l,v])=>(
+              <div key={l} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"6px 0",borderBottom:`1px solid ${C.border}`}}>
+                <span style={{fontSize:12,color:C.muted}}>{l}</span>
+                <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                  <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:13,color:C.text}}>{v}</span>
+                  <CopyBtn text={v} />
+                </div>
+              </div>
+            ))}
+          </Card>
+          <div style={{marginTop:12}}>
+            <Label>Other strings —' colors</Label>
+            <div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:6}}>
+              {["hello","world","react","crypto","toolsrift","hash"].map(w=>{
+                const h=md5(w);
+                const col=`#${h.slice(0,6)}`;
+                return <div key={w} title={col} style={{width:36,height:36,borderRadius:6,background:col,border:`1px solid ${C.border}`,cursor:"pointer"}} onClick={()=>setInput(w)} />;
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// �"����� COMPONENT MAP �����������������������������������������������������������������������������������������������������������������������"�
+const TOOL_COMPONENTS = {
+  "hash-all":          HashAll,
+  "md5-hash":          ()=><SingleHash algo="md5" />,
+  "sha1-hash":         ()=><SingleHash algo="sha1" />,
+  "sha256-hash":       ()=><SingleHash algo="sha256" />,
+  "sha512-hash":       ()=><SingleHash algo="sha512" />,
+  "sha384-hash":       ()=><SingleHash algo="sha384" />,
+  "hmac-generator":    HmacGenerator,
+  "hash-compare":      HashCompare,
+  "crc32":             Crc32Tool,
+  "adler32":           Adler32Tool,
+  "fnv-hash":          FnvHash,
+  "djb2-hash":         Djb2Hash,
+  "password-generator":PasswordGenerator,
+  "passphrase-gen":    PassphraseGen,
+  "password-strength": PasswordStrength,
+  "random-string":     RandomString,
+  "uuid-generator":    UuidGenerator,
+  "hash-file":         FileHash,
+  "bcrypt-hash":       BcryptHash,
+  "token-generator":   TokenGenerator,
+  "otp-generator":     OtpGenerator,
+  "caesar-hash":       SimpleStringHash,
+  "xor-cipher":        XorCipher,
+  "binary-converter":  NumberBaseConverter,
+  "color-hash":        ColorHash,
+};
+
+// �"����� PAGE SHELLS ���������������������������������������������������������������������������������������������������������������������������"�
+function Breadcrumb({ tool }) {
+  const cat=CATEGORIES.find(c=>c.id===tool.cat);
+  return (
+    <>
+      <nav style={{display:"flex",alignItems:"center",gap:8,fontSize:12,color:C.muted,marginBottom:20}}>
+        <a href="https://toolsrift.com" style={{color:C.muted,textDecoration:"none"}}>—— ToolsRift</a><span>›</span>
+        <a href={`#/category/${tool.cat}`} style={{color:C.muted,textDecoration:"none"}}>{cat?.name}</a><span>›</span>
+        <span style={{color:C.text}}>{tool.name}</span>
+      </nav>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://toolsrift.com" },
+          { "@type": "ListItem", "position": 2, "name": "Hash Generator Tools", "item": "https://toolsrift.com/hash" },
+          { "@type": "ListItem", "position": 3, "name": tool?.name || tool?.id || "" }
+        ]
+      }) }} />
+    </>
+  );
+}
+
+function FaqSection({ faqs }) {
+  if(!faqs?.length) return null;
+  return (
+    <section style={{marginTop:32}}>
+      <h2 style={{...T.h2,marginBottom:14}}>Frequently Asked Questions</h2>
+      <VStack gap={8}>
+        {faqs.map(([q,a],i)=>(
+          <details key={i} style={{background:"rgba(255,255,255,0.02)",border:`1px solid ${C.border}`,borderRadius:8}}>
+            <summary style={{padding:"12px 16px",cursor:"pointer",fontSize:13,fontWeight:600,color:C.text,listStyle:"none",display:"flex",justifyContent:"space-between"}}>
+              <h3 style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,fontWeight:600,margin:0}}>{q}</h3>
+              <span style={{color:C.muted}}>+</span>
+            </summary>
+            <div style={{padding:"0 16px 14px",fontSize:13,color:C.muted,lineHeight:1.7}}>{a}</div>
+          </details>
+        ))}
+      </VStack>
+    </section>
+  );
+}
+
+function RelatedTools({ currentId }) {
+  const current=TOOLS.find(t=>t.id===currentId);
+  const related=TOOLS.filter(t=>t.id!==currentId&&t.cat===current?.cat).slice(0,4);
+  if(!related.length) return null;
+  return (
+    <section style={{marginTop:32}}>
+      <h2 style={{...T.h2,marginBottom:14}}>Related Tools</h2>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:10}}>
+        {related.map(t=>(
+          <a key={t.id} href={`#/tool/${t.id}`} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:"rgba(255,255,255,0.02)",border:`1px solid ${C.border}`,borderRadius:8,textDecoration:"none",transition:"border-color .15s"}}
+            onMouseEnter={e=>e.currentTarget.style.borderColor="rgba(16,185,129,0.4)"} onMouseLeave={e=>e.currentTarget.style.borderColor=C.border}>
+            <span style={{fontSize:20}}>{t.icon}</span>
+            <div><div style={{fontSize:13,fontWeight:600,color:C.text}}>{t.name}</div><div style={{fontSize:11,color:C.muted}}>{t.desc}</div></div>
+          </a>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ToolPage({ toolId }) {
+  const tool=TOOLS.find(t=>t.id===toolId);
+  const meta=TOOL_META[toolId];
+  const ToolComp=TOOL_COMPONENTS[toolId];
+  // PHASE 1: All tools free, no gating. Re-enable in Phase 2.
+  useEffect(()=>{ document.title=meta?.title||`${tool?.name} —" Free Hash Tool | ToolsRift`; },[toolId]);
+  if(!tool||!ToolComp) return <div style={{padding:40,textAlign:"center",color:C.muted}}>Tool not found. <a href="#/" style={{color:C.green}}>— Home</a></div>;
+  return (
+    <div style={{maxWidth:920,margin:"0 auto",padding:"24px 20px 60px"}}>
+      <Breadcrumb tool={tool} />
+      <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:24,gap:16}}>
+        <div>
+          <h1 style={{...T.h1,marginBottom:6,display:"flex",alignItems:"center",gap:12}}>
+            <span style={{fontSize:28}}>{tool.icon}</span> {tool.name}
+          </h1>
+          <p style={{fontSize:14,color:C.muted,lineHeight:1.6,maxWidth:620}}>{meta?.desc||tool.desc}</p>
+        </div>
+        <Badge color="green">Free</Badge>
+      </div>
+      <Card className="fade-in"><ToolComp /></Card>
+      {meta?.howTo && (
+        <div style={{ background:'rgba(59,130,246,0.05)', border:'1px solid rgba(59,130,246,0.12)', borderRadius:16, padding:'28px 32px', marginBottom:24, marginTop:24 }}>
+          <h2 style={{ fontSize:17, fontWeight:700, color:'#F1F5F9', margin:'0 0 12px', fontFamily:"'Sora', sans-serif" }}>—"— How to Use This Tool</h2>
+          <p style={{ fontSize:14, color:'#94A3B8', lineHeight:1.8, margin:0 }}>{meta.howTo}</p>
+        </div>
+      )}
+      <FaqSection faqs={meta?.faq} />
+      {meta?.faq && meta.faq.length > 0 && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": meta.faq.map(([q, a]) => ({
+            "@type": "Question",
+            "name": q,
+            "acceptedAnswer": { "@type": "Answer", "text": a }
+          }))
+        })}} />
+      )}
+      <RelatedTools currentId={toolId} />
+    </div>
+  );
+}
+
+function CategoryPage({ catId }) {
+  const cat=CATEGORIES.find(c=>c.id===catId);
+  const tools=TOOLS.filter(t=>t.cat===catId);
+  useEffect(()=>{ document.title=`${cat?.name} —" Free Hash & Crypto Tools | ToolsRift`; },[catId]);
+  if(!cat) return <div style={{padding:40,textAlign:"center",color:C.muted}}>Not found. <a href="#/" style={{color:C.green}}>— Home</a></div>;
+  return (
+    <div style={{maxWidth:920,margin:"0 auto",padding:"24px 20px 60px"}}>
+      <nav style={{fontSize:12,color:C.muted,marginBottom:20}}><a href="#/" style={{color:C.muted,textDecoration:"none"}}>—— ToolsRift</a> › <span style={{color:C.text}}>{cat.name}</span></nav>
+      <h1 style={{...T.h1,marginBottom:6}}>{cat.icon} {cat.name}</h1>
+      <p style={{fontSize:14,color:C.muted,marginBottom:28}}>{cat.desc} —" {tools.length} free tools</p>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:12}}>
+        {tools.map(t=>(
+          <a key={t.id} href={`#/tool/${t.id}`} style={{display:"flex",gap:12,padding:"14px 16px",background:C.surface,border:`1px solid ${C.border}`,borderRadius:10,textDecoration:"none",alignItems:"flex-start",transition:"all .15s"}}
+            onMouseEnter={e=>{e.currentTarget.style.borderColor="rgba(16,185,129,0.4)";e.currentTarget.style.transform="translateY(-1px)";}} onMouseLeave={e=>{e.currentTarget.style.borderColor=C.border;e.currentTarget.style.transform="";}}>
+            <span style={{fontSize:24,marginTop:2}}>{t.icon}</span>
+            <div><div style={{fontSize:13,fontWeight:600,color:C.text,marginBottom:3}}>{t.name}</div><div style={{fontSize:12,color:C.muted,lineHeight:1.5}}>{t.desc}</div></div>
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+
+const PAGE_THEME = getCategoryById('hash');
+
+function DevBadge() {
+  return (
+    <span style={{
+      position:'absolute', top:8, right:8, pointerEvents:'none',
+      background:'rgba(16,185,129,0.15)', color:'#10B981',
+      fontSize:10, fontWeight:700, padding:'2px 6px', borderRadius:4,
+      letterSpacing:'0.04em', fontFamily:"'Plus Jakarta Sans',sans-serif",
+    }}>DEV</span>
+  );
+}
+
+const HASH_SPECIAL_CSS = `
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  .trh-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  @media(max-width:1024px){.trh-grid{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:640px){.trh-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:400px){.trh-grid{grid-template-columns:1fr}}
+  .trh-detail{display:grid;grid-template-columns:220px 1fr;gap:24px;padding:16px 0 60px}
+  @media(max-width:768px){.trh-detail{grid-template-columns:1fr;padding:16px 0 96px}}
+  .trh-sidebar{display:block}
+  @media(max-width:768px){.trh-sidebar{display:none}}
+  .trh-mobile-bar{display:none}
+  @media(max-width:768px){.trh-mobile-bar{display:flex}}
+`;
+
+function CategoryHomePage() {
+  useEffect(() => { document.title = 'Free Hash & Crypto Tools —" ToolsRift'; }, []);
+
+  return (
+    <CategoryLayout theme={PAGE_THEME} currentTool={null}>
+      <CategoryDashboard
+        theme={PAGE_THEME}
+        tools={TOOLS}
+        subcats={CATEGORIES}
+        searchPlaceholder="Search hash & crypto tools..."
+      />
+    </CategoryLayout>
+  );
+}
+
+function ToolDetailPage({ toolId }) {
+  const tool     = TOOLS.find(t => t.id === toolId);
+  const meta     = TOOL_META[toolId];
+  const ToolComp = TOOL_COMPONENTS[toolId];
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const acc = PAGE_THEME.color;
+
+  useEffect(() => {
+    document.title = meta?.title || `${tool?.name} —" Free Hash Tool | ToolsRift`;
+    setDrawerOpen(false);
+  }, [toolId]);
+
+  if (!tool || !ToolComp) return (
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'}>
+      <div style={{ padding:40, textAlign:'center', color:'#64748B', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
+        <div style={{ fontSize:48, marginBottom:16 }}>—"</div>
+        <p style={{ color:'#E2E8F0', marginBottom:8, fontSize:16 }}>Tool not found</p>
+        <a href="#/" style={{ color:acc }}>— Back to Hash & Crypto</a>
+      </div>
+    </CategoryLayout>
+  );
+
+  const sidebarTools = TOOLS.filter(t => t.cat === tool.cat);
+  const toolData = { name:tool.name, description:meta?.desc||tool.desc, howTo:meta?.howTo, faq:meta?.faq };
+
+  return (
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId}>
+      <style>{HASH_SPECIAL_CSS}</style>
+      <div className="trh-detail">
+        <aside className="trh-sidebar">
+          <div style={{ position:'sticky', top:72, background:'#0D1117', border:'1px solid rgba(255,255,255,0.06)', borderRadius:12, overflow:'hidden' }}>
+            <div style={{ padding:'12px 16px', borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
+              <div style={{ fontSize:11, fontWeight:700, color:'#475569', textTransform:'uppercase', letterSpacing:'0.06em' }}>
+                {CATEGORIES.find(c => c.id === tool.cat)?.name || 'Tools'}
+              </div>
+            </div>
+            <div style={{ padding:'8px 0', maxHeight:'calc(100vh - 160px)', overflowY:'auto' }}>
+              {sidebarTools.map(t => {
+                const isActive = t.id === toolId;
+                return (
+                  <a key={t.id} href={`#/tool/${t.id}`}
+                    style={{ display:'flex', alignItems:'center', gap:10, minHeight:44, padding:'10px 16px', textDecoration:'none', background:isActive?`${acc}18`:'transparent', borderLeft:isActive?`2px solid ${acc}`:'2px solid transparent', transition:'background 0.15s' }}
+                    onMouseEnter={e => { if (!isActive) e.currentTarget.style.background='rgba(255,255,255,0.03)'; }}
+                    onMouseLeave={e => { if (!isActive) e.currentTarget.style.background='transparent'; }}
+                  >
+                    <span style={{ fontSize:15, flexShrink:0 }}>{t.icon}</span>
+                    <span style={{ fontSize:13, fontWeight:isActive?600:400, color:isActive?'#F1F5F9':'#94A3B8', lineHeight:1.3, fontFamily:"'Plus Jakarta Sans',sans-serif" }}>{t.name}</span>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        </aside>
+
+        <div style={{ minWidth:0 }}>
+          <a href="#/" style={{ display:'inline-flex', alignItems:'center', gap:6, color:'#64748B', fontSize:13, textDecoration:'none', marginBottom:16, fontFamily:"'Plus Jakarta Sans',sans-serif" }}
+            onMouseEnter={e => e.currentTarget.style.color='#E2E8F0'}
+            onMouseLeave={e => e.currentTarget.style.color='#64748B'}
+          >— Back to Hash & Crypto</a>
+          <ToolPageLayout theme={PAGE_THEME} tool={toolData}>
+            <ToolComp />
+          </ToolPageLayout>
+        </div>
+      </div>
+
+      <div className="trh-mobile-bar" style={{ position:'fixed', bottom:0, left:0, right:0, zIndex:200, background:'rgba(6,9,15,0.96)', backdropFilter:'blur(12px)', borderTop:'1px solid rgba(255,255,255,0.06)', padding:'12px 16px', justifyContent:'space-between', alignItems:'center' }}>
+        <span style={{ fontSize:13, color:'#94A3B8', fontFamily:"'Plus Jakarta Sans',sans-serif", overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', maxWidth:'60%' }}>{tool.icon} {tool.name}</span>
+        <button onClick={() => setDrawerOpen(d => !d)} style={{ background:acc, color:'#fff', border:'none', borderRadius:8, padding:'8px 16px', fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:"'Plus Jakarta Sans',sans-serif", minHeight:44, flexShrink:0 }}>
+          {drawerOpen ? '✕ Close' : '—"— All Tools'}
+        </button>
+      </div>
+
+      {drawerOpen && (
+        <div style={{ position:'fixed', bottom:0, left:0, right:0, zIndex:199, background:'#0D1117', borderTop:`2px solid ${acc}`, maxHeight:'60vh', overflowY:'auto', padding:'8px 0 80px' }}>
+          {sidebarTools.map(t => {
+            const isActive = t.id === toolId;
+            return (
+              <a key={t.id} href={`#/tool/${t.id}`} onClick={() => setDrawerOpen(false)}
+                style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 20px', minHeight:52, textDecoration:'none', background:isActive?`${acc}18`:'transparent', borderLeft:isActive?`3px solid ${acc}`:'3px solid transparent' }}
+              >
+                <span style={{ fontSize:20 }}>{t.icon}</span>
+                <span style={{ fontSize:14, fontWeight:isActive?600:400, color:isActive?'#F1F5F9':'#94A3B8', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>{t.name}</span>
+              </a>
+            );
+          })}
+        </div>
+      )}
+    </CategoryLayout>
+  );
+}
+
+function ToolsRiftHash() {
+  const route = useAppRouter();
+  return (
+    <div style={{ fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
+      <style>{GLOBAL_CSS}</style>
+      {route.page === 'home'     && <CategoryHomePage />}
+      {route.page === 'tool'     && <ToolDetailPage toolId={route.toolId} />}
+      {route.page === 'category' && <CategoryPage catId={route.catId} />}
+    </div>
+  );
+}
+
+export default ToolsRiftHash;
