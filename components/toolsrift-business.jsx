@@ -1,7 +1,7 @@
 ﻿import { useState, useEffect, useRef, useCallback } from "react";
 import { getCategoryById } from '../lib/categoryThemes';
 import CategoryLayout from './shared/CategoryLayout';
-import CategoryDashboard from './shared/CategoryDashboard';
+import PremiumCategoryLanding from './shared/PremiumCategoryLanding';
 import ToolPageLayout, { ToolSchemas } from './shared/ToolPageLayout';
 // PHASE 1: import { trackUse, isLimitReached, getRemaining, DAILY_LIMIT } from '../lib/usage';
 // PHASE 2: import UpgradeModal from './UpgradeModal';
@@ -818,7 +818,7 @@ function ToolsRiftBusiness(){
           </CategoryLayout>
         ):(
           <CategoryLayout theme={PAGE_THEME} currentTool={null}>
-            <CategoryDashboard
+            <PremiumCategoryLanding
               theme={PAGE_THEME}
               tools={TOOLS}
               searchPlaceholder="Search business tools..."

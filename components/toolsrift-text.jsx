@@ -2,9 +2,13 @@
 // PHASE 2: import { trackUse, isLimitReached, getRemaining, DAILY_LIMIT } from '../lib/usage';
 import { getCategoryById } from '../lib/categoryThemes';
 import CategoryLayout from './shared/CategoryLayout';
-import CategoryDashboard from './shared/CategoryDashboard';
+import PremiumCategoryLanding from './shared/PremiumCategoryLanding';
 import ToolCard from './shared/ToolCard';
 import ToolPageLayout from './shared/ToolPageLayout';
+import InteractiveToolWorkspace from './shared/InteractiveToolWorkspace';
+import SmartInput from './shared/SmartInput';
+import SmartOutput from './shared/SmartOutput';
+import SmartControls from './shared/SmartControls';
 // PHASE 2: import UpgradeModal from './UpgradeModal';
 // PHASE 2: import UsageCounter from './UsageCounter';
 
@@ -159,7 +163,7 @@ function StatBox({ value, label }) {
 function useAppRouter() {
   const parse = () => {
     const h = window.location.hash || "#/";
-    const path = h.replace(/^#/, "") || "/";
+    const path = h.replace(/^#/, "").replace(/\?.*$/, "") || "/";
     const parts = path.split("/").filter(Boolean);
     if (!parts.length) return { page:"home" };
     if (parts[0]==="tool" && parts[1]) return { page:"tool", toolId:parts[1] };
@@ -533,109 +537,303 @@ function numToWords(n) {
 
 // �"����� INDIVIDUAL TOOL COMPONENTS ���������������������������������������������������������������������������������������������"�
 
+const WORD_COUNTER_SAMPLE = `The quick brown fox jumps over the lazy dog. This pangram has been used by typographers for over a century to display every letter of the English alphabet in a single sentence.
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+
+Paste your own copy here — counters, reading time and statistics update live as you type. No upload, no signup.`;
+
 function WordCounterPro() {
-  const [text, setText] = useState("");
+  const [text, setText] = useState('');
+  const theme = getCategoryById('text');
+  const tool  = { id: 'word-counter-pro', name: 'Word Counter Pro', icon: '⏱️' };
+
   const s = useMemo(() => {
     const words = text.trim() ? text.trim().split(/\s+/).filter(Boolean) : [];
     const sentences = countSentences(text);
     const paras = text.trim() ? text.trim().split(/\n\s*\n/).filter(Boolean).length : 0;
     const lines = text ? text.split("\n").length : 0;
-    const readSec = Math.round((words.length/225)*60);
-    const speakSec = Math.round((words.length/130)*60);
-    const fmt = s => s<60 ? `${s}s` : `${Math.floor(s/60)}m ${s%60}s`;
-    return { words:words.length, chars:text.length, charsNoSpace:text.replace(/\s/g,"").length, sentences, paras, lines, read:fmt(readSec), speak:fmt(speakSec) };
+    const readSec = Math.round((words.length / 225) * 60);
+    const speakSec = Math.round((words.length / 130) * 60);
+    const fmt = sec => sec < 60 ? `${sec}s` : `${Math.floor(sec / 60)}m ${sec % 60}s`;
+    return {
+      words: words.length,
+      chars: text.length,
+      charsNoSpace: text.replace(/\s/g, '').length,
+      sentences,
+      paras,
+      lines,
+      read: fmt(readSec),
+      speak: fmt(speakSec),
+    };
   }, [text]);
+
+  const tiles = useMemo(() => ([
+    { label: 'Words',       value: s.words.toLocaleString(),        accent: true  },
+    { label: 'Characters',  value: s.chars.toLocaleString()                       },
+    { label: 'No spaces',   value: s.charsNoSpace.toLocaleString()                },
+    { label: 'Sentences',   value: s.sentences.toLocaleString()                   },
+    { label: 'Paragraphs',  value: s.paras.toLocaleString()                       },
+    { label: 'Lines',       value: s.lines.toLocaleString()                       },
+    { label: 'Read time',   value: s.read,    detail: '@ 225 wpm'                 },
+    { label: 'Speak time',  value: s.speak,   detail: '@ 130 wpm'                 },
+  ]), [s]);
+
+  const buildReport = () =>
+    [
+      `Word Counter Pro — ToolsRift`,
+      `Words: ${s.words}`,
+      `Characters: ${s.chars}`,
+      `Characters (no spaces): ${s.charsNoSpace}`,
+      `Sentences: ${s.sentences}`,
+      `Paragraphs: ${s.paras}`,
+      `Lines: ${s.lines}`,
+      `Reading time: ${s.read} @ 225 wpm`,
+      `Speaking time: ${s.speak} @ 130 wpm`,
+    ].join('\n');
+
+  const status = text
+    ? { state: 'live', label: 'Live', detail: `${s.words.toLocaleString()} words` }
+    : { state: 'idle', label: 'Waiting for text' };
+
   return (
-    <VStack>
-      <Textarea value={text} onChange={setText} placeholder="Paste or type your text here..." rows={8} />
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10 }}>
-        {[["Words",s.words],["Characters",s.chars],["No Spaces",s.charsNoSpace],["Sentences",s.sentences],["Paragraphs",s.paras],["Lines",s.lines],["Read Time",s.read],["Speak Time",s.speak]].map(([l,v])=><StatBox key={l} value={v} label={l}/>)}
-      </div>
-    </VStack>
+    <InteractiveToolWorkspace
+      theme={theme}
+      tool={tool}
+      inputLabel="Your text"
+      outputLabel="Statistics"
+      status={status}
+      stats={{ chars: s.chars, words: s.words, lines: s.lines }}
+      onLoadSample={() => setText(WORD_COUNTER_SAMPLE)}
+      onClear={() => setText('')}
+      onCopy={() => buildReport()}
+      onDownload={() => ({ content: buildReport(), filename: 'word-counter-report.txt' })}
+      shareState={text ? { t: text } : null}
+      onRestoreState={(st) => { if (typeof st?.t === 'string') setText(st.t); }}
+      primaryAction={{ label: 'Load sample', icon: '✨', onClick: () => setText(WORD_COUNTER_SAMPLE) }}
+    >
+      <InteractiveToolWorkspace.Input>
+        <SmartInput
+          theme={theme}
+          value={text}
+          onChange={setText}
+          placeholder="Paste or type your text here…"
+          rows={10}
+          maxRows={28}
+          ariaLabel="Text to analyse"
+        />
+      </InteractiveToolWorkspace.Input>
+
+      <InteractiveToolWorkspace.Output>
+        <div
+          style={{
+            display: 'grid',
+            gap: 10,
+            gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 130px), 1fr))',
+          }}
+        >
+          {tiles.map((t) => (
+            <div
+              key={t.label}
+              style={{
+                background: t.accent
+                  ? `linear-gradient(135deg, ${theme.tint25}, ${theme.tint06})`
+                  : 'rgba(15,23,42,0.55)',
+                border: `1px solid ${t.accent ? theme.tint25 : 'rgba(255,255,255,0.06)'}`,
+                borderRadius: 14,
+                padding: '14px 14px 12px',
+                position: 'relative',
+                overflow: 'hidden',
+              }}
+            >
+              <div
+                style={{
+                  fontFamily: theme.fonts.head,
+                  fontSize: t.accent ? 28 : 22,
+                  fontWeight: 800,
+                  color: t.accent ? theme.color : '#F8FAFC',
+                  letterSpacing: '-0.02em',
+                  lineHeight: 1.1,
+                }}
+              >
+                {t.value}
+              </div>
+              <div
+                style={{
+                  marginTop: 6,
+                  fontSize: 11,
+                  fontWeight: 700,
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  color: t.accent ? theme.color : '#94A3B8',
+                  fontFamily: theme.fonts.body,
+                }}
+              >
+                {t.label}
+              </div>
+              {t.detail && (
+                <div style={{ marginTop: 2, fontSize: 11, color: '#64748B', fontFamily: theme.fonts.body }}>
+                  {t.detail}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
   );
 }
 
 function CharacterCounter() {
-  const [text, setText] = useState("");
-  const [limit, setLimit] = useState("");
+  const theme = getCategoryById('text');
+  const tool  = { id:'character-counter', name:'Character Counter', icon:'📝' };
+  const [text, setText]   = useState('');
+  const [limit, setLimit] = useState(160);
   const len = text.length;
-  const lim = parseInt(limit)||0;
-  const limits = [{ name:"Twitter/X", v:280},{ name:"SMS",v:160},{ name:"Meta Desc",v:160},{ name:"Title Tag",v:60},{ name:"Instagram",v:2200},{ name:"LinkedIn",v:700}];
+  const lim = Number(limit) || 0;
+  const platforms = [
+    { name:'Twitter/X', v:280 }, { name:'SMS', v:160 }, { name:'Meta Desc', v:160 },
+    { name:'Title Tag', v:60 }, { name:'Instagram', v:2200 }, { name:'LinkedIn', v:700 },
+  ];
+  const status = text
+    ? { state: lim && len > lim ? 'error' : 'live', label:`${len.toLocaleString()} chars`, detail: lim ? `${lim - len >= 0 ? lim - len + ' left' : len - lim + ' over'}` : '' }
+    : { state:'idle', label:'Type or paste text' };
   return (
-    <VStack>
-      <div style={{ display:"flex", gap:10 }}>
-        <div style={{ flex:1 }}><Label>Your Text</Label><Textarea value={text} onChange={setText} placeholder="Type or paste your text..." rows={5} /></div>
-        <div style={{ width:160 }}><Label>Character Limit</Label><Input value={limit} onChange={setLimit} placeholder="e.g. 160" /></div>
-      </div>
-      {lim > 0 && (
-        <div style={{ background:"rgba(0,0,0,0.3)", borderRadius:8, padding:14, border:`1px solid ${len>lim?C.danger:C.border}` }}>
-          <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
-            <span style={{ ...T.label }}>Limit Progress</span>
-            <span style={{ fontWeight:700, color:len>lim?C.danger:C.success }}>{len}/{lim} ({lim-len >= 0 ? `${lim-len} left` : `${len-lim} over`})</span>
-          </div>
-          <div style={{ height:6, background:"rgba(255,255,255,0.08)", borderRadius:3, overflow:"hidden" }}>
-            <div style={{ height:"100%", width:`${Math.min((len/lim)*100,100)}%`, background:len>lim?C.danger:C.blue, borderRadius:3, transition:"width .2s" }} />
-          </div>
-        </div>
-      )}
-      <Grid3>
-        {[["Chars",len],["No Spaces",text.replace(/\s/g,"").length],["Words",text.trim()?text.trim().split(/\s+/).length:0],["Lines",text?text.split("\n").length:0],["Unique Chars",new Set(text.toLowerCase().replace(/\s/g,"")).size],["Digits",((text.match(/\d/g))||[]).length]].map(([l,v])=><StatBox key={l} value={v} label={l}/>)}
-      </Grid3>
-      <div>
-        <Label>Platform Limits</Label>
-        <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
-          {limits.map(pl => {
-            const over = len > pl.v, pct = Math.min((len/pl.v)*100,100);
-            return (
-              <div key={pl.name} style={{ background:"rgba(255,255,255,0.03)", border:`1px solid ${over?C.danger:C.border}`, borderRadius:8, padding:"10px 14px", minWidth:120 }}>
-                <div style={{ fontSize:11, color:C.muted, marginBottom:4 }}>{pl.name} ({pl.v})</div>
-                <div style={{ height:4, background:"rgba(255,255,255,0.06)", borderRadius:2, overflow:"hidden", marginBottom:4 }}>
-                  <div style={{ height:"100%", width:`${pct}%`, background:over?C.danger:C.blue, borderRadius:2 }} />
-                </div>
-                <div style={{ fontSize:12, fontWeight:600, color:over?C.danger:C.success }}>{over?`${len-pl.v} over`:`${pl.v-len} left`}</div>
+    <InteractiveToolWorkspace
+      theme={theme}
+      tool={tool}
+      inputLabel="Your text"
+      outputLabel="Character analysis"
+      status={status}
+      stats={{ chars: len, words: text.trim() ? text.trim().split(/\s+/).length : 0, lines: text ? text.split('\n').length : 0 }}
+      onLoadSample={() => setText('The quick brown fox jumps over the lazy dog.')}
+      onClear={() => setText('')}
+      onCopy={() => text}
+      shareState={text ? { t:text, l:limit } : null}
+      onRestoreState={(st) => { if (typeof st?.t === 'string') setText(st.t); if (typeof st?.l !== 'undefined') setLimit(st.l); }}
+    >
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls theme={theme} title="Limit" fields={[
+          { type:'number', label:'Character limit', value:limit, onChange:setLimit, min:0, step:10, unit:'chars' },
+        ]} />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input>
+        <SmartInput theme={theme} value={text} onChange={setText} placeholder="Type or paste your text…" rows={10} />
+      </InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output>
+        <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
+          {lim > 0 && (
+            <div style={{ padding:'14px 16px', background:'rgba(15,23,42,0.55)', border:`1px solid ${len>lim?'#F87171':theme.tint12}`, borderRadius:12 }}>
+              <div style={{ display:'flex', justifyContent:'space-between', marginBottom:6, fontSize:11.5, letterSpacing:'0.1em', textTransform:'uppercase', fontWeight:700, color:'#94A3B8', fontFamily: theme.fonts.body }}>
+                <span>Limit progress</span>
+                <span style={{ color:len>lim?'#F87171':theme.color }}>{len}/{lim}</span>
               </div>
-            );
-          })}
+              <div style={{ height:6, background:'rgba(255,255,255,0.06)', borderRadius:3, overflow:'hidden' }}>
+                <div style={{ height:'100%', width:`${Math.min((len/lim)*100,100)}%`, background:len>lim?'#F87171':theme.color, transition:'width .2s' }} />
+              </div>
+            </div>
+          )}
+          <div style={{ display:'grid', gap:10, gridTemplateColumns:'repeat(auto-fill, minmax(min(100%,120px), 1fr))' }}>
+            {[
+              ['Chars',        len],
+              ['No spaces',    text.replace(/\s/g,'').length],
+              ['Words',        text.trim() ? text.trim().split(/\s+/).length : 0],
+              ['Lines',        text ? text.split('\n').length : 0],
+              ['Unique chars', new Set(text.toLowerCase().replace(/\s/g,'')).size],
+              ['Digits',       ((text.match(/\d/g))||[]).length],
+            ].map(([l,v]) => (
+              <div key={l} style={{ padding:'12px 12px', background:'rgba(15,23,42,0.55)', border:`1px solid ${theme.tint12}`, borderRadius:12, textAlign:'center' }}>
+                <div style={{ fontFamily: theme.fonts.head, fontSize:22, fontWeight:800, color:theme.color }}>{v.toLocaleString()}</div>
+                <div style={{ fontSize:10.5, fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase', color:'#94A3B8', marginTop:4 }}>{l}</div>
+              </div>
+            ))}
+          </div>
+          <div>
+            <div style={{ fontSize:11.5, fontWeight:700, letterSpacing:'0.12em', textTransform:'uppercase', color:'#94A3B8', marginBottom:8, fontFamily: theme.fonts.body }}>Platform limits</div>
+            <div style={{ display:'flex', flexWrap:'wrap', gap:8 }}>
+              {platforms.map((pl) => {
+                const over = len > pl.v;
+                const pct  = Math.min((len/pl.v)*100, 100);
+                return (
+                  <div key={pl.name} style={{ background:'rgba(255,255,255,0.03)', border:`1px solid ${over?'#F87171':theme.tint12}`, borderRadius:10, padding:'10px 14px', minWidth:120 }}>
+                    <div style={{ fontSize:11, color:'#94A3B8', marginBottom:4 }}>{pl.name} <span style={{ color:'#64748B' }}>({pl.v})</span></div>
+                    <div style={{ height:4, background:'rgba(255,255,255,0.06)', borderRadius:2, overflow:'hidden', marginBottom:4 }}>
+                      <div style={{ height:'100%', width:`${pct}%`, background:over?'#F87171':theme.color, borderRadius:2 }} />
+                    </div>
+                    <div style={{ fontSize:12, fontWeight:700, color:over?'#FCA5A5':theme.color, fontFamily: theme.fonts.mono }}>{over?`${len-pl.v} over`:`${pl.v-len} left`}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
-      </div>
-    </VStack>
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
   );
 }
 
 function ReadingTime() {
-  const [text, setText] = useState("");
-  const [readWpm, setReadWpm] = useState("225");
-  const [speakWpm, setSpeakWpm] = useState("130");
+  const theme = getCategoryById('text');
+  const tool  = { id:'reading-time', name:'Reading Time Calculator', icon:'⏱️' };
+  const [text, setText] = useState('');
+  const [readWpm, setReadWpm]   = useState(225);
+  const [speakWpm, setSpeakWpm] = useState(130);
   const words = text.trim() ? text.trim().split(/\s+/).filter(Boolean).length : 0;
   const calcTime = (wpm) => {
-    const secs = Math.round((words / (parseInt(wpm)||225)) * 60);
+    const secs = Math.round((words / (Number(wpm) || 225)) * 60);
     const m = Math.floor(secs/60), s = secs%60;
-    return m===0 ? `${s} sec` : s===0 ? `${m} min` : `${m} min ${s} sec`;
+    return m === 0 ? `${s} sec` : s === 0 ? `${m} min` : `${m} min ${s} sec`;
   };
   const pages = (words/275).toFixed(1);
+  const status = text ? { state:'live', label:`${words.toLocaleString()} words`, detail: calcTime(readWpm) } : { state:'idle', label:'Paste your content' };
   return (
-    <VStack>
-      <Textarea value={text} onChange={setText} placeholder="Paste your article, speech, or presentation content..." rows={8} />
-      <Grid2>
-        <div><Label>Reading Speed (WPM)</Label><Input value={readWpm} onChange={setReadWpm} placeholder="225" /></div>
-        <div><Label>Speaking Speed (WPM)</Label><Input value={speakWpm} onChange={setSpeakWpm} placeholder="130" /></div>
-      </Grid2>
-      <Grid3>
-        <BigResult value={words} label="Total Words" />
-        <BigResult value={calcTime(readWpm)} label="Reading Time" />
-        <BigResult value={calcTime(speakWpm)} label="Speaking Time" />
-      </Grid3>
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:10 }}>
-        {[["Pages (A4 @ 275 wpm)", pages],["Paragraphs", text.trim()?text.trim().split(/\n\s*\n/).filter(Boolean).length:0],["Sentences", countSentences(text)]].map(([l,v])=><StatBox key={l} value={v} label={l}/>)}
-      </div>
-      <Card style={{ background:"rgba(245,158,11,0.06)", border:"1px solid rgba(245,158,11,0.15)" }}>
-        <div style={{ fontSize:12, color:"#FCD34D", lineHeight:1.7 }}>
-          <strong>Speed Reference:</strong> Silent reading ~225 WPM · Presentation delivery ~130 WPM · Audiobooks ~150 WPM · Speed reading ~400 WPM
+    <InteractiveToolWorkspace
+      theme={theme}
+      tool={tool}
+      inputLabel="Your content"
+      outputLabel="Time estimates"
+      status={status}
+      stats={{ words, chars: text.length }}
+      onLoadSample={() => setText('Reading time tools are a fast way to estimate how long a piece of writing will take to read aloud or silently. Paste an article, a speech draft, or a blog post and instantly see reading and speaking estimates calibrated to your WPM.')}
+      onClear={() => setText('')}
+      onCopy={() => `Words: ${words}\nReading time: ${calcTime(readWpm)}\nSpeaking time: ${calcTime(speakWpm)}\nPages (A4): ${pages}`}
+      shareState={text ? { t:text, r:readWpm, s:speakWpm } : null}
+      onRestoreState={(st) => {
+        if (typeof st?.t === 'string') setText(st.t);
+        if (typeof st?.r !== 'undefined') setReadWpm(st.r);
+        if (typeof st?.s !== 'undefined') setSpeakWpm(st.s);
+      }}
+    >
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls theme={theme} title="Speed (words per minute)" fields={[
+          { type:'slider', label:'Reading speed',  value:readWpm,  min:50, max:600, unit:'WPM', onChange:setReadWpm },
+          { type:'slider', label:'Speaking speed', value:speakWpm, min:50, max:300, unit:'WPM', onChange:setSpeakWpm },
+        ]} />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input>
+        <SmartInput theme={theme} value={text} onChange={setText} placeholder="Paste your article, speech or presentation…" rows={10} />
+      </InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output>
+        <div style={{ display:'grid', gap:10 }}>
+          {[
+            ['Total words',  words.toLocaleString(),   true],
+            ['Reading time', calcTime(readWpm),        false],
+            ['Speaking time',calcTime(speakWpm),       false],
+            ['Pages (A4)',   pages,                    false],
+            ['Paragraphs',   (text.trim() ? text.trim().split(/\n\s*\n/).filter(Boolean).length : 0).toString(), false],
+            ['Sentences',    countSentences(text).toString(), false],
+          ].map(([l, v, big]) => (
+            <div key={l} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding: big ? '16px 16px' : '12px 14px', background: big ? `linear-gradient(135deg, ${theme.tint25}, ${theme.tint06})` : 'rgba(15,23,42,0.55)', border:`1px solid ${big ? theme.tint25 : theme.tint12}`, borderRadius:12 }}>
+              <span style={{ fontSize:12, fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase', color: big ? theme.color : '#94A3B8', fontFamily: theme.fonts.body }}>{l}</span>
+              <span style={{ fontFamily: theme.fonts.head, fontSize: big ? 24 : 16, fontWeight:800, color: big ? theme.color : '#F8FAFC' }}>{v}</span>
+            </div>
+          ))}
         </div>
-      </Card>
-    </VStack>
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
   );
 }
+
 
 function WordFrequency() {
   const [text, setText] = useState("");
@@ -858,33 +1056,47 @@ function AnagramChecker() {
 }
 
 function TextReverser() {
-  const [text, setText] = useState("");
-  const [mode, setMode] = useState("chars");
-  const [output, setOutput] = useState("");
-  const run = () => {
-    if (mode==="chars") setOutput(text.split("").reverse().join(""));
-    else if (mode==="words") setOutput(text.split(" ").reverse().join(" "));
-    else setOutput(text.split("\n").reverse().join("\n"));
-  };
+  const theme = getCategoryById('text');
+  const tool  = { id:'text-reverser', name:'Text Reverser', icon:'↩️' };
+  const [text, setText] = useState('');
+  const [mode, setMode] = useState('chars');
+  const output = useMemo(() => {
+    if (!text) return '';
+    if (mode === 'chars') return text.split('').reverse().join('');
+    if (mode === 'words') return text.split(' ').reverse().join(' ');
+    return text.split('\n').reverse().join('\n');
+  }, [text, mode]);
+  const status = text ? { state:'live', label:'Reversed', detail:`${output.length.toLocaleString()} chars` } : { state:'idle', label:'Type or paste text' };
   return (
-    <VStack>
-      <Grid2>
-        <div><Label>Input Text</Label><Textarea value={text} onChange={setText} placeholder="Enter text to reverse..." rows={6} /></div>
-        <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-          <div><Label>Reverse Mode</Label>
-            <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
-              {[["chars","Characters (mirror text)"],["words","Word Order"],["lines","Line Order"]].map(([v,l])=>(
-                <label key={v} style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", fontSize:13, color:C.text, padding:"8px 12px", background:mode===v?"rgba(59,130,246,0.1)":"rgba(255,255,255,0.02)", borderRadius:6, border:`1px solid ${mode===v?"rgba(59,130,246,0.3)":C.border}` }}>
-                  <input type="radio" name="rmode" checked={mode===v} onChange={()=>setMode(v)} /> {l}
-                </label>
-              ))}
-            </div>
-          </div>
-          <Btn onClick={run} disabled={!text.trim()}>Reverse Text</Btn>
-        </div>
-      </Grid2>
-      {output && <div><Label>Result</Label><div style={{ position:"relative" }}><Result>{output}</Result><div style={{ position:"absolute", top:8, right:8 }}><CopyBtn text={output} /></div></div></div>}
-    </VStack>
+    <InteractiveToolWorkspace
+      theme={theme}
+      tool={tool}
+      inputLabel="Input text"
+      outputLabel="Reversed"
+      status={status}
+      stats={{ chars: text.length, lines: text ? text.split('\n').length : 0 }}
+      onLoadSample={() => setText('The quick brown fox jumps over the lazy dog.')}
+      onClear={() => setText('')}
+      onCopy={() => output}
+      shareState={text ? { t:text, m:mode } : null}
+      onRestoreState={(st) => { if (typeof st?.t === 'string') setText(st.t); if (typeof st?.m === 'string') setMode(st.m); }}
+    >
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls theme={theme} title="Reverse mode" fields={[
+          { type:'segmented', label:'Mode', value:mode, options:[
+            { value:'chars', label:'Characters' },
+            { value:'words', label:'Word order' },
+            { value:'lines', label:'Line order' },
+          ], onChange:setMode },
+        ]} />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input>
+        <SmartInput theme={theme} value={text} onChange={setText} placeholder="Enter text to reverse…" rows={10} />
+      </InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output>
+        <SmartOutput theme={theme} value={output} empty="Reversed text appears here." mono={false} />
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
   );
 }
 
@@ -924,41 +1136,56 @@ function TextSorter() {
 }
 
 function RemoveDuplicates() {
-  const [text, setText] = useState("");
+  const theme = getCategoryById('text');
+  const tool  = { id:'remove-duplicates', name:'Remove Duplicate Lines', icon:'✂️' };
+  const [text, setText] = useState('');
   const [caseSensitive, setCaseSensitive] = useState(false);
-  const [output, setOutput] = useState("");
-  const [stats, setStats] = useState(null);
-  const run = () => {
-    const lines = text.split("\n");
+  const { output, stats } = useMemo(() => {
+    if (!text) return { output:'', stats:{ orig:0, kept:0, removed:0 } };
+    const lines = text.split('\n');
     const seen = new Set();
-    const result = lines.filter(l => {
+    const result = lines.filter((l) => {
       const key = caseSensitive ? l : l.toLowerCase();
       if (seen.has(key)) return false;
       seen.add(key); return true;
     });
-    setOutput(result.join("\n"));
-    setStats({ orig:lines.length, result:result.length, removed:lines.length-result.length });
-  };
+    return { output: result.join('\n'), stats:{ orig: lines.length, kept: result.length, removed: lines.length - result.length } };
+  }, [text, caseSensitive]);
+  const status = text ? { state:'live', label:`${stats.kept} kept`, detail:`${stats.removed} removed` } : { state:'idle', label:'Paste lines' };
   return (
-    <VStack>
-      <div style={{ display:"flex", gap:12, alignItems:"center" }}>
-        <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", fontSize:13, color:C.text }}>
-          <input type="checkbox" checked={caseSensitive} onChange={e=>setCaseSensitive(e.target.checked)} /> Case sensitive
-        </label>
-        <Btn onClick={run} disabled={!text.trim()}>Remove Duplicates</Btn>
-      </div>
-      <Grid2>
-        <div><Label>Input Text</Label><Textarea value={text} onChange={setText} placeholder={"Enter lines...\nDuplicate lines\nWill be removed\nDuplicate lines"} rows={10} /></div>
-        <div>
-          <Label>Cleaned Output</Label>
-          {stats && <div style={{ marginBottom:8, display:"flex", gap:8 }}>
-            <Badge color="green">{stats.result} kept</Badge>
-            <Badge color="amber">{stats.removed} removed</Badge>
-          </div>}
-          {output && <div style={{ position:"relative" }}><Textarea value={output} onChange={()=>{}} rows={10} mono /><div style={{ position:"absolute", top:8, right:8 }}><CopyBtn text={output} /></div></div>}
+    <InteractiveToolWorkspace
+      theme={theme}
+      tool={tool}
+      inputLabel="Input lines"
+      outputLabel="Cleaned"
+      status={status}
+      stats={{ lines: stats.orig, chars: text.length }}
+      onLoadSample={() => setText('apple\nbanana\napple\ncherry\nAPPLE\nbanana\ndragonfruit')}
+      onClear={() => setText('')}
+      onCopy={() => output}
+      shareState={text ? { t:text, c:caseSensitive } : null}
+      onRestoreState={(st) => { if (typeof st?.t === 'string') setText(st.t); if (typeof st?.c === 'boolean') setCaseSensitive(st.c); }}
+    >
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls theme={theme} title="Options" fields={[
+          { type:'toggle', label:'Case sensitive (treat "Apple" ≠ "apple")', value:caseSensitive, onChange:setCaseSensitive },
+        ]} />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input>
+        <SmartInput theme={theme} value={text} onChange={setText} placeholder={'Enter lines, one per line…'} rows={12} mono lineNumbers />
+      </InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output>
+        <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+          {output && (
+            <div style={{ display:'flex', gap:8 }}>
+              <span style={{ padding:'4px 10px', background:`${theme.tint12}`, color:theme.color, borderRadius:999, fontSize:11.5, fontWeight:700, letterSpacing:'0.05em', textTransform:'uppercase' }}>{stats.kept} kept</span>
+              <span style={{ padding:'4px 10px', background:'rgba(248,113,113,0.12)', color:'#FCA5A5', borderRadius:999, fontSize:11.5, fontWeight:700, letterSpacing:'0.05em', textTransform:'uppercase' }}>{stats.removed} removed</span>
+            </div>
+          )}
+          <SmartOutput theme={theme} value={output} mono empty="Cleaned output appears here." />
         </div>
-      </Grid2>
-    </VStack>
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
   );
 }
 
@@ -2154,7 +2381,7 @@ function CategoryPage({ catId }) {
 
 const PAGE_THEME = getCategoryById('text');
 
-// ── Category home: powered by shared CategoryDashboard ─────────────────────
+// ── Category home: powered by shared PremiumCategoryLanding ─────────────────────
 function CategoryHomePage() {
   useEffect(() => {
     document.title = 'Free Text Tools Online — ToolsRift';
@@ -2162,7 +2389,7 @@ function CategoryHomePage() {
 
   return (
     <CategoryLayout theme={PAGE_THEME} currentTool={null}>
-      <CategoryDashboard
+      <PremiumCategoryLanding
         theme={PAGE_THEME}
         tools={TOOLS}
         subcats={CATEGORIES}

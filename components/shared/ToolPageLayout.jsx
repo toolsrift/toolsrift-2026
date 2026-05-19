@@ -2,11 +2,12 @@
 // Universal tool page shell. Mobile-first, theme-aware, app-ready.
 // Injects WebApplication, BreadcrumbList, and FAQPage JSON-LD schemas.
 
-import { useState, useRef } from 'react';
+import { Children, useState, useRef } from 'react';
 import Head from 'next/head';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COLORS, RADIUS, FS, MQ, SPRING } from '../../lib/designTokens';
 import { FadeUp, Stagger, StaggerItem } from './motion';
+import InteractiveToolWorkspace from './InteractiveToolWorkspace';
 
 // ── JSON-LD schema injection ────────────────────────────────────────────────
 export function ToolSchemas({ theme, tool }) {
@@ -324,14 +325,42 @@ function RelatedTools({ theme, related = [] }) {
   );
 }
 
+// ── Auto-wrap detection ─────────────────────────────────────────────────────
+// If a tool component returns an <InteractiveToolWorkspace> at its root, it's
+// already integrated — we render it as-is. Otherwise the body is wrapped in
+// a minimal workspace so it gets the sticky toolbar, status chip, drag-drop
+// overlay, and keyboard shortcuts for free.
+function isWorkspaceRoot(children) {
+  const arr = Children.toArray(children);
+  if (arr.length !== 1) return false;
+  const c = arr[0];
+  return c && c.type === InteractiveToolWorkspace;
+}
+
 // ── Root ────────────────────────────────────────────────────────────────────
 export default function ToolPageLayout({ theme, tool, related, children }) {
+  const alreadyWrapped = isWorkspaceRoot(children);
+  const body = alreadyWrapped
+    ? children
+    : (
+      <InteractiveToolWorkspace
+        theme={theme}
+        tool={tool}
+        status={{ state: 'live', label: 'Live' }}
+        noStatusBar
+      >
+        <InteractiveToolWorkspace.Input>
+          {children}
+        </InteractiveToolWorkspace.Input>
+      </InteractiveToolWorkspace>
+    );
+
   return (
     <div style={{ padding: '32px 0 96px' }}>
       <ToolSchemas theme={theme} tool={tool} />
       <Breadcrumb theme={theme} toolName={tool.name} />
       <ToolHeader theme={theme} tool={tool} />
-      <ToolCard theme={theme}>{children}</ToolCard>
+      {body}
       {tool.howTo && <HowToUse theme={theme} text={tool.howTo} />}
       <FAQSection theme={theme} faq={tool.faq} />
       <RelatedTools theme={theme} related={related} />

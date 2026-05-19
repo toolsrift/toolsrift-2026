@@ -4,8 +4,10 @@ import { getCategoryById } from "../lib/categoryThemes";
 // PHASE 2: import UpgradeModal from './UpgradeModal';
 // PHASE 2: import UsageCounter from './UsageCounter';
 import CategoryLayout from './shared/CategoryLayout';
-import CategoryDashboard from './shared/CategoryDashboard';
+import PremiumCategoryLanding from './shared/PremiumCategoryLanding';
 import ToolPageLayout, { ToolSchemas } from './shared/ToolPageLayout';
+import InteractiveToolWorkspace from './shared/InteractiveToolWorkspace';
+import SmartControls from './shared/SmartControls';
 
 const THEME = getCategoryById("colors");
 const PAGE_THEME = getCategoryById('colors');
@@ -325,7 +327,7 @@ function StatRow({ label, value, mono=true, accent="" }) {
 
 // ─── ROUTER ───────────────────────────────────────────────────────────────────
 function useAppRouter() {
-  const parse=()=>{const h=window.location.hash||"#/";const path=h.replace(/^#/,"")||"/";const parts=path.split("/").filter(Boolean);if(!parts.length)return{page:"home"};if(parts[0]==="tool"&&parts[1])return{page:"tool",toolId:parts[1]};if(parts[0]==="category"&&parts[1])return{page:"category",catId:parts[1]};return{page:"home"};};
+  const parse=()=>{const h=window.location.hash||"#/";const path=h.replace(/^#/, "").replace(/\?.*$/, "") || "/";const parts=path.split("/").filter(Boolean);if(!parts.length)return{page:"home"};if(parts[0]==="tool"&&parts[1])return{page:"tool",toolId:parts[1]};if(parts[0]==="category"&&parts[1])return{page:"category",catId:parts[1]};return{page:"home"};};
   const[route,setRoute]=useState(parse);
   useEffect(()=>{const fn=()=>setRoute(parse());window.addEventListener("hashchange",fn);return()=>window.removeEventListener("hashchange",fn);},[]);
   useEffect(()=>{const fn=e=>{const a=e.target.closest("a[href]");if(!a)return;const h=a.getAttribute("href");if(h&&h.startsWith("#/")){e.preventDefault();window.location.hash=h;}};document.addEventListener("click",fn);return()=>document.removeEventListener("click",fn);},[]);
@@ -1197,36 +1199,111 @@ function ColorTemperature() {
 }
 
 function HexRgba() {
-  const [hex, setHex] = useState("#EC4899");
+  const theme = getCategoryById('colors');
+  const tool  = { id:'hex-rgba', name:'HEX to RGBA Converter', icon:'🔢' };
+  const [hex, setHex]     = useState('#EC4899');
   const [alpha, setAlpha] = useState(100);
-  const rgb = hexToRgb(hexValid(hex)?hex:"#EC4899")||{r:236,g:72,b:153};
-  const a=(alpha/100).toFixed(2);
-  const rgba=`rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${a})`;
-  const hex8="#"+hex.replace("#","")+(Math.round(alpha/100*255).toString(16).padStart(2,"0")).toUpperCase();
-  const alphas=[100,90,80,70,60,50,40,30,20,10,0];
+
+  const safeHex = hexValid(hex) ? hex : '#EC4899';
+  const rgb = hexToRgb(safeHex) || { r:236, g:72, b:153 };
+  const a   = (alpha / 100).toFixed(2);
+  const rgba = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${a})`;
+  const hex8 = '#' + safeHex.replace('#','') + Math.round(alpha/100*255).toString(16).padStart(2,'0').toUpperCase();
+  const [hv,sv,lv] = rgbToHsl(rgb.r, rgb.g, rgb.b);
+  const hsla = `hsla(${hv}, ${sv}%, ${lv}%, ${a})`;
+
+  const status = hexValid(hex)
+    ? { state:'ok', label:'Valid', detail: `${alpha}% alpha` }
+    : { state:'error', label:'Invalid HEX', detail:'Use #RRGGBB' };
+
+  const buildReport = () =>
+    `HEX:       ${safeHex}\nrgba():    ${rgba}\n8-digit:   ${hex8}\nhsla():    ${hsla}\nAlpha:     ${Math.round(alpha/100*255)} / 255`;
 
   return (
-    <VStack>
-      <ColorInput label="HEX Color" value={hex} onChange={setHex}/>
-      <Slider label="Alpha / Opacity" value={alpha} onChange={setAlpha} min={0} max={100} unit="%"/>
-      <div style={{height:80,borderRadius:10,background:rgba,border:`1px solid ${C.border}`,display:"flex",alignItems:"center",justifyContent:"center",backgroundImage:"linear-gradient(45deg, #aaa 25%, transparent 25%), linear-gradient(-45deg, #aaa 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #aaa 75%), linear-gradient(-45deg, transparent 75%, #aaa 75%)",backgroundSize:"16px 16px",backgroundPosition:"0 0, 0 8px, 8px -8px, -8px 0px"}}/>
-      <Card>
-        <StatRow label="rgba()" value={rgba} accent={C.pink}/>
-        <StatRow label="8-digit HEX" value={hex8}/>
-        <StatRow label="CSS hsla()" value={(()=>{const [hv,sv,lv]=rgbToHsl(rgb.r,rgb.g,rgb.b);return `hsla(${hv}, ${sv}%, ${lv}%, ${a})`;})()}/>
-        <StatRow label="Alpha value (0–255)" value={Math.round(alpha/100*255)}/>
-      </Card>
-      <div>
-        <Label>Quick Alpha Values</Label>
-        <div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:6}}>
-          {alphas.map(a2=>(
-            <button key={a2} onClick={()=>setAlpha(a2)} style={{padding:"5px 12px",background:alpha===a2?"rgba(236,72,153,0.2)":"rgba(255,255,255,0.03)",border:`1px solid ${alpha===a2?"rgba(236,72,153,0.5)":C.border}`,borderRadius:6,color:alpha===a2?C.pink:C.muted,fontSize:12,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
-              {a2}%
-            </button>
+    <InteractiveToolWorkspace
+      theme={theme}
+      tool={tool}
+      inputLabel="Pick a colour"
+      outputLabel="All formats"
+      status={status}
+      onLoadSample={() => { setHex('#3B82F6'); setAlpha(80); }}
+      onClear={() => { setHex('#000000'); setAlpha(100); }}
+      onCopy={() => rgba}
+      onDownload={() => ({ content: buildReport(), filename: 'color-formats.txt' })}
+      shareState={{ h: hex, a: alpha }}
+      onRestoreState={(st) => { if (typeof st?.h === 'string') setHex(st.h); if (typeof st?.a === 'number') setAlpha(st.a); }}
+    >
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls
+          theme={theme}
+          title="Colour & alpha"
+          fields={[
+            { type:'color',  label:'HEX colour', value:safeHex, onChange:setHex },
+            { type:'slider', label:'Alpha / opacity', value:alpha, min:0, max:100, unit:'%', onChange:setAlpha },
+          ]}
+        />
+      </InteractiveToolWorkspace.Controls>
+
+      <InteractiveToolWorkspace.Input>
+        <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
+          <div
+            style={{
+              height: 130, borderRadius: 14, background: rgba,
+              border: `1px solid ${theme.tint25}`,
+              backgroundImage:'linear-gradient(45deg, #2a2a2a 25%, transparent 25%), linear-gradient(-45deg, #2a2a2a 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #2a2a2a 75%), linear-gradient(-45deg, transparent 75%, #2a2a2a 75%)',
+              backgroundSize:'18px 18px',
+              backgroundPosition:'0 0, 0 9px, 9px -9px, -9px 0px',
+              boxShadow:`0 8px 24px ${theme.tint25}`,
+            }}
+          />
+          <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+            {[100,90,80,70,60,50,40,25,10,0].map((q) => (
+              <button
+                key={q}
+                type="button"
+                onClick={() => setAlpha(q)}
+                style={{
+                  padding:'6px 12px',
+                  background: alpha===q ? theme.tint25 : 'rgba(255,255,255,0.03)',
+                  color: alpha===q ? theme.color : '#94A3B8',
+                  border:`1px solid ${alpha===q ? theme.color : 'rgba(255,255,255,0.06)'}`,
+                  borderRadius:8,
+                  fontSize:12, fontWeight:700, cursor:'pointer',
+                  fontFamily: theme.fonts.mono,
+                }}
+              >{q}%</button>
+            ))}
+          </div>
+        </div>
+      </InteractiveToolWorkspace.Input>
+
+      <InteractiveToolWorkspace.Output>
+        <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+          {[
+            ['HEX',     safeHex,     true],
+            ['rgba()',  rgba,        false],
+            ['8-digit', hex8,        false],
+            ['hsla()',  hsla,        false],
+            ['Alpha',   `${Math.round(alpha/100*255)} / 255`, false],
+          ].map(([label, value, accent]) => (
+            <div
+              key={label}
+              style={{
+                display:'flex', alignItems:'center', justifyContent:'space-between',
+                gap:12,
+                padding:'12px 14px',
+                background: accent ? `${theme.tint25}` : 'rgba(15,23,42,0.55)',
+                border: `1px solid ${accent ? theme.tint25 : 'rgba(255,255,255,0.06)'}`,
+                borderRadius: 12,
+              }}
+            >
+              <span style={{ fontSize:11.5, fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase', color:theme.color, fontFamily: theme.fonts.body }}>{label}</span>
+              <span style={{ fontFamily: theme.fonts.mono, fontSize:13.5, fontWeight:600, color:'#F8FAFC' }}>{value}</span>
+            </div>
           ))}
         </div>
-      </div>
-    </VStack>
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
   );
 }
 
@@ -1486,7 +1563,7 @@ function HomePage() {
   useEffect(()=>{document.title="Free Color Tools Online – Picker, Converter, Palettes | ToolsRift";},[]);
   return (
     <CategoryLayout theme={PAGE_THEME} currentTool={null}>
-      <CategoryDashboard
+      <PremiumCategoryLanding
         theme={PAGE_THEME}
         tools={TOOLS}
         subcats={CATEGORIES}

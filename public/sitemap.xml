@@ -26,4 +26,10 @@
   <url><loc>https://toolsrift.com/converters2</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://toolsrift.com/devtools</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://toolsrift.com/business</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://toolsrift.com/checker</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://toolsrift.com/tools</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolsrift.com/roadmap</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://toolsrift.com/terms</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://toolsrift.com/cookie-policy</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://toolsrift.com/disclaimer</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
 </urlset>

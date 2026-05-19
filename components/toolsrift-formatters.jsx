@@ -4,7 +4,7 @@ import { getCategoryById } from "../lib/categoryThemes";
 // PHASE 2: import UpgradeModal from './UpgradeModal';
 // PHASE 2: import UsageCounter from './UsageCounter';
 import CategoryLayout from './shared/CategoryLayout';
-import CategoryDashboard from './shared/CategoryDashboard';
+import PremiumCategoryLanding from './shared/PremiumCategoryLanding';
 import ToolPageLayout, { ToolSchemas } from './shared/ToolPageLayout';
 
 const THEME = getCategoryById("formatters");
@@ -139,7 +139,7 @@ function StatBox({ value, label }) {
 function useAppRouter() {
   const parse = () => {
     const h = window.location.hash || "#/";
-    const path = h.replace(/^#/, "") || "/";
+    const path = h.replace(/^#/, "").replace(/\?.*$/, "") || "/";
     const parts = path.split("/").filter(Boolean);
     if (!parts.length) return { page:"home" };
     if (parts[0]==="tool" && parts[1]) return { page:"tool", toolId:parts[1] };
@@ -1798,7 +1798,7 @@ function HomePage() {
   }, []);
   return (
     <CategoryLayout theme={PAGE_THEME} currentTool={null}>
-      <CategoryDashboard
+      <PremiumCategoryLanding
         theme={PAGE_THEME}
         tools={TOOLS}
         subcats={CATEGORIES}

@@ -2,7 +2,11 @@
 // PHASE 2: import { trackUse, isLimitReached, getRemaining, DAILY_LIMIT } from '../lib/usage';
 import { getCategoryById } from '../lib/categoryThemes';
 import CategoryLayout from './shared/CategoryLayout';
-import CategoryDashboard from './shared/CategoryDashboard';
+import PremiumCategoryLanding from './shared/PremiumCategoryLanding';
+import InteractiveToolWorkspace from './shared/InteractiveToolWorkspace';
+import SmartInput from './shared/SmartInput';
+import SmartOutput from './shared/SmartOutput';
+import SmartControls from './shared/SmartControls';
 import ToolCard from './shared/ToolCard';
 import ToolPageLayout from './shared/ToolPageLayout';
 // PHASE 2: import UpgradeModal from './UpgradeModal';
@@ -195,7 +199,7 @@ function JsonEditor({ value, onChange, label, height=320, readOnly=false, showHi
 
 // �"����� ROUTER �������������������������������������������������������������������������������������������������������������������������������������"�
 function useAppRouter() {
-  const parse=()=>{const h=window.location.hash||"#/";const path=h.replace(/^#/,"")||"/";const parts=path.split("/").filter(Boolean);if(!parts.length)return{page:"home"};if(parts[0]==="tool"&&parts[1])return{page:"tool",toolId:parts[1]};if(parts[0]==="category"&&parts[1])return{page:"category",catId:parts[1]};return{page:"home"};};
+  const parse=()=>{const h=window.location.hash||"#/";const path=h.replace(/^#/, "").replace(/\?.*$/, "") || "/";const parts=path.split("/").filter(Boolean);if(!parts.length)return{page:"home"};if(parts[0]==="tool"&&parts[1])return{page:"tool",toolId:parts[1]};if(parts[0]==="category"&&parts[1])return{page:"category",catId:parts[1]};return{page:"home"};};
   const[route,setRoute]=useState(parse);
   useEffect(()=>{const fn=()=>setRoute(parse());window.addEventListener("hashchange",fn);return()=>window.removeEventListener("hashchange",fn);},[]);
   useEffect(()=>{const fn=e=>{const a=e.target.closest("a[href]");if(!a)return;const h=a.getAttribute("href");if(h&&h.startsWith("#/")){e.preventDefault();window.location.hash=h;}};document.addEventListener("click",fn);return()=>document.removeEventListener("click",fn);},[]);
@@ -555,56 +559,85 @@ function jsonPath(obj, path) {
 // �"����� TOOL COMPONENTS �����������������������������������������������������������������������������������������������������������������"�
 
 function JsonFormatter() {
-  const [input,setInput]=useState(SAMPLE);
-  const [indent,setIndent]=useState("2");
-  const [sortKeys,setSortKeys]=useState(false);
-  const [error,setError]=useState("");
-  const [output,setOutput]=useState("");
-
-  useEffect(()=>{
-    if(!input.trim()){setOutput("");setError("");return;}
-    try{
-      let parsed=JSON.parse(input);
-      if(sortKeys) parsed=deepSortKeys(parsed);
-      setOutput(JSON.stringify(parsed,null,parseInt(indent)||2));
-      setError("");
-    }catch(e){setError(e.message);setOutput("");}
-  },[input,indent,sortKeys]);
+  const theme = getCategoryById('code');
+  const tool  = { id:'json-formatter', name:'JSON Formatter', icon:'✨' };
+  const [input,setInput]   = useState("");
+  const [indent,setIndent] = useState('2');
+  const [sortKeys,setSortKeys] = useState(false);
 
   function deepSortKeys(obj) {
-    if(Array.isArray(obj)) return obj.map(deepSortKeys);
-    if(typeof obj==="object"&&obj) return Object.fromEntries(Object.keys(obj).sort().map(k=>[k,deepSortKeys(obj[k])]));
+    if (Array.isArray(obj)) return obj.map(deepSortKeys);
+    if (typeof obj==='object' && obj) return Object.fromEntries(Object.keys(obj).sort().map(k=>[k,deepSortKeys(obj[k])]));
     return obj;
   }
 
-  const stats = useMemo(()=>{
-    if(!output) return null;
-    try{
-      const p=JSON.parse(output);
-      const keys=(s=>s.match(/"[^"]+"\s*:/g)||[])(output).length;
-      return{keys,chars:output.length,minified:JSON.stringify(p).length};
-    }catch{return null;}
-  },[output]);
+  const { output, error } = useMemo(() => {
+    if (!input.trim()) return { output:'', error:'' };
+    try {
+      let parsed = JSON.parse(input);
+      if (sortKeys) parsed = deepSortKeys(parsed);
+      const ind = indent === 'tab' ? '\t' : parseInt(indent) || 2;
+      return { output: JSON.stringify(parsed, null, ind), error:'' };
+    } catch (e) { return { output:'', error: e.message }; }
+  }, [input, indent, sortKeys]);
+
+  const status = error
+    ? { state:'error', label:'Invalid', detail:error.slice(0, 60) }
+    : output
+      ? { state:'ok', label:'Valid', detail:`${output.length.toLocaleString()} chars` }
+      : { state:'idle', label:'Paste JSON to format' };
 
   return (
-    <VStack>
-      <div style={{display:"flex",gap:10,flexWrap:"wrap",alignItems:"center"}}>
-        <div style={{display:"flex",alignItems:"center",gap:8}}>
-          <Label>Indent:</Label>
-          {["2","4","tab"].map(v=><Btn key={v} variant={indent===v?"primary":"secondary"} size="sm" onClick={()=>setIndent(v)}>{v==="tab"?"Tab":v+" spaces"}</Btn>)}
-        </div>
-        <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:13,color:C.text}}>
-          <input type="checkbox" checked={sortKeys} onChange={e=>setSortKeys(e.target.checked)}/> Sort keys
-        </label>
-        <Btn variant="secondary" size="sm" onClick={()=>setInput(SAMPLE)}>Load sample</Btn>
-      </div>
-      <ErrorBox msg={error}/>
-      <Grid2>
-        <JsonEditor value={input} onChange={setInput} label="Input JSON" height={340}/>
-        <JsonEditor value={output} onChange={()=>{}} label="Formatted JSON" height={340} readOnly/>
-      </Grid2>
-      {stats&&<Grid3><StatBox value={stats.keys} label="Keys"/><StatBox value={`${stats.chars} B`} label="Formatted"/><StatBox value={`${stats.minified} B`} label="Minified"/></Grid3>}
-    </VStack>
+    <InteractiveToolWorkspace
+      theme={theme}
+      tool={tool}
+      inputLabel="JSON input"
+      outputLabel="Formatted JSON"
+      status={status}
+      stats={{ chars: input.length, lines: input ? input.split('\n').length : 0 }}
+      onLoadSample={() => setInput(SAMPLE)}
+      onClear={() => setInput('')}
+      onCopy={() => output}
+      onDownload={() => ({ content: output, filename: 'formatted.json' })}
+      shareState={input ? { t: input, i: indent, s: sortKeys } : null}
+      onRestoreState={(st) => {
+        if (typeof st?.t === 'string') setInput(st.t);
+        if (typeof st?.i === 'string') setIndent(st.i);
+        if (typeof st?.s === 'boolean') setSortKeys(st.s);
+      }}
+    >
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls
+          theme={theme}
+          title="Formatting options"
+          fields={[
+            { type:'segmented', label:'Indent', value:indent, options:[{value:'2',label:'2 spaces'},{value:'4',label:'4 spaces'},{value:'tab',label:'Tab'}], onChange:setIndent },
+            { type:'toggle',    label:'Sort keys alphabetically', value:sortKeys, onChange:setSortKeys },
+          ]}
+        />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input>
+        <SmartInput
+          theme={theme}
+          value={input}
+          onChange={setInput}
+          placeholder='Paste JSON here, e.g. {"name":"ToolsRift","tools":1600}'
+          rows={14}
+          maxRows={30}
+          mono
+          lineNumbers
+          ariaLabel="JSON to format"
+        />
+      </InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output>
+        <SmartOutput
+          theme={theme}
+          value={output}
+          empty="Formatted JSON appears here. Errors show in the toolbar as you type."
+          mono
+        />
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
   );
 }
 
@@ -1743,7 +1776,7 @@ function CategoryHomePage() {
 
   return (
     <CategoryLayout theme={PAGE_THEME} currentTool={null}>
-      <CategoryDashboard
+      <PremiumCategoryLanding
         theme={PAGE_THEME}
         tools={TOOLS}
         subcats={CATEGORIES}

@@ -175,20 +175,31 @@ export function LandingNav({ mobileOpen, setMobileOpen }) {
           transition: 'all .25s ease',
         }}
       >
-        <a href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
+        <a
+          href="/"
+          aria-label="ToolsRift — home"
+          style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}
+        >
+          <motion.img
+            src="/logo.svg"
+            alt=""
+            aria-hidden="true"
+            width={140}
+            height={36}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              height: 36, width: 'auto', display: 'block',
+              filter: 'drop-shadow(0 2px 10px rgba(34,211,238,0.28))',
+            }}
+          />
           <motion.span
+            aria-hidden="true"
             animate={{ boxShadow: ['0 0 0 #22D3EE66', '0 0 14px #22D3EEcc', '0 0 0 #22D3EE66'] }}
             transition={{ duration: 2.5, repeat: Infinity }}
-            style={{ width: 10, height: 10, borderRadius: '50%', background: '#22D3EE' }}
+            style={{ width: 8, height: 8, borderRadius: '50%', background: '#22D3EE', flexShrink: 0 }}
           />
-          <span style={{
-            fontSize: 19, fontWeight: 700, letterSpacing: '-0.02em',
-            background: 'linear-gradient(135deg,#22D3EE,#A78BFA,#F472B6)',
-            backgroundSize: '200% 100%',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-            animation: 'tr-gradientShift 6s ease infinite',
-            fontFamily: "'Sora',sans-serif",
-          }}>ToolsRift</span>
         </a>
 
         <div className="tr-nav-links" style={{ alignItems: 'center', gap: 28 }}>
@@ -807,7 +818,8 @@ export function LandingFooter() {
   const cols = [
     { title: 'Top Categories', links: CATEGORY_THEMES.slice(0, 8).map(t => [t.name, t.pageRoute]) },
     { title: 'More Categories', links: CATEGORY_THEMES.slice(8, 16).map(t => [t.name, t.pageRoute]) },
-    { title: 'Company', links: [['About', '/about'], ['Roadmap', '/roadmap'], ['Privacy Policy', '/privacy-policy'], ['Pricing', '/pricing']] },
+    { title: 'Company', links: [['About', '/about'], ['Roadmap', '/roadmap'], ['Pricing', '/pricing']] },
+    { title: 'Legal',   links: [['Privacy Policy', '/privacy-policy'], ['Terms of Service', '/terms'], ['Cookie Policy', '/cookie-policy'], ['Disclaimer', '/disclaimer']] },
   ];
   return (
     <footer style={{

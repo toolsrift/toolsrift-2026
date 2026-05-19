@@ -2,9 +2,13 @@
 // PHASE 2: import { trackUse, isLimitReached, getRemaining, DAILY_LIMIT } from '../lib/usage';
 import { getCategoryById } from '../lib/categoryThemes';
 import CategoryLayout from './shared/CategoryLayout';
-import CategoryDashboard from './shared/CategoryDashboard';
+import PremiumCategoryLanding from './shared/PremiumCategoryLanding';
 import ToolCard from './shared/ToolCard';
 import ToolPageLayout from './shared/ToolPageLayout';
+import InteractiveToolWorkspace from './shared/InteractiveToolWorkspace';
+import SmartInput from './shared/SmartInput';
+import SmartOutput from './shared/SmartOutput';
+import SmartControls from './shared/SmartControls';
 // PHASE 2: import UpgradeModal from './UpgradeModal';
 // PHASE 2: import UsageCounter from './UsageCounter';
 
@@ -173,7 +177,7 @@ function ModeToggle({ mode, setMode, options }) {
 function useAppRouter() {
   const parse = () => {
     const h = window.location.hash||"#/";
-    const path = h.replace(/^#/,"")||"/";
+    const path = h.replace(/^#/, "").replace(/\?.*$/, "") || "/";
     const parts = path.split("/").filter(Boolean);
     if(!parts.length) return { page:"home" };
     if(parts[0]==="tool"&&parts[1]) return { page:"tool", toolId:parts[1] };
@@ -315,52 +319,127 @@ function qpDecode(str) {
 function Base64Encode() {
   const [input, setInput] = useState("");
   const [urlSafe, setUrlSafe] = useState(false);
-  const [error, setError] = useState("");
-  const output = useMemo(()=>{
-    if(!input) return "";
-    try{
+  const theme = getCategoryById('encoders');
+  const tool  = { id:'base64-encode', name:'Base64 Encoder', icon:'🔢' };
+  const { output, error } = useMemo(() => {
+    if (!input) return { output:'', error:'' };
+    try {
       let enc = btoa(unescape(encodeURIComponent(input)));
-      if(urlSafe) enc = enc.replace(/\+/g,"-").replace(/\//g,"_").replace(/=/g,"");
-      setError(""); return enc;
-    } catch(e){ setError("Encoding failed: "+e.message); return ""; }
-  },[input,urlSafe]);
-  const stats = output ? [["Input length", input.length+" chars"],["Output length", output.length+" chars"],["Size increase", Math.round((output.length/input.length-1)*100)+"%"],["Line breaks (76 chars)", output.match(/.{1,76}/g)?.length+" lines"]] : [];
+      if (urlSafe) enc = enc.replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+      return { output: enc, error: '' };
+    } catch (e) { return { output:'', error:'Encoding failed: '+e.message }; }
+  }, [input, urlSafe]);
+
+  const status = error
+    ? { state:'error', label:'Error', detail:error }
+    : input
+      ? { state:'live', label:'Encoded', detail:`${output.length.toLocaleString()} chars` }
+      : { state:'idle', label:'Waiting for text' };
+
   return (
-    <VStack>
-      <IOPanel input={input} onInput={setInput} output={output} inputLabel="Plain Text" outputLabel="Base64 Encoded" error={error}>
-        <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-          <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", fontSize:13, color:C.text }}>
-            <input type="checkbox" checked={urlSafe} onChange={e=>setUrlSafe(e.target.checked)} /> URL-safe (no +/=)
-          </label>
-        </div>
-      </IOPanel>
-      {stats.length>0&&<Card><div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:0 }}>{stats.map(([l,v])=><StatRow key={l} label={l} value={v} mono />)}</div></Card>}
-    </VStack>
+    <InteractiveToolWorkspace
+      theme={theme}
+      tool={tool}
+      inputLabel="Plain text"
+      outputLabel="Base64"
+      status={status}
+      stats={{ chars: input.length, detail: input ? `${Math.round((output.length/Math.max(input.length,1)-1)*100)}% larger` : '' }}
+      onLoadSample={() => setInput('Hello, ToolsRift! 👋 — Encode me to Base64.')}
+      onClear={() => setInput('')}
+      onCopy={() => output}
+      onDownload={() => ({ content: output, filename: 'encoded.base64.txt' })}
+      shareState={input ? { t: input, u: urlSafe } : null}
+      onRestoreState={(st) => { if (typeof st?.t === 'string') setInput(st.t); if (typeof st?.u === 'boolean') setUrlSafe(st.u); }}
+    >
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls
+          theme={theme}
+          title="Options"
+          fields={[
+            { type:'toggle', label:'URL-safe Base64', hint:'Uses -_ instead of +/, strips = padding', value:urlSafe, onChange:setUrlSafe },
+          ]}
+        />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input>
+        <SmartInput
+          theme={theme}
+          value={input}
+          onChange={setInput}
+          placeholder="Type or paste any text…"
+          rows={10}
+          maxRows={26}
+          ariaLabel="Text to encode"
+        />
+      </InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output>
+        <SmartOutput
+          theme={theme}
+          value={output}
+          empty="Base64 output appears here as you type."
+          mono
+        />
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
   );
 }
 
-// �"��� Base64 Decode �������������������������������������������������������������������������������������������������������������������������"�
+// ─── Base64 Decode ──────────────────────────────────────────────────────────
 function Base64Decode() {
   const [input, setInput] = useState("");
-  const [error, setError] = useState("");
-  const output = useMemo(()=>{
-    if(!input.trim()) return "";
-    try{
-      let s = input.trim().replace(/\s/g,"").replace(/-/g,"+").replace(/_/g,"/");
-      while(s.length%4) s+="=";
+  const theme = getCategoryById('encoders');
+  const tool  = { id:'base64-decode', name:'Base64 Decoder', icon:'🔢' };
+  const { output, error } = useMemo(() => {
+    if (!input.trim()) return { output:'', error:'' };
+    try {
+      let s = input.trim().replace(/\s/g,'').replace(/-/g,'+').replace(/_/g,'/');
+      while (s.length % 4) s += '=';
       const decoded = decodeURIComponent(escape(atob(s)));
-      setError(""); return decoded;
-    } catch(e){ setError("Invalid Base64: "+e.message); return ""; }
-  },[input]);
+      return { output: decoded, error: '' };
+    } catch (e) { return { output:'', error:'Invalid Base64: '+e.message }; }
+  }, [input]);
+
+  const status = error
+    ? { state:'error', label:'Invalid', detail:error }
+    : input.trim()
+      ? { state:'ok', label:'Decoded', detail:`${output.length.toLocaleString()} chars` }
+      : { state:'idle', label:'Paste a Base64 string' };
+
   return (
-    <VStack>
-      <IOPanel input={input} onInput={setInput} output={output} inputLabel="Base64 Encoded String" outputLabel="Decoded Text" error={error} inputMono />
-      <Card style={{ background:"rgba(139,92,246,0.05)", border:"1px solid rgba(139,92,246,0.15)" }}>
-        <div style={{ fontSize:12, color:C.muted, lineHeight:1.7 }}>
-          <strong style={{ color:C.text }}>Tip:</strong> Supports standard (+/) and URL-safe (-_) Base64. Whitespace and line breaks are ignored. Padding (=) is optional.
-        </div>
-      </Card>
-    </VStack>
+    <InteractiveToolWorkspace
+      theme={theme}
+      tool={tool}
+      inputLabel="Base64 string"
+      outputLabel="Decoded text"
+      status={status}
+      stats={{ chars: input.length }}
+      onLoadSample={() => setInput('SGVsbG8sIFRvb2xzUmlmdCEg8J+RiyDigJQgRGVjb2RlIG1lLg==')}
+      onClear={() => setInput('')}
+      onCopy={() => output}
+      onDownload={() => ({ content: output, filename: 'decoded.txt' })}
+      shareState={input ? { t: input } : null}
+      onRestoreState={(st) => { if (typeof st?.t === 'string') setInput(st.t); }}
+    >
+      <InteractiveToolWorkspace.Input>
+        <SmartInput
+          theme={theme}
+          value={input}
+          onChange={setInput}
+          placeholder="Paste a Base64-encoded string (standard or URL-safe)…"
+          rows={10}
+          maxRows={26}
+          mono
+          ariaLabel="Base64 to decode"
+        />
+      </InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output>
+        <SmartOutput
+          theme={theme}
+          value={output}
+          empty="Decoded text appears here. Whitespace, line-breaks and padding are handled automatically."
+          mono={false}
+        />
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
   );
 }
 
@@ -447,41 +526,112 @@ function Base32DecodeComp() {
 
 // �"��� URL Encode/Decode �����������������������������������������������������������������������������������������������������������������"�
 function UrlEncode() {
+  const theme = getCategoryById('encoders');
+  const tool  = { id:'url-encode', name:'URL Encoder', icon:'🔗' };
   const [input, setInput] = useState("");
-  const [mode, setMode] = useState("component");
-  const output = useMemo(()=>{
-    if(!input) return "";
-    return mode==="component" ? encodeURIComponent(input) : encodeURI(input);
-  },[input,mode]);
+  const [mode, setMode]   = useState('component');
+  const output = useMemo(() => {
+    if (!input) return '';
+    return mode === 'component' ? encodeURIComponent(input) : encodeURI(input);
+  }, [input, mode]);
+  const status = input
+    ? { state:'live', label:'Encoded', detail:`${output.length.toLocaleString()} chars` }
+    : { state:'idle', label:'Paste text or URL' };
   return (
-    <VStack>
-      <div style={{ display:"flex", gap:8, alignItems:"center", flexWrap:"wrap" }}>
-        <ModeToggle mode={mode} setMode={setMode} options={[["component","Encode Component (safe)"],["full","Encode Full URI"]]} />
-        <span style={{ fontSize:12, color:C.muted }}>{mode==="component"?"Encodes everything except A-Z a-z 0-9 - _ . !":"Preserves :// ? = & # / structure"}</span>
-      </div>
-      <IOPanel input={input} onInput={setInput} output={output} inputLabel="Plain Text / URL" outputLabel="URL Encoded" inputMono={false} outputMono />
-    </VStack>
+    <InteractiveToolWorkspace
+      theme={theme}
+      tool={tool}
+      inputLabel="Plain text / URL"
+      outputLabel="URL-encoded"
+      status={status}
+      stats={{ chars: input.length }}
+      onLoadSample={() => setInput('https://toolsrift.com/search?q=hello world & friends')}
+      onClear={() => setInput('')}
+      onCopy={() => output}
+      onDownload={() => ({ content: output, filename: 'url-encoded.txt' })}
+      shareState={input ? { t: input, m: mode } : null}
+      onRestoreState={(st) => { if (typeof st?.t === 'string') setInput(st.t); if (typeof st?.m === 'string') setMode(st.m); }}
+    >
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls
+          theme={theme}
+          title="Encoding mode"
+          fields={[
+            { type:'segmented', label:'Mode', value:mode,
+              options:[{value:'component',label:'Component (safe)'},{value:'full',label:'Full URI'}], onChange:setMode },
+          ]}
+        />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input>
+        <SmartInput
+          theme={theme}
+          value={input}
+          onChange={setInput}
+          placeholder="Paste text or a URL with spaces / special chars…"
+          rows={10}
+        />
+      </InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output>
+        <SmartOutput
+          theme={theme}
+          value={output}
+          empty={mode === 'component' ? 'Encodes everything except A-Z a-z 0-9 - _ . !' : 'Preserves :// ? = & # / so the URL structure stays valid.'}
+          mono
+        />
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
   );
 }
+
 function UrlDecode() {
-  const [input, setInput] = useState("");
+  const theme = getCategoryById('encoders');
+  const tool  = { id:'url-decode', name:'URL Decoder', icon:'🔗' };
+  const [input, setInput] = useState('');
   const [twice, setTwice] = useState(false);
-  const [error, setError] = useState("");
-  const output = useMemo(()=>{
-    if(!input.trim()) return "";
-    try{
-      let d = decodeURIComponent(input.replace(/\+/g," "));
-      if(twice) d = decodeURIComponent(d.replace(/\+/g," "));
-      setError(""); return d;
-    } catch(e){ setError("Malformed URL encoding: "+e.message); return ""; }
-  },[input,twice]);
+  const { output, error } = useMemo(() => {
+    if (!input.trim()) return { output:'', error:'' };
+    try {
+      let d = decodeURIComponent(input.replace(/\+/g, ' '));
+      if (twice) d = decodeURIComponent(d.replace(/\+/g, ' '));
+      return { output:d, error:'' };
+    } catch (e) { return { output:'', error: 'Malformed URL encoding: ' + e.message }; }
+  }, [input, twice]);
+  const status = error
+    ? { state:'error', label:'Invalid', detail:error.slice(0, 50) }
+    : input.trim()
+      ? { state:'ok', label:'Decoded', detail:`${output.length.toLocaleString()} chars` }
+      : { state:'idle', label:'Paste a URL-encoded string' };
   return (
-    <VStack>
-      <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", fontSize:13, color:C.text }}>
-        <input type="checkbox" checked={twice} onChange={e=>setTwice(e.target.checked)} /> Decode twice (double-encoded URLs)
-      </label>
-      <IOPanel input={input} onInput={setInput} output={output} inputLabel="URL Encoded String" outputLabel="Decoded Text" error={error} inputMono outputMono={false} />
-    </VStack>
+    <InteractiveToolWorkspace
+      theme={theme}
+      tool={tool}
+      inputLabel="URL-encoded string"
+      outputLabel="Decoded"
+      status={status}
+      stats={{ chars: input.length }}
+      onLoadSample={() => setInput('https%3A%2F%2Ftoolsrift.com%2Fsearch%3Fq%3Dhello%2520world')}
+      onClear={() => setInput('')}
+      onCopy={() => output}
+      onDownload={() => ({ content: output, filename: 'url-decoded.txt' })}
+      shareState={input ? { t: input, d: twice } : null}
+      onRestoreState={(st) => { if (typeof st?.t === 'string') setInput(st.t); if (typeof st?.d === 'boolean') setTwice(st.d); }}
+    >
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls
+          theme={theme}
+          title="Options"
+          fields={[
+            { type:'toggle', label:'Decode twice (double-encoded URLs)', value:twice, onChange:setTwice },
+          ]}
+        />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input>
+        <SmartInput theme={theme} value={input} onChange={setInput} placeholder="Paste a percent-encoded URL…" rows={10} mono />
+      </InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output>
+        <SmartOutput theme={theme} value={output} empty="Decoded text appears here." mono={false} />
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
   );
 }
 
@@ -1316,7 +1466,7 @@ function CategoryHomePage() {
 
   return (
     <CategoryLayout theme={PAGE_THEME} currentTool={null}>
-      <CategoryDashboard
+      <PremiumCategoryLanding
         theme={PAGE_THEME}
         tools={TOOLS}
         subcats={CATEGORIES}
