@@ -2,9 +2,13 @@
 // PHASE 2: import { trackUse, isLimitReached, getRemaining, DAILY_LIMIT } from '../lib/usage';
 import { getCategoryById } from '../lib/categoryThemes';
 import CategoryLayout from './shared/CategoryLayout';
-import CategoryDashboard from './shared/CategoryDashboard';
+import PremiumCategoryLanding from './shared/PremiumCategoryLanding';
 import ToolCard from './shared/ToolCard';
 import ToolPageLayout from './shared/ToolPageLayout';
+import InteractiveToolWorkspace from './shared/InteractiveToolWorkspace';
+import SmartInput from './shared/SmartInput';
+import SmartOutput from './shared/SmartOutput';
+import SmartControls from './shared/SmartControls';
 // PHASE 2: import UpgradeModal from './UpgradeModal';
 // PHASE 2: import UsageCounter from './UsageCounter';
 
@@ -167,7 +171,7 @@ function ModeToggle({ mode, setMode, options }) {
 
 // �"����� ROUTER �������������������������������������������������������������������������������������������������������������������������������������"�
 function useAppRouter() {
-  const parse=()=>{ const h=window.location.hash||"#/"; const path=h.replace(/^#/,"")||"/"; const parts=path.split("/").filter(Boolean); if(!parts.length) return{page:"home"}; if(parts[0]==="tool"&&parts[1]) return{page:"tool",toolId:parts[1]}; if(parts[0]==="category"&&parts[1]) return{page:"category",catId:parts[1]}; return{page:"home"}; };
+  const parse=()=>{ const h=window.location.hash||"#/"; const path=h.replace(/^#/, "").replace(/\?.*$/, "") || "/"; const parts=path.split("/").filter(Boolean); if(!parts.length) return{page:"home"}; if(parts[0]==="tool"&&parts[1]) return{page:"tool",toolId:parts[1]}; if(parts[0]==="category"&&parts[1]) return{page:"category",catId:parts[1]}; return{page:"home"}; };
   const [route,setRoute]=useState(parse);
   useEffect(()=>{ const fn=()=>setRoute(parse()); window.addEventListener("hashchange",fn); return()=>window.removeEventListener("hashchange",fn); },[]);
   useEffect(()=>{ const fn=e=>{ const a=e.target.closest("a[href]"); if(!a) return; const h=a.getAttribute("href"); if(h&&h.startsWith("#/")){e.preventDefault();window.location.hash=h;} }; document.addEventListener("click",fn); return()=>document.removeEventListener("click",fn); },[]);
@@ -441,54 +445,75 @@ function HashAll() {
 }
 
 function SingleHash({ algo }) {
-  const [input, setInput] = useState("");
+  const theme = getCategoryById('hash');
+  const tool  = { id:`${algo}-hash`, name:`${algo.toUpperCase()} Hash Generator`, icon:'🔐' };
+  const [input, setInput] = useState('');
   const [upper, setUpper] = useState(false);
-  const [result, setResult] = useState("");
+  const [result, setResult] = useState('');
 
-  useEffect(()=>{
-    if(!input){ setResult(""); return; }
-    const compute = async()=>{
+  useEffect(() => {
+    if (!input) { setResult(''); return; }
+    let cancelled = false;
+    (async () => {
       let h;
-      if(algo==="md5") h=md5(input);
-      else if(algo==="sha1") h=sha1(input);
-      else if(algo==="sha256") h=sha256(input);
-      else h=await webCryptoHash(algo==="sha384"?"SHA-384":"SHA-512",input);
-      setResult(upper?h.toUpperCase():h);
-    };
-    compute();
-  },[input,algo,upper]);
+      if (algo === 'md5')        h = md5(input);
+      else if (algo === 'sha1')   h = sha1(input);
+      else if (algo === 'sha256') h = sha256(input);
+      else                        h = await webCryptoHash(algo === 'sha384' ? 'SHA-384' : 'SHA-512', input);
+      if (!cancelled) setResult(upper ? h.toUpperCase() : h);
+    })();
+    return () => { cancelled = true; };
+  }, [input, algo, upper]);
 
-  const info = {md5:{bits:128,chars:32},sha1:{bits:160,chars:40},sha256:{bits:256,chars:64},sha384:{bits:384,chars:96},sha512:{bits:512,chars:128}}[algo];
+  const info = { md5:{bits:128,chars:32}, sha1:{bits:160,chars:40}, sha256:{bits:256,chars:64}, sha384:{bits:384,chars:96}, sha512:{bits:512,chars:128} }[algo];
+  const algoLabel = algo.toUpperCase();
+  const status = input
+    ? { state: 'ok', label: algoLabel, detail: `${info.bits} bits · ${result.length} hex chars` }
+    : { state: 'idle', label: 'Waiting for text' };
 
   return (
-    <VStack>
-      <div>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
-          <Label>Input Text</Label>
-          <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:12,color:C.muted}}>
-            <input type="checkbox" checked={upper} onChange={e=>setUpper(e.target.checked)} /> Uppercase output
-          </label>
+    <InteractiveToolWorkspace
+      theme={theme}
+      tool={tool}
+      inputLabel="Text to hash"
+      outputLabel={`${algoLabel} digest`}
+      status={status}
+      stats={{ chars: input.length, detail: input ? `${new TextEncoder().encode(input).length} bytes` : '' }}
+      onLoadSample={() => setInput('ToolsRift — hash this string.')}
+      onClear={() => setInput('')}
+      onCopy={() => result}
+      onDownload={() => ({ content: `${algoLabel}: ${result}\nInput: ${input}`, filename: `${algo}.txt` })}
+      shareState={input ? { t: input, u: upper } : null}
+      onRestoreState={(st) => { if (typeof st?.t === 'string') setInput(st.t); if (typeof st?.u === 'boolean') setUpper(st.u); }}
+    >
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls theme={theme} title="Options" fields={[
+          { type:'toggle', label:'UPPERCASE output', value:upper, onChange:setUpper },
+        ]} />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input>
+        <SmartInput theme={theme} value={input} onChange={setInput} placeholder="Enter any text to hash…" rows={8} />
+      </InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output>
+        <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+          <SmartOutput theme={theme} value={result} empty={`The ${algoLabel} hash appears here as you type.`} mono />
+          {result && (
+            <div style={{ display:'grid', gap:8, gridTemplateColumns:'repeat(3, 1fr)' }}>
+              {[
+                [info.bits,  'Bits'],
+                [info.chars, 'Hex chars'],
+                [new TextEncoder().encode(input).length, 'Input bytes'],
+              ].map(([v, l]) => (
+                <div key={l} style={{ padding:'10px 12px', background:'rgba(15,23,42,0.5)', border:`1px solid ${theme.tint12}`, borderRadius:10, textAlign:'center' }}>
+                  <div style={{ fontFamily: theme.fonts.head, fontSize:18, fontWeight:800, color:theme.color }}>{v}</div>
+                  <div style={{ fontSize:10.5, fontWeight:700, letterSpacing:'0.12em', textTransform:'uppercase', color:'#94A3B8', marginTop:2 }}>{l}</div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-        <Textarea value={input} onChange={setInput} placeholder="Enter any text to hash…" mono={false} rows={5} />
-      </div>
-      <HashOutput label={`${algo.toUpperCase()} Hash —" ${info.bits} bits`} value={result} />
-      {result && (
-        <Grid3>
-          <StatBox value={info.bits} label="Hash Bits" />
-          <StatBox value={info.chars} label="Hex Chars" />
-          <StatBox value={new TextEncoder().encode(input).length} label="Input Bytes" />
-        </Grid3>
-      )}
-      <Card style={{background:"rgba(16,185,129,0.04)",border:"1px solid rgba(16,185,129,0.12)"}}>
-        <div style={{fontSize:12,color:C.muted,lineHeight:1.8}}>
-          {algo==="md5"&&<><strong style={{color:C.text}}>MD5</strong> —" Fast 128-bit hash. <span style={{color:C.warn}}>Not secure for passwords or signatures.</span> Use for checksums only.</>}
-          {algo==="sha1"&&<><strong style={{color:C.text}}>SHA-1</strong> —" 160-bit hash. <span style={{color:C.warn}}>Deprecated for security use.</span> Still used in Git commits and legacy systems.</>}
-          {algo==="sha256"&&<><strong style={{color:C.text}}>SHA-256</strong> —" 256-bit hash from the SHA-2 family. <span style={{color:C.green}}>Recommended for most uses.</span> Used in Bitcoin, TLS, and code signing.</>}
-          {algo==="sha384"&&<><strong style={{color:C.text}}>SHA-384</strong> —" 384-bit truncated SHA-512. <span style={{color:C.green}}>Strong and secure.</span> Used in TLS certificates and HMAC.</>}
-          {algo==="sha512"&&<><strong style={{color:C.text}}>SHA-512</strong> —" 512-bit hash from SHA-2. <span style={{color:C.green}}>Maximum SHA-2 strength.</span> Faster than SHA-256 on 64-bit CPUs.</>}
-        </div>
-      </Card>
-    </VStack>
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
   );
 }
 
@@ -1442,7 +1467,7 @@ function CategoryHomePage() {
 
   return (
     <CategoryLayout theme={PAGE_THEME} currentTool={null}>
-      <CategoryDashboard
+      <PremiumCategoryLanding
         theme={PAGE_THEME}
         tools={TOOLS}
         subcats={CATEGORIES}

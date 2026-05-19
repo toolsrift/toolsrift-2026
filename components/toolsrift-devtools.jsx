@@ -2,9 +2,13 @@
 // PHASE 1: import { trackUse, isLimitReached, getRemaining, DAILY_LIMIT } from "../lib/usage";
 import { getCategoryById } from '../lib/categoryThemes';
 import CategoryLayout from './shared/CategoryLayout';
-import CategoryDashboard from './shared/CategoryDashboard';
+import PremiumCategoryLanding from './shared/PremiumCategoryLanding';
 import ToolCard from './shared/ToolCard';
 import ToolPageLayout from './shared/ToolPageLayout';
+import InteractiveToolWorkspace from './shared/InteractiveToolWorkspace';
+import SmartInput from './shared/SmartInput';
+import SmartOutput from './shared/SmartOutput';
+import SmartControls from './shared/SmartControls';
 // PHASE 2: import UpgradeModal from "./UpgradeModal";
 // PHASE 2: import UsageCounter from "./UsageCounter";
 
@@ -177,7 +181,7 @@ const TOOL_COMPONENTS = {};
 function useAppRouter() {
   const parse = () => {
     const h = window.location.hash || "#/";
-    const path = h.replace(/^#/, "") || "/";
+    const path = h.replace(/^#/, "").replace(/\?.*$/, "") || "/";
     const parts = path.split("/").filter(Boolean);
     if (!parts.length) return { page: "home" };
     if (parts[0] === "tool" && parts[1]) return { page: "tool", toolId: parts[1] };
@@ -365,7 +369,7 @@ function CategoryHomePage() {
 
   return (
     <CategoryLayout theme={PAGE_THEME} currentTool={null}>
-      <CategoryDashboard
+      <PremiumCategoryLanding
         theme={PAGE_THEME}
         tools={TOOLS}
         subcats={CATEGORIES}
@@ -1189,106 +1193,158 @@ function DiffCheckerTool() {
 
 /* ---------- regex-tester-adv ---------- */
 function RegexTesterAdvTool() {
-  const [pattern, setPattern] = useState("\\b\\w+@\\w+\\.\\w+\\b");
-  const [flags, setFlags] = useState("gi");
-  const [input, setInput] = useState("Contact us at support@example.com or admin@toolsrift.dev");
+  const theme = getCategoryById('devtools');
+  const tool  = { id:'regex-tester-adv', name:'Regex Tester', icon:'🧪' };
+  const [pattern, setPattern]       = useState('\\b\\w+@\\w+\\.\\w+\\b');
+  const [flags, setFlags]           = useState('gi');
+  const [input, setInput]           = useState('Contact us at support@example.com or admin@toolsrift.dev');
   const [replaceMode, setReplaceMode] = useState(false);
-  const [replaceWith, setReplaceWith] = useState("[email]");
-  const [error, setError] = useState("");
+  const [replaceWith, setReplaceWith] = useState('[email]');
 
-  const regex = useMemo(() => {
-    try {
-      setError("");
-      return new RegExp(pattern, flags);
-    } catch (e) {
-      setError(String(e.message || e));
-      return null;
-    }
+  const { regex, error } = useMemo(() => {
+    try { return { regex: new RegExp(pattern, flags), error:'' }; }
+    catch (e) { return { regex:null, error: String(e.message || e) }; }
   }, [pattern, flags]);
 
   const matches = useMemo(() => {
     if (!regex) return [];
     const out = [];
+    const r = new RegExp(regex.source, regex.flags.includes('g') ? regex.flags : regex.flags + 'g');
     let m;
-    const r = new RegExp(regex.source, regex.flags.includes("g") ? regex.flags : regex.flags + "g");
     while ((m = r.exec(input)) !== null) {
-      out.push({
-        match: m[0],
-        index: m.index,
-        groups: m.slice(1),
-      });
+      out.push({ match:m[0], index:m.index, groups:m.slice(1) });
       if (m.index === r.lastIndex) r.lastIndex++;
     }
     return out;
   }, [regex, input]);
 
-  const highlighted = useMemo(() => {
+  const highlightedHtml = useMemo(() => {
     if (!regex) return esc(input);
-    const r = new RegExp(regex.source, regex.flags.includes("g") ? regex.flags : regex.flags + "g");
-    let last = 0;
-    let html = "";
-    let m;
+    const r = new RegExp(regex.source, regex.flags.includes('g') ? regex.flags : regex.flags + 'g');
+    let last = 0, html = '', m;
     while ((m = r.exec(input)) !== null) {
       html += esc(input.slice(last, m.index));
-      html += `<mark style="background:#FDE68A;color:#111;padding:0 2px;border-radius:2px">${esc(m[0])}</mark>`;
+      html += `<mark style="background:${theme.color};color:${theme.textOnColor||'#0a0a0a'};padding:1px 4px;border-radius:4px;font-weight:600">${esc(m[0])}</mark>`;
       last = m.index + m[0].length;
       if (m.index === r.lastIndex) r.lastIndex++;
     }
     html += esc(input.slice(last));
     return html;
-  }, [regex, input]);
+  }, [regex, input, theme.color, theme.textOnColor]);
 
   const replaced = useMemo(() => {
-    if (!regex) return "";
-    try { return input.replace(regex, replaceWith); } catch { return ""; }
+    if (!regex) return '';
+    try { return input.replace(regex, replaceWith); } catch { return ''; }
   }, [regex, input, replaceWith]);
 
-  const cheatRows = [
-    ["\\d", "digit"], ["\\w", "word char"], ["\\s", "whitespace"],
-    [".", "any char"], ["^ / $", "start / end"], ["[abc]", "char set"],
-    ["[^abc]", "negated set"], ["a|b", "alternation"], ["(group)", "capturing group"],
-    ["(?:group)", "non-capturing group"], ["\\b", "word boundary"], ["{n,m}", "range quantifier"],
-  ];
+  const status = error
+    ? { state:'error', label:'Invalid pattern', detail: error.slice(0, 60) }
+    : { state: matches.length ? 'ok' : 'idle', label: matches.length ? `${matches.length} match${matches.length===1?'':'es'}` : 'No matches' };
+
+  const buildReport = () => {
+    const lines = [
+      `Pattern: /${pattern}/${flags}`,
+      `Matches: ${matches.length}`,
+      ...matches.map((m, i) => `  #${i+1}  index ${m.index}  →  ${m.match}${m.groups.length ? `   groups: [${m.groups.join(', ')}]` : ''}`),
+    ];
+    if (replaceMode) lines.push('', '— Replace —', replaced);
+    return lines.join('\n');
+  };
 
   return (
-    <VStack>
-      <SectionTitle icon="🧪" title="Regex Tester Advanced" subtitle="Flags, groups, replace mode, and inline yellow-highlighted matches." />
-      <Grid3>
-        <div><Label>Pattern</Label><Input value={pattern} onChange={setPattern} /></div>
-        <div><Label>Flags</Label><Input value={flags} onChange={setFlags} placeholder="gimsyu" /></div>
-        <div style={{ display: "flex", alignItems: "end" }}>
-          <GhostBtn onClick={() => setReplaceMode((v) => !v)}>{replaceMode ? "Disable Replace Mode" : "Enable Replace Mode"}</GhostBtn>
+    <InteractiveToolWorkspace
+      theme={theme}
+      tool={tool}
+      inputLabel="Test string"
+      outputLabel={replaceMode ? 'Replace result' : 'Matches'}
+      status={status}
+      stats={{ chars: input.length, detail: matches.length ? `${matches.length} hit${matches.length===1?'':'s'}` : '' }}
+      onLoadSample={() => { setPattern('\\b\\w+@\\w+\\.\\w+\\b'); setFlags('gi'); setInput('Contact us at support@example.com or admin@toolsrift.dev'); }}
+      onClear={() => { setPattern(''); setInput(''); }}
+      onCopy={() => buildReport()}
+      onDownload={() => ({ content: buildReport(), filename: 'regex-results.txt' })}
+      shareState={{ p:pattern, f:flags, t:input, r:replaceMode, w:replaceWith }}
+      onRestoreState={(st) => {
+        if (typeof st?.p === 'string') setPattern(st.p);
+        if (typeof st?.f === 'string') setFlags(st.f);
+        if (typeof st?.t === 'string') setInput(st.t);
+        if (typeof st?.r === 'boolean') setReplaceMode(st.r);
+        if (typeof st?.w === 'string') setReplaceWith(st.w);
+      }}
+    >
+      <InteractiveToolWorkspace.Controls>
+        <div style={{ display:'grid', gap:12, gridTemplateColumns:'1fr 120px', alignItems:'end' }}>
+          <div>
+            <div style={{ fontSize:12, fontWeight:700, color:'#94A3B8', marginBottom:6, fontFamily: theme.fonts.body, letterSpacing:'0.04em', textTransform:'uppercase' }}>Pattern</div>
+            <input
+              value={pattern}
+              onChange={(e)=>setPattern(e.target.value)}
+              placeholder="Type your regex…"
+              style={{
+                width:'100%', height:42, padding:'0 14px',
+                background:'rgba(15,23,42,0.6)',
+                border:`1px solid ${error ? '#F87171' : theme.tint12}`,
+                borderRadius:10, color:'#F8FAFC',
+                fontFamily: theme.fonts.mono, fontSize:14, outline:'none',
+              }}
+            />
+          </div>
+          <div>
+            <div style={{ fontSize:12, fontWeight:700, color:'#94A3B8', marginBottom:6, fontFamily: theme.fonts.body, letterSpacing:'0.04em', textTransform:'uppercase' }}>Flags</div>
+            <input
+              value={flags}
+              onChange={(e)=>setFlags(e.target.value)}
+              placeholder="gimsyu"
+              style={{
+                width:'100%', height:42, padding:'0 14px',
+                background:'rgba(15,23,42,0.6)',
+                border:`1px solid ${theme.tint12}`,
+                borderRadius:10, color:'#F8FAFC',
+                fontFamily: theme.fonts.mono, fontSize:14, textAlign:'center', outline:'none',
+              }}
+            />
+          </div>
         </div>
-      </Grid3>
-      {replaceMode && <div><Label>Replace With</Label><Input value={replaceWith} onChange={setReplaceWith} /></div>}
-      <div><Label>Test Input</Label><Textarea value={input} onChange={setInput} rows={8} /></div>
+        <div style={{ marginTop:12 }}>
+          <SmartControls theme={theme} title="Replace mode" fields={[
+            { type:'toggle', label:'Enable replace mode', value:replaceMode, onChange:setReplaceMode },
+            ...(replaceMode ? [{ type:'select', label:'Replace with', value:replaceWith, options:[{value:'[email]',label:'[email]'},{value:'***',label:'***'},{value:'',label:'(empty)'}], onChange:setReplaceWith }] : []),
+          ]} />
+        </div>
+      </InteractiveToolWorkspace.Controls>
 
-      {error ? <Card><div style={{ color: "#FCA5A5" }}>{error}</div></Card> : (
-        <>
-          <Card>
-            <Label>Highlighted Matches</Label>
-            <div style={{ minHeight: 64, lineHeight: 1.7, whiteSpace: "pre-wrap", fontSize: 13 }} dangerouslySetInnerHTML={{ __html: highlighted }} />
-          </Card>
+      <InteractiveToolWorkspace.Input>
+        <SmartInput theme={theme} value={input} onChange={setInput} placeholder="Paste text to test against the pattern…" rows={10} mono lineNumbers />
+      </InteractiveToolWorkspace.Input>
 
-          <DataTable
-            columns={["#", "Match", "Index", "Groups"]}
-            rows={matches.map((m, i) => [String(i + 1), m.match, String(m.index), m.groups.length ? m.groups.join(" | ") : "—"])}
+      <InteractiveToolWorkspace.Output>
+        <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+          <div
+            style={{
+              padding:'14px 16px',
+              background:'rgba(15,23,42,0.55)',
+              border:`1px solid ${error ? '#F87171' : theme.tint12}`,
+              borderRadius:12,
+              fontFamily: theme.fonts.mono, fontSize:13, lineHeight:1.7,
+              whiteSpace:'pre-wrap', wordBreak:'break-word',
+              color:'#E2E8F0',
+              minHeight:80,
+            }}
+            dangerouslySetInnerHTML={{ __html: error ? `<span style="color:#FCA5A5">${esc(error)}</span>` : highlightedHtml }}
           />
-
-          {replaceMode && (
-            <Card>
-              <Label>Replace Result</Label>
-              <CodeBox code={replaced} />
-            </Card>
+          {replaceMode && !error && (
+            <div style={{ padding:'12px 14px', background:theme.tint06, border:`1px solid ${theme.tint25}`, borderRadius:12, fontFamily: theme.fonts.mono, fontSize:13, color:'#F8FAFC', whiteSpace:'pre-wrap' }}>
+              {replaced}
+            </div>
           )}
-        </>
-      )}
-
-      <Card>
-        <Label>Regex Cheat Sheet</Label>
-        <DataTable columns={["Token", "Meaning"]} rows={cheatRows} />
-      </Card>
-    </VStack>
+          {matches.length > 0 && !error && (
+            <div style={{ fontSize:12, color:'#94A3B8', fontFamily: theme.fonts.body }}>
+              {matches.length} match{matches.length===1?'':'es'} · groups: {matches.reduce((a,m)=>a+m.groups.length,0)}
+            </div>
+          )}
+        </div>
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
   );
 }
 
@@ -2187,38 +2243,56 @@ function makeLoremParagraphs(count) {
 }
 
 function LoremIpsumAdvTool() {
-  const [mode, setMode] = useState("paragraphs");
-  const [count, setCount] = useState("3");
+  const theme = getCategoryById('devtools');
+  const tool  = { id:'lorem-ipsum-adv', name:'Lorem Ipsum Generator', icon:'⚡' };
+  const [mode, setMode]   = useState('paragraphs');
+  const [count, setCount] = useState(3);
 
   const output = useMemo(() => {
-    const c = Math.max(1, Math.min(5000, parseInt(count || "1", 10) || 1));
-    if (mode === "words") return makeLoremWords(c);
-    if (mode === "sentences") return makeLoremSentences(c);
+    const c = Math.max(1, Math.min(5000, Number(count) || 1));
+    if (mode === 'words')     return makeLoremWords(c);
+    if (mode === 'sentences') return makeLoremSentences(c);
     return makeLoremParagraphs(c);
   }, [mode, count]);
 
+  const wordCount = output.trim().split(/\s+/).filter(Boolean).length;
+  const status = { state:'live', label:`${count} ${mode}`, detail: `${wordCount.toLocaleString()} words` };
+
   return (
-    <VStack>
-      <SectionTitle icon="——" title="Lorem Ipsum Advanced" subtitle="Generate lorem ipsum by words, sentences, or paragraphs with custom length." />
-      <Grid2>
-        <div>
-          <Label>Mode</Label>
-          <SelectInput value={mode} onChange={setMode} options={[
-            { value: "words", label: "Words" },
-            { value: "sentences", label: "Sentences" },
-            { value: "paragraphs", label: "Paragraphs" },
-          ]} />
-        </div>
-        <div>
-          <Label>Count</Label>
-          <Input value={count} onChange={setCount} />
-        </div>
-      </Grid2>
-      <CodeBox code={output} />
-      <div><GhostBtn onClick={() => copyText(output)}>Copy Output</GhostBtn></div>
-    </VStack>
+    <InteractiveToolWorkspace
+      theme={theme}
+      tool={tool}
+      inputLabel="Configure"
+      outputLabel="Generated lorem ipsum"
+      status={status}
+      stats={{ words: wordCount, chars: output.length, lines: output.split('\n').length }}
+      onLoadSample={() => { setMode('paragraphs'); setCount(3); }}
+      onCopy={() => output}
+      onDownload={() => ({ content: output, filename: 'lorem-ipsum.txt' })}
+      shareState={{ m:mode, c:count }}
+      onRestoreState={(st) => { if (typeof st?.m === 'string') setMode(st.m); if (typeof st?.c !== 'undefined') setCount(st.c); }}
+    >
+      <InteractiveToolWorkspace.Input>
+        <SmartControls
+          theme={theme}
+          title="Generator settings"
+          fields={[
+            { type:'segmented', label:'Generate by', value:mode, options:[
+              { value:'words',      label:'Words' },
+              { value:'sentences',  label:'Sentences' },
+              { value:'paragraphs', label:'Paragraphs' },
+            ], onChange:setMode },
+            { type:'slider', label:'Count', value:Number(count) || 1, min:1, max: mode === 'words' ? 1000 : mode === 'sentences' ? 100 : 30, onChange:setCount },
+          ]}
+        />
+      </InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output>
+        <SmartOutput theme={theme} value={output} mono={false} empty="Generated text appears here." />
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
   );
 }
+
 
 /* ---------- hash-generator-adv ---------- */
 /* deterministic non-crypto placeholders for MD5/SHA1 fallback */

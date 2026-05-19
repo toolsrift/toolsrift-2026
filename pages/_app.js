@@ -11,6 +11,21 @@ export default function App({ Component, pageProps }) {
     } catch (e) {}
   }, []);
 
+  // Tools use hash routing (#/tool/foo) inside each category app shell.
+  // Hash changes don't trigger a real page navigation, so the viewport
+  // stays wherever the user clicked. Scroll to top whenever the new hash
+  // is a tool route, so every tool opens at the top of the page.
+  useEffect(() => {
+    const onHashChange = () => {
+      const h = window.location.hash || '';
+      if (h.startsWith('#/tool/') || h === '#/' || h === '') {
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+      }
+    };
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
+
   return (
     <>
       <Head>

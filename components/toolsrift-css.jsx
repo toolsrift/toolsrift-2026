@@ -4,8 +4,11 @@ import { getCategoryById } from "../lib/categoryThemes";
 // PHASE 2: import UpgradeModal from './UpgradeModal';
 // PHASE 2: import UsageCounter from './UsageCounter';
 import CategoryLayout from './shared/CategoryLayout';
-import CategoryDashboard from './shared/CategoryDashboard';
+import PremiumCategoryLanding from './shared/PremiumCategoryLanding';
 import ToolPageLayout, { ToolSchemas } from './shared/ToolPageLayout';
+import InteractiveToolWorkspace from './shared/InteractiveToolWorkspace';
+import SmartControls from './shared/SmartControls';
+import SmartOutput from './shared/SmartOutput';
 
 const THEME = getCategoryById("css");
 const PAGE_THEME = getCategoryById('css');
@@ -170,7 +173,7 @@ function PreviewBox({ style={}, children, height=160, label="Preview" }) {
 
 // ─── ROUTER ───────────────────────────────────────────────────────────────────
 function useAppRouter() {
-  const parse=()=>{const h=window.location.hash||"#/";const path=h.replace(/^#/,"")||"/";const parts=path.split("/").filter(Boolean);if(!parts.length)return{page:"home"};if(parts[0]==="tool"&&parts[1])return{page:"tool",toolId:parts[1]};if(parts[0]==="category"&&parts[1])return{page:"category",catId:parts[1]};return{page:"home"};};
+  const parse=()=>{const h=window.location.hash||"#/";const path=h.replace(/^#/, "").replace(/\?.*$/, "") || "/";const parts=path.split("/").filter(Boolean);if(!parts.length)return{page:"home"};if(parts[0]==="tool"&&parts[1])return{page:"tool",toolId:parts[1]};if(parts[0]==="category"&&parts[1])return{page:"category",catId:parts[1]};return{page:"home"};};
   const[route,setRoute]=useState(parse);
   useEffect(()=>{const fn=()=>setRoute(parse());window.addEventListener("hashchange",fn);return()=>window.removeEventListener("hashchange",fn);},[]);
   useEffect(()=>{const fn=e=>{const a=e.target.closest("a[href]");if(!a)return;const h=a.getAttribute("href");if(h&&h.startsWith("#/")){e.preventDefault();window.location.hash=h;}};document.addEventListener("click",fn);return()=>document.removeEventListener("click",fn);},[]);
@@ -221,49 +224,104 @@ const TOOL_META = {
 
 // ── 1. CSS GRADIENT ───────────────────────────────────────────────────────────
 function CssGradient() {
-  const [type,setType]=useState("linear");
-  const [angle,setAngle]=useState(135);
-  const [shape,setShape]=useState("ellipse");
-  const [stops,setStops]=useState([{color:"#06B6D4",pos:0},{color:"#8B5CF6",pos:50},{color:"#EC4899",pos:100}]);
-  const [conicAngle,setConicAngle]=useState(0);
+  const theme = getCategoryById('css');
+  const tool  = { id:'css-gradient', name:'CSS Gradient Generator', icon:'🌈' };
+  const [type, setType]             = useState('linear');
+  const [angle, setAngle]           = useState(135);
+  const [shape, setShape]           = useState('ellipse');
+  const [conicAngle, setConicAngle] = useState(0);
+  const [stops, setStops] = useState([
+    { color:'#06B6D4', pos:0 },
+    { color:'#8B5CF6', pos:50 },
+    { color:'#EC4899', pos:100 },
+  ]);
 
-  const addStop=()=>setStops(s=>[...s,{color:"#ffffff",pos:50}].sort((a,b)=>a.pos-b.pos));
-  const updateStop=(i,k,v)=>setStops(s=>s.map((x,j)=>j===i?{...x,[k]:v}:x).sort((a,b)=>a.pos-b.pos));
-  const removeStop=i=>setStops(s=>s.filter((_,j)=>j!==i));
+  const addStop    = () => setStops((s) => [...s, { color:'#ffffff', pos:50 }].sort((a,b) => a.pos - b.pos));
+  const updateStop = (i, k, v) => setStops((s) => s.map((x, j) => j === i ? { ...x, [k]:v } : x).sort((a,b) => a.pos - b.pos));
+  const removeStop = (i) => setStops((s) => s.filter((_, j) => j !== i));
 
-  const stopsStr=stops.map(s=>`${s.color} ${s.pos}%`).join(", ");
-  const gradient=type==="linear"?`linear-gradient(${angle}deg, ${stopsStr})`:type==="radial"?`radial-gradient(${shape} at center, ${stopsStr})`:`conic-gradient(from ${conicAngle}deg, ${stopsStr})`;
-  const css=`background: ${gradient};`;
+  const stopsStr = stops.map((s) => `${s.color} ${s.pos}%`).join(', ');
+  const gradient =
+    type === 'linear'  ? `linear-gradient(${angle}deg, ${stopsStr})`
+  : type === 'radial'  ? `radial-gradient(${shape} at center, ${stopsStr})`
+  :                      `conic-gradient(from ${conicAngle}deg, ${stopsStr})`;
+  const css = `background: ${gradient};`;
+
+  const status = { state:'live', label: type, detail: `${stops.length} stop${stops.length===1?'':'s'}` };
 
   return (
-    <VStack>
-      <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-        {["linear","radial","conic"].map(t=>(
-          <Btn key={t} variant={type===t?"primary":"secondary"} size="sm" onClick={()=>setType(t)}>{t}</Btn>
-        ))}
-      </div>
-      {type==="linear"&&<Slider label="Angle" value={angle} onChange={setAngle} min={0} max={360} unit="°"/>}
-      {type==="radial"&&<div><Label>Shape</Label><SelectInput value={shape} onChange={setShape} options={[{value:"ellipse",label:"Ellipse"},{value:"circle",label:"Circle"}]}/></div>}
-      {type==="conic"&&<Slider label="Start Angle" value={conicAngle} onChange={setConicAngle} min={0} max={360} unit="°"/>}
-      <div>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}><Label>Color Stops</Label><Btn size="sm" variant="secondary" onClick={addStop}>+ Add Stop</Btn></div>
-        <VStack gap={8}>
-          {stops.map((s,i)=>(
-            <div key={i} style={{display:"flex",gap:10,alignItems:"center"}}>
-              <input type="color" value={s.color} onChange={e=>updateStop(i,"color",e.target.value)} style={{width:36,height:36,borderRadius:6,border:`1px solid ${C.border}`,cursor:"pointer",padding:2,background:"none"}}/>
-              <Input value={s.color} onChange={v=>updateStop(i,"color",v)} mono style={{width:100}}/>
-              <input type="range" min={0} max={100} value={s.pos} onChange={e=>updateStop(i,"pos",Number(e.target.value))} style={{flex:1}}/>
-              <span style={{minWidth:36,fontSize:12,color:C.cyan,fontFamily:"'JetBrains Mono',monospace"}}>{s.pos}%</span>
-              {stops.length>2&&<Btn size="sm" variant="ghost" onClick={()=>removeStop(i)}>×</Btn>}
-            </div>
-          ))}
-        </VStack>
-      </div>
-      <PreviewBox height={140} label="Preview">
-        <div style={{position:"absolute",inset:0,background:gradient}}/>
-      </PreviewBox>
-      <CSSOutput css={css}/>
-    </VStack>
+    <InteractiveToolWorkspace
+      theme={theme}
+      tool={tool}
+      inputLabel="Gradient builder"
+      outputLabel="Live preview & CSS"
+      status={status}
+      onLoadSample={() => {
+        setType('linear'); setAngle(135);
+        setStops([{ color:'#22D3EE', pos:0 },{ color:'#A78BFA', pos:50 },{ color:'#F472B6', pos:100 }]);
+      }}
+      onCopy={() => css}
+      onDownload={() => ({ content: `/* CSS Gradient — ToolsRift */\n${css}\n`, filename: 'gradient.css' })}
+      shareState={{ t:type, a:angle, s:shape, c:conicAngle, st:stops }}
+      onRestoreState={(st) => {
+        if (typeof st?.t === 'string') setType(st.t);
+        if (typeof st?.a !== 'undefined') setAngle(st.a);
+        if (typeof st?.s === 'string') setShape(st.s);
+        if (typeof st?.c !== 'undefined') setConicAngle(st.c);
+        if (Array.isArray(st?.st)) setStops(st.st);
+      }}
+    >
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls
+          theme={theme}
+          title="Gradient type"
+          fields={[
+            { type:'segmented', label:'Type', value:type, options:[
+              { value:'linear', label:'Linear' },
+              { value:'radial', label:'Radial' },
+              { value:'conic',  label:'Conic'  },
+            ], onChange:setType },
+            ...(type === 'linear' ? [{ type:'slider', label:'Angle',       value:angle,      min:0, max:360, unit:'°', onChange:setAngle }] : []),
+            ...(type === 'radial' ? [{ type:'select', label:'Shape',       value:shape,
+                options:[{value:'ellipse',label:'Ellipse'},{value:'circle',label:'Circle'}], onChange:setShape }] : []),
+            ...(type === 'conic'  ? [{ type:'slider', label:'Start angle', value:conicAngle, min:0, max:360, unit:'°', onChange:setConicAngle }] : []),
+          ]}
+        />
+      </InteractiveToolWorkspace.Controls>
+
+      <InteractiveToolWorkspace.Input>
+        <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+            <span style={{ fontSize:11.5, fontWeight:700, color:'#94A3B8', letterSpacing:'0.12em', textTransform:'uppercase', fontFamily: theme.fonts.body }}>Colour stops</span>
+            <button
+              type="button"
+              onClick={addStop}
+              style={{ background: theme.tint12, color:theme.color, border:`1px solid ${theme.tint25}`, padding:'4px 12px', borderRadius:999, fontSize:12, fontWeight:700, cursor:'pointer', fontFamily: theme.fonts.body }}
+            >+ Add stop</button>
+          </div>
+          <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+            {stops.map((s, i) => (
+              <div key={i} style={{ display:'flex', gap:10, alignItems:'center', padding:'8px 10px', background:'rgba(15,23,42,0.55)', border:`1px solid ${theme.tint12}`, borderRadius:10 }}>
+                <input type="color" value={s.color} onChange={(e)=>updateStop(i,'color',e.target.value)} style={{ width:36, height:36, borderRadius:6, border:'none', cursor:'pointer', padding:2, background:'transparent' }} />
+                <input type="text"  value={s.color} onChange={(e)=>updateStop(i,'color',e.target.value)} style={{ width:104, height:34, background:'rgba(0,0,0,0.25)', border:`1px solid ${theme.tint12}`, borderRadius:8, color:'#F8FAFC', fontFamily: theme.fonts.mono, fontSize:12, padding:'0 10px', outline:'none' }} />
+                <input type="range" min={0} max={100} value={s.pos} onChange={(e)=>updateStop(i,'pos',Number(e.target.value))} style={{ flex:1, accentColor: theme.color }} />
+                <span style={{ minWidth:40, textAlign:'right', fontFamily: theme.fonts.mono, fontSize:12, color: theme.color }}>{s.pos}%</span>
+                {stops.length > 2 && (
+                  <button type="button" onClick={()=>removeStop(i)} aria-label="Remove stop" style={{ width:28, height:28, borderRadius:6, background:'rgba(255,255,255,0.04)', color:'#94A3B8', border:`1px solid ${theme.tint12}`, cursor:'pointer', fontSize:14 }}>×</button>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </InteractiveToolWorkspace.Input>
+
+      <InteractiveToolWorkspace.Output>
+        <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+          <div style={{ position:'relative', height:200, borderRadius:14, overflow:'hidden', background: gradient, border:`1px solid ${theme.tint25}`, boxShadow: `0 12px 32px ${theme.tint25}` }} />
+          <SmartOutput theme={theme} value={css} empty="" mono />
+        </div>
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
   );
 }
 
@@ -1321,7 +1379,7 @@ function HomePage() {
   useEffect(()=>{document.title="Free CSS Generator Tools – Online CSS Builders | ToolsRift";},[]);
   return (
     <CategoryLayout theme={PAGE_THEME} currentTool={null}>
-      <CategoryDashboard
+      <PremiumCategoryLanding
         theme={PAGE_THEME}
         tools={TOOLS}
         subcats={CATEGORIES}

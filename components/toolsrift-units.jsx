@@ -1,7 +1,7 @@
 ﻿import { useState, useEffect, useCallback, useMemo } from "react";
 import { getCategoryById } from '../lib/categoryThemes';
 import CategoryLayout from './shared/CategoryLayout';
-import CategoryDashboard from './shared/CategoryDashboard';
+import PremiumCategoryLanding from './shared/PremiumCategoryLanding';
 import ToolPageLayout, { ToolSchemas } from './shared/ToolPageLayout';
 // PHASE 2: import { trackUse, isLimitReached, getRemaining, DAILY_LIMIT } from '../lib/usage';
 // PHASE 2: import UpgradeModal from './UpgradeModal';
@@ -205,7 +205,7 @@ function UnitConverter({ units, defaultFrom, defaultTo, accentColor=C.violet }) 
 
 // ─── ROUTER ───────────────────────────────────────────────────────────────────
 function useAppRouter() {
-  const parse=()=>{const h=window.location.hash||"#/";const path=h.replace(/^#/,"")||"/";const parts=path.split("/").filter(Boolean);if(!parts.length)return{page:"home"};if(parts[0]==="tool"&&parts[1])return{page:"tool",toolId:parts[1]};if(parts[0]==="category"&&parts[1])return{page:"category",catId:parts[1]};return{page:"home"};};
+  const parse=()=>{const h=window.location.hash||"#/";const path=h.replace(/^#/, "").replace(/\?.*$/, "") || "/";const parts=path.split("/").filter(Boolean);if(!parts.length)return{page:"home"};if(parts[0]==="tool"&&parts[1])return{page:"tool",toolId:parts[1]};if(parts[0]==="category"&&parts[1])return{page:"category",catId:parts[1]};return{page:"home"};};
   const[route,setRoute]=useState(parse);
   useEffect(()=>{const fn=()=>setRoute(parse());window.addEventListener("hashchange",fn);return()=>window.removeEventListener("hashchange",fn);},[]);
   useEffect(()=>{const fn=e=>{const a=e.target.closest("a[href]");if(!a)return;const h=a.getAttribute("href");if(h&&h.startsWith("#/")){e.preventDefault();window.location.hash=h;}};document.addEventListener("click",fn);return()=>document.removeEventListener("click",fn);},[]);
@@ -989,7 +989,7 @@ function HomePage() {
   useEffect(()=>{document.title="Free Unit Converters – Length, Weight, Temperature & More | ToolsRift";},[]);
   return (
     <CategoryLayout theme={PAGE_THEME} currentTool={null}>
-      <CategoryDashboard
+      <PremiumCategoryLanding
         theme={PAGE_THEME}
         tools={TOOLS}
         subcats={CATEGORIES}

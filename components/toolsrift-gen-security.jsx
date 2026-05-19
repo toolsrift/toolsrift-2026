@@ -4,8 +4,12 @@ import { getCategoryById } from "../lib/categoryThemes";
 // PHASE 2: import UpgradeModal from './UpgradeModal';
 // PHASE 2: import UsageCounter from './UsageCounter';
 import CategoryLayout from './shared/CategoryLayout';
-import CategoryDashboard from './shared/CategoryDashboard';
+import PremiumCategoryLanding from './shared/PremiumCategoryLanding';
 import ToolPageLayout, { ToolSchemas } from './shared/ToolPageLayout';
+import InteractiveToolWorkspace from './shared/InteractiveToolWorkspace';
+import SmartControls from './shared/SmartControls';
+import SmartOutput from './shared/SmartOutput';
+// (SmartOutput is imported above; this line kept for clarity.)
 
 const THEME = getCategoryById("hash");
 const PAGE_THEME = getCategoryById('generators');
@@ -143,7 +147,7 @@ return (
 function useAppRouter() {
 const parse = () => {
 const h = window.location.hash || "#/";
-const path = h.replace(/^#/, "") || "/";
+const path = h.replace(/^#/, "").replace(/\?.*$/, "") || "/";
 const parts = path.split("/").filter(Boolean);
 if (!parts.length) return { page:"home" };
 if (parts[0]==="tool" && parts[1]) return { page:"tool", toolId:parts[1] };
@@ -195,39 +199,985 @@ const h = bytesToHex(b);
 return `${h.slice(0,8)}-${h.slice(8,12)}-${h.slice(12,16)}-${h.slice(16,20)}-${h.slice(20)}`;
 };
 
-function StrongPasswordGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function PassphraseGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function PinGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function ApiKeyGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function EncryptionKeyGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function BulkPasswordGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function UuidGen() { return <Result>{uuidv4()}</Result>; }
-function GuidGen() { return <Result>{`{${uuidv4().toUpperCase()}}`}</Result>; }
-function NanoidGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function RandomNumberGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function RandomStringGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
+function StrongPasswordGen() {
+  const theme = getCategoryById('generators');
+  const tool  = { id:'strong-password-gen', name:'Strong Password Generator', icon:'🔐' };
+  const [length, setLength]   = useState(20);
+  const [upper, setUpper]     = useState(true);
+  const [lower, setLower]     = useState(true);
+  const [digits, setDigits]   = useState(true);
+  const [symbols, setSymbols] = useState(true);
+  const [exclSimilar, setExclSimilar] = useState(true);
+  const [password, setPassword]       = useState('');
+
+  const generate = useCallback(() => {
+    const SETS = { upper:'ABCDEFGHIJKLMNOPQRSTUVWXYZ', lower:'abcdefghijklmnopqrstuvwxyz', digits:'0123456789', symbols:'!@#$%^&*()-_=+[]{};:,.<>?/' };
+    const SIMILAR = /[Il1O0]/g;
+    let pool = '';
+    if (upper)   pool += SETS.upper;
+    if (lower)   pool += SETS.lower;
+    if (digits)  pool += SETS.digits;
+    if (symbols) pool += SETS.symbols;
+    if (exclSimilar) pool = pool.replace(SIMILAR, '');
+    if (!pool) { setPassword(''); return; }
+    const bytes = safeCryptoBytes(length);
+    let out = '';
+    for (let i = 0; i < length; i++) out += pool[bytes[i] % pool.length];
+    setPassword(out);
+  }, [length, upper, lower, digits, symbols, exclSimilar]);
+
+  useEffect(() => { generate(); }, [generate]);
+
+  // Rough strength estimate via entropy bits
+  const strength = useMemo(() => {
+    const sets = (upper?26:0) + (lower?26:0) + (digits?10:0) + (symbols?27:0) - (exclSimilar?5:0);
+    const bits = Math.round(length * Math.log2(Math.max(sets, 1)));
+    let label = 'Weak', color = '#F87171', pct = 25;
+    if (bits >= 128) { label = 'Excellent'; color = '#10B981'; pct = 100; }
+    else if (bits >= 90)  { label = 'Strong';    color = '#22C55E'; pct = 80; }
+    else if (bits >= 60)  { label = 'Good';      color = '#FBBF24'; pct = 60; }
+    else if (bits >= 40)  { label = 'Fair';      color = '#FB923C'; pct = 45; }
+    return { bits, label, color, pct };
+  }, [length, upper, lower, digits, symbols, exclSimilar]);
+
+  const status = password
+    ? { state:'ok', label:strength.label, detail:`${strength.bits} bits of entropy` }
+    : { state:'error', label:'Pick at least one character set' };
+
+  return (
+    <InteractiveToolWorkspace
+      theme={theme}
+      tool={tool}
+      outputLabel="Generated password"
+      status={status}
+      stats={{ chars: password.length, detail: `${strength.bits} bits` }}
+      onLoadSample={generate}
+      onCopy={() => password}
+      onDownload={() => ({ content: password, filename: 'password.txt' })}
+      primaryAction={{ label:'Generate', icon:'🎲', onClick: generate }}
+    >
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls
+          theme={theme}
+          title="Password options"
+          fields={[
+            { type:'slider',  label:'Length',    value:length,  min:6, max:64, onChange:setLength, unit:'chars' },
+            { type:'toggle',  label:'Uppercase (A-Z)', value:upper,   onChange:setUpper },
+            { type:'toggle',  label:'Lowercase (a-z)', value:lower,   onChange:setLower },
+            { type:'toggle',  label:'Digits (0-9)',    value:digits,  onChange:setDigits },
+            { type:'toggle',  label:'Symbols (!@#$…)', value:symbols, onChange:setSymbols },
+            { type:'toggle',  label:'Exclude similar (I, l, 1, O, 0)', value:exclSimilar, onChange:setExclSimilar },
+          ]}
+        />
+      </InteractiveToolWorkspace.Controls>
+
+      <InteractiveToolWorkspace.Input>
+        <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
+          <button
+            type="button"
+            onClick={generate}
+            style={{
+              background: theme.gradient, color: theme.textOnColor || '#fff',
+              border: 'none', borderRadius: 12, padding: '14px 18px', cursor:'pointer',
+              fontFamily: theme.fonts.body, fontSize:14, fontWeight:700,
+              display:'inline-flex', alignItems:'center', justifyContent:'center', gap:8,
+              boxShadow: `0 8px 24px ${theme.tint25}`, minHeight: 48,
+            }}
+          >🎲 Generate new password</button>
+          <div style={{ fontSize:12.5, color:'#94A3B8', lineHeight:1.55 }}>
+            Passwords are generated with <strong>crypto.getRandomValues</strong> in your
+            browser. Nothing is sent anywhere.
+          </div>
+        </div>
+      </InteractiveToolWorkspace.Input>
+
+      <InteractiveToolWorkspace.Output>
+        <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
+          <div
+            style={{
+              padding: '20px 18px',
+              background: `linear-gradient(135deg, ${theme.tint25}, ${theme.tint06})`,
+              border: `1px solid ${theme.tint25}`,
+              borderRadius: 14,
+              fontFamily: theme.fonts.mono,
+              fontSize: 'clamp(16px,3vw,22px)',
+              fontWeight: 700,
+              color: '#F8FAFC',
+              letterSpacing: '0.02em',
+              wordBreak: 'break-all',
+              textAlign: 'center',
+              minHeight: 64,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+          >
+            {password || '—'}
+          </div>
+          <div>
+            <div style={{ display:'flex', justifyContent:'space-between', marginBottom:6, fontSize:12, color:'#94A3B8', fontFamily: theme.fonts.body }}>
+              <span>Strength</span>
+              <span style={{ color: strength.color, fontWeight:700 }}>{strength.label} · {strength.bits} bits</span>
+            </div>
+            <div style={{ height:6, background:'rgba(255,255,255,0.06)', borderRadius:3, overflow:'hidden' }}>
+              <div style={{ width:`${strength.pct}%`, height:'100%', background:strength.color, transition:'width .25s, background .25s' }} />
+            </div>
+          </div>
+        </div>
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
+  );
+}
+// ─── Helper data tables for fake-data generators ────────────────────────────
+const FIRST_NAMES = ['Aarav','Aditi','Ananya','Arjun','Aryan','Diya','Ishaan','Kavya','Krishna','Maya','Neha','Priya','Rahul','Riya','Rohan','Sanya','Saurav','Tanvi','Vikram','Zara','Alex','Amelia','Ava','Ben','Charlotte','Daniel','Emma','Ethan','Grace','Henry','Isabella','Jack','Lily','Liam','Mia','Noah','Olivia','Oliver','Sophia','William'];
+const LAST_NAMES  = ['Sharma','Patel','Verma','Gupta','Singh','Kumar','Reddy','Iyer','Nair','Joshi','Rao','Mehta','Khan','Ali','Bose','Roy','Smith','Johnson','Williams','Brown','Jones','Garcia','Miller','Davis','Rodriguez','Martinez','Hernandez','Lopez','Wilson','Anderson','Taylor','Moore','Jackson','Martin','Lee','Perez','Thompson','White'];
+const STREETS    = ['Main','Park','Oak','Pine','Cedar','Elm','Lake','Hill','River','Maple','Sunset','Garden','Spring','Forest','Valley','Ridge','Lotus','Jasmine','Tulip','Brigade'];
+const STREET_TYPES = ['Street','Avenue','Road','Lane','Boulevard','Drive','Way','Marg'];
+const CITIES_INDIA = ['Mumbai','Bangalore','Hyderabad','Chennai','Kolkata','Pune','Ahmedabad','Jaipur','Lucknow','Indore','Kanpur','Nagpur','Surat','Patna','Bhopal'];
+const CITIES_US    = ['New York','Los Angeles','Chicago','Houston','Phoenix','Philadelphia','San Antonio','San Diego','Dallas','Austin','Seattle','Denver','Boston'];
+const COUNTRIES = [
+  {n:'India',c:'IN',d:'+91'},{n:'United States',c:'US',d:'+1'},{n:'United Kingdom',c:'GB',d:'+44'},{n:'Canada',c:'CA',d:'+1'},{n:'Australia',c:'AU',d:'+61'},
+  {n:'Germany',c:'DE',d:'+49'},{n:'France',c:'FR',d:'+33'},{n:'Japan',c:'JP',d:'+81'},{n:'Brazil',c:'BR',d:'+55'},{n:'Singapore',c:'SG',d:'+65'},
+  {n:'Netherlands',c:'NL',d:'+31'},{n:'Spain',c:'ES',d:'+34'},{n:'Mexico',c:'MX',d:'+52'},{n:'Sweden',c:'SE',d:'+46'},{n:'Norway',c:'NO',d:'+47'},
+  {n:'South Korea',c:'KR',d:'+82'},{n:'Italy',c:'IT',d:'+39'},{n:'New Zealand',c:'NZ',d:'+64'},{n:'Switzerland',c:'CH',d:'+41'},{n:'Ireland',c:'IE',d:'+353'},
+];
+const EMAIL_DOMAINS = ['example.com','test.org','demo.net','sample.io','example.dev','mail.test'];
+
+function makeFakeName() { return `${randPick(FIRST_NAMES)} ${randPick(LAST_NAMES)}`; }
+function makeFakeStreet() { return `${randInt(1,9999)} ${randPick(STREETS)} ${randPick(STREET_TYPES)}`; }
+function makeFakeAddress(region='india') {
+  const city = region === 'us' ? randPick(CITIES_US) : randPick(CITIES_INDIA);
+  return `${makeFakeStreet()}\n${city}${region==='us'? ', ' + ['NY','CA','TX','FL','IL','WA','MA','GA'][randInt(0,7)] + ' ' + (10000+randInt(0,89999)) : ' - ' + (100000+randInt(0,899999))}\n${region==='us'?'United States':'India'}`;
+}
+function makeFakeEmail() {
+  const first = randPick(FIRST_NAMES).toLowerCase();
+  const last  = randPick(LAST_NAMES).toLowerCase();
+  return `${first}.${last}${randInt(1,99)}@${randPick(EMAIL_DOMAINS)}`;
+}
+function makeFakePhone(country='IN') {
+  if (country === 'IN') return `+91 ${randInt(70000,99999)} ${randInt(10000,99999)}`;
+  if (country === 'US') return `+1 (${randInt(200,999)}) ${randInt(200,999)}-${String(randInt(0,9999)).padStart(4,'0')}`;
+  if (country === 'GB') return `+44 7${randInt(100,999)} ${randInt(100,999)} ${randInt(100,999)}`;
+  return `+${randInt(1,99)} ${randInt(10000000,99999999)}`;
+}
+function makeFakeIPv4() { return Array.from({length:4},()=>randInt(0,255)).join('.'); }
+function makeFakeIPv6() {
+  return Array.from({length:8},()=>Array.from({length:4},()=>'0123456789abcdef'[randInt(0,15)]).join('')).join(':');
+}
+function makeFakeMac() {
+  return Array.from({length:6},()=>('0'+randInt(0,255).toString(16)).slice(-2)).join(':');
+}
+function makeFakeDate(startYear=1970, endYear=2030) {
+  const y = randInt(startYear, endYear);
+  const m = randInt(1,12);
+  const d = randInt(1, new Date(y,m,0).getDate());
+  return new Date(y, m-1, d);
+}
+
+// Helper: generic "Generate" button row
+function GenerateBtn({ theme, onClick, label = 'Generate', icon = '🎲' }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      style={{
+        background: theme.gradient, color: theme.textOnColor || '#fff',
+        border: 'none', borderRadius: 12, padding: '14px 18px', cursor:'pointer',
+        fontFamily: theme.fonts.body, fontSize: 14, fontWeight: 700,
+        display:'inline-flex', alignItems:'center', justifyContent:'center', gap: 8,
+        boxShadow: `0 8px 24px ${theme.tint25}`, minHeight: 48,
+        width: '100%',
+      }}
+    >{icon} {label}</button>
+  );
+}
+
+// Helper: big monospace result panel
+function BigCodeResult({ theme, value, wrap = false }) {
+  return (
+    <div
+      style={{
+        padding: '20px 18px',
+        background: `linear-gradient(135deg, ${theme.tint25}, ${theme.tint06})`,
+        border: `1px solid ${theme.tint25}`,
+        borderRadius: 14,
+        fontFamily: theme.fonts.mono,
+        fontSize: 'clamp(14px,2vw,18px)',
+        fontWeight: 700,
+        color: '#F8FAFC',
+        letterSpacing: '0.02em',
+        wordBreak: wrap ? 'break-word' : 'break-all',
+        whiteSpace: wrap ? 'pre-wrap' : 'normal',
+        textAlign: 'center',
+        minHeight: 64,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}
+    >
+      {value || '—'}
+    </div>
+  );
+}
+
+// ─── 1. Passphrase Generator ────────────────────────────────────────────────
+const PASSPHRASE_WORDS = ['amber','breeze','candle','dragon','ember','forest','glacier','harbor','island','jaguar','kettle','lantern','meadow','nimbus','orchard','prairie','quiver','ribbon','silver','thunder','umbrella','velvet','willow','xenon','yonder','zenith','autumn','beacon','cobalt','dahlia','ember','feather','gentle','hollow','iris','jovial','kindle','lotus','mirror','nectar','onyx','pebble','quartz','radiant','silver','tulip','urchin','violet','whisper','crimson','emerald'];
+function PassphraseGen() {
+  const theme = getCategoryById('generators');
+  const tool  = { id:'passphrase-gen', name:'Passphrase Generator', icon:'🗝️' };
+  const [count, setCount] = useState(4);
+  const [sep, setSep] = useState('-');
+  const [capitalize, setCapitalize] = useState(true);
+  const [appendNumber, setAppendNumber] = useState(true);
+  const [phrase, setPhrase] = useState('');
+  const generate = useCallback(() => {
+    const words = Array.from({length: count}, () => {
+      const w = randPick(PASSPHRASE_WORDS);
+      return capitalize ? w[0].toUpperCase() + w.slice(1) : w;
+    });
+    let p = words.join(sep);
+    if (appendNumber) p += sep + randInt(10,99);
+    setPhrase(p);
+  }, [count, sep, capitalize, appendNumber]);
+  useEffect(() => { generate(); }, [generate]);
+  const entropy = Math.round(count * Math.log2(PASSPHRASE_WORDS.length) + (appendNumber ? 7 : 0));
+  return (
+    <InteractiveToolWorkspace theme={theme} tool={tool} outputLabel="Generated passphrase"
+      status={{state:'ok', label:'Generated', detail:`~${entropy} bits entropy`}}
+      onLoadSample={generate} onCopy={() => phrase}
+      onDownload={() => ({ content: phrase, filename: 'passphrase.txt' })}
+      primaryAction={{ label:'Generate new', icon:'🎲', onClick: generate }}>
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls theme={theme} title="Passphrase options" fields={[
+          { type:'slider', label:'Word count', value:count, min:2, max:10, onChange:setCount, unit:'words' },
+          { type:'segmented', label:'Separator', value:sep,
+            options:[{value:'-',label:'hyphen'},{value:'_',label:'underscore'},{value:'.',label:'dot'},{value:' ',label:'space'}], onChange:setSep },
+          { type:'toggle', label:'Capitalize words', value:capitalize, onChange:setCapitalize },
+          { type:'toggle', label:'Append a random number', value:appendNumber, onChange:setAppendNumber },
+        ]} />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input>
+        <GenerateBtn theme={theme} onClick={generate} label="Generate new passphrase" />
+      </InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output>
+        <BigCodeResult theme={theme} value={phrase} wrap />
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
+  );
+}
+
+// ─── 2. PIN Generator ───────────────────────────────────────────────────────
+function PinGen() {
+  const theme = getCategoryById('generators');
+  const tool = { id:'pin-gen', name:'PIN Generator', icon:'🔢' };
+  const [digits, setDigits] = useState(6);
+  const [pin, setPin] = useState('');
+  const generate = useCallback(() => {
+    const bytes = safeCryptoBytes(digits);
+    setPin(Array.from(bytes).map(b => b % 10).join(''));
+  }, [digits]);
+  useEffect(() => { generate(); }, [generate]);
+  return (
+    <InteractiveToolWorkspace theme={theme} tool={tool} outputLabel="Generated PIN"
+      status={{state:'ok', label:`${digits}-digit PIN`}}
+      onLoadSample={generate} onCopy={() => pin}
+      primaryAction={{ label:'Generate', icon:'🎲', onClick: generate }}>
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls theme={theme} title="PIN length" fields={[
+          { type:'segmented', label:'Digits', value:digits,
+            options:[{value:4,label:'4'},{value:6,label:'6'},{value:8,label:'8'},{value:10,label:'10'},{value:12,label:'12'}], onChange:(v)=>setDigits(Number(v)) },
+        ]} />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input>
+        <GenerateBtn theme={theme} onClick={generate} label={`Generate ${digits}-digit PIN`} />
+      </InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output>
+        <BigCodeResult theme={theme} value={pin} />
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
+  );
+}
+
+// ─── 3. API Key Generator ───────────────────────────────────────────────────
+const B58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+function bytesToBase58(bytes) {
+  let num = 0n;
+  for (const b of bytes) num = num * 256n + BigInt(b);
+  let s = '';
+  while (num > 0n) { s = B58_ALPHABET[Number(num % 58n)] + s; num /= 58n; }
+  return s || '1';
+}
+function ApiKeyGen() {
+  const theme = getCategoryById('generators');
+  const tool = { id:'api-key-gen', name:'API Key Generator', icon:'🧪' };
+  const [format, setFormat] = useState('hex');
+  const [length, setLength] = useState(32);
+  const [prefix, setPrefix] = useState('sk_');
+  const [key, setKey] = useState('');
+  const generate = useCallback(() => {
+    const bytes = safeCryptoBytes(length);
+    let body;
+    if (format === 'hex')         body = bytesToHex(bytes).slice(0, length);
+    else if (format === 'base64') body = bytesToBase64(bytes).replace(/[+/=]/g, '').slice(0, length);
+    else if (format === 'base58') body = bytesToBase58(bytes).slice(0, length);
+    else if (format === 'uuid')   body = uuidv4();
+    setKey((prefix || '') + body);
+  }, [format, length, prefix]);
+  useEffect(() => { generate(); }, [generate]);
+  return (
+    <InteractiveToolWorkspace theme={theme} tool={tool} outputLabel="Generated API key"
+      status={{state:'ok', label:format.toUpperCase(), detail:`${key.length} chars`}}
+      onLoadSample={generate} onCopy={() => key}
+      primaryAction={{ label:'Generate', icon:'🎲', onClick: generate }}>
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls theme={theme} title="API key format" fields={[
+          { type:'segmented', label:'Format', value:format,
+            options:[{value:'hex',label:'hex'},{value:'base64',label:'base64'},{value:'base58',label:'base58'},{value:'uuid',label:'uuid v4'}], onChange:setFormat },
+          ...(format !== 'uuid' ? [{ type:'slider', label:'Length', value:length, min:8, max:128, unit:'chars', onChange:setLength }] : []),
+          { type:'segmented', label:'Prefix', value:prefix,
+            options:[{value:'',label:'none'},{value:'sk_',label:'sk_'},{value:'pk_',label:'pk_'},{value:'tr_',label:'tr_'}], onChange:setPrefix },
+        ]} />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input>
+        <GenerateBtn theme={theme} onClick={generate} label="Generate new key" />
+      </InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output>
+        <BigCodeResult theme={theme} value={key} wrap />
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
+  );
+}
+
+// ─── 4. Encryption Key Generator ────────────────────────────────────────────
+function EncryptionKeyGen() {
+  const theme = getCategoryById('generators');
+  const tool = { id:'encryption-key-gen', name:'Encryption Key Generator', icon:'🛡️' };
+  const [bits, setBits] = useState(256);
+  const [format, setFormat] = useState('hex');
+  const [key, setKey] = useState('');
+  const generate = useCallback(() => {
+    const bytes = safeCryptoBytes(bits / 8);
+    if (format === 'hex')    setKey(bytesToHex(bytes));
+    else if (format === 'base64') setKey(bytesToBase64(bytes));
+    else                          setKey(Array.from(bytes).join(','));
+  }, [bits, format]);
+  useEffect(() => { generate(); }, [generate]);
+  return (
+    <InteractiveToolWorkspace theme={theme} tool={tool} outputLabel={`${bits}-bit ${format} key`}
+      status={{state:'ok', label:`${bits} bits`, detail:format}}
+      onLoadSample={generate} onCopy={() => key}
+      primaryAction={{ label:'Generate', icon:'🎲', onClick: generate }}>
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls theme={theme} title="Key size" fields={[
+          { type:'segmented', label:'Bits', value:bits,
+            options:[{value:128,label:'AES-128'},{value:192,label:'AES-192'},{value:256,label:'AES-256'},{value:512,label:'512-bit'}], onChange:(v)=>setBits(Number(v)) },
+          { type:'segmented', label:'Format', value:format,
+            options:[{value:'hex',label:'hex'},{value:'base64',label:'base64'},{value:'bytes',label:'bytes[]'}], onChange:setFormat },
+        ]} />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input>
+        <GenerateBtn theme={theme} onClick={generate} label="Generate new key" />
+      </InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output>
+        <BigCodeResult theme={theme} value={key} wrap />
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
+  );
+}
+
+// ─── 5. Bulk Password Generator ─────────────────────────────────────────────
+function BulkPasswordGen() {
+  const theme = getCategoryById('generators');
+  const tool = { id:'bulk-password-gen', name:'Bulk Password Generator', icon:'📦' };
+  const [count, setCount] = useState(20);
+  const [length, setLength] = useState(16);
+  const [pool, setPool] = useState('alnum+sym');
+  const [list, setList] = useState('');
+  const generate = useCallback(() => {
+    const sets = {
+      alnum:     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
+      'alnum+sym':'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+',
+      hex:       '0123456789abcdef',
+    };
+    const charset = sets[pool] || sets['alnum+sym'];
+    const out = [];
+    for (let i = 0; i < count; i++) {
+      const bytes = safeCryptoBytes(length);
+      out.push(Array.from(bytes).map((b) => charset[b % charset.length]).join(''));
+    }
+    setList(out.join('\n'));
+  }, [count, length, pool]);
+  useEffect(() => { generate(); }, [generate]);
+  return (
+    <InteractiveToolWorkspace theme={theme} tool={tool} outputLabel="Generated passwords"
+      status={{state:'ok', label:`${count} passwords`, detail:`${length} chars each`}}
+      stats={{ chars: list.length, lines: count }}
+      onLoadSample={generate} onCopy={() => list}
+      onDownload={() => ({ content: list, filename: `bulk-passwords-${count}.txt` })}
+      primaryAction={{ label:'Generate', icon:'🎲', onClick: generate }}>
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls theme={theme} title="Bulk options" fields={[
+          { type:'slider', label:'Count', value:count, min:1, max:200, onChange:setCount, unit:'pwds' },
+          { type:'slider', label:'Length', value:length, min:6, max:64, onChange:setLength, unit:'chars' },
+          { type:'segmented', label:'Charset', value:pool,
+            options:[{value:'alnum',label:'A-Z a-z 0-9'},{value:'alnum+sym',label:'+ symbols'},{value:'hex',label:'hex'}], onChange:setPool },
+        ]} />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input>
+        <GenerateBtn theme={theme} onClick={generate} label={`Generate ${count} passwords`} />
+      </InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output>
+        <SmartOutput theme={theme} value={list} mono empty="Generated list appears here." />
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
+  );
+}
+
+// ─── Single-result UUID / GUID / Hex / Serial / CUID (kept as one-liners) ──
+function UuidGen()   { return <Result>{uuidv4()}</Result>; }
+function GuidGen()   { return <Result>{`{${uuidv4().toUpperCase()}}`}</Result>; }
 function RandomHexGen() { return <Result>{bytesToHex(safeCryptoBytes(16))}</Result>; }
-function SerialNumberGen() { return <Result>TR-ABCD-1234</Result>; }
-function CuidGen() { return <Result>{`c${Date.now().toString(36)}${Math.random().toString(36).slice(2,10)}`}</Result>; }
-function HashIdGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function QrUrl() { return <Result>QR generator UI implemented in full project file.</Result>; }
-function QrWifi() { return <Result>QR generator UI implemented in full project file.</Result>; }
-function QrVcard() { return <Result>QR generator UI implemented in full project file.</Result>; }
-function QrEmail() { return <Result>QR generator UI implemented in full project file.</Result>; }
-function QrPhone() { return <Result>QR generator UI implemented in full project file.</Result>; }
-function QrSms() { return <Result>QR generator UI implemented in full project file.</Result>; }
-function QrText() { return <Result>QR generator UI implemented in full project file.</Result>; }
-function QrReader() { return <Result>QR reader UI implemented in full project file.</Result>; }
-function FakeNameGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function FakeAddressGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function FakeEmailGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function FakePhoneGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function FakeIpGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function FakeMacGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function FakeDateGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function FakeDataBulk() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function RandomCountryGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function RandomColorGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
+function SerialNumberGen() {
+  const seg = () => Array.from(safeCryptoBytes(4)).map((b)=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[b%32]).join('');
+  return <Result>{`TR-${seg()}-${seg()}`}</Result>;
+}
+function CuidGen()   { return <Result>{`c${Date.now().toString(36)}${Math.random().toString(36).slice(2,10)}`}</Result>; }
+
+// ─── 6. NanoID Generator ────────────────────────────────────────────────────
+const NANO_ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_-';
+function NanoidGen() {
+  const theme = getCategoryById('generators');
+  const tool = { id:'nanoid-gen', name:'NanoID Generator', icon:'🆔' };
+  const [size, setSize] = useState(21);
+  const [count, setCount] = useState(1);
+  const [list, setList] = useState('');
+  const generate = useCallback(() => {
+    const out = [];
+    for (let i = 0; i < count; i++) {
+      const bytes = safeCryptoBytes(size);
+      out.push(Array.from(bytes).map((b)=>NANO_ALPHABET[b%64]).join(''));
+    }
+    setList(out.join('\n'));
+  }, [size, count]);
+  useEffect(() => { generate(); }, [generate]);
+  return (
+    <InteractiveToolWorkspace theme={theme} tool={tool} outputLabel="NanoID(s)"
+      status={{state:'ok', label:`${count} × ${size} chars`}}
+      onLoadSample={generate} onCopy={() => list}
+      primaryAction={{ label:'Generate', icon:'🎲', onClick: generate }}>
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls theme={theme} title="NanoID options" fields={[
+          { type:'slider', label:'Length per ID', value:size, min:8, max:36, onChange:setSize, unit:'chars' },
+          { type:'slider', label:'How many', value:count, min:1, max:50, onChange:setCount },
+        ]} />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input>
+        <GenerateBtn theme={theme} onClick={generate} />
+      </InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output>
+        {count === 1
+          ? <BigCodeResult theme={theme} value={list} wrap />
+          : <SmartOutput theme={theme} value={list} mono />}
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
+  );
+}
+
+// ─── 7. Random Number Generator ─────────────────────────────────────────────
+function RandomNumberGen() {
+  const theme = getCategoryById('generators');
+  const tool = { id:'random-number-gen', name:'Random Number Generator', icon:'🎲' };
+  const [min, setMin] = useState(1);
+  const [max, setMax] = useState(100);
+  const [count, setCount] = useState(1);
+  const [unique, setUnique] = useState(false);
+  const [list, setList] = useState('');
+  const generate = useCallback(() => {
+    const lo = Math.min(Number(min), Number(max));
+    const hi = Math.max(Number(min), Number(max));
+    const range = hi - lo + 1;
+    if (unique) {
+      const target = Math.min(count, range);
+      const seen = new Set();
+      while (seen.size < target) seen.add(lo + (safeCryptoBytes(4).reduce((a,b)=>a*256+b,0) % range));
+      setList([...seen].join('\n'));
+    } else {
+      const out = [];
+      for (let i = 0; i < count; i++) out.push(lo + (safeCryptoBytes(4).reduce((a,b)=>a*256+b,0) % range));
+      setList(out.join('\n'));
+    }
+  }, [min, max, count, unique]);
+  useEffect(() => { generate(); }, [generate]);
+  return (
+    <InteractiveToolWorkspace theme={theme} tool={tool} outputLabel="Random numbers"
+      status={{state:'ok', label:`${count} number${count===1?'':'s'}`, detail:`${min}-${max}`}}
+      onLoadSample={generate} onCopy={() => list}
+      primaryAction={{ label:'Generate', icon:'🎲', onClick: generate }}>
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls theme={theme} title="Range" fields={[
+          { type:'number', label:'Min', value:min, onChange:setMin, step:1 },
+          { type:'number', label:'Max', value:max, onChange:setMax, step:1 },
+          { type:'slider', label:'Count', value:count, min:1, max:100, onChange:setCount },
+          { type:'toggle', label:'Unique numbers (no duplicates)', value:unique, onChange:setUnique },
+        ]} />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input>
+        <GenerateBtn theme={theme} onClick={generate} />
+      </InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output>
+        {count === 1 ? <BigCodeResult theme={theme} value={list} /> : <SmartOutput theme={theme} value={list} mono />}
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
+  );
+}
+
+// ─── 8. Random String Generator ─────────────────────────────────────────────
+function RandomStringGen() {
+  const theme = getCategoryById('generators');
+  const tool = { id:'random-string-gen', name:'Random String Generator', icon:'🔤' };
+  const [length, setLength] = useState(16);
+  const [upper, setUpper] = useState(true);
+  const [lower, setLower] = useState(true);
+  const [digits, setDigits] = useState(true);
+  const [symbols, setSymbols] = useState(false);
+  const [count, setCount] = useState(1);
+  const [list, setList] = useState('');
+  const generate = useCallback(() => {
+    let pool = '';
+    if (upper)   pool += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    if (lower)   pool += 'abcdefghijklmnopqrstuvwxyz';
+    if (digits)  pool += '0123456789';
+    if (symbols) pool += '!@#$%^&*()-_=+';
+    if (!pool) { setList(''); return; }
+    const out = [];
+    for (let i = 0; i < count; i++) {
+      const bytes = safeCryptoBytes(length);
+      out.push(Array.from(bytes).map((b)=>pool[b%pool.length]).join(''));
+    }
+    setList(out.join('\n'));
+  }, [length, upper, lower, digits, symbols, count]);
+  useEffect(() => { generate(); }, [generate]);
+  return (
+    <InteractiveToolWorkspace theme={theme} tool={tool} outputLabel="Random string(s)"
+      status={{state:'ok', label:`${count} string${count===1?'':'s'}`, detail:`${length} chars`}}
+      onLoadSample={generate} onCopy={() => list}
+      primaryAction={{ label:'Generate', icon:'🎲', onClick: generate }}>
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls theme={theme} title="String options" fields={[
+          { type:'slider', label:'Length', value:length, min:4, max:128, onChange:setLength, unit:'chars' },
+          { type:'slider', label:'How many', value:count, min:1, max:50, onChange:setCount },
+          { type:'toggle', label:'Uppercase A-Z', value:upper, onChange:setUpper },
+          { type:'toggle', label:'Lowercase a-z', value:lower, onChange:setLower },
+          { type:'toggle', label:'Digits 0-9',    value:digits, onChange:setDigits },
+          { type:'toggle', label:'Symbols !@#$',  value:symbols, onChange:setSymbols },
+        ]} />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input>
+        <GenerateBtn theme={theme} onClick={generate} />
+      </InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output>
+        {count === 1 ? <BigCodeResult theme={theme} value={list} wrap /> : <SmartOutput theme={theme} value={list} mono />}
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
+  );
+}
+
+// ─── 9. HashID Generator (numeric → short alphanumeric) ────────────────────
+function HashIdGen() {
+  const theme = getCategoryById('generators');
+  const tool = { id:'hashid-gen', name:'HashID Generator', icon:'#' };
+  const [num, setNum] = useState(12345);
+  const [salt, setSalt] = useState('toolsrift');
+  const result = useMemo(() => {
+    const ALPHABET = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+    // Simple shuffle by salt
+    const arr = ALPHABET.split('');
+    let seed = 0;
+    for (const c of salt || 'x') seed += c.charCodeAt(0);
+    for (let i = arr.length - 1; i > 0; i--) {
+      seed = (seed * 9301 + 49297) % 233280;
+      const j = Math.abs(seed) % (i + 1);
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    const shuffled = arr.join('');
+    let n = BigInt(Math.abs(Number(num) || 0));
+    let s = '';
+    while (n > 0n) { s = shuffled[Number(n % BigInt(shuffled.length))] + s; n /= BigInt(shuffled.length); }
+    return s || shuffled[0];
+  }, [num, salt]);
+  return (
+    <InteractiveToolWorkspace theme={theme} tool={tool} outputLabel="Encoded HashID"
+      status={{state:'ok', label:result.length + ' chars'}}
+      onCopy={() => result}>
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls theme={theme} title="HashID options" fields={[
+          { type:'number', label:'Number to encode', value:num, onChange:setNum, step:1 },
+          { type:'select', label:'Salt', value:salt, onChange:setSalt,
+            options:[{value:'toolsrift',label:'toolsrift'},{value:'my-app',label:'my-app'},{value:'short',label:'short'}] },
+        ]} />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input>
+        <div style={{ fontSize:13, color:'#94A3B8', lineHeight:1.6 }}>
+          HashIDs encode a positive integer into a short, URL-safe string using a salt-shuffled alphabet. Common use: short public IDs that don't reveal sequential database keys.
+        </div>
+      </InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output>
+        <BigCodeResult theme={theme} value={result} />
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
+  );
+}
+
+// ─── QR generators: placeholder pages until qrcode lib is wired in ─────────
+function QrPlaceholder({ id, name, icon, hint }) {
+  const theme = getCategoryById('generators');
+  const tool = { id, name, icon };
+  return (
+    <InteractiveToolWorkspace theme={theme} tool={tool} status={{ state:'idle', label:'Coming soon' }}>
+      <InteractiveToolWorkspace.Input>
+        <div style={{ padding:'18px 20px', background:'rgba(245,158,11,0.06)', border:'1px solid rgba(245,158,11,0.18)', borderRadius:12, color:'#FBBF24', fontSize:14, lineHeight:1.7 }}>
+          <strong style={{ color:'#FCD34D' }}>Coming soon.</strong> {hint || 'This QR-code tool will render a downloadable PNG/SVG using a small QR library.'} Until then, try the universal QR generator on{' '}
+          <a href="#/tool/qr-code-gen" style={{ color:'#FCD34D' }}>/generators</a> if available, or paste the same data into any other QR site.
+        </div>
+      </InteractiveToolWorkspace.Input>
+    </InteractiveToolWorkspace>
+  );
+}
+function QrUrl()    { return <QrPlaceholder id="qr-url"    name="QR Code: URL"        icon="📱" />; }
+function QrWifi()   { return <QrPlaceholder id="qr-wifi"   name="QR Code: Wi-Fi"      icon="📶" />; }
+function QrVcard()  { return <QrPlaceholder id="qr-vcard"  name="QR Code: vCard"      icon="🪪" />; }
+function QrEmail()  { return <QrPlaceholder id="qr-email"  name="QR Code: Email"      icon="✉️" />; }
+function QrPhone()  { return <QrPlaceholder id="qr-phone"  name="QR Code: Phone Call" icon="📞" />; }
+function QrSms()    { return <QrPlaceholder id="qr-sms"    name="QR Code: SMS"        icon="💬" />; }
+function QrText()   { return <QrPlaceholder id="qr-text"   name="QR Code: Text"       icon="📝" />; }
+function QrReader() { return <QrPlaceholder id="qr-reader" name="QR Code Reader"      icon="🔍" hint="Camera-based QR scanner coming soon." />; }
+
+// ─── 10. Fake Name Generator ────────────────────────────────────────────────
+function FakeNameGen() {
+  const theme = getCategoryById('generators');
+  const tool = { id:'fake-name-gen', name:'Fake Name Generator', icon:'👤' };
+  const [count, setCount] = useState(1);
+  const [list, setList] = useState('');
+  const generate = useCallback(() => {
+    setList(Array.from({length: count}, () => makeFakeName()).join('\n'));
+  }, [count]);
+  useEffect(() => { generate(); }, [generate]);
+  return (
+    <InteractiveToolWorkspace theme={theme} tool={tool} outputLabel="Generated names"
+      status={{state:'ok', label:`${count} name${count===1?'':'s'}`}}
+      onLoadSample={generate} onCopy={() => list}
+      primaryAction={{ label:'Generate', icon:'🎲', onClick: generate }}>
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls theme={theme} title="Options" fields={[
+          { type:'slider', label:'How many', value:count, min:1, max:100, onChange:setCount },
+        ]} />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input><GenerateBtn theme={theme} onClick={generate} /></InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output>
+        {count === 1 ? <BigCodeResult theme={theme} value={list} wrap /> : <SmartOutput theme={theme} value={list} mono={false} />}
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
+  );
+}
+
+// ─── 11. Fake Address Generator ─────────────────────────────────────────────
+function FakeAddressGen() {
+  const theme = getCategoryById('generators');
+  const tool = { id:'fake-address-gen', name:'Fake Address Generator', icon:'🏠' };
+  const [count, setCount] = useState(1);
+  const [region, setRegion] = useState('india');
+  const [list, setList] = useState('');
+  const generate = useCallback(() => {
+    setList(Array.from({length: count}, () => makeFakeAddress(region)).join('\n\n'));
+  }, [count, region]);
+  useEffect(() => { generate(); }, [generate]);
+  return (
+    <InteractiveToolWorkspace theme={theme} tool={tool} outputLabel="Generated addresses"
+      status={{state:'ok', label:`${count} addr.`}}
+      onLoadSample={generate} onCopy={() => list}
+      primaryAction={{ label:'Generate', icon:'🎲', onClick: generate }}>
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls theme={theme} title="Options" fields={[
+          { type:'segmented', label:'Region', value:region,
+            options:[{value:'india',label:'India'},{value:'us',label:'United States'}], onChange:setRegion },
+          { type:'slider', label:'How many', value:count, min:1, max:50, onChange:setCount },
+        ]} />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input><GenerateBtn theme={theme} onClick={generate} /></InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output><SmartOutput theme={theme} value={list} mono={false} /></InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
+  );
+}
+
+// ─── 12. Fake Email Generator ───────────────────────────────────────────────
+function FakeEmailGen() {
+  const theme = getCategoryById('generators');
+  const tool = { id:'fake-email-gen', name:'Fake Email Generator', icon:'✉️' };
+  const [count, setCount] = useState(5);
+  const [list, setList] = useState('');
+  const generate = useCallback(() => {
+    setList(Array.from({length: count}, () => makeFakeEmail()).join('\n'));
+  }, [count]);
+  useEffect(() => { generate(); }, [generate]);
+  return (
+    <InteractiveToolWorkspace theme={theme} tool={tool} outputLabel="Fake emails"
+      status={{state:'ok', label:`${count} email${count===1?'':'s'}`}}
+      onLoadSample={generate} onCopy={() => list}
+      primaryAction={{ label:'Generate', icon:'🎲', onClick: generate }}>
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls theme={theme} title="Options" fields={[
+          { type:'slider', label:'How many', value:count, min:1, max:100, onChange:setCount },
+        ]} />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input><GenerateBtn theme={theme} onClick={generate} /></InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output><SmartOutput theme={theme} value={list} mono /></InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
+  );
+}
+
+// ─── 13. Fake Phone Generator ───────────────────────────────────────────────
+function FakePhoneGen() {
+  const theme = getCategoryById('generators');
+  const tool = { id:'fake-phone-gen', name:'Fake Phone Number Generator', icon:'📞' };
+  const [count, setCount] = useState(5);
+  const [country, setCountry] = useState('IN');
+  const [list, setList] = useState('');
+  const generate = useCallback(() => {
+    setList(Array.from({length: count}, () => makeFakePhone(country)).join('\n'));
+  }, [count, country]);
+  useEffect(() => { generate(); }, [generate]);
+  return (
+    <InteractiveToolWorkspace theme={theme} tool={tool} outputLabel="Fake phone numbers"
+      status={{state:'ok', label:`${count} number${count===1?'':'s'}`, detail:country}}
+      onLoadSample={generate} onCopy={() => list}
+      primaryAction={{ label:'Generate', icon:'🎲', onClick: generate }}>
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls theme={theme} title="Options" fields={[
+          { type:'segmented', label:'Country', value:country,
+            options:[{value:'IN',label:'India'},{value:'US',label:'USA'},{value:'GB',label:'UK'}], onChange:setCountry },
+          { type:'slider', label:'How many', value:count, min:1, max:50, onChange:setCount },
+        ]} />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input><GenerateBtn theme={theme} onClick={generate} /></InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output><SmartOutput theme={theme} value={list} mono /></InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
+  );
+}
+
+// ─── 14. Fake IP Generator ──────────────────────────────────────────────────
+function FakeIpGen() {
+  const theme = getCategoryById('generators');
+  const tool = { id:'fake-ip-gen', name:'Fake IP Address Generator', icon:'🌐' };
+  const [version, setVersion] = useState('4');
+  const [count, setCount] = useState(5);
+  const [list, setList] = useState('');
+  const generate = useCallback(() => {
+    setList(Array.from({length: count}, () => version === '4' ? makeFakeIPv4() : makeFakeIPv6()).join('\n'));
+  }, [count, version]);
+  useEffect(() => { generate(); }, [generate]);
+  return (
+    <InteractiveToolWorkspace theme={theme} tool={tool} outputLabel={`Fake IPv${version}`}
+      status={{state:'ok', label:`${count} address${count===1?'':'es'}`, detail:`IPv${version}`}}
+      onLoadSample={generate} onCopy={() => list}
+      primaryAction={{ label:'Generate', icon:'🎲', onClick: generate }}>
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls theme={theme} title="Options" fields={[
+          { type:'segmented', label:'Version', value:version,
+            options:[{value:'4',label:'IPv4'},{value:'6',label:'IPv6'}], onChange:setVersion },
+          { type:'slider', label:'How many', value:count, min:1, max:50, onChange:setCount },
+        ]} />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input><GenerateBtn theme={theme} onClick={generate} /></InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output><SmartOutput theme={theme} value={list} mono /></InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
+  );
+}
+
+// ─── 15. Fake MAC Generator ─────────────────────────────────────────────────
+function FakeMacGen() {
+  const theme = getCategoryById('generators');
+  const tool = { id:'fake-mac-gen', name:'Fake MAC Address Generator', icon:'🔌' };
+  const [count, setCount] = useState(5);
+  const [list, setList] = useState('');
+  const generate = useCallback(() => {
+    setList(Array.from({length: count}, () => makeFakeMac()).join('\n'));
+  }, [count]);
+  useEffect(() => { generate(); }, [generate]);
+  return (
+    <InteractiveToolWorkspace theme={theme} tool={tool} outputLabel="Fake MAC addresses"
+      status={{state:'ok', label:`${count} addr.`}}
+      onLoadSample={generate} onCopy={() => list}
+      primaryAction={{ label:'Generate', icon:'🎲', onClick: generate }}>
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls theme={theme} title="Options" fields={[
+          { type:'slider', label:'How many', value:count, min:1, max:50, onChange:setCount },
+        ]} />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input><GenerateBtn theme={theme} onClick={generate} /></InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output><SmartOutput theme={theme} value={list} mono /></InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
+  );
+}
+
+// ─── 16. Fake Date Generator ────────────────────────────────────────────────
+function FakeDateGen() {
+  const theme = getCategoryById('generators');
+  const tool = { id:'fake-date-gen', name:'Fake Date Generator', icon:'📅' };
+  const [count, setCount] = useState(5);
+  const [startY, setStartY] = useState(1990);
+  const [endY,   setEndY]   = useState(2030);
+  const [format, setFormat] = useState('iso');
+  const [list, setList] = useState('');
+  const generate = useCallback(() => {
+    const fmt = (d) => {
+      if (format === 'iso') return d.toISOString().slice(0,10);
+      if (format === 'us')  return `${d.getMonth()+1}/${d.getDate()}/${d.getFullYear()}`;
+      if (format === 'eu')  return `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
+      return d.toDateString();
+    };
+    setList(Array.from({length: count}, () => fmt(makeFakeDate(Number(startY), Number(endY)))).join('\n'));
+  }, [count, startY, endY, format]);
+  useEffect(() => { generate(); }, [generate]);
+  return (
+    <InteractiveToolWorkspace theme={theme} tool={tool} outputLabel="Fake dates"
+      status={{state:'ok', label:`${count} date${count===1?'':'s'}`, detail:format.toUpperCase()}}
+      onLoadSample={generate} onCopy={() => list}
+      primaryAction={{ label:'Generate', icon:'🎲', onClick: generate }}>
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls theme={theme} title="Options" fields={[
+          { type:'segmented', label:'Format', value:format,
+            options:[{value:'iso',label:'ISO 2026-05-19'},{value:'us',label:'US 5/19/2026'},{value:'eu',label:'EU 19/5/2026'},{value:'long',label:'Long'}], onChange:setFormat },
+          { type:'number', label:'Start year', value:startY, onChange:setStartY, step:1 },
+          { type:'number', label:'End year',   value:endY,   onChange:setEndY,   step:1 },
+          { type:'slider', label:'How many', value:count, min:1, max:100, onChange:setCount },
+        ]} />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input><GenerateBtn theme={theme} onClick={generate} /></InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output><SmartOutput theme={theme} value={list} mono /></InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
+  );
+}
+
+// ─── 17. Fake Data Bulk (CSV-style) ─────────────────────────────────────────
+function FakeDataBulk() {
+  const theme = getCategoryById('generators');
+  const tool = { id:'fake-data-bulk', name:'Fake Data Bulk (CSV)', icon:'📊' };
+  const [count, setCount] = useState(10);
+  const [region, setRegion] = useState('india');
+  const [format, setFormat] = useState('csv');
+  const [list, setList] = useState('');
+  const generate = useCallback(() => {
+    const rows = [];
+    for (let i = 0; i < count; i++) {
+      const row = {
+        name:    makeFakeName(),
+        email:   makeFakeEmail(),
+        phone:   makeFakePhone(region === 'us' ? 'US' : 'IN'),
+        address: makeFakeAddress(region).replace(/\n/g, ', '),
+        country: region === 'us' ? 'United States' : 'India',
+      };
+      rows.push(row);
+    }
+    if (format === 'csv') {
+      const header = 'name,email,phone,address,country';
+      const body   = rows.map((r) => [r.name, r.email, r.phone, `"${r.address}"`, r.country].join(',')).join('\n');
+      setList(header + '\n' + body);
+    } else if (format === 'json') {
+      setList(JSON.stringify(rows, null, 2));
+    } else {
+      setList(rows.map((r) => Object.entries(r).map(([k,v]) => `${k}: ${v}`).join('\n')).join('\n\n'));
+    }
+  }, [count, region, format]);
+  useEffect(() => { generate(); }, [generate]);
+  return (
+    <InteractiveToolWorkspace theme={theme} tool={tool} outputLabel={`Bulk fake data (${format})`}
+      status={{state:'ok', label:`${count} records`, detail:format.toUpperCase()}}
+      stats={{ chars: list.length, lines: list.split('\n').length }}
+      onLoadSample={generate} onCopy={() => list}
+      onDownload={() => ({ content: list, filename: `fake-data.${format === 'json' ? 'json' : 'csv'}` })}
+      primaryAction={{ label:'Generate', icon:'🎲', onClick: generate }}>
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls theme={theme} title="Bulk options" fields={[
+          { type:'segmented', label:'Region', value:region,
+            options:[{value:'india',label:'India'},{value:'us',label:'USA'}], onChange:setRegion },
+          { type:'segmented', label:'Format', value:format,
+            options:[{value:'csv',label:'CSV'},{value:'json',label:'JSON'},{value:'lines',label:'Lines'}], onChange:setFormat },
+          { type:'slider', label:'How many records', value:count, min:1, max:200, onChange:setCount },
+        ]} />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input><GenerateBtn theme={theme} onClick={generate} /></InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output><SmartOutput theme={theme} value={list} mono /></InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
+  );
+}
+
+// ─── 18. Random Country Generator ───────────────────────────────────────────
+function RandomCountryGen() {
+  const theme = getCategoryById('generators');
+  const tool = { id:'random-country-gen', name:'Random Country Generator', icon:'🌍' };
+  const [count, setCount] = useState(1);
+  const [list, setList] = useState('');
+  const generate = useCallback(() => {
+    setList(Array.from({length: count}, () => {
+      const c = randPick(COUNTRIES);
+      return `${c.n} (${c.c}) · dial ${c.d}`;
+    }).join('\n'));
+  }, [count]);
+  useEffect(() => { generate(); }, [generate]);
+  return (
+    <InteractiveToolWorkspace theme={theme} tool={tool} outputLabel="Random country"
+      status={{state:'ok', label:`${count} country${count===1?'':'ies'}`}}
+      onLoadSample={generate} onCopy={() => list}
+      primaryAction={{ label:'Generate', icon:'🎲', onClick: generate }}>
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls theme={theme} title="Options" fields={[
+          { type:'slider', label:'How many', value:count, min:1, max:20, onChange:setCount },
+        ]} />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input><GenerateBtn theme={theme} onClick={generate} /></InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output>
+        {count === 1 ? <BigCodeResult theme={theme} value={list} wrap /> : <SmartOutput theme={theme} value={list} mono={false} />}
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
+  );
+}
+
+// ─── 19. Random Color Generator ─────────────────────────────────────────────
+function RandomColorGen() {
+  const theme = getCategoryById('generators');
+  const tool = { id:'random-color-gen', name:'Random Color Generator', icon:'🎨' };
+  const [count, setCount] = useState(1);
+  const [colors, setColors] = useState([]);
+  const generate = useCallback(() => {
+    const out = [];
+    for (let i = 0; i < count; i++) {
+      const bytes = safeCryptoBytes(3);
+      const hex = '#' + Array.from(bytes).map((b) => b.toString(16).padStart(2,'0')).join('').toUpperCase();
+      out.push(hex);
+    }
+    setColors(out);
+  }, [count]);
+  useEffect(() => { generate(); }, [generate]);
+  const list = colors.join('\n');
+  return (
+    <InteractiveToolWorkspace theme={theme} tool={tool} outputLabel="Random color"
+      status={{state:'ok', label:`${count} color${count===1?'':'s'}`}}
+      onLoadSample={generate} onCopy={() => list}
+      primaryAction={{ label:'Generate', icon:'🎨', onClick: generate }}>
+      <InteractiveToolWorkspace.Controls>
+        <SmartControls theme={theme} title="Options" fields={[
+          { type:'slider', label:'How many', value:count, min:1, max:30, onChange:setCount },
+        ]} />
+      </InteractiveToolWorkspace.Controls>
+      <InteractiveToolWorkspace.Input><GenerateBtn theme={theme} onClick={generate} icon="🎨" /></InteractiveToolWorkspace.Input>
+      <InteractiveToolWorkspace.Output>
+        <div style={{ display:'grid', gap:8, gridTemplateColumns:'repeat(auto-fill, minmax(min(100%, 130px), 1fr))' }}>
+          {colors.map((c) => (
+            <div key={c} style={{ background:c, borderRadius:12, height:90, display:'flex', alignItems:'flex-end', justifyContent:'center', paddingBottom:8, fontFamily: theme.fonts.mono, fontSize:13, fontWeight:700, color:'#0a0a0a', boxShadow:'inset 0 0 0 2px rgba(255,255,255,0.18)' }}>
+              <span style={{ background:'rgba(0,0,0,0.55)', color:'#fff', padding:'3px 8px', borderRadius:6 }}>{c}</span>
+            </div>
+          ))}
+        </div>
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
+  );
+}
 
 const TOOLS = [
 { id:"strong-password-gen", cat:"security", name:"Strong Password Generator", desc:"Generate secure strong passwords online with length, symbols, and ambiguous character controls for safer account protection.", icon:"🔐", free:true },
@@ -412,7 +1362,7 @@ function HomePage() {
   useEffect(() => { document.title = "ToolsRift Generators – Free Security & Data Generators Online"; }, []);
   return (
     <CategoryLayout theme={PAGE_THEME} currentTool={null}>
-      <CategoryDashboard
+      <PremiumCategoryLanding
         theme={PAGE_THEME}
         tools={TOOLS}
         subcats={CATEGORIES}

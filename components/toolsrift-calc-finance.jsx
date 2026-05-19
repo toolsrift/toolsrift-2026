@@ -4,8 +4,10 @@ import { getCategoryById } from "../lib/categoryThemes";
 // PHASE 2: import UpgradeModal from "./UpgradeModal";
 // PHASE 2: import UsageCounter from "./UsageCounter";
 import CategoryLayout from './shared/CategoryLayout';
-import CategoryDashboard from './shared/CategoryDashboard';
+import PremiumCategoryLanding from './shared/PremiumCategoryLanding';
 import ToolPageLayout, { ToolSchemas } from './shared/ToolPageLayout';
+import InteractiveToolWorkspace from './shared/InteractiveToolWorkspace';
+import SmartControls from './shared/SmartControls';
 
 const THEME = getCategoryById("financecalc");
 const PAGE_THEME = getCategoryById('financecalc');
@@ -805,59 +807,140 @@ function emi(P, annualRate, months) {
 }
 
 function CarLoanCalc() {
-  const [price, setPrice] = useState("25000");
-  const [down, setDown] = useState("5000");
-  const [rate, setRate] = useState("9");
-  const [years, setYears] = useState("5");
-  const [insuranceYear, setInsuranceYear] = useState("1200");
-  const [maintenanceYear, setMaintenanceYear] = useState("800");
+  const theme = getCategoryById('financecalc');
+  const tool  = { id:'car-loan-calc', name:'Car Loan / EMI Calculator', icon:'🚗' };
+  const [price, setPrice]               = useState(25000);
+  const [down, setDown]                 = useState(5000);
+  const [rate, setRate]                 = useState(9);
+  const [years, setYears]               = useState(5);
+  const [insuranceYear, setInsuranceYear] = useState(1200);
+  const [maintenanceYear, setMaintenanceYear] = useState(800);
 
   const out = useMemo(() => {
-    const principal = Math.max(0, n(price) - n(down));
-    const months = Math.max(1, Math.floor(n(years) * 12));
-    const E = emi(principal, n(rate), months);
+    const principal = Math.max(0, Number(price) - Number(down));
+    const months = Math.max(1, Math.floor(Number(years) * 12));
+    const E = emi(principal, Number(rate), months);
     const totalLoanPaid = E * months;
     const totalInterest = totalLoanPaid - principal;
-    const tco = n(down) + totalLoanPaid + (n(insuranceYear) + n(maintenanceYear)) * n(years);
-
-    // amortization first 12
+    const tco = Number(down) + totalLoanPaid + (Number(insuranceYear) + Number(maintenanceYear)) * Number(years);
     let bal = principal;
-    const r = n(rate) / 12 / 100;
+    const r = Number(rate) / 12 / 100;
     const rows = [];
     for (let m = 1; m <= Math.min(12, months); m++) {
       const i = bal * r;
       let p = E - i;
       if (p > bal) p = bal;
       const end = bal - p;
-      rows.push([m, curr(bal), curr(i), curr(p), curr(end)]);
+      rows.push({ m, bal, i, p, end });
       bal = end;
     }
-    const sumRows = [
-      ["Vehicle Price", curr(n(price))],
-      ["Down Payment", curr(n(down))],
-      ["Loan Principal", curr(principal)],
-      ["Total Interest", curr(totalInterest)],
-      ["Total Cost of Ownership", curr(tco)],
-    ];
-    return { E, rows, sumRows };
+    return { E, totalLoanPaid, totalInterest, tco, principal, rows };
   }, [price, down, rate, years, insuranceYear, maintenanceYear]);
 
+  const buildReport = () => [
+    'Car Loan / EMI Calculator — ToolsRift',
+    `Vehicle price:      ${curr(price)}`,
+    `Down payment:       ${curr(down)}`,
+    `Loan principal:     ${curr(out.principal)}`,
+    `APR:                ${rate}%`,
+    `Term:               ${years} years (${Math.floor(years*12)} months)`,
+    '',
+    `Monthly EMI:        ${curr(out.E)}`,
+    `Total interest:     ${curr(out.totalInterest)}`,
+    `Total paid (loan):  ${curr(out.totalLoanPaid)}`,
+    `Total cost of ownership: ${curr(out.tco)}`,
+  ].join('\n');
+
+  const status = { state:'ok', label:`EMI ${curr(out.E)}`, detail:`${years}y · ${rate}%` };
+
   return (
-    <VStack>
-      <Grid3>
-        <div><Label>Car Price</Label><Input value={price} onChange={setPrice} /></div>
-        <div><Label>Down Payment</Label><Input value={down} onChange={setDown} /></div>
-        <div><Label>APR %</Label><Input value={rate} onChange={setRate} /></div>
-      </Grid3>
-      <Grid3>
-        <div><Label>Loan Years</Label><Input value={years} onChange={setYears} /></div>
-        <div><Label>Insurance / Year</Label><Input value={insuranceYear} onChange={setInsuranceYear} /></div>
-        <div><Label>Maintenance / Year</Label><Input value={maintenanceYear} onChange={setMaintenanceYear} /></div>
-      </Grid3>
-      <BigResult value={curr(out.E)} label="Monthly EMI" />
-      <DataTable columns={["Item", "Amount"]} rows={out.sumRows} />
-      <DataTable columns={["Month", "Start Balance", "Interest", "Principal", "End Balance"]} rows={out.rows} />
-    </VStack>
+    <InteractiveToolWorkspace
+      theme={theme}
+      tool={tool}
+      inputLabel="Loan inputs"
+      outputLabel="EMI breakdown"
+      status={status}
+      onLoadSample={() => { setPrice(28000); setDown(5000); setRate(7.5); setYears(5); }}
+      onCopy={() => buildReport()}
+      onDownload={() => ({ content: buildReport(), filename: 'car-loan-emi.txt' })}
+      shareState={{ p:price, d:down, r:rate, y:years, i:insuranceYear, m:maintenanceYear }}
+      onRestoreState={(st) => {
+        if (typeof st?.p !== 'undefined') setPrice(st.p);
+        if (typeof st?.d !== 'undefined') setDown(st.d);
+        if (typeof st?.r !== 'undefined') setRate(st.r);
+        if (typeof st?.y !== 'undefined') setYears(st.y);
+        if (typeof st?.i !== 'undefined') setInsuranceYear(st.i);
+        if (typeof st?.m !== 'undefined') setMaintenanceYear(st.m);
+      }}
+    >
+      <InteractiveToolWorkspace.Input>
+        <SmartControls
+          theme={theme}
+          title="Loan terms"
+          fields={[
+            { type:'number', label:'Vehicle price', value:price, onChange:setPrice, min:0, step:500, unit:'$' },
+            { type:'number', label:'Down payment',  value:down,  onChange:setDown,  min:0, step:500, unit:'$' },
+            { type:'slider', label:'APR',           value:rate,  onChange:setRate,  min:0, max:30, step:0.1, unit:'%' },
+            { type:'slider', label:'Term',          value:years, onChange:setYears, min:1, max:10, unit:'years' },
+            { type:'number', label:'Insurance / year',  value:insuranceYear,   onChange:setInsuranceYear,   min:0, step:100, unit:'$' },
+            { type:'number', label:'Maintenance / year',value:maintenanceYear, onChange:setMaintenanceYear, min:0, step:100, unit:'$' },
+          ]}
+        />
+      </InteractiveToolWorkspace.Input>
+
+      <InteractiveToolWorkspace.Output>
+        <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
+          <div style={{ padding:'24px 22px', background:`linear-gradient(135deg, ${theme.tint25}, ${theme.tint06})`, border:`1px solid ${theme.tint25}`, borderRadius:16, textAlign:'center' }}>
+            <div style={{ fontFamily: theme.fonts.head, fontSize:'clamp(36px,5vw,52px)', fontWeight:800, color: theme.color, letterSpacing:'-0.03em', lineHeight:1 }}>
+              {curr(out.E)}
+            </div>
+            <div style={{ marginTop:4, fontSize:13, color:'#94A3B8', fontFamily: theme.fonts.body }}>Monthly EMI</div>
+          </div>
+
+          <div style={{ display:'grid', gap:10, gridTemplateColumns:'repeat(2, 1fr)' }}>
+            {[
+              ['Principal',         curr(out.principal)],
+              ['Total interest',    curr(out.totalInterest)],
+              ['Total paid (loan)', curr(out.totalLoanPaid)],
+              ['5-yr TCO',          curr(out.tco)],
+            ].map(([l,v]) => (
+              <div key={l} style={{ padding:'12px 14px', background:'rgba(15,23,42,0.55)', border:`1px solid ${theme.tint12}`, borderRadius:12 }}>
+                <div style={{ fontSize:11.5, fontWeight:700, color:'#94A3B8', letterSpacing:'0.1em', textTransform:'uppercase', fontFamily: theme.fonts.body }}>{l}</div>
+                <div style={{ marginTop:4, fontFamily: theme.fonts.mono, fontSize:15, fontWeight:700, color:'#F8FAFC' }}>{v}</div>
+              </div>
+            ))}
+          </div>
+
+          <details>
+            <summary style={{ cursor:'pointer', fontSize:13, fontWeight:600, color: theme.color, fontFamily: theme.fonts.body, padding:'10px 0' }}>
+              First 12 months amortisation
+            </summary>
+            <div style={{ overflowX:'auto', marginTop:8 }}>
+              <table style={{ width:'100%', borderCollapse:'collapse', fontFamily: theme.fonts.mono, fontSize:12 }}>
+                <thead>
+                  <tr style={{ background:'rgba(255,255,255,0.04)' }}>
+                    {['Month','Start','Interest','Principal','End'].map((h) => (
+                      <th key={h} style={{ padding:'8px 10px', textAlign:'right', color:'#94A3B8', fontWeight:700, fontSize:11, letterSpacing:'0.06em' }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {out.rows.map((r) => (
+                    <tr key={r.m} style={{ borderTop:`1px solid ${theme.tint12}` }}>
+                      <td style={{ padding:'7px 10px', textAlign:'right', color:theme.color }}>{r.m}</td>
+                      <td style={{ padding:'7px 10px', textAlign:'right', color:'#E2E8F0' }}>{curr(r.bal)}</td>
+                      <td style={{ padding:'7px 10px', textAlign:'right', color:'#FDA4AF' }}>{curr(r.i)}</td>
+                      <td style={{ padding:'7px 10px', textAlign:'right', color:'#86EFAC' }}>{curr(r.p)}</td>
+                      <td style={{ padding:'7px 10px', textAlign:'right', color:'#E2E8F0' }}>{curr(r.end)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </details>
+        </div>
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
   );
 }
 
@@ -1057,52 +1140,115 @@ function bmrMifflin(gender, weightKg, heightCm, age) {
 }
 
 function TdeeCalc() {
-  const [gender, setGender] = useState("male");
-  const [age, setAge] = useState("30");
-  const [weight, setWeight] = useState("75");
-  const [height, setHeight] = useState("175");
-  const [activity, setActivity] = useState("1.55");
+  const theme = getCategoryById('financecalc');
+  const tool  = { id:'tdee-calc', name:'TDEE Calculator', icon:'🔥' };
+  const [gender, setGender]     = useState('male');
+  const [age, setAge]           = useState(30);
+  const [weight, setWeight]     = useState(75);
+  const [height, setHeight]     = useState(175);
+  const [activity, setActivity] = useState('1.55');
 
   const out = useMemo(() => {
-    const a = n(age), w = n(weight), h = n(height), act = n(activity);
-    const bmr = bmrMifflin(gender, w, h, a);
+    const a = Number(age) || 0, w = Number(weight) || 0, h = Number(height) || 0, act = Number(activity) || 1.2;
+    const bmr  = bmrMifflin(gender, w, h, a);
     const tdee = bmr * act;
-    let cat = "Maintenance";
-    if (tdee < 1800) cat = "Lower energy need";
-    else if (tdee < 2600) cat = "Moderate energy need";
-    else cat = "Higher energy need";
-    const rows = [
-      ["BMR (Mifflin-St Jeor)", round(bmr, 0)],
-      ["Activity Factor", act],
-      ["TDEE", round(tdee, 0)],
-      ["Category", cat],
-    ];
-    return { bmr, tdee, cat, rows };
+    let cat = 'Maintenance';
+    if (tdee < 1800)      cat = 'Lower energy need';
+    else if (tdee < 2600) cat = 'Moderate energy need';
+    else                  cat = 'Higher energy need';
+    return { bmr: Math.round(bmr), tdee: Math.round(tdee), cat };
   }, [gender, age, weight, height, activity]);
 
+  const buildReport = () => [
+    'TDEE Calculator — ToolsRift',
+    `BMR (Mifflin-St Jeor): ${out.bmr} kcal`,
+    `Activity factor: ${activity}`,
+    `TDEE: ${out.tdee} kcal/day`,
+    `Classification: ${out.cat}`,
+    '',
+    `Inputs: ${gender}, ${age}y, ${weight}kg, ${height}cm`,
+  ].join('\n');
+
+  const status = out.tdee
+    ? { state:'ok', label:`${out.tdee.toLocaleString()} kcal`, detail: out.cat }
+    : { state:'idle', label:'Enter your details' };
+
   return (
-    <VStack>
-      <Grid3>
-        <div><Label>Gender</Label><SelectInput value={gender} onChange={setGender} options={[{ value: "male", label: "Male" }, { value: "female", label: "Female" }]} /></div>
-        <div><Label>Age</Label><Input value={age} onChange={setAge} /></div>
-        <div><Label>Weight (kg)</Label><Input value={weight} onChange={setWeight} /></div>
-      </Grid3>
-      <Grid2>
-        <div><Label>Height (cm)</Label><Input value={height} onChange={setHeight} /></div>
-        <div><Label>Activity Level</Label><SelectInput value={activity} onChange={setActivity} options={[
-          { value: "1.2", label: "Sedentary (1.2)" },
-          { value: "1.375", label: "Lightly active (1.375)" },
-          { value: "1.55", label: "Moderately active (1.55)" },
-          { value: "1.725", label: "Very active (1.725)" },
-          { value: "1.9", label: "Extra active (1.9)" },
-        ]} /></div>
-      </Grid2>
-      <Grid2>
-        <BigResult value={`${round(out.tdee, 0)} kcal`} label="TDEE" />
-        <BigResult value={out.cat} label="Classification" />
-      </Grid2>
-      <DataTable columns={["Metric", "Value"]} rows={out.rows} />
-    </VStack>
+    <InteractiveToolWorkspace
+      theme={theme}
+      tool={tool}
+      inputLabel="Your details"
+      outputLabel="Daily energy needs"
+      status={status}
+      onLoadSample={() => { setGender('female'); setAge(28); setWeight(62); setHeight(168); setActivity('1.375'); }}
+      onClear={() => { setAge(0); setWeight(0); setHeight(0); }}
+      onCopy={() => buildReport()}
+      onDownload={() => ({ content: buildReport(), filename: 'tdee.txt' })}
+      shareState={{ g:gender, a:age, w:weight, h:height, ac:activity }}
+      onRestoreState={(st) => {
+        if (typeof st?.g === 'string') setGender(st.g);
+        if (typeof st?.a !== 'undefined') setAge(st.a);
+        if (typeof st?.w !== 'undefined') setWeight(st.w);
+        if (typeof st?.h !== 'undefined') setHeight(st.h);
+        if (typeof st?.ac === 'string') setActivity(st.ac);
+      }}
+    >
+      <InteractiveToolWorkspace.Input>
+        <SmartControls
+          theme={theme}
+          title="Profile"
+          fields={[
+            { type:'segmented', label:'Gender', value:gender, options:[{value:'male',label:'Male'},{value:'female',label:'Female'}], onChange:setGender },
+            { type:'number',    label:'Age',    value:age,    onChange:setAge,    min:10, max:120, unit:'years' },
+            { type:'number',    label:'Weight', value:weight, onChange:setWeight, min:20, max:300, unit:'kg' },
+            { type:'number',    label:'Height', value:height, onChange:setHeight, min:80, max:230, unit:'cm' },
+            { type:'select',    label:'Activity level', value:activity, onChange:setActivity, options:[
+              { value:'1.2',   label:'Sedentary (little/no exercise)' },
+              { value:'1.375', label:'Lightly active (1–3 days/wk)' },
+              { value:'1.55',  label:'Moderately active (3–5 days/wk)' },
+              { value:'1.725', label:'Very active (6–7 days/wk)' },
+              { value:'1.9',   label:'Extra active (physical job)' },
+            ] },
+          ]}
+        />
+      </InteractiveToolWorkspace.Input>
+
+      <InteractiveToolWorkspace.Output>
+        <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
+          <div
+            style={{
+              padding: '24px 22px',
+              background:`linear-gradient(135deg, ${theme.tint25}, ${theme.tint06})`,
+              border:`1px solid ${theme.tint25}`,
+              borderRadius:16, textAlign:'center',
+            }}
+          >
+            <div style={{ fontFamily: theme.fonts.head, fontSize:'clamp(38px,6vw,56px)', fontWeight:800, color: theme.color, letterSpacing:'-0.03em', lineHeight:1 }}>
+              {out.tdee.toLocaleString()}
+            </div>
+            <div style={{ marginTop:4, fontSize:13, color:'#94A3B8', fontFamily: theme.fonts.body }}>kcal / day · {out.cat}</div>
+          </div>
+
+          <div style={{ display:'grid', gap:10, gridTemplateColumns:'repeat(2, 1fr)' }}>
+            {[
+              ['BMR',           `${out.bmr.toLocaleString()} kcal`],
+              ['Activity',      `× ${activity}`],
+              ['Deficit (-500)', `${Math.max(out.tdee-500,0).toLocaleString()} kcal`],
+              ['Surplus (+300)', `${(out.tdee+300).toLocaleString()} kcal`],
+            ].map(([l,v]) => (
+              <div key={l} style={{ padding:'12px 14px', background:'rgba(15,23,42,0.55)', border:`1px solid ${theme.tint12}`, borderRadius:12 }}>
+                <div style={{ fontSize:11.5, fontWeight:700, color:'#94A3B8', letterSpacing:'0.1em', textTransform:'uppercase', fontFamily: theme.fonts.body }}>{l}</div>
+                <div style={{ marginTop:4, fontFamily: theme.fonts.mono, fontSize:16, fontWeight:700, color:'#F8FAFC' }}>{v}</div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ fontSize:11.5, color:'#64748B', lineHeight:1.5 }}>
+            Uses the Mifflin-St Jeor BMR formula × activity multiplier. Educational use only — consult a professional for medical advice.
+          </div>
+        </div>
+      </InteractiveToolWorkspace.Output>
+    </InteractiveToolWorkspace>
   );
 }
 
@@ -1704,7 +1850,7 @@ Object.assign(TOOL_COMPONENTS, {
 function useAppRouter() {
   const parse = () => {
     const h = window.location.hash || "#/";
-    const path = h.replace(/^#/, "") || "/";
+    const path = h.replace(/^#/, "").replace(/\?.*$/, "") || "/";
     const parts = path.split("/").filter(Boolean);
     if (!parts.length) return { page: "home" };
     if (parts[0] === "tool" && parts[1]) return { page: "tool", toolId: parts[1] };
@@ -1833,7 +1979,7 @@ function SubcatTabs({ cats, active, onSelect }) {
 function HomePage() {
   return (
     <CategoryLayout theme={PAGE_THEME} currentTool={null}>
-      <CategoryDashboard
+      <PremiumCategoryLanding
         theme={PAGE_THEME}
         tools={TOOLS}
         subcats={CATEGORIES}
