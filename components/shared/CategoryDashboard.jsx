@@ -37,14 +37,14 @@ function ThemedToolTile({ theme, tool, onClick, index = 0 }) {
       transition={SPRING.smooth}
       style={{
         position: 'relative',
-        background: hov ? theme.tint06 : 'rgba(15,23,42,0.6)',
-        border: `1px solid ${hov ? theme.tint25 : 'rgba(255,255,255,0.06)'}`,
-        borderRadius: feel === 'liquid' ? 22 : feel === 'precise' ? 8 : 14,
+        background: hov ? theme.tint12 : COLORS.surface,
+        border: `1px solid ${hov ? theme.color : 'rgba(255,255,255,0.08)'}`,
+        borderRadius: feel === 'liquid' ? 16 : feel === 'precise' ? 8 : 12,
         padding: 18,
         cursor: 'pointer',
         transform: tileTransform,
-        transition: 'background 0.25s, border-color 0.25s, transform 0.3s ease, box-shadow 0.3s',
-        boxShadow: hov ? `0 12px 32px ${theme.tint25}` : 'none',
+        transition: 'background 0.2s, border-color 0.2s, transform 0.25s ease, box-shadow 0.25s',
+        boxShadow: hov ? `0 12px 28px ${theme.color}26, 0 0 0 1px ${theme.color}33 inset` : '0 1px 2px rgba(0,0,0,0.3)',
         overflow: 'hidden',
         userSelect: 'none',
         height: '100%',
@@ -97,13 +97,14 @@ function ThemedToolTile({ theme, tool, onClick, index = 0 }) {
       <div style={{
         fontFamily: theme.fonts.body,
         fontSize: 12.5,
-        color: COLORS.muted,
+        color: hov ? '#CBD5E1' : COLORS.muted,
         lineHeight: 1.5,
         display: '-webkit-box',
         WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
         overflow: 'hidden',
         position: 'relative', zIndex: 1,
         minHeight: 36,
+        transition: 'color 0.2s',
       }}>
         {tool.desc || tool.description || ''}
       </div>

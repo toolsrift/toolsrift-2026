@@ -1,5 +1,7 @@
 import Head from 'next/head'
 import dynamic from 'next/dynamic'
+import CategoryContent from '../components/CategoryContent'
+import categoryContent from '../lib/categoryContent'
 const ToolsRiftHash = dynamic(() => import('../components/toolsrift-hash'), { ssr: false })
 export default function Hash() {
   return (<><Head>
@@ -11,5 +13,5 @@ export default function Hash() {
         <meta property="og:site_name" content="ToolsRift" />
         <meta name="twitter:card" content="summary_large_image" />
         <link rel="canonical" href="https://toolsrift.com/hash" />
-      </Head><ToolsRiftHash /></>)
+      </Head><ToolsRiftHash /><CategoryContent data={categoryContent.hash} /></>)
 }

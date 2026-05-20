@@ -200,7 +200,7 @@ export default function About() {
           </p>
           <div style={{ background: C.surface, border: `1px solid ${C.borderLight}`, borderRadius: 16, padding: '28px 32px' }}>
             {[
-              { icon: '📧', label: 'Email', value: 'hello@toolsrift.com', href: 'mailto:hello@toolsrift.com' },
+              { icon: '📧', label: 'Email', value: 'contact@toolsrift.com', href: 'mailto:contact@toolsrift.com' },
               { icon: '🌐', label: 'Website', value: 'toolsrift.com', href: 'https://toolsrift.com' },
               { icon: '📍', label: 'Location', value: 'Hyderabad, India', href: null },
             ].map(item => (
@@ -221,7 +221,7 @@ export default function About() {
         {/* FOOTER */}
         <footer style={{ borderTop: `1px solid ${C.borderLight}`, padding: '28px 24px', textAlign: 'center', color: C.dim, fontSize: 13 }}>
           <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '6px 16px', marginBottom: 12 }}>
-            {[['Home','/'],['About','/about'],['Privacy Policy','/privacy-policy'],['Text Tools','/text'],['PDF Tools','/pdf'],['Image Tools','/images'],['Dev Tools','/devtools']].map(([n,h]) => (
+            {[['Home','/'],['About','/about'],['Contact','/contact'],['Privacy Policy','/privacy-policy'],['Terms','/terms'],['Disclaimer','/disclaimer'],['Cookies','/cookies']].map(([n,h]) => (
               <a key={h} href={h} style={{ color: C.dim, textDecoration: 'none' }}
                 onMouseEnter={e => e.currentTarget.style.color = '#A5B4FC'}
                 onMouseLeave={e => e.currentTarget.style.color = C.dim}>{n}</a>

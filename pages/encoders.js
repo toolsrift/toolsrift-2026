@@ -1,5 +1,7 @@
 import Head from 'next/head'
 import dynamic from 'next/dynamic'
+import CategoryContent from '../components/CategoryContent'
+import categoryContent from '../lib/categoryContent'
 const ToolsRiftEncoders = dynamic(() => import('../components/toolsrift-encoders'), { ssr: false })
 export default function Encoders() {
   return (<><Head>
@@ -11,5 +13,5 @@ export default function Encoders() {
         <meta property="og:site_name" content="ToolsRift" />
         <meta name="twitter:card" content="summary_large_image" />
         <link rel="canonical" href="https://toolsrift.com/encoders" />
-      </Head><ToolsRiftEncoders /></>)
+      </Head><ToolsRiftEncoders /><CategoryContent data={categoryContent.encoders} /></>)
 }

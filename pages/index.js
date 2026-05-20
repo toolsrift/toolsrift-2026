@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import dynamic from 'next/dynamic'
+import HomepageContent from '../components/HomepageContent'
 
 const ToolsRiftMain = dynamic(
   () => import('../components/toolsrift-main').catch(err => {
@@ -16,10 +17,10 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>ToolsRift — 1600+ Free Online Tools</title>
-        <meta name="description" content="ToolsRift offers 1600+ free online tools including calculators, converters, text tools, PDF tools, image tools and more. No signup required." />
-        <meta property="og:title" content="ToolsRift — 1600+ Free Online Tools" />
-        <meta property="og:description" content="Free online tools for everyone. Calculators, converters, text tools, and more." />
+        <title>ToolsRift — 544+ Free Online Tools, No Signup</title>
+        <meta name="description" content="ToolsRift offers 544+ free online tools — calculators, converters, text and PDF tools, image editors, code formatters and more. No signup, no upload, runs in your browser." />
+        <meta property="og:title" content="ToolsRift — 544+ Free Online Tools" />
+        <meta property="og:description" content="Free online tools for everyone. Calculators, converters, text tools, PDFs, images and more. Browser-based, no signup." />
         <meta property="og:url" content="https://toolsrift.com" />
         <meta property="og:site_name" content="ToolsRift" />
         <meta name="twitter:card" content="summary_large_image" />
@@ -30,6 +31,7 @@ export default function Home() {
         <link rel="canonical" href="https://toolsrift.com" />
       </Head>
       <ToolsRiftMain />
+      <HomepageContent />
     </>
   )
 }

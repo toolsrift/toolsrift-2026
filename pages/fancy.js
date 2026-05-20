@@ -1,5 +1,7 @@
 import Head from 'next/head'
 import dynamic from 'next/dynamic';
+import CategoryContent from '../components/CategoryContent'
+import categoryContent from '../lib/categoryContent'
 const ToolsRiftFancy = dynamic(() => import('../components/toolsrift-fancy'), { ssr: false });
 export default function FancyPage() {
   return (
@@ -15,6 +17,7 @@ export default function FancyPage() {
         <link rel="canonical" href="https://toolsrift.com/fancy" />
       </Head>
       <ToolsRiftFancy />
+      <CategoryContent data={categoryContent.fancy} />
     </>
   );
 }

@@ -1,5 +1,7 @@
 import Head from 'next/head'
 import dynamic from 'next/dynamic'
+import CategoryContent from '../components/CategoryContent'
+import categoryContent from '../lib/categoryContent'
 const ToolsRiftColors = dynamic(() => import('../components/toolsrift-colors'), { ssr: false })
 export default function Colors() {
   return (<><Head>
@@ -11,5 +13,5 @@ export default function Colors() {
         <meta property="og:site_name" content="ToolsRift" />
         <meta name="twitter:card" content="summary_large_image" />
         <link rel="canonical" href="https://toolsrift.com/colors" />
-      </Head><ToolsRiftColors /></>)
+      </Head><ToolsRiftColors /><CategoryContent data={categoryContent.colors} /></>)
 }

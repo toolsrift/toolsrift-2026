@@ -1,5 +1,7 @@
 import Head from 'next/head'
 import dynamic from 'next/dynamic'
+import CategoryContent from '../components/CategoryContent'
+import categoryContent from '../lib/categoryContent'
 const ToolsRiftJson = dynamic(() => import('../components/toolsrift-json'), { ssr: false })
 export default function Json() {
   return (<><Head>
@@ -11,5 +13,5 @@ export default function Json() {
         <meta property="og:site_name" content="ToolsRift" />
         <meta name="twitter:card" content="summary_large_image" />
         <link rel="canonical" href="https://toolsrift.com/json" />
-      </Head><ToolsRiftJson /></>)
+      </Head><ToolsRiftJson /><CategoryContent data={categoryContent.json} /></>)
 }

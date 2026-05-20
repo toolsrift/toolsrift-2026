@@ -1,5 +1,7 @@
 import Head from 'next/head'
 import dynamic from 'next/dynamic'
+import CategoryContent from '../components/CategoryContent'
+import categoryContent from '../lib/categoryContent'
 const ToolsRiftUnits = dynamic(() => import('../components/toolsrift-units'), { ssr: false })
 export default function Units() {
   return (<><Head>
@@ -11,5 +13,5 @@ export default function Units() {
         <meta property="og:site_name" content="ToolsRift" />
         <meta name="twitter:card" content="summary_large_image" />
         <link rel="canonical" href="https://toolsrift.com/units" />
-      </Head><ToolsRiftUnits /></>)
+      </Head><ToolsRiftUnits /><CategoryContent data={categoryContent.units} /></>)
 }

@@ -1,5 +1,7 @@
 import Head from 'next/head'
 import dynamic from 'next/dynamic';
+import CategoryContent from '../components/CategoryContent'
+import categoryContent from '../lib/categoryContent'
 const ToolsRiftFormatters = dynamic(() => import('../components/toolsrift-formatters'), { ssr: false });
 export default function FormattersPage() {
   return (
@@ -15,6 +17,7 @@ export default function FormattersPage() {
         <link rel="canonical" href="https://toolsrift.com/formatters" />
       </Head>
       <ToolsRiftFormatters />
+      <CategoryContent data={categoryContent.formatters} />
     </>
   );
 }

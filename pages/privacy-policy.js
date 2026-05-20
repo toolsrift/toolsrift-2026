@@ -83,7 +83,7 @@ To exercise these rights, contact us at the email below.`
     title: '9. Contact Us',
     content: `If you have any questions, concerns, or requests regarding this Privacy Policy, please contact us:
 
-Email: privacy@toolsrift.com
+Email: contact@toolsrift.com
 Website: https://toolsrift.com
 Location: Hyderabad, India
 
@@ -174,7 +174,7 @@ export default function PrivacyPolicy() {
         {/* FOOTER */}
         <footer style={{ borderTop: `1px solid ${C.borderLight}`, padding: '28px 24px', textAlign: 'center', color: C.dim, fontSize: 13 }}>
           <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '6px 16px', marginBottom: 12 }}>
-            {[['Home','/'],['Privacy Policy','/privacy-policy'],['About','/about'],['Text Tools','/text'],['PDF Tools','/pdf'],['Image Tools','/images'],['Dev Tools','/devtools']].map(([n,h]) => (
+            {[['Home','/'],['About','/about'],['Contact','/contact'],['Privacy Policy','/privacy-policy'],['Terms','/terms'],['Disclaimer','/disclaimer'],['Cookies','/cookies']].map(([n,h]) => (
               <a key={h} href={h} style={{ color: C.dim, textDecoration: 'none' }}
                 onMouseEnter={e => e.currentTarget.style.color = '#A5B4FC'}
                 onMouseLeave={e => e.currentTarget.style.color = C.dim}>{n}</a>

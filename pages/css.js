@@ -1,5 +1,7 @@
 import Head from 'next/head'
 import dynamic from 'next/dynamic'
+import CategoryContent from '../components/CategoryContent'
+import categoryContent from '../lib/categoryContent'
 const ToolsRiftCss = dynamic(() => import('../components/toolsrift-css'), { ssr: false })
 export default function Css() {
   return (<><Head>
@@ -11,5 +13,5 @@ export default function Css() {
         <meta property="og:site_name" content="ToolsRift" />
         <meta name="twitter:card" content="summary_large_image" />
         <link rel="canonical" href="https://toolsrift.com/css" />
-      </Head><ToolsRiftCss /></>)
+      </Head><ToolsRiftCss /><CategoryContent data={categoryContent.css} /></>)
 }

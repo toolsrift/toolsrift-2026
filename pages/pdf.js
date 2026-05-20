@@ -1,5 +1,7 @@
 import Head from 'next/head'
 import dynamic from 'next/dynamic';
+import CategoryContent from '../components/CategoryContent'
+import categoryContent from '../lib/categoryContent'
 const ToolsRiftPDF = dynamic(() => import('../components/toolsrift-pdf'), { ssr: false });
 export default function PDFPage() {
   return (
@@ -15,6 +17,7 @@ export default function PDFPage() {
         <link rel="canonical" href="https://toolsrift.com/pdf" />
       </Head>
       <ToolsRiftPDF />
+      <CategoryContent data={categoryContent.pdf} />
     </>
   );
 }

@@ -1,5 +1,7 @@
 import Head from 'next/head'
 import dynamic from 'next/dynamic';
+import CategoryContent from '../components/CategoryContent'
+import categoryContent from '../lib/categoryContent'
 const C = dynamic(() => import('../components/toolsrift-converters2'), { ssr: false });
 export default function P() {
   return (
@@ -15,6 +17,7 @@ export default function P() {
         <link rel="canonical" href="https://toolsrift.com/converters2" />
       </Head>
       <C />
+      <CategoryContent data={categoryContent.converters2} />
     </>
   );
 }

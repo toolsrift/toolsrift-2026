@@ -807,7 +807,8 @@ export function LandingFooter() {
   const cols = [
     { title: 'Top Categories', links: CATEGORY_THEMES.slice(0, 8).map(t => [t.name, t.pageRoute]) },
     { title: 'More Categories', links: CATEGORY_THEMES.slice(8, 16).map(t => [t.name, t.pageRoute]) },
-    { title: 'Company', links: [['About', '/about'], ['Roadmap', '/roadmap'], ['Privacy Policy', '/privacy-policy'], ['Pricing', '/pricing']] },
+    { title: 'Company', links: [['About', '/about'], ['Contact', '/contact'], ['Roadmap', '/roadmap'], ['Pricing', '/pricing']] },
+    { title: 'Legal', links: [['Privacy Policy', '/privacy-policy'], ['Terms of Service', '/terms'], ['Cookie Policy', '/cookies'], ['Disclaimer', '/disclaimer']] },
   ];
   return (
     <footer style={{

@@ -1,19 +1,17 @@
-// ── ToolsRift CategoryLayout (v2) ────────────────────────────────────────────
-// Uses the upgraded theme registry (tint25, bgRadial, fonts, anim)
-// and shared motion + ui primitives. Each category renders as its own
-// micro-brand with a unique themed hero, sticky nav, and footer.
+// ── ToolsRift CategoryLayout (v3 — pro redesign May 2026) ───────────────────
+// Compact header + compact category banner + clean footer.
+// Replaces the previous oversized hero with a SmallSEOTools / Linear-style
+// professional layout that gets users to the tools fast.
+//
+// Editing this single file updates every tool category page in the project.
 
 import { useState, useEffect } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { COLORS, RADIUS, FS, MQ } from '../../lib/designTokens';
-import { BlurUp, FadeUp, GradientBlob, ParticlesField, ScanlineOverlay } from './motion';
-import { Pill, ThemedButton } from './ui';
+import { motion } from 'framer-motion';
+import { COLORS, FS, MQ } from '../../lib/designTokens';
 
-// ── Sticky themed header ────────────────────────────────────────────────────
+// ── Sticky top nav (single line, no decorative animations) ──────────────────
 function CategoryHeader({ theme }) {
   const [scrolled, setScrolled] = useState(false);
-  const { scrollY } = useScroll();
-  const blur = useTransform(scrollY, [0, 80], [10, 18]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -22,182 +20,275 @@ function CategoryHeader({ theme }) {
   }, []);
 
   return (
-    <motion.header
+    <header
       style={{
         position: 'sticky', top: 0, zIndex: 100,
         height: 60,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '0 clamp(16px, 4vw, 28px)',
-        background: `rgba(6,9,15,${scrolled ? 0.95 : 0.7})`,
-        backdropFilter: `blur(${scrolled ? 18 : 12}px) saturate(140%)`,
-        WebkitBackdropFilter: `blur(${scrolled ? 18 : 12}px) saturate(140%)`,
-        borderBottom: `1px solid ${scrolled ? theme.tint25 : 'rgba(255,255,255,0.04)'}`,
+        background: scrolled ? 'rgba(6,9,15,0.92)' : 'rgba(6,9,15,0.75)',
+        backdropFilter: 'blur(14px) saturate(140%)',
+        WebkitBackdropFilter: 'blur(14px) saturate(140%)',
+        borderBottom: `1px solid ${scrolled ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.03)'}`,
         transition: 'background 0.25s, border-color 0.25s',
         fontFamily: theme.fonts.body,
       }}
     >
       <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-        <motion.span
-          animate={{ boxShadow: [`0 0 0 ${theme.color}66`, `0 0 14px ${theme.color}aa`, `0 0 0 ${theme.color}66`] }}
-          transition={{ duration: 2.5, repeat: Infinity }}
-          style={{ width: 10, height: 10, borderRadius: '50%', background: theme.color, flexShrink: 0 }}
-        />
-        <span style={{ fontFamily: theme.fonts.head, fontWeight: 700, fontSize: 15, color: COLORS.text, letterSpacing: '-0.01em' }}>
-          ToolsRift
-        </span>
-        <span style={{ color: 'rgba(255,255,255,0.18)', fontSize: 14 }}>›</span>
+        <img src="/logo.svg" alt="ToolsRift" style={{ height: 28, display: 'block' }} />
+        <span style={{ color: 'rgba(255,255,255,0.18)', fontSize: 16, fontWeight: 300 }}>/</span>
         <span style={{
           fontSize: 14, fontWeight: 600,
-          background: theme.gradientText,
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
+          color: COLORS.text,
+          fontFamily: theme.fonts.head,
+          letterSpacing: '-0.01em',
         }}>
           {theme.name}
         </span>
       </a>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
         <a
           href="/"
+          className="tr-hide-on-mobile"
           style={{
             fontSize: 13, color: COLORS.muted, textDecoration: 'none', fontWeight: 500,
             display: 'none',
           }}
-          className="tr-hide-on-mobile"
         >
-          All Tools
+          All categories
         </a>
-        <Pill theme={theme} variant="tint">{theme.toolCount} tools</Pill>
+        <span style={{
+          fontSize: 12, fontWeight: 700,
+          padding: '5px 10px',
+          borderRadius: 999,
+          background: `${theme.color}15`,
+          color: theme.color,
+          letterSpacing: '0.04em',
+          fontFamily: theme.fonts.body,
+        }}>
+          {theme.toolCount} tools
+        </span>
         <style>{`@media ${MQ.sm}{.tr-hide-on-mobile{display:inline!important}}`}</style>
       </div>
-    </motion.header>
+    </header>
   );
 }
 
-// ── Themed hero (only on category landing) ──────────────────────────────────
-function CategoryHero({ theme }) {
-  const showParticles = theme.anim.particles;
-  const showScanline = theme.anim.scanline;
-  const showBlobs = theme.anim.blob;
-
+// ── Compact category banner (replaces the giant hero) ───────────────────────
+function CategoryBanner({ theme }) {
   return (
-    <section style={{
-      position: 'relative',
-      overflow: 'hidden',
-      padding: 'clamp(56px, 9vw, 120px) clamp(16px, 4vw, 32px) clamp(40px, 6vw, 72px)',
-      textAlign: 'center',
-      isolation: 'isolate',
-    }}>
-      {/* 25% themed background wash */}
-      <div aria-hidden style={{
-        position: 'absolute', inset: 0, zIndex: 0,
-        background: theme.bgRadial,
-      }} />
+    <section
+      style={{
+        position: 'relative',
+        padding: 'clamp(28px, 4vw, 44px) clamp(16px, 4vw, 32px)',
+        borderBottom: `1px solid rgba(255,255,255,0.05)`,
+        background: `linear-gradient(180deg, ${theme.color}0A 0%, transparent 100%)`,
+        overflow: 'hidden',
+      }}
+    >
+      {/* subtle accent line at bottom */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute', left: 0, right: 0, bottom: -1, height: 1,
+          background: `linear-gradient(90deg, transparent, ${theme.color}88, transparent)`,
+        }}
+      />
 
-      {/* Decorative blobs */}
-      {showBlobs && (
-        <>
-          <GradientBlob color={theme.tint25} color2={theme.tint12} size={520} x="-10%" y="-10%" delay={0.1} />
-          <GradientBlob color={`${theme.accent2}55`} size={420} x="60%" y="20%" delay={0.4} opacity={0.45} />
-        </>
-      )}
-      {showParticles && <ParticlesField color={`${theme.color}55`} count={18} />}
-      {showScanline && <ScanlineOverlay color={`${theme.color}33`} />}
+      <div
+        style={{
+          maxWidth: 1280, margin: '0 auto',
+          display: 'flex', alignItems: 'center', gap: 'clamp(14px, 2vw, 22px)',
+          flexWrap: 'wrap',
+        }}
+      >
+        {/* Icon tile */}
+        <div
+          style={{
+            width: 56, height: 56, borderRadius: 14,
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            background: theme.gradient || `linear-gradient(135deg, ${theme.color}, ${theme.colorDark || theme.color})`,
+            fontSize: 28,
+            boxShadow: `0 8px 24px ${theme.color}30`,
+            flexShrink: 0,
+          }}
+          aria-hidden
+        >
+          {theme.icon}
+        </div>
 
-      {/* Content */}
-      <div style={{ position: 'relative', zIndex: 2, maxWidth: 720, margin: '0 auto' }}>
-        <BlurUp delay={0.05}>
-          <div style={{
-            fontSize: 64, lineHeight: 1, marginBottom: 18,
-            filter: `drop-shadow(0 8px 24px ${theme.color}40)`,
-            display: 'inline-block',
-            animation: showBlobs ? 'tr-float 5s ease-in-out infinite' : 'none',
-          }}>
-            {theme.icon}
-          </div>
-        </BlurUp>
-
-        <BlurUp delay={0.15}>
-          <h1 style={{
-            fontFamily: theme.fonts.head,
-            fontWeight: 700,
-            fontSize: FS['4xl'],
-            color: COLORS.textBright,
-            margin: '0 0 14px',
-            letterSpacing: '-0.025em',
-            lineHeight: 1.1,
-          }}>
-            <span style={{
-              backgroundImage: theme.gradientText,
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}>
-              {theme.name}
-            </span>
+        {/* Title + tagline */}
+        <div style={{ flex: '1 1 280px', minWidth: 0 }}>
+          <h1
+            style={{
+              fontFamily: theme.fonts.head,
+              fontWeight: 700,
+              fontSize: 'clamp(22px, 2.2vw + 14px, 32px)',
+              color: COLORS.textBright,
+              margin: '0 0 6px',
+              letterSpacing: '-0.02em',
+              lineHeight: 1.15,
+            }}
+          >
+            {theme.name}
           </h1>
-        </BlurUp>
-
-        <FadeUp delay={0.3}>
-          <p style={{
-            fontFamily: theme.fonts.body,
-            fontSize: FS.lg,
-            color: COLORS.muted,
-            margin: '0 auto 24px',
-            lineHeight: 1.55,
-            maxWidth: 520,
-          }}>
-            {theme.tagline}
+          <p
+            style={{
+              fontFamily: theme.fonts.body,
+              fontSize: 'clamp(13px, 0.8vw + 11px, 15px)',
+              color: COLORS.muted,
+              margin: 0,
+              lineHeight: 1.5,
+              maxWidth: 620,
+            }}
+          >
+            {theme.tagline || theme.description}
           </p>
-        </FadeUp>
+        </div>
 
-        <FadeUp delay={0.42}>
-          <div style={{ display: 'inline-flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
-            <Pill theme={theme} variant="solid">{theme.toolCount} tools</Pill>
-            <Pill theme={theme} variant="outline">100% free</Pill>
-            <Pill theme={theme} variant="tint">In-browser</Pill>
-          </div>
-        </FadeUp>
+        {/* Meta pills (right side on desktop) */}
+        <div
+          style={{
+            display: 'flex', gap: 6, flexWrap: 'wrap',
+            alignItems: 'center',
+          }}
+        >
+          <Stat label="Tools" value={theme.toolCount} accent={theme.color} />
+          <Stat label="Free" value="100%" />
+          <Stat label="Mode" value="In-browser" />
+        </div>
       </div>
     </section>
   );
 }
 
-// ── Footer ──────────────────────────────────────────────────────────────────
+function Stat({ label, value, accent }) {
+  return (
+    <div
+      style={{
+        display: 'inline-flex', alignItems: 'baseline', gap: 6,
+        padding: '7px 12px',
+        background: COLORS.surface,
+        border: `1px solid ${COLORS.borderLight}`,
+        borderRadius: 10,
+        fontFamily: "'JetBrains Mono', monospace",
+      }}
+    >
+      <span style={{
+        fontSize: 13, fontWeight: 700,
+        color: accent || COLORS.textBright,
+        lineHeight: 1,
+      }}>{value}</span>
+      <span style={{
+        fontSize: 10, fontWeight: 600,
+        color: COLORS.dim, textTransform: 'uppercase',
+        letterSpacing: '0.08em',
+        lineHeight: 1,
+      }}>{label}</span>
+    </div>
+  );
+}
+
+// ── Footer (with full legal page links for AdSense compliance) ──────────────
 function CategoryFooter({ theme }) {
-  const links = [
-    { label: 'All Categories', href: '/' },
-    { label: 'About',          href: '/about' },
-    { label: 'Privacy',        href: '/privacy-policy' },
-    { label: 'Roadmap',        href: '/roadmap' },
+  const linkGroups = [
+    {
+      title: 'Tools',
+      links: [
+        { label: 'All categories', href: '/' },
+        { label: 'PDF Tools',     href: '/pdf' },
+        { label: 'Image Tools',   href: '/images' },
+        { label: 'Text Tools',    href: '/text' },
+        { label: 'Developer Tools', href: '/devtools' },
+      ],
+    },
+    {
+      title: 'Company',
+      links: [
+        { label: 'About',    href: '/about' },
+        { label: 'Contact',  href: '/contact' },
+        { label: 'Roadmap',  href: '/roadmap' },
+      ],
+    },
+    {
+      title: 'Legal',
+      links: [
+        { label: 'Privacy Policy',     href: '/privacy-policy' },
+        { label: 'Terms of Service',   href: '/terms' },
+        { label: 'Cookie Policy',      href: '/cookies' },
+        { label: 'Disclaimer',         href: '/disclaimer' },
+      ],
+    },
   ];
 
   return (
-    <footer style={{
-      borderTop: `1px solid ${theme.tint12}`,
-      background: `linear-gradient(180deg, transparent, ${theme.tint06})`,
-      padding: '40px 16px 32px',
-      textAlign: 'center',
-      marginTop: 64,
-      fontFamily: theme.fonts.body,
-    }}>
-      <div style={{
-        display: 'inline-flex', alignItems: 'center', gap: 8,
-        marginBottom: 14, fontSize: 13, color: COLORS.muted,
-      }}>
-        <span style={{ width: 6, height: 6, borderRadius: '50%', background: theme.color }} />
-        <span>{theme.toolCount} free {theme.name.toLowerCase()} on ToolsRift</span>
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'center', gap: 20, flexWrap: 'wrap', marginBottom: 14 }}>
-        {links.map(({ label, href }) => (
-          <a key={href} href={href} style={{ fontSize: 12, color: COLORS.dim, textDecoration: 'none' }}>
-            {label}
-          </a>
-        ))}
-      </div>
-      <div style={{ fontSize: 11, color: COLORS.faint }}>
-        © 2026 ToolsRift · Free online tools, powered by ads.
+    <footer
+      style={{
+        borderTop: `1px solid ${COLORS.borderLight}`,
+        background: `linear-gradient(180deg, transparent, ${theme.color}05)`,
+        padding: '48px clamp(16px, 4vw, 32px) 28px',
+        marginTop: 64,
+        fontFamily: theme.fonts.body,
+      }}
+    >
+      <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+        <div
+          style={{
+            display: 'grid',
+            gap: 32,
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
+            marginBottom: 36,
+          }}
+        >
+          <div>
+            <a href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, textDecoration: 'none', marginBottom: 12 }}>
+              <img src="/logo.svg" alt="ToolsRift" style={{ height: 28 }} />
+            </a>
+            <p style={{ color: COLORS.muted, fontSize: 13, lineHeight: 1.65, margin: 0, maxWidth: 280 }}>
+              544+ free online tools across 34 categories. Runs in your browser. No sign-up.
+            </p>
+          </div>
+
+          {linkGroups.map((g) => (
+            <div key={g.title}>
+              <div
+                style={{
+                  color: COLORS.text, fontSize: 12, fontWeight: 700,
+                  textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14,
+                  fontFamily: theme.fonts.head,
+                }}
+              >
+                {g.title}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {g.links.map(({ label, href }) => (
+                  <a
+                    key={href}
+                    href={href}
+                    style={{ color: COLORS.muted, fontSize: 13, textDecoration: 'none', transition: 'color 0.15s' }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = theme.color)}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = COLORS.muted)}
+                  >
+                    {label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div
+          style={{
+            paddingTop: 22,
+            borderTop: `1px solid ${COLORS.borderLight}`,
+            display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10,
+            color: COLORS.dim, fontSize: 12,
+          }}
+        >
+          <span>© 2026 ToolsRift · Free online tools, powered by ads.</span>
+          <span>Made with ♥ in Hyderabad, India</span>
+        </div>
       </div>
     </footer>
   );
@@ -209,18 +300,20 @@ export default function CategoryLayout({ theme, currentTool, children }) {
     <div style={{ minHeight: '100vh', background: COLORS.bg, display: 'flex', flexDirection: 'column' }}>
       <CategoryHeader theme={theme} />
 
-      {!currentTool && <CategoryHero theme={theme} />}
+      {!currentTool && <CategoryBanner theme={theme} />}
 
-      <main style={{
-        flex: 1,
-        width: '100%',
-        maxWidth: 1280,
-        margin: '0 auto',
-        padding: '0 clamp(16px, 4vw, 32px)',
-        boxSizing: 'border-box',
-        position: 'relative',
-        zIndex: 1,
-      }}>
+      <main
+        style={{
+          flex: 1,
+          width: '100%',
+          maxWidth: 1280,
+          margin: '0 auto',
+          padding: '0 clamp(16px, 4vw, 32px)',
+          boxSizing: 'border-box',
+          position: 'relative',
+          zIndex: 1,
+        }}
+      >
         {children}
       </main>
 

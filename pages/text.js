@@ -1,5 +1,7 @@
 import Head from 'next/head'
 import dynamic from 'next/dynamic'
+import CategoryContent from '../components/CategoryContent'
+import categoryContent from '../lib/categoryContent'
 const ToolsRiftText = dynamic(() => import('../components/toolsrift-text'), { ssr: false })
 
 export async function getServerSideProps(context) {
@@ -22,6 +24,7 @@ export default function Text({ isApp }) {
         <link rel="canonical" href="https://toolsrift.com/text" />
       </Head>
       <ToolsRiftText isApp={isApp} />
+      <CategoryContent data={categoryContent.text} />
     </>
   )
 }

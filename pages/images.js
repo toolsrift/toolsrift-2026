@@ -1,5 +1,7 @@
 import Head from 'next/head'
 import dynamic from 'next/dynamic';
+import CategoryContent from '../components/CategoryContent'
+import categoryContent from '../lib/categoryContent'
 const ToolsRiftImages = dynamic(() => import('../components/toolsrift-images'), { ssr: false });
 export default function ImagesPage() {
   return (
@@ -15,6 +17,7 @@ export default function ImagesPage() {
         <link rel="canonical" href="https://toolsrift.com/images" />
       </Head>
       <ToolsRiftImages />
+      <CategoryContent data={categoryContent.images} />
     </>
   );
 }

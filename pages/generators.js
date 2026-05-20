@@ -1,5 +1,7 @@
 import Head from 'next/head'
 import dynamic from 'next/dynamic';
+import CategoryContent from '../components/CategoryContent'
+import categoryContent from '../lib/categoryContent'
 const C = dynamic(() => import('../components/toolsrift-gen-security'), { ssr: false });
 export default function P() {
   return (
@@ -15,6 +17,7 @@ export default function P() {
         <link rel="canonical" href="https://toolsrift.com/generators" />
       </Head>
       <C />
+      <CategoryContent data={categoryContent.generators} />
     </>
   );
 }

@@ -1,5 +1,7 @@
 import Head from 'next/head'
 import dynamic from 'next/dynamic';
+import CategoryContent from '../components/CategoryContent'
+import categoryContent from '../lib/categoryContent'
 const ToolsRiftJS = dynamic(() => import('../components/toolsrift-js'), { ssr: false });
 export default function JSPage() {
   return (
@@ -15,6 +17,7 @@ export default function JSPage() {
         <link rel="canonical" href="https://toolsrift.com/js" />
       </Head>
       <ToolsRiftJS />
+      <CategoryContent data={categoryContent.js} />
     </>
   );
 }
