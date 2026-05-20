@@ -149,51 +149,56 @@ function SubcatPills({ theme, subcats, active, onChange }) {
   );
 }
 
-// ── Trending strip ──────────────────────────────────────────────────────────
+// ── Trending strip — wraps cleanly, no horizontal scroll ───────────────────
 function TrendingStrip({ theme, tools, onToolClick }) {
   if (!tools.length) return null;
   return (
     <FadeUp>
-      <div style={{ marginBottom: 32 }}>
+      <div style={{ marginBottom: 28 }}>
         <div style={{
           display: 'flex', alignItems: 'center', gap: 10,
-          marginBottom: 14, fontFamily: theme.fonts.body,
+          marginBottom: 12, fontFamily: theme.fonts.body,
         }}>
           <span style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: 28, height: 28, borderRadius: 8,
-            background: theme.tint12, color: theme.color, fontSize: 14,
-          }}>🔥</span>
+            width: 24, height: 24, borderRadius: 7,
+            background: theme.tint12, color: theme.color, fontSize: 12,
+          }}>★</span>
           <span style={{
-            fontSize: 12, fontWeight: 700, letterSpacing: '0.12em',
-            textTransform: 'uppercase', color: theme.color,
-          }}>Trending in {theme.name.toLowerCase()}</span>
+            fontSize: 11, fontWeight: 700, letterSpacing: '0.14em',
+            textTransform: 'uppercase', color: COLORS.muted,
+          }}>Popular {theme.name.toLowerCase()}</span>
         </div>
         <div style={{
-          display: 'flex', gap: 10, overflowX: 'auto',
-          paddingBottom: 6, scrollbarWidth: 'thin',
-          WebkitOverflowScrolling: 'touch',
+          display: 'flex', flexWrap: 'wrap', gap: 8,
         }}>
-          {tools.slice(0, 8).map((t) => (
+          {tools.slice(0, 6).map((t) => (
             <button
               key={t.id}
               onClick={() => onToolClick?.(t.id)}
               style={{
-                flex: '0 0 auto',
-                display: 'inline-flex', alignItems: 'center', gap: 8,
-                minHeight: 40, padding: '8px 16px',
-                background: theme.tint06,
-                border: `1px solid ${theme.tint25}`,
-                borderRadius: 999,
-                color: COLORS.text, fontSize: 13.5, fontWeight: 600,
+                display: 'inline-flex', alignItems: 'center', gap: 7,
+                minHeight: 36, padding: '7px 14px',
+                background: 'rgba(255,255,255,0.03)',
+                border: `1px solid rgba(255,255,255,0.08)`,
+                borderRadius: 8,
+                color: COLORS.text, fontSize: 13, fontWeight: 500,
                 fontFamily: theme.fonts.body,
                 whiteSpace: 'nowrap', cursor: 'pointer',
-                transition: 'all .2s',
+                transition: 'all .15s',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = theme.tint12; e.currentTarget.style.borderColor = theme.color; }}
-              onMouseLeave={e => { e.currentTarget.style.background = theme.tint06; e.currentTarget.style.borderColor = theme.tint25; }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = theme.tint12;
+                e.currentTarget.style.borderColor = theme.color + '66';
+                e.currentTarget.style.color = COLORS.textBright;
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
+                e.currentTarget.style.color = COLORS.text;
+              }}
             >
-              <span>{t.icon || theme.motif}</span>
+              <span style={{ fontSize: 13, opacity: 0.85 }}>{t.icon || theme.motif}</span>
               <span>{t.name}</span>
             </button>
           ))}

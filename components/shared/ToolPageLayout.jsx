@@ -324,17 +324,129 @@ function RelatedTools({ theme, related = [] }) {
   );
 }
 
+// ── Sidebar (related tools in the same subcategory) ───────────────────────
+function ToolSidebar({ theme, tool, related = [] }) {
+  // Filter related tools to active tool's siblings, exclude self
+  const siblings = related.filter(t => t.id !== tool.id).slice(0, 12);
+  if (siblings.length === 0) return null;
+
+  return (
+    <aside
+      className="tpl-sidebar"
+      style={{
+        position: 'sticky', top: 72,
+        background: COLORS.surface,
+        border: `1px solid ${COLORS.borderLight}`,
+        borderRadius: RADIUS.lg,
+        overflow: 'hidden',
+        alignSelf: 'start',
+      }}
+    >
+      <div
+        style={{
+          padding: '14px 16px',
+          borderBottom: `1px solid ${COLORS.borderLight}`,
+        }}
+      >
+        <div
+          style={{
+            fontSize: 11, fontWeight: 700, letterSpacing: '0.1em',
+            textTransform: 'uppercase', color: COLORS.dim,
+            fontFamily: theme.fonts.body,
+          }}
+        >
+          Related {theme.name.toLowerCase()}
+        </div>
+      </div>
+      <div style={{ padding: '6px 0', maxHeight: 'calc(100vh - 160px)', overflowY: 'auto' }}>
+        {siblings.map(t => (
+          <a
+            key={t.id}
+            href={`${theme.pageRoute}#/tool/${t.id}`}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 10, minHeight: 40,
+              padding: '9px 16px', textDecoration: 'none',
+              borderLeft: '2px solid transparent',
+              transition: 'background 0.15s, border-color 0.15s',
+              fontFamily: theme.fonts.body,
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+              e.currentTarget.style.borderLeftColor = theme.color;
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.borderLeftColor = 'transparent';
+            }}
+          >
+            <span
+              style={{
+                width: 22, height: 22, borderRadius: 6,
+                background: theme.tint12, color: theme.color,
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 11, flexShrink: 0,
+              }}
+            >
+              {(t.icon || theme.motif || '·').slice(0, 2)}
+            </span>
+            <span
+              style={{
+                fontSize: 13, fontWeight: 500, color: COLORS.muted,
+                lineHeight: 1.3, overflow: 'hidden',
+                textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              }}
+            >
+              {t.name}
+            </span>
+          </a>
+        ))}
+      </div>
+      <a
+        href={theme.pageRoute}
+        style={{
+          display: 'block', padding: '12px 16px',
+          borderTop: `1px solid ${COLORS.borderLight}`,
+          fontSize: 12, fontWeight: 600,
+          color: theme.color, textDecoration: 'none',
+          fontFamily: theme.fonts.body,
+          textAlign: 'center',
+        }}
+      >
+        See all {theme.toolCount} →
+      </a>
+    </aside>
+  );
+}
+
 // ── Root ────────────────────────────────────────────────────────────────────
 export default function ToolPageLayout({ theme, tool, related, children }) {
+  const hasSidebar = related && related.length > 1;
+
   return (
     <div style={{ padding: '32px 0 96px' }}>
       <ToolSchemas theme={theme} tool={tool} />
       <Breadcrumb theme={theme} toolName={tool.name} />
-      <ToolHeader theme={theme} tool={tool} />
-      <ToolCard theme={theme}>{children}</ToolCard>
-      {tool.howTo && <HowToUse theme={theme} text={tool.howTo} />}
-      <FAQSection theme={theme} faq={tool.faq} />
-      <RelatedTools theme={theme} related={related} />
+
+      <style>{`
+        .tpl-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
+        @media (min-width: 1024px) {
+          .tpl-grid.with-sidebar { grid-template-columns: 240px 1fr; }
+        }
+        @media (max-width: 1023px) {
+          .tpl-sidebar { display: none; }
+        }
+      `}</style>
+
+      <div className={`tpl-grid ${hasSidebar ? 'with-sidebar' : ''}`}>
+        {hasSidebar && <ToolSidebar theme={theme} tool={tool} related={related} />}
+        <div style={{ minWidth: 0 }}>
+          <ToolHeader theme={theme} tool={tool} />
+          <ToolCard theme={theme}>{children}</ToolCard>
+          {tool.howTo && <HowToUse theme={theme} text={tool.howTo} />}
+          <FAQSection theme={theme} faq={tool.faq} />
+          <RelatedTools theme={theme} related={related} />
+        </div>
+      </div>
     </div>
   );
 }

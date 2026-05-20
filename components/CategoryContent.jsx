@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import { useEffect, useState } from 'react'
 
 const C = {
   bg: '#06090F',
@@ -92,7 +93,18 @@ function Divider() {
  *   }
  */
 export default function CategoryContent({ data }) {
-  if (!data) return null
+  // Hide on tool detail pages (#/tool/X) — the tool component renders its own
+  // layout with footer, and CategoryContent would appear AFTER that footer.
+  // Detect both initial load and hash changes.
+  const [onToolPage, setOnToolPage] = useState(false)
+  useEffect(() => {
+    const check = () => setOnToolPage(/^#\/tool\//.test(window.location.hash))
+    check()
+    window.addEventListener('hashchange', check)
+    return () => window.removeEventListener('hashchange', check)
+  }, [])
+
+  if (!data || onToolPage) return null
   const {
     categoryName, categorySlug, heroTagline,
     intro = [], whyToolsRift = [], howToUse = [],
