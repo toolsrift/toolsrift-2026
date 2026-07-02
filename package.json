@@ -1,7 +1,7 @@
 {
   "name": "toolsrift",
   "version": "1.0.0",
-  "description": "ToolsRift — 1600+ Free Online Tools",
+  "description": "ToolsRift — 590+ Free Online Tools",
   "private": true,
   "scripts": {
     "dev": "next dev",
