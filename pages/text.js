@@ -4,13 +4,12 @@ import CategoryContent from '../components/CategoryContent'
 import categoryContent from '../lib/categoryContent'
 const ToolsRiftText = dynamic(() => import('../components/toolsrift-text'), { ssr: false })
 
-export async function getServerSideProps(context) {
-  const host = context.req.headers.host || ''
-  const isApp = host.startsWith('text.')
-  return { props: { isApp } }
-}
+// NOTE: getServerSideProps was removed on purpose.
+// It only computed an `isApp` prop that the tool component never used,
+// and it forced this page to be server-rendered on every request.
+// Now the page is fully static — served instantly from Vercel's edge cache.
 
-export default function Text({ isApp }) {
+export default function Text() {
   return (
     <>
       <Head>
@@ -23,7 +22,7 @@ export default function Text({ isApp }) {
         <meta name="twitter:card" content="summary_large_image" />
         <link rel="canonical" href="https://toolsrift.com/text" />
       </Head>
-      <ToolsRiftText isApp={isApp} />
+      <ToolsRiftText />
       <CategoryContent data={categoryContent.text} />
     </>
   )
