@@ -5,7 +5,7 @@ export default function Custom404() {
     <>
       <Head>
         <title>404 — Page Not Found | ToolsRift</title>
-        <meta name="description" content="Page not found. Browse 544+ free online tools on ToolsRift." />
+        <meta name="description" content="Page not found. Browse 590+ free online tools on ToolsRift." />
         <meta name="robots" content="noindex" />
       </Head>
       <div style={{
