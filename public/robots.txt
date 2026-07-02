@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /checker
 
 Sitemap: https://toolsrift.com/sitemap.xml
