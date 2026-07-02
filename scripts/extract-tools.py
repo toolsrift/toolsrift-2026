@@ -10,7 +10,7 @@ os.chdir(os.path.join(os.path.dirname(__file__), '..'))
 MAP = {
  'business':'toolsrift-business','colors':'toolsrift-colors','converters2':'toolsrift-converters2',
  'css':'toolsrift-css','devgen':'toolsrift-gen-devconfig','devtools':'toolsrift-devtools',
- 'encoders':'toolsrift-encoders','encoding':'toolsrift-encoding','fancy':'toolsrift-fancy',
+ 'encoders':'toolsrift-encoders','encoding':'toolsrift-encoding','everyday':'toolsrift-everyday','fancy':'toolsrift-fancy',
  'financecalc':'toolsrift-calc-finance','formatters':'toolsrift-formatters',
  'generators':'toolsrift-gen-security','generators2':'toolsrift-gen-content','hash':'toolsrift-hash',
  'html':'toolsrift-html','images':'toolsrift-images','js':'toolsrift-js','json':'toolsrift-json',
