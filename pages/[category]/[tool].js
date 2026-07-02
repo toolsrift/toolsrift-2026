@@ -1,0 +1,248 @@
+import Head from 'next/head'
+import Link from 'next/link'
+import dynamic from 'next/dynamic'
+import { useEffect, useState } from 'react'
+import TOOL_REGISTRY from '../../lib/toolRegistry'
+
+/* ============================================================
+   DYNAMIC TOOL PAGE — /[category]/[tool]
+   ============================================================
+   This single file gives every tool its own real URL, e.g.
+     /text/word-counter-pro
+     /json/json-formatter
+   WITHOUT changing any of the 22 category component files.
+
+   HOW IT WORKS (the "hash bridge"):
+   Your category components use useAppRouter(), which reads
+   window.location.hash (#/tool/<id>) to decide which tool to
+   show. This page sets that hash via history.replaceState()
+   BEFORE mounting the category component — so the component
+   opens directly on the right tool, thinking a user navigated
+   to it. Zero changes needed inside the components.
+
+   WHAT GOOGLE SEES (server-rendered, before any JS):
+   - Unique <title>, meta description, canonical per tool
+   - Breadcrumbs + H1 + description + how-to + FAQ content
+   - SoftwareApplication / BreadcrumbList / FAQPage schema
+   - Internal links to related tools (crawl paths)
+   ============================================================ */
+
+// Map category slug -> its component (static imports so webpack can bundle)
+const COMPONENTS = {
+  business:    dynamic(() => import('../../components/toolsrift-business'),      { ssr: false }),
+  colors:      dynamic(() => import('../../components/toolsrift-colors'),        { ssr: false }),
+  converters2: dynamic(() => import('../../components/toolsrift-converters2'),   { ssr: false }),
+  css:         dynamic(() => import('../../components/toolsrift-css'),           { ssr: false }),
+  devgen:      dynamic(() => import('../../components/toolsrift-gen-devconfig'), { ssr: false }),
+  devtools:    dynamic(() => import('../../components/toolsrift-devtools'),      { ssr: false }),
+  encoders:    dynamic(() => import('../../components/toolsrift-encoders'),      { ssr: false }),
+  encoding:    dynamic(() => import('../../components/toolsrift-encoding'),      { ssr: false }),
+  fancy:       dynamic(() => import('../../components/toolsrift-fancy'),         { ssr: false }),
+  financecalc: dynamic(() => import('../../components/toolsrift-calc-finance'),  { ssr: false }),
+  formatters:  dynamic(() => import('../../components/toolsrift-formatters'),    { ssr: false }),
+  generators:  dynamic(() => import('../../components/toolsrift-gen-security'),  { ssr: false }),
+  generators2: dynamic(() => import('../../components/toolsrift-gen-content'),   { ssr: false }),
+  hash:        dynamic(() => import('../../components/toolsrift-hash'),          { ssr: false }),
+  html:        dynamic(() => import('../../components/toolsrift-html'),          { ssr: false }),
+  images:      dynamic(() => import('../../components/toolsrift-images'),        { ssr: false }),
+  js:          dynamic(() => import('../../components/toolsrift-js'),            { ssr: false }),
+  json:        dynamic(() => import('../../components/toolsrift-json'),          { ssr: false }),
+  mathcalc:    dynamic(() => import('../../components/toolsrift-calc-math'),     { ssr: false }),
+  pdf:         dynamic(() => import('../../components/toolsrift-pdf'),           { ssr: false }),
+  text:        dynamic(() => import('../../components/toolsrift-text'),          { ssr: false }),
+  units:       dynamic(() => import('../../components/toolsrift-units'),         { ssr: false }),
+}
+
+const C = {
+  bg: '#06090F', surface: '#0D1117', border: 'rgba(255,255,255,0.08)',
+  borderLight: 'rgba(255,255,255,0.05)', text: '#F1F5F9', muted: '#94A3B8',
+  dim: '#64748B', blue: '#3B82F6', indigo: '#6366F1',
+}
+
+export async function getStaticPaths() {
+  const paths = []
+  for (const [category, data] of Object.entries(TOOL_REGISTRY)) {
+    for (const t of data.tools) {
+      paths.push({ params: { category, tool: t.id } })
+    }
+  }
+  return { paths, fallback: false }
+}
+
+export async function getStaticProps({ params }) {
+  const catData = TOOL_REGISTRY[params.category]
+  const tool = catData.tools.find(t => t.id === params.tool)
+  const idx = catData.tools.indexOf(tool)
+  // 6 related tools from the same category (wrap around the list)
+  const related = []
+  for (let i = 1; related.length < 6 && i < catData.tools.length; i++) {
+    related.push(catData.tools[(idx + i) % catData.tools.length])
+  }
+  return {
+    props: {
+      category: params.category,
+      categoryName: catData.name,
+      tool,
+      related,
+    },
+  }
+}
+
+export default function ToolPage({ category, categoryName, tool, related }) {
+  const Widget = COMPONENTS[category]
+  const url = `https://toolsrift.com/${category}/${tool.id}`
+  const title = `${tool.name} — Free Online Tool | ToolsRift`
+  const description = tool.desc
+    ? `${tool.desc}. Free, instant, no signup required. Works in your browser — your data never leaves your device.`
+    : `Use ${tool.name} free online. Instant results, no signup required. Works entirely in your browser.`
+
+  // HASH BRIDGE: set #/tool/<id> before the widget mounts, so the
+  // category component's internal router opens this exact tool.
+  const [ready, setReady] = useState(false)
+  useEffect(() => {
+    window.history.replaceState(
+      null, '',
+      window.location.pathname + window.location.search + `#/tool/${tool.id}`
+    )
+    setReady(true)
+  }, [tool.id])
+
+  const faqs = [
+    [`Is ${tool.name} free to use?`,
+     `Yes. ${tool.name} on ToolsRift is completely free with no signup, no installation and no usage limits.`],
+    [`Is my data safe when using ${tool.name}?`,
+     `Yes. ${tool.name} runs entirely in your browser using JavaScript. Your data is processed on your own device and is never uploaded to any server.`],
+    [`Does ${tool.name} work on mobile?`,
+     `Yes. ${tool.name} works on any modern device — Android, iPhone, tablet or desktop — directly in your browser with no app required.`],
+  ]
+
+  return (
+    <>
+      <Head>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={url} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={url} />
+        <meta property="og:site_name" content="ToolsRift" />
+        <meta name="twitter:card" content="summary_large_image" />
+        {/* BreadcrumbList schema */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://toolsrift.com/' },
+            { '@type': 'ListItem', position: 2, name: categoryName, item: `https://toolsrift.com/${category}` },
+            { '@type': 'ListItem', position: 3, name: tool.name, item: url },
+          ],
+        }) }} />
+        {/* SoftwareApplication schema — tells Google this is a free web tool */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'SoftwareApplication',
+          name: tool.name,
+          description: tool.desc || description,
+          url,
+          applicationCategory: 'UtilityApplication',
+          operatingSystem: 'Any',
+          browserRequirements: 'Requires JavaScript',
+          offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+          publisher: { '@type': 'Organization', name: 'ToolsRift', url: 'https://toolsrift.com' },
+        }) }} />
+        {/* FAQPage schema */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: faqs.map(([q, a]) => ({
+            '@type': 'Question', name: q,
+            acceptedAnswer: { '@type': 'Answer', text: a },
+          })),
+        }) }} />
+      </Head>
+
+      {/* THE TOOL WIDGET — your existing category app, opened on this tool */}
+      {ready && <Widget />}
+
+      {/* ============================================================
+          SERVER-RENDERED SEO CONTENT
+          This block is in the HTML before JavaScript runs — it is
+          what makes this page indexable and AdSense-eligible.
+          ============================================================ */}
+      <div style={{
+        background: C.bg, color: C.text, borderTop: `1px solid ${C.borderLight}`,
+        fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", padding: '48px 24px 40px',
+      }}>
+        <div style={{ maxWidth: 920, margin: '0 auto' }}>
+
+          {/* Breadcrumbs (crawlable links up the hierarchy) */}
+          <nav aria-label="Breadcrumb" style={{ fontSize: 13, color: C.dim, marginBottom: 20 }}>
+            <Link href="/" style={{ color: C.dim, textDecoration: 'none' }}>Home</Link>
+            <span style={{ margin: '0 8px' }}>›</span>
+            <Link href={`/${category}`} style={{ color: C.dim, textDecoration: 'none' }}>{categoryName}</Link>
+            <span style={{ margin: '0 8px' }}>›</span>
+            <span style={{ color: C.muted }}>{tool.name}</span>
+          </nav>
+
+          {/* H1 — the page's primary heading, server-rendered */}
+          <h1 style={{
+            fontSize: 'clamp(24px,4vw,34px)', fontWeight: 800,
+            fontFamily: "'Sora', sans-serif", margin: '0 0 14px', lineHeight: 1.2,
+          }}>
+            {tool.name} — Free Online Tool
+          </h1>
+
+          <p style={{ fontSize: 16, lineHeight: 1.75, color: C.muted, margin: '0 0 12px' }}>
+            {tool.desc ? `${tool.desc}.` : ''} {tool.name} is a free online tool from the ToolsRift{' '}
+            <Link href={`/${category}`} style={{ color: C.blue, textDecoration: 'none' }}>{categoryName}</Link>{' '}
+            collection. It runs entirely in your browser — nothing to install, no signup, and your data
+            never leaves your device.
+          </p>
+
+          {/* How to use */}
+          <h2 style={{ fontSize: 20, fontWeight: 700, fontFamily: "'Sora', sans-serif", margin: '32px 0 12px' }}>
+            How to use {tool.name}
+          </h2>
+          <ol style={{ fontSize: 15, lineHeight: 1.9, color: C.muted, margin: 0, paddingLeft: 22 }}>
+            <li>Open the {tool.name} above — it loads instantly, no account needed.</li>
+            <li>Enter or upload your input. Everything is processed locally on your device.</li>
+            <li>Get your result immediately and copy or download it with one click.</li>
+          </ol>
+
+          {/* FAQ (matches the FAQPage schema above) */}
+          <h2 style={{ fontSize: 20, fontWeight: 700, fontFamily: "'Sora', sans-serif", margin: '32px 0 12px' }}>
+            Frequently asked questions
+          </h2>
+          {faqs.map(([q, a], i) => (
+            <div key={i} style={{ marginBottom: 16 }}>
+              <h3 style={{ fontSize: 15, fontWeight: 700, color: C.text, margin: '0 0 6px' }}>{q}</h3>
+              <p style={{ fontSize: 14.5, lineHeight: 1.7, color: C.muted, margin: 0 }}>{a}</p>
+            </div>
+          ))}
+
+          {/* Related tools — crawlable internal links */}
+          <h2 style={{ fontSize: 20, fontWeight: 700, fontFamily: "'Sora', sans-serif", margin: '32px 0 14px' }}>
+            More {categoryName}
+          </h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 12 }}>
+            {related.map(r => (
+              <Link key={r.id} href={`/${category}/${r.id}`} style={{
+                display: 'block', padding: '12px 16px', background: C.surface,
+                border: `1px solid ${C.border}`, borderRadius: 10, textDecoration: 'none',
+              }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: C.text, marginBottom: 4 }}>{r.name}</div>
+                <div style={{ fontSize: 12.5, color: C.dim, lineHeight: 1.5 }}>{r.desc}</div>
+              </Link>
+            ))}
+          </div>
+
+          <p style={{ marginTop: 28, fontSize: 14 }}>
+            <Link href={`/${category}`} style={{ color: C.blue, textDecoration: 'none' }}>
+              ← View all {categoryName}
+            </Link>
+          </p>
+        </div>
+      </div>
+    </>
+  )
+}
