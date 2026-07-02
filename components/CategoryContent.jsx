@@ -1,5 +1,7 @@
 import Head from 'next/head'
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import TOOL_REGISTRY from '../lib/toolRegistry'
 
 const C = {
   bg: '#06090F',
@@ -43,6 +45,20 @@ function H2({ children }) {
     }}>
       {children}
     </h2>
+  )
+}
+
+/* Server-rendered H1 — the page's primary heading for SEO.
+   Tool widgets load with ssr:false, so without this the HTML
+   Google receives has no <h1> at all. Styled identically to H2. */
+function H1({ children }) {
+  return (
+    <h1 style={{
+      fontSize: 'clamp(22px,3.5vw,32px)', fontWeight: 800, color: C.text,
+      fontFamily: "'Sora', sans-serif", margin: '0 0 16px', lineHeight: 1.25
+    }}>
+      {children}
+    </h1>
   )
 }
 
@@ -148,14 +164,45 @@ export default function CategoryContent({ data }) {
         borderTop: `1px solid ${C.borderLight}`,
       }}>
 
-        {/* INTRO */}
+        {/* INTRO — uses <h1> so every category page has a server-rendered H1 */}
         <Section>
           <Eyebrow color={C.indigo}>About {categoryName}</Eyebrow>
-          <H2>{heroTagline || `Everything you need to know about ${categoryName.toLowerCase()}`}</H2>
+          <H1>{heroTagline || `Everything you need to know about ${categoryName.toLowerCase()}`}</H1>
           {intro.map((p, i) => <Paragraph key={i}>{p}</Paragraph>)}
         </Section>
 
         <Divider />
+
+        {/* ALL TOOLS — server-rendered links to every tool's own URL.
+            This is how Google DISCOVERS the /[category]/[tool] pages:
+            crawlable <a href> links in the initial HTML. Without this
+            block the tool pages would exist but never get found. */}
+        {TOOL_REGISTRY[categorySlug]?.tools?.length > 0 && (
+          <>
+            <Section maxWidth={1100}>
+              <Eyebrow color={C.emerald}>All {categoryName}</Eyebrow>
+              <H2>Browse every tool in this category</H2>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+                gap: 12, marginTop: 8,
+              }}>
+                {TOOL_REGISTRY[categorySlug].tools.map(t => (
+                  <Link key={t.id} href={`/${categorySlug}/${t.id}`} style={{
+                    display: 'block', padding: '12px 16px', background: C.surface,
+                    border: `1px solid ${C.borderLight}`, borderRadius: 10,
+                    textDecoration: 'none',
+                  }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: C.text, marginBottom: 3 }}>{t.name}</div>
+                    <div style={{ fontSize: 12.5, color: C.dim, lineHeight: 1.5 }}>{t.desc}</div>
+                  </Link>
+                ))}
+              </div>
+            </Section>
+
+            <Divider />
+          </>
+        )}
 
         {/* WHY TOOLSRIFT */}
         <Section>
