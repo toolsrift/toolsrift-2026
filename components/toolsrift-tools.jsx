@@ -52,7 +52,7 @@ export default function ToolsRiftAllTools() {
 
         <FadeUp delay={0.3}>
           <p style={{ margin: '16px auto 0', color: '#94A3B8', fontSize: FS.lg, maxWidth: 620, lineHeight: 1.55 }}>
-            Browse all 23 categories of free online tools. Click any category to dive in.
+            Browse all 24 categories of free online tools. Click any category to dive in.
           </p>
         </FadeUp>
 
