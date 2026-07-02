@@ -37,6 +37,7 @@ const COMPONENTS = {
   devtools:    dynamic(() => import('../../components/toolsrift-devtools'),      { ssr: false }),
   encoders:    dynamic(() => import('../../components/toolsrift-encoders'),      { ssr: false }),
   encoding:    dynamic(() => import('../../components/toolsrift-encoding'),      { ssr: false }),
+  everyday:    dynamic(() => import('../../components/toolsrift-everyday'),      { ssr: false }),
   fancy:       dynamic(() => import('../../components/toolsrift-fancy'),         { ssr: false }),
   financecalc: dynamic(() => import('../../components/toolsrift-calc-finance'),  { ssr: false }),
   formatters:  dynamic(() => import('../../components/toolsrift-formatters'),    { ssr: false }),
