@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { getCategoryById } from "../lib/categoryThemes";
 // PHASE 2: import { trackUse, isLimitReached, getRemaining, DAILY_LIMIT } from "../lib/usage";
 // PHASE 2: import UpgradeModal from "./UpgradeModal";
@@ -606,6 +606,22 @@ const TOOLS = [
   { id: "break-even-calc", cat: "finance", name: "Break-even Calculator", icon: "⚖️", desc: "Break-even units and revenue.", free: true },
   { id: "net-worth-calc", cat: "finance", name: "Net Worth Calculator", icon: "🧾", desc: "Assets minus liabilities.", free: true },
   { id: "budget-calc", cat: "finance", name: "Budget Planner", icon: "📊", desc: "Income vs expenses with visual bar.", free: true },
+  // ── India Finance Batch (July 2026) ──
+  { id: "emi-calc", cat: "finance", name: "EMI Calculator", icon: "🏦", desc: "Monthly EMI, total interest and year-wise loan schedule for any loan.", free: true },
+  { id: "home-loan-emi-calc", cat: "finance", name: "Home Loan EMI Calculator", icon: "🏠", desc: "Home loan EMI with principal/interest split and yearly balance table.", free: true },
+  { id: "sip-calc", cat: "finance", name: "SIP Calculator", icon: "📈", desc: "Mutual fund SIP maturity value, invested amount and wealth gained.", free: true },
+  { id: "step-up-sip-calc", cat: "finance", name: "Step-up SIP Calculator", icon: "🪜", desc: "SIP returns when you increase your monthly investment every year.", free: true },
+  { id: "lumpsum-calc", cat: "finance", name: "Lumpsum Calculator", icon: "💎", desc: "One-time investment growth with year-by-year value table.", free: true },
+  { id: "swp-calc", cat: "finance", name: "SWP Calculator", icon: "🏧", desc: "Systematic withdrawal plan — how long your corpus lasts with monthly income.", free: true },
+  { id: "gst-calc", cat: "finance", name: "GST Calculator", icon: "🧾", desc: "Add or remove GST with CGST/SGST split for all Indian GST rates.", free: true },
+  { id: "fd-calc", cat: "finance", name: "FD Calculator", icon: "🏛️", desc: "Fixed deposit maturity with quarterly compounding like Indian banks.", free: true },
+  { id: "hra-calc", cat: "finance", name: "HRA Exemption Calculator", icon: "🏘️", desc: "HRA tax exemption using the three-rule method for metro and non-metro.", free: true },
+  { id: "ctc-to-inhand-calc", cat: "finance", name: "CTC to In-Hand Salary Calculator", icon: "💼", desc: "Convert annual CTC to monthly take-home salary under the new tax regime.", free: true },
+  { id: "nps-calc", cat: "finance", name: "NPS Calculator", icon: "🧓", desc: "NPS retirement corpus, tax-free lumpsum and monthly pension estimate.", free: true },
+  { id: "ssy-calc", cat: "finance", name: "Sukanya Samriddhi Calculator", icon: "👧", desc: "SSY maturity value for your daughter with 15-year deposits, 21-year term.", free: true },
+  { id: "inflation-calc", cat: "finance", name: "Inflation Calculator", icon: "📉", desc: "Future cost of expenses and how inflation erodes the value of money.", free: true },
+  { id: "simple-vs-compound-calc", cat: "finance", name: "Simple vs Compound Interest", icon: "⚖️", desc: "Side-by-side comparison showing the power of compounding year by year.", free: true },
+  { id: "loan-prepayment-calc", cat: "finance", name: "Loan Prepayment Calculator", icon: "✂️", desc: "Interest saved and tenure reduced by paying extra EMI every month.", free: true },
 
   { id: "tdee-calc", cat: "health", name: "TDEE Calculator", icon: "🔥", desc: "Daily energy expenditure by activity.", free: true },
   { id: "macro-calc", cat: "health", name: "Macro Calculator", icon: "🥗", desc: "Protein/carbs/fats from calorie goal.", free: true },
@@ -1740,6 +1756,535 @@ function Breadcrumb({ tool, cat }) {
     </>
   );
 }
+
+// ───── INDIA FINANCE BATCH (July 2026) — 15 calculators ─────────────────────
+
+function EmiCalc() {
+  const [amount, setAmount] = useState("1000000");
+  const [rate, setRate] = useState("9");
+  const [years, setYears] = useState("10");
+  const out = useMemo(() => {
+    const P = n(amount), r = n(rate) / 100 / 12, m = Math.max(1, Math.round(n(years) * 12));
+    const emi = r > 0 ? (P * r * Math.pow(1 + r, m)) / (Math.pow(1 + r, m) - 1) : P / m;
+    const total = emi * m, interest = total - P;
+    let bal = P; const rows = [];
+    for (let i = 1; i <= m; i++) {
+      const intr = bal * r, princ = emi - intr; bal = Math.max(0, bal - princ);
+      if (i % 12 === 0 || i === m) rows.push([Math.ceil(i / 12), inr(emi * Math.min(12, i - (Math.ceil(i / 12) - 1) * 12) || emi * 12), inr(bal)]);
+    }
+    return { emi, total, interest, rows };
+  }, [amount, rate, years]);
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Loan Amount (₹)</Label><Input value={amount} onChange={setAmount} /></div>
+        <div><Label>Interest Rate % (p.a.)</Label><Input value={rate} onChange={setRate} /></div>
+        <div><Label>Tenure (Years)</Label><Input value={years} onChange={setYears} /></div>
+      </Grid3>
+      <Grid3>
+        <BigResult value={inr(out.emi)} label="Monthly EMI" />
+        <BigResult value={inr(out.interest)} label="Total Interest" />
+        <BigResult value={inr(out.total)} label="Total Payment" />
+      </Grid3>
+      <DataTable columns={["Year", "Paid in Year", "Balance Left"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function HomeLoanEmiCalc() {
+  const [amount, setAmount] = useState("5000000");
+  const [rate, setRate] = useState("8.5");
+  const [years, setYears] = useState("20");
+  const out = useMemo(() => {
+    const P = n(amount), r = n(rate) / 100 / 12, m = Math.max(1, Math.round(n(years) * 12));
+    const emi = r > 0 ? (P * r * Math.pow(1 + r, m)) / (Math.pow(1 + r, m) - 1) : P / m;
+    const total = emi * m, interest = total - P;
+    let bal = P; const rows = [];
+    for (let i = 1; i <= m; i++) {
+      const intr = bal * r, princ = emi - intr; bal = Math.max(0, bal - princ);
+      if (i % 12 === 0 || i === m) rows.push([Math.ceil(i / 12), inr(princ * 12), inr(intr * 12), inr(bal)]);
+    }
+    return { emi, total, interest, rows };
+  }, [amount, rate, years]);
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Home Loan Amount (₹)</Label><Input value={amount} onChange={setAmount} /></div>
+        <div><Label>Interest Rate % (p.a.)</Label><Input value={rate} onChange={setRate} /></div>
+        <div><Label>Tenure (Years)</Label><Input value={years} onChange={setYears} /></div>
+      </Grid3>
+      <Grid3>
+        <BigResult value={inr(out.emi)} label="Monthly EMI" />
+        <BigResult value={inr(out.interest)} label="Total Interest" />
+        <BigResult value={inr(out.total)} label="Total Payment" />
+      </Grid3>
+      <DataTable columns={["Year", "Principal Paid", "Interest Paid", "Balance"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function SipCalc() {
+  const [monthly, setMonthly] = useState("10000");
+  const [rate, setRate] = useState("12");
+  const [years, setYears] = useState("15");
+  const out = useMemo(() => {
+    const P = n(monthly), i = n(rate) / 100 / 12, m = Math.max(1, Math.round(n(years) * 12));
+    const fv = i > 0 ? P * ((Math.pow(1 + i, m) - 1) / i) * (1 + i) : P * m;
+    const invested = P * m, gain = fv - invested;
+    let bal = 0; const rows = [];
+    for (let k = 1; k <= m; k++) { bal = (bal + P) * (1 + i); if (k % 12 === 0 || k === m) rows.push([Math.ceil(k / 12), inr(P * k), inr(bal - P * k), inr(bal)]); }
+    return { fv, invested, gain, rows };
+  }, [monthly, rate, years]);
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Monthly SIP (₹)</Label><Input value={monthly} onChange={setMonthly} /></div>
+        <div><Label>Expected Return % (p.a.)</Label><Input value={rate} onChange={setRate} /></div>
+        <div><Label>Duration (Years)</Label><Input value={years} onChange={setYears} /></div>
+      </Grid3>
+      <Grid3>
+        <BigResult value={inr(out.fv)} label="Maturity Value" />
+        <BigResult value={inr(out.invested)} label="Total Invested" />
+        <BigResult value={inr(out.gain)} label="Wealth Gained" />
+      </Grid3>
+      <DataTable columns={["Year", "Invested", "Returns", "Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function StepUpSipCalc() {
+  const [monthly, setMonthly] = useState("10000");
+  const [stepUp, setStepUp] = useState("10");
+  const [rate, setRate] = useState("12");
+  const [years, setYears] = useState("15");
+  const out = useMemo(() => {
+    const i = n(rate) / 100 / 12, yrs = Math.max(1, Math.round(n(years))), s = n(stepUp) / 100;
+    let bal = 0, invested = 0, sip = n(monthly); const rows = [];
+    for (let y = 1; y <= yrs; y++) {
+      for (let mo = 0; mo < 12; mo++) { bal = (bal + sip) * (1 + i); invested += sip; }
+      rows.push([y, inr(sip), inr(invested), inr(bal)]);
+      sip = sip * (1 + s);
+    }
+    return { fv: bal, invested, gain: bal - invested, rows };
+  }, [monthly, stepUp, rate, years]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Starting Monthly SIP (₹)</Label><Input value={monthly} onChange={setMonthly} /></div>
+        <div><Label>Annual Step-up %</Label><Input value={stepUp} onChange={setStepUp} /></div>
+      </Grid2>
+      <Grid2>
+        <div><Label>Expected Return % (p.a.)</Label><Input value={rate} onChange={setRate} /></div>
+        <div><Label>Duration (Years)</Label><Input value={years} onChange={setYears} /></div>
+      </Grid2>
+      <Grid3>
+        <BigResult value={inr(out.fv)} label="Maturity Value" />
+        <BigResult value={inr(out.invested)} label="Total Invested" />
+        <BigResult value={inr(out.gain)} label="Wealth Gained" />
+      </Grid3>
+      <DataTable columns={["Year", "Monthly SIP", "Total Invested", "Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function LumpsumCalc() {
+  const [amount, setAmount] = useState("100000");
+  const [rate, setRate] = useState("12");
+  const [years, setYears] = useState("10");
+  const out = useMemo(() => {
+    const P = n(amount), r = n(rate) / 100, t = Math.max(1, n(years));
+    const fv = P * Math.pow(1 + r, t);
+    const rows = []; let bal = P;
+    for (let y = 1; y <= Math.floor(t); y++) { bal = bal * (1 + r); rows.push([y, inr(bal - P), inr(bal)]); }
+    return { fv, gain: fv - P, mult: P > 0 ? fv / P : 0, rows };
+  }, [amount, rate, years]);
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Investment (₹)</Label><Input value={amount} onChange={setAmount} /></div>
+        <div><Label>Expected Return % (p.a.)</Label><Input value={rate} onChange={setRate} /></div>
+        <div><Label>Duration (Years)</Label><Input value={years} onChange={setYears} /></div>
+      </Grid3>
+      <Grid3>
+        <BigResult value={inr(out.fv)} label="Maturity Value" />
+        <BigResult value={inr(out.gain)} label="Total Gain" />
+        <BigResult value={`${round(out.mult, 2)}×`} label="Money Multiplied" />
+      </Grid3>
+      <DataTable columns={["Year", "Gain", "Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function SwpCalc() {
+  const [corpus, setCorpus] = useState("5000000");
+  const [withdraw, setWithdraw] = useState("30000");
+  const [rate, setRate] = useState("8");
+  const [years, setYears] = useState("20");
+  const out = useMemo(() => {
+    const i = n(rate) / 100 / 12, m = Math.max(1, Math.round(n(years) * 12)), W = n(withdraw);
+    let bal = n(corpus), totalW = 0, exhausted = 0; const rows = [];
+    for (let k = 1; k <= m; k++) {
+      bal = bal * (1 + i) - W; totalW += W;
+      if (bal <= 0 && !exhausted) { exhausted = k; bal = 0; }
+      if (k % 12 === 0 || k === m) rows.push([Math.ceil(k / 12), inr(W * 12), inr(bal)]);
+      if (exhausted) break;
+    }
+    return { bal, totalW, exhausted, rows };
+  }, [corpus, withdraw, rate, years]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Total Corpus (₹)</Label><Input value={corpus} onChange={setCorpus} /></div>
+        <div><Label>Monthly Withdrawal (₹)</Label><Input value={withdraw} onChange={setWithdraw} /></div>
+      </Grid2>
+      <Grid2>
+        <div><Label>Expected Return % (p.a.)</Label><Input value={rate} onChange={setRate} /></div>
+        <div><Label>Duration (Years)</Label><Input value={years} onChange={setYears} /></div>
+      </Grid2>
+      <Grid3>
+        <BigResult value={inr(out.bal)} label="Balance at End" />
+        <BigResult value={inr(out.totalW)} label="Total Withdrawn" />
+        <BigResult value={out.exhausted ? `${Math.ceil(out.exhausted / 12)} yrs` : "Lasts full term"} label={out.exhausted ? "Corpus Lasts" : "Corpus Status"} />
+      </Grid3>
+      <DataTable columns={["Year", "Withdrawn", "Balance"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function GstCalc() {
+  const [amount, setAmount] = useState("10000");
+  const [rate, setRate] = useState("18");
+  const [mode, setMode] = useState("add");
+  const out = useMemo(() => {
+    const A = n(amount), r = n(rate) / 100;
+    if (mode === "add") {
+      const gst = A * r, total = A + gst;
+      return { base: A, gst, total, cgst: gst / 2, sgst: gst / 2 };
+    }
+    const base = A / (1 + r), gst = A - base;
+    return { base, gst, total: A, cgst: gst / 2, sgst: gst / 2 };
+  }, [amount, rate, mode]);
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Amount (₹)</Label><Input value={amount} onChange={setAmount} /></div>
+        <div><Label>GST Rate</Label><SelectInput value={rate} onChange={setRate} options={[["0.25","0.25%"],["3","3%"],["5","5%"],["12","12%"],["18","18%"],["28","28%"]]} /></div>
+        <div><Label>Mode</Label><SelectInput value={mode} onChange={setMode} options={[["add","Add GST (exclusive)"],["remove","Remove GST (inclusive)"]]} /></div>
+      </Grid3>
+      <Grid3>
+        <BigResult value={inr(out.base)} label="Base Amount" />
+        <BigResult value={inr(out.gst)} label={`GST (${rate}%)`} sub={`CGST ${inr(out.cgst)} + SGST ${inr(out.sgst)}`} />
+        <BigResult value={inr(out.total)} label="Total Amount" />
+      </Grid3>
+      <Result>For intra-state supply GST splits equally into CGST and SGST. For inter-state supply the full amount is charged as IGST.</Result>
+    </VStack>
+  );
+}
+
+function FdCalc() {
+  const [amount, setAmount] = useState("100000");
+  const [rate, setRate] = useState("7");
+  const [years, setYears] = useState("5");
+  const out = useMemo(() => {
+    const P = n(amount), r = n(rate) / 100, t = Math.max(0.25, n(years));
+    const maturity = P * Math.pow(1 + r / 4, 4 * t); // quarterly compounding (standard for Indian banks)
+    const rows = []; let prev = P;
+    for (let y = 1; y <= Math.floor(t); y++) {
+      const val = P * Math.pow(1 + r / 4, 4 * y);
+      rows.push([y, inr(val - prev), inr(val)]); prev = val;
+    }
+    return { maturity, interest: maturity - P, rows };
+  }, [amount, rate, years]);
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Deposit Amount (₹)</Label><Input value={amount} onChange={setAmount} /></div>
+        <div><Label>Interest Rate % (p.a.)</Label><Input value={rate} onChange={setRate} /></div>
+        <div><Label>Tenure (Years)</Label><Input value={years} onChange={setYears} /></div>
+      </Grid3>
+      <Grid2>
+        <BigResult value={inr(out.maturity)} label="Maturity Amount" />
+        <BigResult value={inr(out.interest)} label="Interest Earned" />
+      </Grid2>
+      <Result>Calculated with quarterly compounding, the standard used by Indian banks for cumulative fixed deposits.</Result>
+      <DataTable columns={["Year", "Interest in Year", "Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function HraCalc() {
+  const [basic, setBasic] = useState("50000");
+  const [hra, setHra] = useState("20000");
+  const [rent, setRent] = useState("18000");
+  const [metro, setMetro] = useState("yes");
+  const out = useMemo(() => {
+    const B = n(basic), H = n(hra), R = n(rent);
+    const a = H;
+    const b = Math.max(0, R - 0.1 * B);
+    const c = (metro === "yes" ? 0.5 : 0.4) * B;
+    const exempt = Math.max(0, Math.min(a, b, c));
+    return { a, b, c, exempt, taxable: Math.max(0, H - exempt) };
+  }, [basic, hra, rent, metro]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Basic Salary + DA (₹/month)</Label><Input value={basic} onChange={setBasic} /></div>
+        <div><Label>HRA Received (₹/month)</Label><Input value={hra} onChange={setHra} /></div>
+      </Grid2>
+      <Grid2>
+        <div><Label>Rent Paid (₹/month)</Label><Input value={rent} onChange={setRent} /></div>
+        <div><Label>Metro City? (Delhi/Mumbai/Kolkata/Chennai)</Label><SelectInput value={metro} onChange={setMetro} options={[["yes","Yes — Metro (50%)"],["no","No — Non-metro (40%)"]]} /></div>
+      </Grid2>
+      <Grid2>
+        <BigResult value={inr(out.exempt)} label="HRA Exempt (monthly)" sub={`${inr(out.exempt * 12)} per year`} />
+        <BigResult value={inr(out.taxable)} label="Taxable HRA (monthly)" />
+      </Grid2>
+      <DataTable columns={["Rule", "Amount (monthly)"]} rows={[
+        ["Actual HRA received", inr(out.a)],
+        ["Rent paid − 10% of Basic+DA", inr(out.b)],
+        [metro === "yes" ? "50% of Basic+DA (metro)" : "40% of Basic+DA (non-metro)", inr(out.c)],
+        ["Exemption = LOWEST of the three", inr(out.exempt)],
+      ]} />
+      <Result>Note: HRA exemption is available only under the old tax regime.</Result>
+    </VStack>
+  );
+}
+
+// New-regime income tax (FY 2025-26) helper — used by CTC calculator
+function newRegimeTax(gross) {
+  const taxable = Math.max(0, gross - 75000); // standard deduction
+  if (taxable <= 1200000) return 0; // Section 87A rebate
+  const slabs = [[400000, 0], [400000, 0.05], [400000, 0.10], [400000, 0.15], [400000, 0.20], [400000, 0.25], [Infinity, 0.30]];
+  let rem = taxable, tax = 0;
+  for (const [width, r] of slabs) {
+    const amt = Math.min(rem, width);
+    tax += amt * r; rem -= amt;
+    if (rem <= 0) break;
+  }
+  return tax * 1.04; // 4% health & education cess
+}
+
+function CtcToInhandCalc() {
+  const [ctc, setCtc] = useState("1200000");
+  const [basicPct, setBasicPct] = useState("40");
+  const out = useMemo(() => {
+    const C_ = n(ctc), basic = C_ * n(basicPct) / 100;
+    const employerPf = 0.12 * basic;          // employer PF (inside CTC)
+    const gross = Math.max(0, C_ - employerPf);
+    const employeePf = 0.12 * basic;          // employee PF deduction
+    const profTax = 2400;                     // typical professional tax per year
+    const tax = newRegimeTax(gross);
+    const annualInhand = Math.max(0, gross - employeePf - profTax - tax);
+    return { gross, employerPf, employeePf, profTax, tax, annualInhand, monthly: annualInhand / 12 };
+  }, [ctc, basicPct]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Annual CTC (₹)</Label><Input value={ctc} onChange={setCtc} /></div>
+        <div><Label>Basic Salary (% of CTC)</Label><SelectInput value={basicPct} onChange={setBasicPct} options={[["40","40% (common)"],["50","50%"],["35","35%"]]} /></div>
+      </Grid2>
+      <Grid2>
+        <BigResult value={inr(out.monthly)} label="Monthly In-Hand (approx)" />
+        <BigResult value={inr(out.annualInhand)} label="Annual In-Hand (approx)" />
+      </Grid2>
+      <DataTable columns={["Component", "Amount (yearly)"]} rows={[
+        ["CTC", inr(n(ctc))],
+        ["Less: Employer PF (12% of basic)", `− ${inr(out.employerPf)}`],
+        ["Gross Salary", inr(out.gross)],
+        ["Less: Employee PF (12% of basic)", `− ${inr(out.employeePf)}`],
+        ["Less: Professional Tax", `− ${inr(out.profTax)}`],
+        ["Less: Income Tax (new regime, FY 2025-26)", `− ${inr(out.tax)}`],
+        ["In-Hand Salary", inr(out.annualInhand)],
+      ]} />
+      <Result>Estimate under the new tax regime (FY 2025-26) with ₹75,000 standard deduction, Section 87A rebate up to ₹12 lakh taxable income, and 4% cess. Actual in-hand varies with your company's salary structure, gratuity, insurance and other deductions.</Result>
+    </VStack>
+  );
+}
+
+function NpsCalc() {
+  const [age, setAge] = useState("30");
+  const [monthly, setMonthly] = useState("5000");
+  const [rate, setRate] = useState("10");
+  const [annuityPct, setAnnuityPct] = useState("40");
+  const [annuityRate, setAnnuityRate] = useState("6");
+  const out = useMemo(() => {
+    const yrs = Math.max(1, 60 - Math.min(59, Math.max(18, Math.round(n(age)))));
+    const i = n(rate) / 100 / 12, m = yrs * 12, P = n(monthly);
+    const corpus = i > 0 ? P * ((Math.pow(1 + i, m) - 1) / i) * (1 + i) : P * m;
+    const invested = P * m;
+    const annuityCorpus = corpus * Math.min(100, Math.max(40, n(annuityPct))) / 100;
+    const lumpsum = corpus - annuityCorpus;
+    const pension = annuityCorpus * (n(annuityRate) / 100) / 12;
+    return { yrs, corpus, invested, annuityCorpus, lumpsum, pension };
+  }, [age, monthly, rate, annuityPct, annuityRate]);
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Your Current Age</Label><Input value={age} onChange={setAge} /></div>
+        <div><Label>Monthly Contribution (₹)</Label><Input value={monthly} onChange={setMonthly} /></div>
+        <div><Label>Expected Return % (p.a.)</Label><Input value={rate} onChange={setRate} /></div>
+      </Grid3>
+      <Grid2>
+        <div><Label>Annuity Purchase % (min 40%)</Label><Input value={annuityPct} onChange={setAnnuityPct} /></div>
+        <div><Label>Annuity Rate % (p.a.)</Label><Input value={annuityRate} onChange={setAnnuityRate} /></div>
+      </Grid2>
+      <Grid3>
+        <BigResult value={inr(out.corpus)} label={`Corpus at 60 (${out.yrs} yrs)`} />
+        <BigResult value={inr(out.lumpsum)} label="Tax-free Lumpsum" />
+        <BigResult value={inr(out.pension)} label="Monthly Pension (approx)" />
+      </Grid3>
+      <Result>At retirement, minimum 40% of the NPS corpus must be used to buy an annuity that pays monthly pension; the rest can be withdrawn as lumpsum. Total invested: {inr(out.invested)}.</Result>
+    </VStack>
+  );
+}
+
+function SsyCalc() {
+  const [yearly, setYearly] = useState("100000");
+  const [rate, setRate] = useState("8.2");
+  const out = useMemo(() => {
+    const D = Math.min(150000, Math.max(250, n(yearly))), r = n(rate) / 100;
+    let bal = 0; const rows = [];
+    for (let y = 1; y <= 21; y++) {
+      const dep = y <= 15 ? D : 0;
+      bal = (bal + dep) * (1 + r);
+      if (y % 3 === 0 || y === 21 || y === 15) rows.push([y, dep ? inr(dep) : "—", inr(bal)]);
+    }
+    const invested = D * 15;
+    return { maturity: bal, invested, interest: bal - invested, capped: n(yearly) > 150000 };
+  }, [yearly, rate]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Yearly Deposit (₹, max 1.5 lakh)</Label><Input value={yearly} onChange={setYearly} /></div>
+        <div><Label>Interest Rate % (p.a.)</Label><Input value={rate} onChange={setRate} /></div>
+      </Grid2>
+      <Grid3>
+        <BigResult value={inr(out.maturity)} label="Maturity Value (21 yrs)" />
+        <BigResult value={inr(out.invested)} label="Total Deposited (15 yrs)" />
+        <BigResult value={inr(out.interest)} label="Interest Earned" />
+      </Grid3>
+      <Result>Sukanya Samriddhi Yojana: deposits are made for 15 years; the account matures 21 years after opening. Deposits qualify for Section 80C and maturity is tax-free (EEE).{out.capped ? " Deposit capped at ₹1,50,000 — the yearly maximum." : ""}</Result>
+    </VStack>
+  );
+}
+
+function InflationCalc() {
+  const [amount, setAmount] = useState("100000");
+  const [rate, setRate] = useState("6");
+  const [years, setYears] = useState("10");
+  const out = useMemo(() => {
+    const P = n(amount), r = n(rate) / 100, t = Math.max(1, n(years));
+    const future = P * Math.pow(1 + r, t);        // future cost of same item
+    const eroded = P / Math.pow(1 + r, t);        // value of today's money later
+    return { future, eroded, lossPct: (1 - eroded / P) * 100 };
+  }, [amount, rate, years]);
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Amount Today (₹)</Label><Input value={amount} onChange={setAmount} /></div>
+        <div><Label>Inflation Rate % (p.a.)</Label><Input value={rate} onChange={setRate} /></div>
+        <div><Label>Years</Label><Input value={years} onChange={setYears} /></div>
+      </Grid3>
+      <Grid3>
+        <BigResult value={inr(out.future)} label={`Future Cost after ${years} yrs`} />
+        <BigResult value={inr(out.eroded)} label="What Today's Money Will Be Worth" />
+        <BigResult value={pct(out.lossPct)} label="Purchasing Power Lost" />
+      </Grid3>
+      <Result>Something costing {inr(n(amount))} today will cost {inr(out.future)} in {years} years at {rate}% inflation — and {inr(n(amount))} kept as cash will only buy {inr(out.eroded)} worth of goods.</Result>
+    </VStack>
+  );
+}
+
+function SimpleVsCompoundCalc() {
+  const [amount, setAmount] = useState("100000");
+  const [rate, setRate] = useState("8");
+  const [years, setYears] = useState("10");
+  const out = useMemo(() => {
+    const P = n(amount), r = n(rate) / 100, t = Math.max(1, n(years));
+    const si = P * r * t;
+    const ci = P * Math.pow(1 + r, t) - P;
+    const rows = [];
+    for (let y = 1; y <= Math.floor(t); y++) rows.push([y, inr(P + P * r * y), inr(P * Math.pow(1 + r, y)), inr(P * Math.pow(1 + r, y) - (P + P * r * y))]);
+    return { si, ci, diff: ci - si, rows };
+  }, [amount, rate, years]);
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Principal (₹)</Label><Input value={amount} onChange={setAmount} /></div>
+        <div><Label>Interest Rate % (p.a.)</Label><Input value={rate} onChange={setRate} /></div>
+        <div><Label>Years</Label><Input value={years} onChange={setYears} /></div>
+      </Grid3>
+      <Grid3>
+        <BigResult value={inr(out.si)} label="Simple Interest" />
+        <BigResult value={inr(out.ci)} label="Compound Interest" />
+        <BigResult value={inr(out.diff)} label="Compounding Advantage" />
+      </Grid3>
+      <DataTable columns={["Year", "With Simple Interest", "With Compound Interest", "Difference"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function LoanPrepaymentCalc() {
+  const [amount, setAmount] = useState("3000000");
+  const [rate, setRate] = useState("8.5");
+  const [years, setYears] = useState("20");
+  const [extra, setExtra] = useState("5000");
+  const out = useMemo(() => {
+    const P = n(amount), r = n(rate) / 100 / 12, m = Math.max(1, Math.round(n(years) * 12)), X = n(extra);
+    const emi = r > 0 ? (P * r * Math.pow(1 + r, m)) / (Math.pow(1 + r, m) - 1) : P / m;
+    // without prepayment
+    const totalNormal = emi * m, interestNormal = totalNormal - P;
+    // with extra monthly payment
+    let bal = P, months = 0, interestExtra = 0;
+    while (bal > 0 && months < m * 2) {
+      const intr = bal * r; interestExtra += intr;
+      bal = bal + intr - (emi + X); months++;
+    }
+    return {
+      emi, interestNormal, interestExtra,
+      saved: Math.max(0, interestNormal - interestExtra),
+      monthsSaved: Math.max(0, m - months), months,
+    };
+  }, [amount, rate, years, extra]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Loan Amount (₹)</Label><Input value={amount} onChange={setAmount} /></div>
+        <div><Label>Interest Rate % (p.a.)</Label><Input value={rate} onChange={setRate} /></div>
+      </Grid2>
+      <Grid2>
+        <div><Label>Tenure (Years)</Label><Input value={years} onChange={setYears} /></div>
+        <div><Label>Extra Payment per Month (₹)</Label><Input value={extra} onChange={setExtra} /></div>
+      </Grid2>
+      <Grid3>
+        <BigResult value={inr(out.saved)} label="Interest Saved" />
+        <BigResult value={`${Math.floor(out.monthsSaved / 12)}y ${out.monthsSaved % 12}m`} label="Loan Ends Earlier By" />
+        <BigResult value={inr(out.emi)} label="Regular EMI" />
+      </Grid3>
+      <Result>By paying an extra {inr(n(extra))} every month, you finish the loan in {Math.floor(out.months / 12)} years {out.months % 12} months instead of {years} years, and save {inr(out.saved)} in interest.</Result>
+    </VStack>
+  );
+}
+
+Object.assign(TOOL_COMPONENTS, {
+  "emi-calc": EmiCalc,
+  "home-loan-emi-calc": HomeLoanEmiCalc,
+  "sip-calc": SipCalc,
+  "step-up-sip-calc": StepUpSipCalc,
+  "lumpsum-calc": LumpsumCalc,
+  "swp-calc": SwpCalc,
+  "gst-calc": GstCalc,
+  "fd-calc": FdCalc,
+  "hra-calc": HraCalc,
+  "ctc-to-inhand-calc": CtcToInhandCalc,
+  "nps-calc": NpsCalc,
+  "ssy-calc": SsyCalc,
+  "inflation-calc": InflationCalc,
+  "simple-vs-compound-calc": SimpleVsCompoundCalc,
+  "loan-prepayment-calc": LoanPrepaymentCalc,
+});
+// ───── END INDIA FINANCE BATCH ───────────────────────────────────────────────
+
 
 function ToolPage({ toolId }) {
   const tool = TOOLS.find(t => t.id === toolId);
