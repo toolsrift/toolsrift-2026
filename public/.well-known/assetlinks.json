@@ -1,14 +1,10 @@
-export default function handler(req, res) {
-  res.setHeader('Content-Type', 'application/json');
-  res.setHeader('Cache-Control', 'public, max-age=3600');
-  res.status(200).json([{
-    relation: ['delegate_permission/common.handle_all_urls'],
-    target: {
-      namespace: 'android_app',
-      package_name: 'com.toolsrift.text.twa',
-      sha256_cert_fingerprints: [
-        'AB:54:5C:86:59:BC:74:D1:A8:5B:78:A4:1D:43:8A:AD:87:D9:B1:71:7C:AB:5D:FC:14:8E:54:00:44:BB:CB:07'
-      ]
-    }
-  }]);
-}
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.toolsrift.text.twa",
+    "sha256_cert_fingerprints": [
+      "AB:54:5C:86:59:BC:74:D1:A8:5B:78:A4:1D:43:8A:AD:87:D9:B1:71:7C:AB:5D:FC:14:8E:54:00:44:BB:CB:07"
+    ]
+  }
+}]
