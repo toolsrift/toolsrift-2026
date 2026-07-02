@@ -162,15 +162,24 @@ export default function ToolPage({ category, categoryName, tool, related }) {
         }) }} />
       </Head>
 
-      {/* THE TOOL WIDGET — your existing category app, opened on this tool */}
+      {/* THE TOOL WIDGET — your existing category app, opened on this tool.
+          It renders the full interactive page via ToolPageLayout: the tool
+          itself PLUS breadcrumb, H1, how-to, FAQ and related tools. */}
       {ready && <Widget />}
 
       {/* ============================================================
-          SERVER-RENDERED SEO CONTENT
-          This block is in the HTML before JavaScript runs — it is
-          what makes this page indexable and AdSense-eligible.
+          SERVER-RENDERED SEO FALLBACK
+          The Widget above is client-only (ssr:false), so its content is
+          NOT in the HTML Google first receives. This block provides that
+          same content server-side so the page is indexable and AdSense-
+          eligible. Once the interactive Widget mounts (ready === true) we
+          HIDE this block, otherwise the page would show the content twice
+          — a stranded footer and a duplicate H1/FAQ below the live tool.
+          Crawlers see it (they read the initial HTML); users never see a
+          duplicate because it disappears the instant the tool loads.
           ============================================================ */}
       <div style={{
+        display: ready ? 'none' : 'block',
         background: C.bg, color: C.text, borderTop: `1px solid ${C.borderLight}`,
         fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", padding: '48px 24px 40px',
       }}>
