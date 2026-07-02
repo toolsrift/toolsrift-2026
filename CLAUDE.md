@@ -837,3 +837,26 @@ When ready for Phase 2 (Pro subscriptions):
 ---
 
 *This document is the single source of truth for all Claude Code operations on ToolsRift Phase 1.*
+
+---
+
+## DYNAMIC TOOL ROUTING SYSTEM (added July 2026)
+
+Every tool now has its own indexable URL: `/{category}/{tool-id}` (e.g. `/text/word-counter-pro`).
+
+**How it works:**
+- `pages/[category]/[tool].js` — single dynamic page for all 593 tools. Uses a "hash bridge": on mount it sets `window.location.hash = #/tool/{id}` via `history.replaceState()` BEFORE loading the category component, so the component's internal `useAppRouter()` opens the correct tool. NO changes to category component files are needed.
+- `lib/toolRegistry.js` — AUTO-GENERATED registry of all tools (id, name, desc per category). Never edit by hand.
+- `components/CategoryContent.jsx` — renders a server-side link grid to every tool URL (Google discovery paths).
+
+**MANDATORY workflow when adding/removing tools in any category component:**
+1. `python3 scripts/extract-tools.py`   (regenerates lib/toolRegistry.js)
+2. `node scripts/generate-sitemap.js`   (regenerates public/sitemap.xml)
+3. Commit both generated files together with the component change.
+
+Skipping step 1 means new tools get no URL/page. Skipping step 2 means Google is never told about them.
+
+**Rules:**
+- Tool ids must be kebab-case `[a-z0-9-]+` (they become URLs).
+- Every tool object needs `id`, `name`, and `desc` (desc is used for meta description).
+- `public/sw.js` must still NEVER exist.
