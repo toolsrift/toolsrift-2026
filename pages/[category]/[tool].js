@@ -99,13 +99,54 @@ export default function ToolPage({ category, categoryName, tool, related }) {
 
   // HASH BRIDGE: set #/tool/<id> before the widget mounts, so the
   // category component's internal router opens this exact tool.
+  //
+  // WHY THIS IS NOT A ONE-LINER: Next.js's pages router reconciles the
+  // browser URL with a history.replaceState() of its own shortly AFTER
+  // hydration. That resolved URL has no client-only hash, so it strips the
+  // `#/tool/<id>` we just set. Because the category widget is loaded with
+  // ssr:false it mounts asynchronously — often AFTER that reconciliation —
+  // and its internal useAppRouter() then reads an empty hash and shows the
+  // category home page instead of the tool. To win the race we keep the hash
+  // asserted across the reconciliation passes until the widget has mounted
+  // and read it, then stop guarding so in-app navigation is never fought.
   const [ready, setReady] = useState(false)
   useEffect(() => {
-    window.history.replaceState(
-      null, '',
-      window.location.pathname + window.location.search + `#/tool/${tool.id}`
-    )
-    setReady(true)
+    const targetHash = `#/tool/${tool.id}`
+    const apply = () => {
+      // Only restore when the hash has been stripped entirely — that is the
+      // signature of Next.js's URL reconciliation. A non-empty hash means the
+      // widget or the user has navigated in-app, so we must never override it.
+      if (!window.location.hash) {
+        window.history.replaceState(
+          null, '',
+          window.location.pathname + window.location.search + targetHash
+        )
+      }
+    }
+    apply()
+    // Re-assert the hash on every frame to survive Next.js's post-hydration
+    // URL reconciliation, which fires a tick or two after this effect.
+    let stopped = false
+    const tick = () => {
+      if (stopped) return
+      apply()
+      raf = window.requestAnimationFrame(tick)
+    }
+    let raf = window.requestAnimationFrame(tick)
+    // Mount the widget on the next tick (after the first reconciliation pass),
+    // then give the ssr:false chunk a short window to mount and read the hash
+    // before we stop guarding.
+    const mountTimer = window.setTimeout(() => setReady(true), 0)
+    const stopTimer = window.setTimeout(() => {
+      stopped = true
+      window.cancelAnimationFrame(raf)
+    }, 1200)
+    return () => {
+      stopped = true
+      window.cancelAnimationFrame(raf)
+      window.clearTimeout(mountTimer)
+      window.clearTimeout(stopTimer)
+    }
   }, [tool.id])
 
   const faqs = [
