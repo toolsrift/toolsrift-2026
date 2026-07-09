@@ -147,7 +147,7 @@ const path = h.replace(/^#/, "") || "/";
 const parts = path.split("/").filter(Boolean);
 if (!parts.length) return { page:"home" };
 if (parts[0]==="tool" && parts[1]) return { page:"tool", toolId:parts[1] };
-if (parts[0]==="category" && parts[1]) return { page:"category", catId:parts[1] };
+if (parts[0]==="category" && parts[1]) return { page:"home" };
 return { page:"home" };
 };
 const [route, setRoute] = useState(parse);
@@ -195,39 +195,813 @@ const h = bytesToHex(b);
 return `${h.slice(0,8)}-${h.slice(8,12)}-${h.slice(12,16)}-${h.slice(16,20)}-${h.slice(20)}`;
 };
 
-function StrongPasswordGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function PassphraseGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function PinGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function ApiKeyGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function EncryptionKeyGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function BulkPasswordGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function UuidGen() { return <Result>{uuidv4()}</Result>; }
-function GuidGen() { return <Result>{`{${uuidv4().toUpperCase()}}`}</Result>; }
-function NanoidGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function RandomNumberGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function RandomStringGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function RandomHexGen() { return <Result>{bytesToHex(safeCryptoBytes(16))}</Result>; }
-function SerialNumberGen() { return <Result>TR-ABCD-1234</Result>; }
-function CuidGen() { return <Result>{`c${Date.now().toString(36)}${Math.random().toString(36).slice(2,10)}`}</Result>; }
-function HashIdGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function QrUrl() { return <Result>QR generator UI implemented in full project file.</Result>; }
-function QrWifi() { return <Result>QR generator UI implemented in full project file.</Result>; }
-function QrVcard() { return <Result>QR generator UI implemented in full project file.</Result>; }
-function QrEmail() { return <Result>QR generator UI implemented in full project file.</Result>; }
-function QrPhone() { return <Result>QR generator UI implemented in full project file.</Result>; }
-function QrSms() { return <Result>QR generator UI implemented in full project file.</Result>; }
-function QrText() { return <Result>QR generator UI implemented in full project file.</Result>; }
-function QrReader() { return <Result>QR reader UI implemented in full project file.</Result>; }
-function FakeNameGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function FakeAddressGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function FakeEmailGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function FakePhoneGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function FakeIpGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function FakeMacGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function FakeDateGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function FakeDataBulk() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function RandomCountryGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
-function RandomColorGen() { return <Result>Tool implementation trimmed due to response limits.</Result>; }
+// ---------- Generation helpers ----------
+const CHARSETS = {
+  upper: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+  lower: "abcdefghijklmnopqrstuvwxyz",
+  digits: "0123456789",
+  symbols: "!@#$%^&*()-_=+[]{};:,.<>?",
+};
+function buildCharset({ upper, lower, digits, symbols, excludeAmbiguous }) {
+  let cs = "";
+  if (upper) cs += CHARSETS.upper;
+  if (lower) cs += CHARSETS.lower;
+  if (digits) cs += CHARSETS.digits;
+  if (symbols) cs += CHARSETS.symbols;
+  if (excludeAmbiguous) cs = cs.split("").filter(c => !"Il1O0o".includes(c)).join("");
+  return cs;
+}
+function pickFromCharset(len, cs) {
+  if (!cs || len <= 0) return "";
+  const bytes = safeCryptoBytes(len);
+  let out = "";
+  for (let i = 0; i < len; i++) out += cs[bytes[i] % cs.length];
+  return out;
+}
+function passwordStrength(pw, charsetSize) {
+  if (!pw) return { label: "—", color: "blue", pct: 0 };
+  const entropy = pw.length * Math.log2(Math.max(charsetSize, 2));
+  if (entropy < 40) return { label: "Weak", color: "red", pct: 25 };
+  if (entropy < 60) return { label: "Fair", color: "amber", pct: 55 };
+  if (entropy < 80) return { label: "Good", color: "blue", pct: 78 };
+  return { label: "Strong", color: "green", pct: 100 };
+}
+const PASSPHRASE_WORDS = ["apple","river","stone","cloud","tiger","maple","ocean","planet","forest","ember","silver","garden","meadow","harbor","copper","velvet","cactus","falcon","willow","pebble","cobalt","nebula","orchid","summit","breeze","canyon","marble","lantern","thunder","glacier","harvest","jasmine","kettle","lemon","mango","noble","olive","pixel","quartz","raven","saddle","tundra","umbra","violet","walnut","yonder","zephyr","anchor","beacon","cedar","dolphin","echo","frost","grove","hazel","indigo","juniper","kernel","lagoon","meteor"];
+
+function Check({ label, checked, onChange }) {
+  return (
+    <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", fontSize:13, color:C.text, userSelect:"none" }}>
+      <input type="checkbox" checked={checked} onChange={e => onChange(e.target.checked)} style={{ accentColor:C.blue, width:16, height:16 }} />
+      {label}
+    </label>
+  );
+}
+function NumberField({ value, onChange, min, max, step=1 }) {
+  return (
+    <input type="number" value={value} min={min} max={max} step={step}
+      onChange={e => onChange(e.target.value)}
+      style={{ width:"100%", background:"rgba(255,255,255,0.04)", border:`1px solid ${C.border}`, borderRadius:8, padding:"10px 14px", color:C.text, fontSize:13, fontFamily:"'JetBrains Mono',monospace", outline:"none" }}
+      onFocus={e => e.target.style.borderColor=C.blue} onBlur={e => e.target.style.borderColor=C.border} />
+  );
+}
+function OutputBox({ text, onRegen, filename, download=false, label }) {
+  return (
+    <VStack gap={8}>
+      {label && <Label>{label}</Label>}
+      <Result>{text || "—"}</Result>
+      <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+        <CopyBtn text={text} />
+        {onRegen && <Btn variant="secondary" size="sm" onClick={onRegen}>↻ Regenerate</Btn>}
+        {download && <Btn variant="secondary" size="sm" onClick={() => downloadText(filename || "output.txt", text)}>Download</Btn>}
+      </div>
+    </VStack>
+  );
+}
+
+function StrongPasswordGen() {
+  const [length, setLength] = useState(16);
+  const [upper, setUpper] = useState(true);
+  const [lower, setLower] = useState(true);
+  const [digits, setDigits] = useState(true);
+  const [symbols, setSymbols] = useState(true);
+  const [excl, setExcl] = useState(false);
+  const [out, setOut] = useState("");
+  const opts = { upper, lower, digits, symbols, excludeAmbiguous: excl };
+  const cs = buildCharset(opts);
+  const gen = useCallback(() => {
+    const c = buildCharset({ upper, lower, digits, symbols, excludeAmbiguous: excl });
+    setOut(pickFromCharset(Math.max(4, Math.min(128, Number(length) || 16)), c));
+  }, [length, upper, lower, digits, symbols, excl]);
+  useEffect(() => { gen(); }, [gen]);
+  const st = passwordStrength(out, cs.length);
+  return (
+    <VStack>
+      <div><Label>Length: {length}</Label>
+        <input type="range" min={4} max={64} value={length} onChange={e => setLength(Number(e.target.value))} style={{ width:"100%", accentColor:C.blue }} />
+      </div>
+      <div style={{ display:"flex", flexWrap:"wrap", gap:16 }}>
+        <Check label="Uppercase (A-Z)" checked={upper} onChange={setUpper} />
+        <Check label="Lowercase (a-z)" checked={lower} onChange={setLower} />
+        <Check label="Digits (0-9)" checked={digits} onChange={setDigits} />
+        <Check label="Symbols (!@#)" checked={symbols} onChange={setSymbols} />
+        <Check label="Exclude ambiguous" checked={excl} onChange={setExcl} />
+      </div>
+      {cs.length === 0 && <div style={{ color:C.warn, fontSize:12 }}>Select at least one character set.</div>}
+      <OutputBox text={out} onRegen={gen} />
+      <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+        <div style={{ flex:1, height:6, background:"rgba(255,255,255,0.06)", borderRadius:3, overflow:"hidden" }}>
+          <div style={{ width:`${st.pct}%`, height:"100%", background: st.color==="red"?C.danger:st.color==="amber"?C.warn:st.color==="green"?C.success:C.blue, transition:"width .2s" }} />
+        </div>
+        <Badge color={st.color}>{st.label}</Badge>
+      </div>
+    </VStack>
+  );
+}
+
+function PassphraseGen() {
+  const [count, setCount] = useState(4);
+  const [sep, setSep] = useState("-");
+  const [cap, setCap] = useState(true);
+  const [addNum, setAddNum] = useState(true);
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const n = Math.max(2, Math.min(12, Number(count) || 4));
+    const bytes = safeCryptoBytes(n);
+    let words = [];
+    for (let i = 0; i < n; i++) {
+      let w = PASSPHRASE_WORDS[bytes[i] % PASSPHRASE_WORDS.length];
+      if (cap) w = w.charAt(0).toUpperCase() + w.slice(1);
+      words.push(w);
+    }
+    let phrase = words.join(sep === "space" ? " " : sep);
+    if (addNum) phrase += (sep === "space" ? " " : sep) + randInt(10, 99);
+    setOut(phrase);
+  }, [count, sep, cap, addNum]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Word count</Label><NumberField value={count} onChange={setCount} min={2} max={12} /></div>
+        <div><Label>Separator</Label><SelectInput value={sep} onChange={setSep} options={[{value:"-",label:"Hyphen (-)"},{value:".",label:"Dot (.)"},{value:"_",label:"Underscore (_)"},{value:"space",label:"Space"}]} style={{ width:"100%" }} /></div>
+      </Grid2>
+      <div style={{ display:"flex", gap:16, flexWrap:"wrap" }}>
+        <Check label="Capitalize words" checked={cap} onChange={setCap} />
+        <Check label="Append number" checked={addNum} onChange={setAddNum} />
+      </div>
+      <OutputBox text={out} onRegen={gen} />
+    </VStack>
+  );
+}
+
+function PinGen() {
+  const [len, setLen] = useState("4");
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const n = Number(len);
+    const bytes = safeCryptoBytes(n);
+    let pin = "";
+    for (let i = 0; i < n; i++) pin += (bytes[i] % 10).toString();
+    setOut(pin);
+  }, [len]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <div><Label>PIN length</Label><SelectInput value={len} onChange={setLen} options={[{value:"4",label:"4 digits"},{value:"6",label:"6 digits"},{value:"8",label:"8 digits"}]} style={{ width:"100%" }} /></div>
+      <OutputBox text={out} onRegen={gen} />
+    </VStack>
+  );
+}
+
+function ApiKeyGen() {
+  const [format, setFormat] = useState("hex");
+  const [prefix, setPrefix] = useState("sk");
+  const [len, setLen] = useState(32);
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const n = Math.max(8, Math.min(128, Number(len) || 32));
+    let key = "";
+    if (format === "hex") key = bytesToHex(safeCryptoBytes(Math.ceil(n / 2))).slice(0, n);
+    else if (format === "base64") key = bytesToBase64(safeCryptoBytes(n)).replace(/[+/=]/g, "").slice(0, n);
+    else if (format === "uuid") key = uuidv4();
+    else if (format === "prefixed") key = `${prefix || "sk"}_${bytesToHex(safeCryptoBytes(Math.ceil(n / 2))).slice(0, n)}`;
+    setOut(key);
+  }, [format, prefix, len]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Format</Label><SelectInput value={format} onChange={setFormat} options={[{value:"hex",label:"Hex"},{value:"base64",label:"Base64 (URL-safe)"},{value:"uuid",label:"UUID v4"},{value:"prefixed",label:"Prefixed (sk_...)"}]} style={{ width:"100%" }} /></div>
+        {format === "prefixed"
+          ? <div><Label>Prefix</Label><Input value={prefix} onChange={setPrefix} placeholder="sk" /></div>
+          : format !== "uuid" ? <div><Label>Length</Label><NumberField value={len} onChange={setLen} min={8} max={128} /></div> : <div />}
+      </Grid2>
+      <OutputBox text={out} onRegen={gen} />
+    </VStack>
+  );
+}
+
+function EncryptionKeyGen() {
+  const [bits, setBits] = useState("256");
+  const [fmt, setFmt] = useState("hex");
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const nbytes = Number(bits) / 8;
+    const bytes = safeCryptoBytes(nbytes);
+    setOut(fmt === "hex" ? bytesToHex(bytes) : bytesToBase64(bytes));
+  }, [bits, fmt]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Key size</Label><SelectInput value={bits} onChange={setBits} options={[{value:"128",label:"128-bit (AES-128)"},{value:"192",label:"192-bit (AES-192)"},{value:"256",label:"256-bit (AES-256)"},{value:"512",label:"512-bit"}]} style={{ width:"100%" }} /></div>
+        <div><Label>Output format</Label><SelectInput value={fmt} onChange={setFmt} options={[{value:"hex",label:"Hex"},{value:"base64",label:"Base64"}]} style={{ width:"100%" }} /></div>
+      </Grid2>
+      <OutputBox text={out} onRegen={gen} />
+    </VStack>
+  );
+}
+
+function BulkPasswordGen() {
+  const [count, setCount] = useState(10);
+  const [length, setLength] = useState(16);
+  const [upper, setUpper] = useState(true);
+  const [lower, setLower] = useState(true);
+  const [digits, setDigits] = useState(true);
+  const [symbols, setSymbols] = useState(false);
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const cs = buildCharset({ upper, lower, digits, symbols, excludeAmbiguous: false });
+    if (!cs) { setOut(""); return; }
+    const n = Math.max(1, Math.min(500, Number(count) || 10));
+    const l = Math.max(4, Math.min(128, Number(length) || 16));
+    setOut(Array.from({ length: n }, () => pickFromCharset(l, cs)).join("\n"));
+  }, [count, length, upper, lower, digits, symbols]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={500} /></div>
+        <div><Label>Length each</Label><NumberField value={length} onChange={setLength} min={4} max={128} /></div>
+      </Grid2>
+      <div style={{ display:"flex", gap:16, flexWrap:"wrap" }}>
+        <Check label="A-Z" checked={upper} onChange={setUpper} />
+        <Check label="a-z" checked={lower} onChange={setLower} />
+        <Check label="0-9" checked={digits} onChange={setDigits} />
+        <Check label="Symbols" checked={symbols} onChange={setSymbols} />
+      </div>
+      <OutputBox text={out} onRegen={gen} download filename="passwords.txt" />
+    </VStack>
+  );
+}
+
+function UuidGen() {
+  const [count, setCount] = useState(1);
+  const [upper, setUpper] = useState(false);
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const n = Math.max(1, Math.min(500, Number(count) || 1));
+    let list = Array.from({ length: n }, () => uuidv4());
+    if (upper) list = list.map(u => u.toUpperCase());
+    setOut(list.join("\n"));
+  }, [count, upper]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={500} /></div>
+        <div style={{ display:"flex", alignItems:"flex-end", paddingBottom:8 }}><Check label="Uppercase" checked={upper} onChange={setUpper} /></div>
+      </Grid2>
+      <OutputBox text={out} onRegen={gen} download filename="uuids.txt" />
+    </VStack>
+  );
+}
+
+function GuidGen() {
+  const [count, setCount] = useState(1);
+  const [braces, setBraces] = useState(true);
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const n = Math.max(1, Math.min(500, Number(count) || 1));
+    setOut(Array.from({ length: n }, () => {
+      const g = uuidv4().toUpperCase();
+      return braces ? `{${g}}` : g;
+    }).join("\n"));
+  }, [count, braces]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={500} /></div>
+        <div style={{ display:"flex", alignItems:"flex-end", paddingBottom:8 }}><Check label="Wrap in braces { }" checked={braces} onChange={setBraces} /></div>
+      </Grid2>
+      <OutputBox text={out} onRegen={gen} download filename="guids.txt" />
+    </VStack>
+  );
+}
+
+function NanoidGen() {
+  const DEFAULT_AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_-";
+  const [len, setLen] = useState(21);
+  const [alphabet, setAlphabet] = useState(DEFAULT_AB);
+  const [count, setCount] = useState(1);
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const ab = alphabet || DEFAULT_AB;
+    const l = Math.max(1, Math.min(128, Number(len) || 21));
+    const n = Math.max(1, Math.min(500, Number(count) || 1));
+    setOut(Array.from({ length: n }, () => pickFromCharset(l, ab)).join("\n"));
+  }, [len, alphabet, count]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Length</Label><NumberField value={len} onChange={setLen} min={1} max={128} /></div>
+        <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={500} /></div>
+      </Grid2>
+      <div><Label>Alphabet</Label><Input value={alphabet} onChange={setAlphabet} placeholder={DEFAULT_AB} /></div>
+      <OutputBox text={out} onRegen={gen} download filename="nanoids.txt" />
+    </VStack>
+  );
+}
+
+function RandomNumberGen() {
+  const [min, setMin] = useState(1);
+  const [max, setMax] = useState(100);
+  const [count, setCount] = useState(1);
+  const [mode, setMode] = useState("int");
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    let lo = Number(min), hi = Number(max);
+    if (isNaN(lo) || isNaN(hi)) { setOut("Enter valid numbers"); return; }
+    if (lo > hi) { const t = lo; lo = hi; hi = t; }
+    const n = Math.max(1, Math.min(1000, Number(count) || 1));
+    const vals = [];
+    for (let i = 0; i < n; i++) {
+      const r = crypto.getRandomValues(new Uint32Array(1))[0] / 4294967296;
+      vals.push(mode === "int" ? Math.floor(r * (hi - lo + 1)) + lo : (r * (hi - lo) + lo).toFixed(4));
+    }
+    setOut(vals.join(", "));
+  }, [min, max, count, mode]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Min</Label><NumberField value={min} onChange={setMin} /></div>
+        <div><Label>Max</Label><NumberField value={max} onChange={setMax} /></div>
+        <div><Label>Count</Label><NumberField value={count} onChange={setCount} min={1} max={1000} /></div>
+      </Grid3>
+      <div><Label>Type</Label><SelectInput value={mode} onChange={setMode} options={[{value:"int",label:"Integer"},{value:"dec",label:"Decimal"}]} style={{ width:"100%" }} /></div>
+      <OutputBox text={out} onRegen={gen} />
+    </VStack>
+  );
+}
+
+function RandomStringGen() {
+  const [length, setLength] = useState(16);
+  const [count, setCount] = useState(1);
+  const [upper, setUpper] = useState(true);
+  const [lower, setLower] = useState(true);
+  const [digits, setDigits] = useState(true);
+  const [symbols, setSymbols] = useState(false);
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const cs = buildCharset({ upper, lower, digits, symbols, excludeAmbiguous: false });
+    if (!cs) { setOut(""); return; }
+    const l = Math.max(1, Math.min(256, Number(length) || 16));
+    const n = Math.max(1, Math.min(500, Number(count) || 1));
+    setOut(Array.from({ length: n }, () => pickFromCharset(l, cs)).join("\n"));
+  }, [length, count, upper, lower, digits, symbols]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Length</Label><NumberField value={length} onChange={setLength} min={1} max={256} /></div>
+        <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={500} /></div>
+      </Grid2>
+      <div style={{ display:"flex", gap:16, flexWrap:"wrap" }}>
+        <Check label="A-Z" checked={upper} onChange={setUpper} />
+        <Check label="a-z" checked={lower} onChange={setLower} />
+        <Check label="0-9" checked={digits} onChange={setDigits} />
+        <Check label="Symbols" checked={symbols} onChange={setSymbols} />
+      </div>
+      <OutputBox text={out} onRegen={gen} download filename="strings.txt" />
+    </VStack>
+  );
+}
+
+function RandomHexGen() {
+  const [bytesLen, setBytesLen] = useState(16);
+  const [count, setCount] = useState(1);
+  const [upper, setUpper] = useState(false);
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const b = Math.max(1, Math.min(256, Number(bytesLen) || 16));
+    const n = Math.max(1, Math.min(500, Number(count) || 1));
+    setOut(Array.from({ length: n }, () => {
+      const h = bytesToHex(safeCryptoBytes(b));
+      return upper ? h.toUpperCase() : h;
+    }).join("\n"));
+  }, [bytesLen, count, upper]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Bytes (→ {Number(bytesLen)*2||0} hex chars)</Label><NumberField value={bytesLen} onChange={setBytesLen} min={1} max={256} /></div>
+        <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={500} /></div>
+      </Grid2>
+      <Check label="Uppercase" checked={upper} onChange={setUpper} />
+      <OutputBox text={out} onRegen={gen} download filename="hex.txt" />
+    </VStack>
+  );
+}
+
+function SerialNumberGen() {
+  const [prefix, setPrefix] = useState("TR");
+  const [segments, setSegments] = useState(2);
+  const [segLen, setSegLen] = useState(4);
+  const [count, setCount] = useState(5);
+  const [out, setOut] = useState("");
+  const cs = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const gen = useCallback(() => {
+    const segN = Math.max(1, Math.min(8, Number(segments) || 2));
+    const segL = Math.max(2, Math.min(12, Number(segLen) || 4));
+    const n = Math.max(1, Math.min(500, Number(count) || 5));
+    setOut(Array.from({ length: n }, () => {
+      const parts = Array.from({ length: segN }, () => pickFromCharset(segL, cs));
+      return `${prefix ? prefix + "-" : ""}${parts.join("-")}`;
+    }).join("\n"));
+  }, [prefix, segments, segLen, count]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Prefix</Label><Input value={prefix} onChange={setPrefix} placeholder="TR" /></div>
+        <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={500} /></div>
+      </Grid2>
+      <Grid2>
+        <div><Label>Segments</Label><NumberField value={segments} onChange={setSegments} min={1} max={8} /></div>
+        <div><Label>Chars per segment</Label><NumberField value={segLen} onChange={setSegLen} min={2} max={12} /></div>
+      </Grid2>
+      <OutputBox text={out} onRegen={gen} download filename="serials.txt" />
+    </VStack>
+  );
+}
+
+function CuidGen() {
+  const [count, setCount] = useState(1);
+  const [out, setOut] = useState("");
+  const one = () => `c${Date.now().toString(36)}${bytesToHex(safeCryptoBytes(6))}${pickFromCharset(4, "0123456789abcdefghijklmnopqrstuvwxyz")}`;
+  const gen = useCallback(() => {
+    const n = Math.max(1, Math.min(500, Number(count) || 1));
+    setOut(Array.from({ length: n }, one).join("\n"));
+  }, [count]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={500} /></div>
+      <OutputBox text={out} onRegen={gen} download filename="cuids.txt" />
+    </VStack>
+  );
+}
+
+const HASHID_AB = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+function shuffleAlphabet(alphabet, salt) {
+  const a = alphabet.split("");
+  if (!salt) return a.join("");
+  for (let i = a.length - 1, v = 0, p = 0; i > 0; i--, v++) {
+    v %= salt.length;
+    const int = salt.charCodeAt(v);
+    p += int;
+    const j = (int + v + p) % i;
+    const tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+  }
+  return a.join("");
+}
+function hashidEncode(num, salt, minLen) {
+  let n = Math.floor(Number(num));
+  if (!Number.isFinite(n) || n < 0) return "";
+  const ab = shuffleAlphabet(HASHID_AB, salt);
+  let out = "";
+  if (n === 0) out = ab[0];
+  while (n > 0) { out = ab[n % ab.length] + out; n = Math.floor(n / ab.length); }
+  const ml = Math.max(0, Math.min(32, Number(minLen) || 0));
+  while (out.length < ml) out = ab[(out.length + salt.length) % ab.length] + out;
+  return out;
+}
+function HashIdGen() {
+  const [num, setNum] = useState(12345);
+  const [salt, setSalt] = useState("toolsrift");
+  const [minLen, setMinLen] = useState(6);
+  const out = hashidEncode(num, salt, minLen);
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Number</Label><NumberField value={num} onChange={setNum} min={0} /></div>
+        <div><Label>Salt</Label><Input value={salt} onChange={setSalt} placeholder="salt" /></div>
+        <div><Label>Min length</Label><NumberField value={minLen} onChange={setMinLen} min={0} max={32} /></div>
+      </Grid3>
+      <OutputBox text={out} label="Encoded Hash ID" />
+      <div style={{ fontSize:11, color:C.muted }}>Deterministic: the same number + salt always produces the same ID.</div>
+    </VStack>
+  );
+}
+
+// ---------- Fake data ----------
+const FN_MALE = ["James","John","Robert","Michael","William","David","Daniel","Matthew","Anthony","Mark","Aarav","Vivaan","Aditya","Rohan","Liam","Noah","Lucas","Mateo","Hiroshi","Omar"];
+const FN_FEMALE = ["Mary","Patricia","Jennifer","Linda","Elizabeth","Jessica","Sarah","Emily","Emma","Olivia","Priya","Ananya","Diya","Aisha","Sophia","Isabella","Mia","Amara","Yuki","Fatima"];
+const LAST = ["Smith","Johnson","Williams","Brown","Jones","Garcia","Miller","Davis","Rodriguez","Martinez","Patel","Sharma","Kumar","Singh","Khan","Nguyen","Wang","Chen","Taylor","Anderson"];
+const EMAIL_DOMAINS = ["example.com","mail.com","test.dev","inbox.co","demo.io","sample.net"];
+const ADDR = {
+  US: { streets:["Main St","Oak Ave","Maple Dr","Elm St","Cedar Ln","Pine Rd","Park Ave"], cities:["Springfield","Franklin","Clinton","Georgetown","Madison","Riverside"], regions:["CA","NY","TX","FL","IL","WA"], zip:()=>String(randInt(10000,99999)) },
+  UK: { streets:["High St","Church Rd","Station Rd","Victoria Rd","Kings Rd","Queens Ave"], cities:["London","Manchester","Bristol","Leeds","Liverpool","Sheffield"], regions:["England","Scotland","Wales"], zip:()=>`${randPick(["SW","NW","EC","M","B","LS"])}${randInt(1,9)} ${randInt(1,9)}${randPick(["AA","BB","ZX","QP"])}` },
+  IN: { streets:["MG Road","Gandhi Nagar","Nehru St","Park St","Ring Rd","Church St"], cities:["Mumbai","Delhi","Bengaluru","Hyderabad","Chennai","Pune"], regions:["Maharashtra","Karnataka","Telangana","Tamil Nadu","Delhi"], zip:()=>String(randInt(100000,999999)) },
+};
+const PHONE_FMT = {
+  US: () => `+1 (${randInt(200,999)}) ${randInt(200,999)}-${String(randInt(0,9999)).padStart(4,"0")}`,
+  UK: () => `+44 7${randInt(100,999)} ${String(randInt(0,999999)).padStart(6,"0")}`,
+  IN: () => `+91 ${randInt(70,99)}${String(randInt(0,99999999)).padStart(8,"0")}`,
+  AU: () => `+61 4${randInt(10,99)} ${String(randInt(100,999))} ${String(randInt(100,999))}`,
+};
+const COUNTRIES = [
+  { name:"United States", code:"US", capital:"Washington, D.C.", currency:"USD" },
+  { name:"United Kingdom", code:"GB", capital:"London", currency:"GBP" },
+  { name:"India", code:"IN", capital:"New Delhi", currency:"INR" },
+  { name:"Canada", code:"CA", capital:"Ottawa", currency:"CAD" },
+  { name:"Australia", code:"AU", capital:"Canberra", currency:"AUD" },
+  { name:"Germany", code:"DE", capital:"Berlin", currency:"EUR" },
+  { name:"France", code:"FR", capital:"Paris", currency:"EUR" },
+  { name:"Japan", code:"JP", capital:"Tokyo", currency:"JPY" },
+  { name:"Brazil", code:"BR", capital:"Brasília", currency:"BRL" },
+  { name:"South Africa", code:"ZA", capital:"Pretoria", currency:"ZAR" },
+  { name:"Mexico", code:"MX", capital:"Mexico City", currency:"MXN" },
+  { name:"Italy", code:"IT", capital:"Rome", currency:"EUR" },
+  { name:"Spain", code:"ES", capital:"Madrid", currency:"EUR" },
+  { name:"Netherlands", code:"NL", capital:"Amsterdam", currency:"EUR" },
+  { name:"Sweden", code:"SE", capital:"Stockholm", currency:"SEK" },
+  { name:"Singapore", code:"SG", capital:"Singapore", currency:"SGD" },
+  { name:"United Arab Emirates", code:"AE", capital:"Abu Dhabi", currency:"AED" },
+  { name:"South Korea", code:"KR", capital:"Seoul", currency:"KRW" },
+];
+const fakeName = (gender) => {
+  const first = gender === "male" ? randPick(FN_MALE) : gender === "female" ? randPick(FN_FEMALE) : randPick([...FN_MALE, ...FN_FEMALE]);
+  return `${first} ${randPick(LAST)}`;
+};
+
+function FakeNameGen() {
+  const [gender, setGender] = useState("any");
+  const [count, setCount] = useState(5);
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const n = Math.max(1, Math.min(500, Number(count) || 5));
+    setOut(Array.from({ length: n }, () => fakeName(gender)).join("\n"));
+  }, [gender, count]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Gender</Label><SelectInput value={gender} onChange={setGender} options={[{value:"any",label:"Any"},{value:"male",label:"Male"},{value:"female",label:"Female"}]} style={{ width:"100%" }} /></div>
+        <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={500} /></div>
+      </Grid2>
+      <OutputBox text={out} onRegen={gen} download filename="names.txt" />
+    </VStack>
+  );
+}
+
+function FakeAddressGen() {
+  const [country, setCountry] = useState("US");
+  const [count, setCount] = useState(3);
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const c = ADDR[country] || ADDR.US;
+    const n = Math.max(1, Math.min(200, Number(count) || 3));
+    setOut(Array.from({ length: n }, () => `${randInt(1,9999)} ${randPick(c.streets)}, ${randPick(c.cities)}, ${randPick(c.regions)} ${c.zip()}`).join("\n"));
+  }, [country, count]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Country</Label><SelectInput value={country} onChange={setCountry} options={[{value:"US",label:"United States"},{value:"UK",label:"United Kingdom"},{value:"IN",label:"India"}]} style={{ width:"100%" }} /></div>
+        <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={200} /></div>
+      </Grid2>
+      <OutputBox text={out} onRegen={gen} download filename="addresses.txt" />
+    </VStack>
+  );
+}
+
+function FakeEmailGen() {
+  const [style, setStyle] = useState("name");
+  const [count, setCount] = useState(5);
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const n = Math.max(1, Math.min(500, Number(count) || 5));
+    setOut(Array.from({ length: n }, () => {
+      const fn = randPick([...FN_MALE, ...FN_FEMALE]).toLowerCase();
+      const ln = randPick(LAST).toLowerCase();
+      let local;
+      if (style === "name") local = `${fn}.${ln}`;
+      else if (style === "initial") local = `${fn[0]}${ln}`;
+      else local = `${fn}${randInt(10,9999)}`;
+      return `${local}@${randPick(EMAIL_DOMAINS)}`;
+    }).join("\n"));
+  }, [style, count]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Style</Label><SelectInput value={style} onChange={setStyle} options={[{value:"name",label:"first.last"},{value:"initial",label:"flast"},{value:"random",label:"name+number"}]} style={{ width:"100%" }} /></div>
+        <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={500} /></div>
+      </Grid2>
+      <OutputBox text={out} onRegen={gen} download filename="emails.txt" />
+    </VStack>
+  );
+}
+
+function FakePhoneGen() {
+  const [country, setCountry] = useState("US");
+  const [count, setCount] = useState(5);
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const fmt = PHONE_FMT[country] || PHONE_FMT.US;
+    const n = Math.max(1, Math.min(500, Number(count) || 5));
+    setOut(Array.from({ length: n }, () => fmt()).join("\n"));
+  }, [country, count]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Country</Label><SelectInput value={country} onChange={setCountry} options={[{value:"US",label:"United States"},{value:"UK",label:"United Kingdom"},{value:"IN",label:"India"},{value:"AU",label:"Australia"}]} style={{ width:"100%" }} /></div>
+        <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={500} /></div>
+      </Grid2>
+      <OutputBox text={out} onRegen={gen} download filename="phones.txt" />
+    </VStack>
+  );
+}
+
+function FakeIpGen() {
+  const [ver, setVer] = useState("v4");
+  const [count, setCount] = useState(5);
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const n = Math.max(1, Math.min(500, Number(count) || 5));
+    setOut(Array.from({ length: n }, () => {
+      if (ver === "v4") return Array.from({ length: 4 }, () => randInt(0, 255)).join(".");
+      return Array.from({ length: 8 }, () => bytesToHex(safeCryptoBytes(2))).join(":");
+    }).join("\n"));
+  }, [ver, count]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Version</Label><SelectInput value={ver} onChange={setVer} options={[{value:"v4",label:"IPv4"},{value:"v6",label:"IPv6"}]} style={{ width:"100%" }} /></div>
+        <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={500} /></div>
+      </Grid2>
+      <OutputBox text={out} onRegen={gen} download filename="ips.txt" />
+    </VStack>
+  );
+}
+
+function FakeMacGen() {
+  const [fmt, setFmt] = useState("colon");
+  const [count, setCount] = useState(5);
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const n = Math.max(1, Math.min(500, Number(count) || 5));
+    setOut(Array.from({ length: n }, () => {
+      const parts = Array.from({ length: 6 }, () => bytesToHex(safeCryptoBytes(1)).toUpperCase());
+      if (fmt === "colon") return parts.join(":");
+      if (fmt === "dash") return parts.join("-");
+      return parts.join("").replace(/(.{4})(?=.)/g, "$1.");
+    }).join("\n"));
+  }, [fmt, count]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Format</Label><SelectInput value={fmt} onChange={setFmt} options={[{value:"colon",label:"Colon (AA:BB:...)"},{value:"dash",label:"Dash (AA-BB-...)"},{value:"dot",label:"Dot (AABB.CCDD...)"}]} style={{ width:"100%" }} /></div>
+        <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={500} /></div>
+      </Grid2>
+      <OutputBox text={out} onRegen={gen} download filename="macs.txt" />
+    </VStack>
+  );
+}
+
+function FakeDateGen() {
+  const [start, setStart] = useState("2000-01-01");
+  const [end, setEnd] = useState("2025-12-31");
+  const [fmt, setFmt] = useState("iso");
+  const [count, setCount] = useState(5);
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const s = new Date(start).getTime(), e = new Date(end).getTime();
+    if (isNaN(s) || isNaN(e)) { setOut("Enter valid dates"); return; }
+    const lo = Math.min(s, e), hi = Math.max(s, e);
+    const n = Math.max(1, Math.min(500, Number(count) || 5));
+    setOut(Array.from({ length: n }, () => {
+      const d = new Date(lo + Math.random() * (hi - lo));
+      if (fmt === "iso") return d.toISOString().slice(0, 10);
+      if (fmt === "us") return `${String(d.getMonth()+1).padStart(2,"0")}/${String(d.getDate()).padStart(2,"0")}/${d.getFullYear()}`;
+      if (fmt === "eu") return `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`;
+      return d.toDateString();
+    }).join("\n"));
+  }, [start, end, fmt, count]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Start date</Label><Input value={start} onChange={setStart} placeholder="2000-01-01" /></div>
+        <div><Label>End date</Label><Input value={end} onChange={setEnd} placeholder="2025-12-31" /></div>
+      </Grid2>
+      <Grid2>
+        <div><Label>Format</Label><SelectInput value={fmt} onChange={setFmt} options={[{value:"iso",label:"ISO (YYYY-MM-DD)"},{value:"us",label:"US (MM/DD/YYYY)"},{value:"eu",label:"EU (DD/MM/YYYY)"},{value:"long",label:"Long (Mon DD YYYY)"}]} style={{ width:"100%" }} /></div>
+        <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={500} /></div>
+      </Grid2>
+      <OutputBox text={out} onRegen={gen} download filename="dates.txt" />
+    </VStack>
+  );
+}
+
+function FakeDataBulk() {
+  const [rows, setRows] = useState(10);
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const n = Math.max(1, Math.min(500, Number(rows) || 10));
+    const header = "name,email,phone,city,country";
+    const lines = Array.from({ length: n }, () => {
+      const name = fakeName("any");
+      const email = `${name.toLowerCase().replace(/[^a-z]/g, ".")}@${randPick(EMAIL_DOMAINS)}`;
+      const country = randPick(COUNTRIES);
+      const addr = ADDR[country.code === "GB" ? "UK" : (ADDR[country.code] ? country.code : "US")] || ADDR.US;
+      const phone = (PHONE_FMT[country.code] || PHONE_FMT.US)();
+      return `"${name}","${email}","${phone}","${randPick(addr.cities)}","${country.name}"`;
+    });
+    setOut([header, ...lines].join("\n"));
+  }, [rows]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <div><Label>Rows</Label><NumberField value={rows} onChange={setRows} min={1} max={500} /></div>
+      <OutputBox text={out} onRegen={gen} download filename="fake-data.csv" label="CSV output" />
+    </VStack>
+  );
+}
+
+function RandomCountryGen() {
+  const [count, setCount] = useState(1);
+  const [picks, setPicks] = useState([]);
+  const gen = useCallback(() => {
+    const n = Math.max(1, Math.min(COUNTRIES.length, Number(count) || 1));
+    const pool = [...COUNTRIES];
+    const chosen = [];
+    for (let i = 0; i < n && pool.length; i++) chosen.push(pool.splice(randInt(0, pool.length - 1), 1)[0]);
+    setPicks(chosen);
+  }, [count]);
+  useEffect(() => { gen(); }, [gen]);
+  const asText = picks.map(c => `${c.name} — ${c.code} — Capital: ${c.capital} — Currency: ${c.currency}`).join("\n");
+  return (
+    <VStack>
+      <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={COUNTRIES.length} /></div>
+      <VStack gap={8}>
+        {picks.map((c, i) => (
+          <div key={i} style={{ display:"flex", justifyContent:"space-between", gap:10, background:"rgba(0,0,0,0.3)", border:`1px solid ${C.border}`, borderRadius:8, padding:"10px 14px", flexWrap:"wrap" }}>
+            <span style={{ fontWeight:700, color:C.text }}>{c.name} <Badge color="blue">{c.code}</Badge></span>
+            <span style={{ color:C.muted, fontSize:12 }}>Capital: {c.capital} · Currency: {c.currency}</span>
+          </div>
+        ))}
+      </VStack>
+      <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+        <CopyBtn text={asText} />
+        <Btn variant="secondary" size="sm" onClick={gen}>↻ Regenerate</Btn>
+      </div>
+    </VStack>
+  );
+}
+
+function RandomColorGen() {
+  const [count, setCount] = useState(6);
+  const [colors, setColors] = useState([]);
+  const gen = useCallback(() => {
+    const n = Math.max(1, Math.min(60, Number(count) || 6));
+    setColors(Array.from({ length: n }, () => {
+      const r = randInt(0, 255), g = randInt(0, 255), b = randInt(0, 255);
+      const hex = "#" + [r, g, b].map(x => x.toString(16).padStart(2, "0")).join("").toUpperCase();
+      const max = Math.max(r, g, b) / 255, min = Math.min(r, g, b) / 255, l = (max + min) / 2;
+      let h = 0, s = 0;
+      if (max !== min) {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        const rr = r/255, gg = g/255, bb = b/255;
+        if (max === rr) h = ((gg - bb) / d + (gg < bb ? 6 : 0));
+        else if (max === gg) h = (bb - rr) / d + 2;
+        else h = (rr - gg) / d + 4;
+        h *= 60;
+      }
+      return { hex, rgb:`rgb(${r}, ${g}, ${b})`, hsl:`hsl(${Math.round(h)}, ${Math.round(s*100)}%, ${Math.round(l*100)}%)` };
+    }));
+  }, [count]);
+  useEffect(() => { gen(); }, [gen]);
+  const asText = colors.map(c => `${c.hex}  ${c.rgb}  ${c.hsl}`).join("\n");
+  return (
+    <VStack>
+      <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={60} /></div>
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))", gap:10 }}>
+        {colors.map((c, i) => (
+          <div key={i} style={{ border:`1px solid ${C.border}`, borderRadius:8, overflow:"hidden" }}>
+            <div style={{ height:56, background:c.hex }} />
+            <div style={{ padding:"8px 10px", fontFamily:"'JetBrains Mono',monospace", fontSize:11, color:C.text }}>
+              <div>{c.hex}</div>
+              <div style={{ color:C.muted }}>{c.rgb}</div>
+              <div style={{ color:C.muted }}>{c.hsl}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+        <CopyBtn text={asText} />
+        <Btn variant="secondary" size="sm" onClick={gen}>↻ Regenerate</Btn>
+      </div>
+    </VStack>
+  );
+}
 
 const TOOLS = [
 { id:"strong-password-gen", cat:"security", name:"Strong Password Generator", desc:"Generate secure strong passwords online with length, symbols, and ambiguous character controls for safer account protection.", icon:"🔐", free:true },
@@ -247,14 +1021,7 @@ const TOOLS = [
 { id:"cuid-gen", cat:"ids", name:"CUID Generator", desc:"Create collision-resistant CUID identifiers online for scalable apps that require readable and unique IDs across clients.", icon:"🧰", free:true },
 { id:"hash-id-gen", cat:"ids", name:"Hash ID Generator", desc:"Encode numbers into short hash IDs online using hashids-style alphabet mapping for cleaner URLs and public identifiers.", icon:"🔑", free:true },
 
-{ id:"qr-url", cat:"qr", name:"QR Code URL Generator", desc:"Generate QR codes for URLs online instantly using live preview and copy-ready links for marketing pages and quick sharing.", icon:"🌐", free:true },
-{ id:"qr-wifi", cat:"qr", name:"QR WiFi Generator", desc:"Create WiFi QR codes online from SSID, password, and encryption type for fast network onboarding and device setup.", icon:"📶", free:true },
-{ id:"qr-vcard", cat:"qr", name:"QR vCard Generator", desc:"Generate vCard QR codes online with contact details for business cards, events, and frictionless mobile contact saving.", icon:"👤", free:true },
-{ id:"qr-email", cat:"qr", name:"QR Email Generator", desc:"Generate email compose QR codes online with recipient, subject, and body fields for campaigns and support workflows.", icon:"✉️", free:true },
-{ id:"qr-phone", cat:"qr", name:"QR Phone Generator", desc:"Create phone dialer QR codes online with tel links for instant calls from printed materials and landing pages.", icon:"📞", free:true },
-{ id:"qr-sms", cat:"qr", name:"QR SMS Generator", desc:"Generate SMS QR codes online with prefilled recipient and message text for faster customer outreach and opt-in flows.", icon:"💬", free:true },
-{ id:"qr-text", cat:"qr", name:"QR Text Generator", desc:"Create plain text QR codes online instantly for notes, labels, instructions, and offline-to-digital handoffs.", icon:"📝", free:true },
-{ id:"qr-reader", cat:"qr", name:"QR Reader", desc:"Decode QR codes from uploaded images online using browser-based reader logic without server uploads or account signup.", icon:"🔍", free:true },
+// TODO: QR tools need a vetted encoder — removed until a correct client-side QR encoder is vendored.
 
 { id:"fake-name-gen", cat:"fakedata", name:"Fake Name Generator", desc:"Generate realistic fake names online by gender and locale for testing forms, demos, and privacy-safe mock datasets.", icon:"🧍", free:true },
 { id:"fake-address-gen", cat:"fakedata", name:"Fake Address Generator", desc:"Create fake addresses online for US, UK, and IN with city, region, and postal formats for QA and sample records.", icon:"📍", free:true },
@@ -271,7 +1038,6 @@ const TOOLS = [
 const CATEGORIES = [
 { id:"security", name:"Security Generators", icon:"🔐", desc:"Passwords, passphrases, API keys, encryption keys, and secure credential generators." },
 { id:"ids", name:"ID & Token Generators", icon:"🧬", desc:"UUIDs, GUIDs, Nano IDs, random strings, serials, and short hash IDs." },
-{ id:"qr", name:"QR Code Generators", icon:"📱", desc:"Generate QR codes for URLs, WiFi, contact cards, messages, and decode uploaded QR images." },
 { id:"fakedata", name:"Fake Data Generators", icon:"🧪", desc:"Create realistic fake names, addresses, phone numbers, dates, and bulk mock datasets." },
 ];
 
@@ -301,14 +1067,7 @@ const TOOL_COMPONENTS = {
 "serial-number-gen": SerialNumberGen,
 "cuid-gen": CuidGen,
 "hash-id-gen": HashIdGen,
-"qr-url": QrUrl,
-"qr-wifi": QrWifi,
-"qr-vcard": QrVcard,
-"qr-email": QrEmail,
-"qr-phone": QrPhone,
-"qr-sms": QrSms,
-"qr-text": QrText,
-"qr-reader": QrReader,
+// QR tools removed — see TOOLS array note.
 "fake-name-gen": FakeNameGen,
 "fake-address-gen": FakeAddressGen,
 "fake-email-gen": FakeEmailGen,
@@ -440,8 +1199,7 @@ function Nav() {
       transition: "background 0.2s, border-color 0.2s",
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <span style={{ width: 8, height: 8, borderRadius: "50%", background: C.blue, boxShadow: `0 0 6px ${C.blue}80`, flexShrink: 0 }} />
-        <a href="https://toolsrift.com" style={{ fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 15, color: "#F8FAFC", textDecoration: "none", letterSpacing: "-0.01em" }}>ToolsRift</a>
+        <a href="/" aria-label="ToolsRift home" style={{display:"flex",alignItems:"center",flexShrink:0}}><img src="/logo.svg" alt="ToolsRift" style={{height:26,display:"block"}}/></a>
         <span style={{ color: "rgba(255,255,255,0.2)", fontSize: 13 }}>›</span>
         <span style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 14, fontWeight: 500, color: C.blue }}>{THEME?.name}</span>
       </div>

@@ -167,7 +167,7 @@ function ModeToggle({ mode, setMode, options }) {
 
 // �"����� ROUTER �������������������������������������������������������������������������������������������������������������������������������������"�
 function useAppRouter() {
-  const parse=()=>{ const h=window.location.hash||"#/"; const path=h.replace(/^#/,"")||"/"; const parts=path.split("/").filter(Boolean); if(!parts.length) return{page:"home"}; if(parts[0]==="tool"&&parts[1]) return{page:"tool",toolId:parts[1]}; if(parts[0]==="category"&&parts[1]) return{page:"category",catId:parts[1]}; return{page:"home"}; };
+  const parse=()=>{ const h=window.location.hash||"#/"; const path=h.replace(/^#/,"")||"/"; const parts=path.split("/").filter(Boolean); if(!parts.length) return{page:"home"}; if(parts[0]==="tool"&&parts[1]) return{page:"tool",toolId:parts[1]}; if(parts[0]==="category"&&parts[1]) return{page:"home"}; return{page:"home"}; };
   const [route,setRoute]=useState(parse);
   useEffect(()=>{ const fn=()=>setRoute(parse()); window.addEventListener("hashchange",fn); return()=>window.removeEventListener("hashchange",fn); },[]);
   useEffect(()=>{ const fn=e=>{ const a=e.target.closest("a[href]"); if(!a) return; const h=a.getAttribute("href"); if(h&&h.startsWith("#/")){e.preventDefault();window.location.hash=h;} }; document.addEventListener("click",fn); return()=>document.removeEventListener("click",fn); },[]);
@@ -361,7 +361,7 @@ const TOOL_META = {
   "md5-hash":       {title:"MD5 Hash Generator — Free Online MD5 Checksum Tool", desc:"Generate MD5 hashes from text. MD5 produces a 128-bit (32 hex char) digest. Fast for checksums, not secure for passwords.", faq:[["Is MD5 secure for passwords?","No — MD5 is cryptographically broken. Use bcrypt, Argon2, or scrypt for password hashing."],["What is MD5 used for?","File integrity checksums, database fingerprinting, non-security deduplication."],["How long is an MD5 hash?","32 hexadecimal characters (128 bits)."]]},
   "sha256-hash":    {title:"SHA-256 Hash Generator — Free Online SHA256 Tool",   desc:"Generate SHA-256 cryptographic hashes. SHA-256 is part of SHA-2 family, producing 256-bit (64 hex char) digests.", faq:[["Is SHA-256 secure?","Yes — SHA-256 is still considered secure for general cryptographic use."],["What uses SHA-256?","Bitcoin mining, TLS certificates, code signing, and Git commit hashes."],["How long is a SHA-256 hash?","64 hexadecimal characters (256 bits)."]]},
   "password-generator":{title:"Strong Password Generator — Free Online Tool",   desc:"Generate strong, random passwords with custom length and character sets. Cryptographically secure random generation.", faq:[["How long should my password be?","At least 16 characters. 20+ characters significantly increases security."],["What characters should I include?","Use uppercase, lowercase, numbers, and symbols for maximum entropy."],["Is this generator truly random?","Yes — it uses window.crypto.getRandomValues() which is cryptographically secure."]]},
-  "uuid-generator": {title:"UUID / GUID Generator — Free Online UUID v4 Tool",  desc:"Generate RFC 4122 compliant UUID v4 random identifiers. Generate one or multiple UUIDs at once.", faq:[["What is a UUID?","A Universally Unique Identifier — a 128-bit label guaranteed to be unique across space and time."],["What is UUID v4?","Version 4 UUIDs are randomly generated. Version 1 uses timestamp+MAC address."],["What is the collision probability?","For v4 UUIDs, the probability of collision is astronomically low — 1 in 5.3×10³——."]]},
+  "uuid-generator": {title:"UUID / GUID Generator — Free Online UUID v4 Tool",  desc:"Generate RFC 4122 compliant UUID v4 random identifiers. Generate one or multiple UUIDs at once.", faq:[["What is a UUID?","A Universally Unique Identifier — a 128-bit label guaranteed to be unique across space and time."],["What is UUID v4?","Version 4 UUIDs are randomly generated. Version 1 uses timestamp+MAC address."],["What is the collision probability?","For v4 UUIDs, the probability of collision is astronomically low — 1 in 5.3×10³⁶."]]},
   "hmac-generator": {title:"HMAC-SHA256 Generator — Online HMAC Tool",          desc:"Generate HMAC-SHA256 message authentication codes with a secret key. Used for API authentication.", faq:[["What is HMAC?","Hash-based Message Authentication Code — combines a cryptographic hash with a secret key to authenticate messages."],["How is HMAC different from a hash?","HMAC requires a secret key. Without the key, you cannot reproduce the MAC, unlike a plain hash."],["Where is HMAC used?","API authentication (AWS Signature, Stripe webhooks), JWT signing, and cookie signing."]]},
 };
 
@@ -382,7 +382,7 @@ function cryptoRandomString(len, chars) {
 
 // Simple bcrypt-like (pbkdf2 simulation for UI demo)
 function simpleBcrypt(password, rounds) {
-  // Deterministic demo using SHA-256 rounds —" NOT real bcrypt
+  // Deterministic demo using SHA-256 rounds — NOT real bcrypt
   let h = password;
   for(let i=0;i<Math.pow(2,rounds-4);i++) h=sha256(h+password);
   return `$2b$${String(rounds).padStart(2,"0")}$${btoa(sha256(h)).slice(0,53)}`;
@@ -424,7 +424,7 @@ function HashAll() {
       </div>
       <VStack gap={8}>
         {hashes.map(({label,value,bits,accent})=>(
-          <HashOutput key={label} label={`${label} —" ${value.length||"—"} chars`} value={value} accent={accent} />
+          <HashOutput key={label} label={`${label} — ${value.length||"—"} chars`} value={value} accent={accent} />
         ))}
       </VStack>
       {input && (
@@ -471,7 +471,7 @@ function SingleHash({ algo }) {
         </div>
         <Textarea value={input} onChange={setInput} placeholder="Enter any text to hash…" mono={false} rows={5} />
       </div>
-      <HashOutput label={`${algo.toUpperCase()} Hash —" ${info.bits} bits`} value={result} />
+      <HashOutput label={`${algo.toUpperCase()} Hash — ${info.bits} bits`} value={result} />
       {result && (
         <Grid3>
           <StatBox value={info.bits} label="Hash Bits" />
@@ -481,11 +481,11 @@ function SingleHash({ algo }) {
       )}
       <Card style={{background:"rgba(16,185,129,0.04)",border:"1px solid rgba(16,185,129,0.12)"}}>
         <div style={{fontSize:12,color:C.muted,lineHeight:1.8}}>
-          {algo==="md5"&&<><strong style={{color:C.text}}>MD5</strong> —" Fast 128-bit hash. <span style={{color:C.warn}}>Not secure for passwords or signatures.</span> Use for checksums only.</>}
-          {algo==="sha1"&&<><strong style={{color:C.text}}>SHA-1</strong> —" 160-bit hash. <span style={{color:C.warn}}>Deprecated for security use.</span> Still used in Git commits and legacy systems.</>}
-          {algo==="sha256"&&<><strong style={{color:C.text}}>SHA-256</strong> —" 256-bit hash from the SHA-2 family. <span style={{color:C.green}}>Recommended for most uses.</span> Used in Bitcoin, TLS, and code signing.</>}
-          {algo==="sha384"&&<><strong style={{color:C.text}}>SHA-384</strong> —" 384-bit truncated SHA-512. <span style={{color:C.green}}>Strong and secure.</span> Used in TLS certificates and HMAC.</>}
-          {algo==="sha512"&&<><strong style={{color:C.text}}>SHA-512</strong> —" 512-bit hash from SHA-2. <span style={{color:C.green}}>Maximum SHA-2 strength.</span> Faster than SHA-256 on 64-bit CPUs.</>}
+          {algo==="md5"&&<><strong style={{color:C.text}}>MD5</strong> — Fast 128-bit hash. <span style={{color:C.warn}}>Not secure for passwords or signatures.</span> Use for checksums only.</>}
+          {algo==="sha1"&&<><strong style={{color:C.text}}>SHA-1</strong> — 160-bit hash. <span style={{color:C.warn}}>Deprecated for security use.</span> Still used in Git commits and legacy systems.</>}
+          {algo==="sha256"&&<><strong style={{color:C.text}}>SHA-256</strong> — 256-bit hash from the SHA-2 family. <span style={{color:C.green}}>Recommended for most uses.</span> Used in Bitcoin, TLS, and code signing.</>}
+          {algo==="sha384"&&<><strong style={{color:C.text}}>SHA-384</strong> — 384-bit truncated SHA-512. <span style={{color:C.green}}>Strong and secure.</span> Used in TLS certificates and HMAC.</>}
+          {algo==="sha512"&&<><strong style={{color:C.text}}>SHA-512</strong> — 512-bit hash from SHA-2. <span style={{color:C.green}}>Maximum SHA-2 strength.</span> Faster than SHA-256 on 64-bit CPUs.</>}
         </div>
       </Card>
     </VStack>
@@ -521,7 +521,7 @@ function HmacGenerator() {
       )}
       <Card style={{background:"rgba(16,185,129,0.05)"}}>
         <div style={{fontSize:12,color:C.muted,lineHeight:1.8}}>
-          <strong style={{color:C.text}}>HMAC-SHA256</strong> combines your secret key with the message. Anyone without the key cannot produce a valid signature —" unlike plain SHA-256 which anyone can compute.
+          <strong style={{color:C.text}}>HMAC-SHA256</strong> combines your secret key with the message. Anyone without the key cannot produce a valid signature — unlike plain SHA-256 which anyone can compute.
         </div>
       </Card>
     </VStack>
@@ -548,7 +548,7 @@ function HashCompare() {
       </Grid2>
       {match!==null && (
         <div className="fade-in" style={{textAlign:"center",padding:"24px",background:match?"rgba(16,185,129,0.08)":"rgba(239,68,68,0.06)",border:`1px solid ${match?"rgba(16,185,129,0.3)":"rgba(239,68,68,0.2)"}`,borderRadius:12}}>
-          <div style={{fontSize:40,marginBottom:8}}>{match?"✅":"——"}</div>
+          <div style={{fontSize:40,marginBottom:8}}>{match?"✅":"❌"}</div>
           <div style={{fontFamily:"'Sora',sans-serif",fontSize:20,fontWeight:700,color:match?C.green:C.danger}}>
             {match?"Hashes Match!":"Hashes Do Not Match"}
           </div>
@@ -604,7 +604,7 @@ function FnvHash() {
       <Textarea value={input} onChange={setInput} placeholder="Enter text to hash…" mono={false} rows={4} />
       <HashOutput label="FNV-1a 32-bit" value={fnv} accent={C.purple} />
       <HashOutput label="DJB2" value={djb} accent="#FB923C" />
-      <Card><div style={{fontSize:12,color:C.muted,lineHeight:1.8}}><strong style={{color:C.text}}>FNV (Fowler—"Noll—"Vo)</strong> and <strong style={{color:C.text}}>DJB2</strong> are fast non-cryptographic hashes used in hash tables, caches, and distributed systems. They offer speed but no security guarantees.</div></Card>
+      <Card><div style={{fontSize:12,color:C.muted,lineHeight:1.8}}><strong style={{color:C.text}}>FNV (Fowler-Noll-Vo)</strong> and <strong style={{color:C.text}}>DJB2</strong> are fast non-cryptographic hashes used in hash tables, caches, and distributed systems. They offer speed but no security guarantees.</div></Card>
     </VStack>
   );
 }
@@ -777,7 +777,7 @@ function PasswordStrength() {
       <div style={{position:"relative"}}>
         <Label>Enter Password to Test</Label>
         <Input value={pwd} onChange={setPwd} placeholder="Type your password…" type={show?"text":"password"} />
-        <button onClick={()=>setShow(s=>!s)} style={{position:"absolute",right:12,top:32,background:"transparent",border:"none",cursor:"pointer",color:C.muted,fontSize:14}}>{show?"🙈":"—'"}</button>
+        <button onClick={()=>setShow(s=>!s)} style={{position:"absolute",right:12,top:32,background:"transparent",border:"none",cursor:"pointer",color:C.muted,fontSize:14}}>{show?"🙈":"👁️"}</button>
       </div>
       {analysis && (
         <>
@@ -946,14 +946,14 @@ function FileHash() {
       <div style={{border:`2px dashed ${C.border}`,borderRadius:12,padding:28,textAlign:"center",cursor:"pointer",background:"rgba(255,255,255,0.01)"}}
         onDragOver={e=>e.preventDefault()} onDrop={e=>{e.preventDefault();processFile(e.dataTransfer.files[0]);}}
         onClick={()=>document.getElementById("filehash-input").click()}>
-        <div style={{fontSize:36,marginBottom:8}}>—"—</div>
+        <div style={{fontSize:36,marginBottom:8}}>📁</div>
         <div style={{fontSize:13,color:C.text,marginBottom:4}}>Drop any file here or click to browse</div>
-        <div style={{fontSize:12,color:C.muted}}>All processing happens in your browser —" no uploads</div>
+        <div style={{fontSize:12,color:C.muted}}>All processing happens in your browser — no uploads</div>
         <input id="filehash-input" type="file" style={{display:"none"}} onChange={e=>processFile(e.target.files[0])} />
       </div>
       {loading && (
         <div style={{textAlign:"center",padding:16}}>
-          <div style={{fontSize:24,marginBottom:8}} className="spin">⚙—</div>
+          <div style={{fontSize:24,marginBottom:8}} className="spin">⚙</div>
           <div style={{height:6,background:"rgba(255,255,255,0.06)",borderRadius:3,overflow:"hidden"}}>
             <div style={{height:"100%",width:`${progress}%`,background:`linear-gradient(90deg,${C.green},${C.teal})`,borderRadius:3,transition:"width .3s"}} />
           </div>
@@ -993,19 +993,19 @@ function BcryptHash() {
     <VStack>
       <div><Label>Password</Label><Input value={pwd} onChange={setPwd} placeholder="Enter password to hash…" type="password" /></div>
       <div>
-        <Label>Cost Factor (rounds): {cost} —' 2^{cost} = {Math.pow(2,cost).toLocaleString()} iterations</Label>
+        <Label>Cost Factor (rounds): {cost} → 2^{cost} = {Math.pow(2,cost).toLocaleString()} iterations</Label>
         <input type="range" min={4} max={14} value={cost} onChange={e=>setCost(Number(e.target.value))} style={{width:"100%",marginTop:8}} />
         <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:C.muted,marginTop:4}}>
           <span>4 (fast/insecure)</span><span style={{color:cost>=10?C.green:C.warn}}>10 (recommended)</span><span>14 (very slow)</span>
         </div>
       </div>
-      <Btn onClick={generate} disabled={!pwd||loading}>{loading?"⚙— Hashing…":"Generate Bcrypt Hash"}</Btn>
+      <Btn onClick={generate} disabled={!pwd||loading}>{loading?"⚙ Hashing…":"Generate Bcrypt Hash"}</Btn>
       {result && (
         <HashOutput label={`Bcrypt Hash (cost=${cost})`} value={result} accent={C.green} />
       )}
       <Card style={{background:"rgba(16,185,129,0.04)"}}>
         <div style={{fontSize:12,color:C.muted,lineHeight:1.8}}>
-          <strong style={{color:C.text}}>Bcrypt</strong> is the industry standard for password hashing. Unlike MD5/SHA, it's intentionally slow and includes a built-in salt. Use cost 10—"12 for production. <span style={{color:C.warn}}>Note: This is a demo implementation —" use a server-side bcrypt library for real password hashing.</span>
+          <strong style={{color:C.text}}>Bcrypt</strong> is the industry standard for password hashing. Unlike MD5/SHA, it's intentionally slow and includes a built-in salt. Use cost 10-12 for production. <span style={{color:C.warn}}>Note: This is a demo implementation — use a server-side bcrypt library for real password hashing.</span>
         </div>
       </Card>
     </VStack>
@@ -1056,7 +1056,7 @@ function OtpGenerator() {
   const [code, setCode] = useState("");
   const [remaining, setRemaining] = useState(30);
 
-  // TOTP demo —" derive 6-digit code from SHA1 HMAC of time
+  // TOTP demo — derive 6-digit code from SHA1 HMAC of time
   const compute = useCallback(()=>{
     const T=Math.floor(Date.now()/1000/30);
     const h=hmacSha256(secret,T.toString());
@@ -1086,7 +1086,7 @@ function OtpGenerator() {
       <CopyBtn text={code} style={{alignSelf:"center"}} />
       <Card style={{background:"rgba(59,130,246,0.04)"}}>
         <div style={{fontSize:12,color:C.muted,lineHeight:1.8}}>
-          <strong style={{color:C.text}}>TOTP</strong> (Time-based One-Time Password —" RFC 6238) generates a 6-digit code that changes every 30 seconds based on the current time and a shared secret. Used in 2FA apps like Google Authenticator. <span style={{color:C.warn}}>This is a demo —" production TOTP requires a proper Base32 HMAC-SHA1 implementation.</span>
+          <strong style={{color:C.text}}>TOTP</strong> (Time-based One-Time Password — RFC 6238) generates a 6-digit code that changes every 30 seconds based on the current time and a shared secret. Used in 2FA apps like Google Authenticator. <span style={{color:C.warn}}>This is a demo — production TOTP requires a proper Base32 HMAC-SHA1 implementation.</span>
         </div>
       </Card>
     </VStack>
@@ -1152,7 +1152,7 @@ function XorCipher() {
           <Textarea value={output} onChange={()=>{}} rows={6} readOnly />
         </div>
       </Grid2>
-      <Card><div style={{fontSize:12,color:C.muted,lineHeight:1.8}}><strong style={{color:C.text}}>XOR cipher</strong> is symmetric —" the same key and operation encrypts and decrypts. It is NOT cryptographically secure but useful for light obfuscation. Output is Base64-encoded for safe text transport.</div></Card>
+      <Card><div style={{fontSize:12,color:C.muted,lineHeight:1.8}}><strong style={{color:C.text}}>XOR cipher</strong> is symmetric — the same key and operation encrypts and decrypts. It is NOT cryptographically secure but useful for light obfuscation. Output is Base64-encoded for safe text transport.</div></Card>
     </VStack>
   );
 }
@@ -1236,7 +1236,7 @@ function ColorHash() {
             ))}
           </Card>
           <div style={{marginTop:12}}>
-            <Label>Other strings —' colors</Label>
+            <Label>Other strings → colors</Label>
             <div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:6}}>
               {["hello","world","react","crypto","toolsrift","hash"].map(w=>{
                 const h=md5(w);
@@ -1286,7 +1286,7 @@ function Breadcrumb({ tool }) {
   return (
     <>
       <nav style={{display:"flex",alignItems:"center",gap:8,fontSize:12,color:C.muted,marginBottom:20}}>
-        <a href="https://toolsrift.com" style={{color:C.muted,textDecoration:"none"}}>—— ToolsRift</a><span>›</span>
+        <a href="https://toolsrift.com" style={{color:C.muted,textDecoration:"none"}}>🏠 ToolsRift</a><span>›</span>
         <a href={`#/category/${tool.cat}`} style={{color:C.muted,textDecoration:"none"}}>{cat?.name}</a><span>›</span>
         <span style={{color:C.text}}>{tool.name}</span>
       </nav>
@@ -1348,8 +1348,8 @@ function ToolPage({ toolId }) {
   const meta=TOOL_META[toolId];
   const ToolComp=TOOL_COMPONENTS[toolId];
   // PHASE 1: All tools free, no gating. Re-enable in Phase 2.
-  useEffect(()=>{ document.title=meta?.title||`${tool?.name} —" Free Hash Tool | ToolsRift`; },[toolId]);
-  if(!tool||!ToolComp) return <div style={{padding:40,textAlign:"center",color:C.muted}}>Tool not found. <a href="#/" style={{color:C.green}}>— Home</a></div>;
+  useEffect(()=>{ document.title=meta?.title||`${tool?.name} — Free Hash Tool | ToolsRift`; },[toolId]);
+  if(!tool||!ToolComp) return <div style={{padding:40,textAlign:"center",color:C.muted}}>Tool not found. <a href="#/" style={{color:C.green}}>← Home</a></div>;
   return (
     <div style={{maxWidth:920,margin:"0 auto",padding:"24px 20px 60px"}}>
       <Breadcrumb tool={tool} />
@@ -1365,7 +1365,7 @@ function ToolPage({ toolId }) {
       <Card className="fade-in"><ToolComp /></Card>
       {meta?.howTo && (
         <div style={{ background:'rgba(59,130,246,0.05)', border:'1px solid rgba(59,130,246,0.12)', borderRadius:16, padding:'28px 32px', marginBottom:24, marginTop:24 }}>
-          <h2 style={{ fontSize:17, fontWeight:700, color:'#F1F5F9', margin:'0 0 12px', fontFamily:"'Sora', sans-serif" }}>—"— How to Use This Tool</h2>
+          <h2 style={{ fontSize:17, fontWeight:700, color:'#F1F5F9', margin:'0 0 12px', fontFamily:"'Sora', sans-serif" }}>📖 How to Use This Tool</h2>
           <p style={{ fontSize:14, color:'#94A3B8', lineHeight:1.8, margin:0 }}>{meta.howTo}</p>
         </div>
       )}
@@ -1389,13 +1389,13 @@ function ToolPage({ toolId }) {
 function CategoryPage({ catId }) {
   const cat=CATEGORIES.find(c=>c.id===catId);
   const tools=TOOLS.filter(t=>t.cat===catId);
-  useEffect(()=>{ document.title=`${cat?.name} —" Free Hash & Crypto Tools | ToolsRift`; },[catId]);
-  if(!cat) return <div style={{padding:40,textAlign:"center",color:C.muted}}>Not found. <a href="#/" style={{color:C.green}}>— Home</a></div>;
+  useEffect(()=>{ document.title=`${cat?.name} — Free Hash & Crypto Tools | ToolsRift`; },[catId]);
+  if(!cat) return <div style={{padding:40,textAlign:"center",color:C.muted}}>Not found. <a href="#/" style={{color:C.green}}>← Home</a></div>;
   return (
     <div style={{maxWidth:920,margin:"0 auto",padding:"24px 20px 60px"}}>
-      <nav style={{fontSize:12,color:C.muted,marginBottom:20}}><a href="#/" style={{color:C.muted,textDecoration:"none"}}>—— ToolsRift</a> › <span style={{color:C.text}}>{cat.name}</span></nav>
+      <nav style={{fontSize:12,color:C.muted,marginBottom:20}}><a href="#/" style={{color:C.muted,textDecoration:"none"}}>🏠 ToolsRift</a> › <span style={{color:C.text}}>{cat.name}</span></nav>
       <h1 style={{...T.h1,marginBottom:6}}>{cat.icon} {cat.name}</h1>
-      <p style={{fontSize:14,color:C.muted,marginBottom:28}}>{cat.desc} —" {tools.length} free tools</p>
+      <p style={{fontSize:14,color:C.muted,marginBottom:28}}>{cat.desc} — {tools.length} free tools</p>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:12}}>
         {tools.map(t=>(
           <a key={t.id} href={`#/tool/${t.id}`} style={{display:"flex",gap:12,padding:"14px 16px",background:C.surface,border:`1px solid ${C.border}`,borderRadius:10,textDecoration:"none",alignItems:"flex-start",transition:"all .15s"}}
@@ -1438,7 +1438,7 @@ const HASH_SPECIAL_CSS = `
 `;
 
 function CategoryHomePage() {
-  useEffect(() => { document.title = 'Free Hash & Crypto Tools —" ToolsRift'; }, []);
+  useEffect(() => { document.title = 'Free Hash & Crypto Tools — ToolsRift'; }, []);
 
   return (
     <CategoryLayout theme={PAGE_THEME} currentTool={null}>
@@ -1460,16 +1460,16 @@ function ToolDetailPage({ toolId }) {
   const acc = PAGE_THEME.color;
 
   useEffect(() => {
-    document.title = meta?.title || `${tool?.name} —" Free Hash Tool | ToolsRift`;
+    document.title = meta?.title || `${tool?.name} — Free Hash Tool | ToolsRift`;
     setDrawerOpen(false);
   }, [toolId]);
 
   if (!tool || !ToolComp) return (
     <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'}>
       <div style={{ padding:40, textAlign:'center', color:'#64748B', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
-        <div style={{ fontSize:48, marginBottom:16 }}>—"</div>
+        <div style={{ fontSize:48, marginBottom:16 }}>🔍</div>
         <p style={{ color:'#E2E8F0', marginBottom:8, fontSize:16 }}>Tool not found</p>
-        <a href="#/" style={{ color:acc }}>— Back to Hash & Crypto</a>
+        <a href="#/" style={{ color:acc }}>← Back to Hash & Crypto</a>
       </div>
     </CategoryLayout>
   );
@@ -1510,7 +1510,7 @@ function ToolDetailPage({ toolId }) {
           <a href="#/" style={{ display:'inline-flex', alignItems:'center', gap:6, color:'#64748B', fontSize:13, textDecoration:'none', marginBottom:16, fontFamily:"'Plus Jakarta Sans',sans-serif" }}
             onMouseEnter={e => e.currentTarget.style.color='#E2E8F0'}
             onMouseLeave={e => e.currentTarget.style.color='#64748B'}
-          >— Back to Hash & Crypto</a>
+          >← Back to Hash & Crypto</a>
           <ToolPageLayout theme={PAGE_THEME} tool={toolData}>
             <ToolComp />
           </ToolPageLayout>
@@ -1520,7 +1520,7 @@ function ToolDetailPage({ toolId }) {
       <div className="trh-mobile-bar" style={{ position:'fixed', bottom:0, left:0, right:0, zIndex:200, background:'rgba(6,9,15,0.96)', backdropFilter:'blur(12px)', borderTop:'1px solid rgba(255,255,255,0.06)', padding:'12px 16px', justifyContent:'space-between', alignItems:'center' }}>
         <span style={{ fontSize:13, color:'#94A3B8', fontFamily:"'Plus Jakarta Sans',sans-serif", overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', maxWidth:'60%' }}>{tool.icon} {tool.name}</span>
         <button onClick={() => setDrawerOpen(d => !d)} style={{ background:acc, color:'#fff', border:'none', borderRadius:8, padding:'8px 16px', fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:"'Plus Jakarta Sans',sans-serif", minHeight:44, flexShrink:0 }}>
-          {drawerOpen ? '✕ Close' : '—"— All Tools'}
+          {drawerOpen ? '✕ Close' : '☰ All Tools'}
         </button>
       </div>
 

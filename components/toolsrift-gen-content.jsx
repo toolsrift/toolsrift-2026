@@ -147,7 +147,7 @@ const path = h.replace(/^#/, "") || "/";
 const parts = path.split("/").filter(Boolean);
 if (!parts.length) return { page:"home" };
 if (parts[0]==="tool" && parts[1]) return { page:"tool", toolId:parts[1] };
-if (parts[0]==="category" && parts[1]) return { page:"category", catId:parts[1] };
+if (parts[0]==="category" && parts[1]) return { page:"home" };
 return { page:"home" };
 };
 const [route, setRoute] = useState(parse);
@@ -200,42 +200,875 @@ function buildDocument(title, sections) {
 return `${title}\n${"=".repeat(title.length)}\n\n${sections.map(s=>`${s.h}\n${"-".repeat(s.h.length)}\n${s.p}`).join("\n\n")}\n`;
 }
 
-function PrivacyPolicyGen() { return <Result>Implemented in full build variant.</Result>; }
-function TermsConditionsGen() { return <Result>Implemented in full build variant.</Result>; }
-function CookiePolicyGen() { return <Result>Implemented in full build variant.</Result>; }
-function DisclaimerGen() { return <Result>Implemented in full build variant.</Result>; }
-function ReturnPolicyGen() { return <Result>Implemented in full build variant.</Result>; }
-function NdaGen() { return <Result>Implemented in full build variant.</Result>; }
-function CopyrightNoticeGen() { return <Result>Implemented in full build variant.</Result>; }
-function DmcaNoticeGen() { return <Result>Implemented in full build variant.</Result>; }
-function GdprComplianceGen() { return <Result>Implemented in full build variant.</Result>; }
-function EulaGen() { return <Result>Implemented in full build variant.</Result>; }
+// ---------- Shared helpers ----------
+const rInt = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+const rPick = arr => arr[Math.floor(Math.random() * arr.length)];
+const shuffle = arr => { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const cap = s => (s || "").trim().replace(/\b\w/g, c => c.toUpperCase());
+const YEAR = new Date().getFullYear();
 
-function SvgWaveGen() { return <Result>Implemented in full build variant.</Result>; }
-function SvgBlobGen() { return <Result>Implemented in full build variant.</Result>; }
-function SvgPatternGen() { return <Result>Implemented in full build variant.</Result>; }
-function GradientGen() { return <Result>Implemented in full build variant.</Result>; }
-function MeshGradientGen() { return <Result>Implemented in full build variant.</Result>; }
-function NoiseTextureGen() { return <Result>Implemented in full build variant.</Result>; }
-function GeometricPatternGen() { return <Result>Implemented in full build variant.</Result>; }
-function AbstractBgGen() { return <Result>Implemented in full build variant.</Result>; }
+function LegalDocTool({ fields, build, filename }) {
+  const defaults = { company:"Acme Inc.", website:"https://example.com", email:"legal@example.com", jurisdiction:"California, United States", date:new Date().toISOString().slice(0,10) };
+  const [vals, setVals] = useState(() => {
+    const o = {}; fields.forEach(f => { o[f.key] = f.default !== undefined ? f.default : (defaults[f.key] || ""); }); return o;
+  });
+  const set = (k, v) => setVals(p => ({ ...p, [k]: v }));
+  const text = build(vals);
+  return (
+    <VStack>
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+        {fields.map(f => (
+          <div key={f.key} style={f.full ? { gridColumn:"1 / -1" } : {}}>
+            <Label>{f.label}</Label>
+            {f.type === "textarea"
+              ? <Textarea value={vals[f.key]} onChange={v => set(f.key, v)} rows={3} placeholder={f.placeholder} />
+              : <Input value={vals[f.key]} onChange={v => set(f.key, v)} placeholder={f.placeholder} />}
+          </div>
+        ))}
+      </div>
+      <Textarea value={text} onChange={() => {}} rows={16} mono style={{ minHeight:280 }} />
+      <LegalDocActions text={text} filename={filename} />
+    </VStack>
+  );
+}
 
-function BlogTitleGen() { return <Result>Implemented in full build variant.</Result>; }
-function YoutubeTitleGen() { return <Result>Implemented in full build variant.</Result>; }
-function YoutubeDescriptionGen() { return <Result>Implemented in full build variant.</Result>; }
-function YoutubeTagsGen() { return <Result>Implemented in full build variant.</Result>; }
-function InstagramCaptionGen() { return <Result>Implemented in full build variant.</Result>; }
-function InstagramHashtagGen() { return <Result>Implemented in full build variant.</Result>; }
-function TwitterBioGen() { return <Result>Implemented in full build variant.</Result>; }
-function LinkedinSummaryGen() { return <Result>Implemented in full build variant.</Result>; }
-function ProductDescriptionGen() { return <Result>Implemented in full build variant.</Result>; }
-function HeadlineGen() { return <Result>Implemented in full build variant.</Result>; }
-function SloganGen() { return <Result>Implemented in full build variant.</Result>; }
-function CtaGen() { return <Result>Implemented in full build variant.</Result>; }
-function SubjectLineGen() { return <Result>Implemented in full build variant.</Result>; }
-function BusinessNameGen() { return <Result>Implemented in full build variant.</Result>; }
-function UsernameGen() { return <Result>Implemented in full build variant.</Result>; }
-function ElevatorPitchGen() { return <Result>Implemented in full build variant.</Result>; }
+function SvgOutput({ svg, filename }) {
+  return (
+    <VStack gap={10}>
+      <div style={{ borderRadius:10, overflow:"hidden", border:`1px solid ${C.border}`, background:"#0b0e14", display:"flex", justifyContent:"center", alignItems:"center", minHeight:160 }}
+        dangerouslySetInnerHTML={{ __html: svg }} />
+      <Textarea value={svg} onChange={() => {}} rows={6} mono />
+      <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+        <CopyBtn text={svg} />
+        <Btn variant="secondary" size="sm" onClick={() => downloadText(filename || "art.svg", svg)}>Download SVG</Btn>
+      </div>
+    </VStack>
+  );
+}
+
+function CssOutput({ css, previewStyle }) {
+  return (
+    <VStack gap={10}>
+      <div style={{ borderRadius:10, border:`1px solid ${C.border}`, minHeight:160, ...previewStyle }} />
+      <Textarea value={css} onChange={() => {}} rows={5} mono />
+      <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+        <CopyBtn text={css} />
+        <Btn variant="secondary" size="sm" onClick={() => downloadText("style.css", css)}>Download CSS</Btn>
+      </div>
+    </VStack>
+  );
+}
+
+function ContentList({ items, empty="Fill in the details above and click Generate." }) {
+  const all = (items || []).join("\n");
+  return (
+    <VStack gap={8}>
+      {(!items || items.length === 0) && <Result mono={false}>{empty}</Result>}
+      {(items || []).map((it, i) => (
+        <div key={i} style={{ display:"flex", justifyContent:"space-between", gap:10, background:"rgba(0,0,0,0.3)", border:`1px solid ${C.border}`, borderRadius:8, padding:"10px 14px", alignItems:"center" }}>
+          <span style={{ color:C.text, fontSize:13, lineHeight:1.5, whiteSpace:"pre-wrap" }}>{it}</span>
+          <div style={{ flexShrink:0 }}><CopyBtn text={it} /></div>
+        </div>
+      ))}
+      {items && items.length > 0 && (
+        <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+          <CopyBtn text={all} />
+          <Btn variant="secondary" size="sm" onClick={() => downloadText("content.txt", all)}>Download All</Btn>
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+function BlockOutput({ text }) {
+  return (
+    <VStack gap={8}>
+      <Textarea value={text} onChange={() => {}} rows={10} />
+      <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+        <CopyBtn text={text} />
+        <Btn variant="secondary" size="sm" onClick={() => downloadText("content.txt", text)}>Download</Btn>
+      </div>
+    </VStack>
+  );
+}
+
+// ---------- Legal document generators ----------
+function PrivacyPolicyGen() {
+  return <LegalDocTool filename="privacy-policy.txt"
+    fields={[
+      { key:"company", label:"Company / Site name" },
+      { key:"website", label:"Website URL" },
+      { key:"email", label:"Contact email" },
+      { key:"date", label:"Effective date" },
+    ]}
+    build={v => buildDocument("PRIVACY POLICY", [
+      { h:"1. Introduction", p:`This Privacy Policy describes how ${v.company} ("we", "us", or "our") collects, uses, and protects information when you visit ${v.website} (the "Site"). Effective date: ${v.date}. By using the Site you agree to the practices described here.` },
+      { h:"2. Information We Collect", p:`We may collect personal information you provide directly (such as name and email address) and information collected automatically, including IP address, browser type, device information, pages visited, and referring URLs.` },
+      { h:"3. How We Use Your Information", p:`We use collected information to operate and improve the Site, respond to inquiries, personalize content, analyze usage, prevent fraud, and comply with legal obligations.` },
+      { h:"4. Cookies and Tracking", p:`The Site uses cookies and similar technologies to remember preferences, measure traffic, and support analytics. You can disable cookies through your browser settings, though some features may not function properly.` },
+      { h:"5. Third-Party Services", p:`We may use third-party services (such as analytics and advertising providers) that collect information under their own privacy policies. We are not responsible for the practices of third parties.` },
+      { h:"6. Data Retention", p:`We retain personal information only as long as necessary for the purposes described in this policy or as required by law.` },
+      { h:"7. Your Rights", p:`Depending on your location, you may have the right to access, correct, delete, or restrict the use of your personal information. To exercise these rights, contact us at ${v.email}.` },
+      { h:"8. Data Security", p:`We implement reasonable technical and organizational measures to protect your information; however, no method of transmission or storage is completely secure.` },
+      { h:"9. Children's Privacy", p:`The Site is not intended for children under 13, and we do not knowingly collect personal information from them.` },
+      { h:"10. Changes to This Policy", p:`We may update this Privacy Policy from time to time. Changes are effective when posted on this page with an updated effective date.` },
+      { h:"11. Contact Us", p:`If you have questions about this Privacy Policy, contact ${v.company} at ${v.email}.` },
+    ])} />;
+}
+
+function TermsConditionsGen() {
+  return <LegalDocTool filename="terms-and-conditions.txt"
+    fields={[
+      { key:"company", label:"Company / Site name" },
+      { key:"website", label:"Website URL" },
+      { key:"email", label:"Contact email" },
+      { key:"jurisdiction", label:"Governing jurisdiction" },
+    ]}
+    build={v => buildDocument("TERMS & CONDITIONS", [
+      { h:"1. Acceptance of Terms", p:`These Terms & Conditions govern your use of ${v.website} operated by ${v.company}. By accessing or using the Site, you agree to be bound by these Terms. If you do not agree, do not use the Site.` },
+      { h:"2. Use of the Site", p:`You agree to use the Site only for lawful purposes and in a manner that does not infringe the rights of, or restrict the use of, the Site by any third party.` },
+      { h:"3. Intellectual Property", p:`All content, trademarks, logos, and materials on the Site are the property of ${v.company} or its licensors and are protected by applicable intellectual property laws.` },
+      { h:"4. Prohibited Activities", p:`You may not misuse the Site, including attempting unauthorized access, distributing malware, scraping content without permission, or engaging in fraudulent activity.` },
+      { h:"5. Disclaimer of Warranties", p:`The Site is provided "as is" and "as available" without warranties of any kind, whether express or implied, including fitness for a particular purpose.` },
+      { h:"6. Limitation of Liability", p:`To the maximum extent permitted by law, ${v.company} shall not be liable for any indirect, incidental, or consequential damages arising from your use of the Site.` },
+      { h:"7. Third-Party Links", p:`The Site may contain links to third-party websites. We are not responsible for the content or practices of those websites.` },
+      { h:"8. Termination", p:`We may suspend or terminate your access to the Site at any time, without notice, for conduct that violates these Terms.` },
+      { h:"9. Governing Law", p:`These Terms are governed by and construed in accordance with the laws of ${v.jurisdiction}, without regard to its conflict of law provisions.` },
+      { h:"10. Contact", p:`Questions about these Terms may be directed to ${v.email}.` },
+    ])} />;
+}
+
+function CookiePolicyGen() {
+  return <LegalDocTool filename="cookie-policy.txt"
+    fields={[
+      { key:"company", label:"Company / Site name" },
+      { key:"website", label:"Website URL" },
+      { key:"email", label:"Contact email" },
+      { key:"date", label:"Effective date" },
+    ]}
+    build={v => buildDocument("COOKIE POLICY", [
+      { h:"1. What Are Cookies", p:`Cookies are small text files stored on your device when you visit ${v.website}. They help the Site function and provide information to the owners. Effective date: ${v.date}.` },
+      { h:"2. How We Use Cookies", p:`${v.company} uses cookies to remember your preferences, keep you signed in, understand how the Site is used, and support advertising and analytics.` },
+      { h:"3. Essential Cookies", p:`These cookies are necessary for the Site to function and cannot be switched off. They are usually set in response to actions you take, such as setting privacy preferences or filling in forms.` },
+      { h:"4. Analytics Cookies", p:`These cookies allow us to count visits and traffic sources so we can measure and improve the performance of the Site.` },
+      { h:"5. Preference Cookies", p:`These cookies enable the Site to remember choices you make (such as language or region) to provide enhanced, personalized features.` },
+      { h:"6. Advertising Cookies", p:`These cookies may be set through the Site by advertising partners to build a profile of your interests and show relevant ads on other sites.` },
+      { h:"7. Managing Cookies", p:`You can control and delete cookies through your browser settings. Disabling cookies may affect the functionality of the Site.` },
+      { h:"8. Contact", p:`For questions about our use of cookies, contact ${v.company} at ${v.email}.` },
+    ])} />;
+}
+
+function DisclaimerGen() {
+  return <LegalDocTool filename="disclaimer.txt"
+    fields={[
+      { key:"company", label:"Company / Site name" },
+      { key:"website", label:"Website URL" },
+      { key:"email", label:"Contact email" },
+    ]}
+    build={v => buildDocument("DISCLAIMER", [
+      { h:"1. General Information", p:`The information provided by ${v.company} on ${v.website} is for general informational purposes only. All information is provided in good faith; however, we make no representation or warranty of any kind regarding its accuracy or completeness.` },
+      { h:"2. No Professional Advice", p:`The Site does not contain professional (legal, financial, or medical) advice. Any reliance you place on such information is strictly at your own risk.` },
+      { h:"3. External Links", p:`The Site may contain links to external websites that are not provided or maintained by us. We do not guarantee the accuracy or reliability of any information on these external sites.` },
+      { h:"4. Limitation of Liability", p:`Under no circumstance shall ${v.company} be liable for any loss or damage of any kind incurred as a result of the use of the Site or reliance on any information provided.` },
+      { h:"5. Contact", p:`If you have questions about this Disclaimer, contact us at ${v.email}.` },
+    ])} />;
+}
+
+function ReturnPolicyGen() {
+  return <LegalDocTool filename="return-policy.txt"
+    fields={[
+      { key:"company", label:"Store name" },
+      { key:"email", label:"Support email" },
+      { key:"days", label:"Return window (days)", default:"30" },
+      { key:"website", label:"Website URL" },
+    ]}
+    build={v => buildDocument("RETURN & REFUND POLICY", [
+      { h:"1. Overview", p:`At ${v.company} we want you to be satisfied with your purchase. This policy explains how returns and refunds work for orders placed on ${v.website}.` },
+      { h:"2. Return Window", p:`You may request a return within ${v.days} days of receiving your order. To be eligible, items must be unused, in their original condition, and in the original packaging.` },
+      { h:"3. Non-Returnable Items", p:`Certain items cannot be returned, including perishable goods, digital downloads, gift cards, and personalized products, unless they arrive damaged or defective.` },
+      { h:"4. How to Start a Return", p:`To start a return, contact us at ${v.email} with your order number and reason for return. We will provide instructions on how and where to send your item.` },
+      { h:"5. Refunds", p:`Once your return is received and inspected, we will notify you of the approval or rejection of your refund. Approved refunds are processed to your original payment method within 5–10 business days.` },
+      { h:"6. Exchanges", p:`If you need to exchange an item for the same product, contact ${v.email}. Exchanges are subject to availability.` },
+      { h:"7. Shipping Costs", p:`Return shipping costs are the responsibility of the customer unless the item was received damaged or incorrect.` },
+      { h:"8. Contact", p:`For any questions about returns, reach us at ${v.email}.` },
+    ])} />;
+}
+
+function NdaGen() {
+  return <LegalDocTool filename="nda.txt"
+    fields={[
+      { key:"partyA", label:"Disclosing Party", default:"Acme Inc." },
+      { key:"partyB", label:"Receiving Party", default:"Recipient Name" },
+      { key:"date", label:"Effective date" },
+      { key:"jurisdiction", label:"Governing jurisdiction" },
+      { key:"mutual", label:"Type (mutual / one-way)", default:"mutual" },
+    ]}
+    build={v => buildDocument("NON-DISCLOSURE AGREEMENT", [
+      { h:"1. Parties", p:`This Non-Disclosure Agreement ("Agreement") is entered into as of ${v.date} between ${v.partyA} and ${v.partyB} (each a "Party"). This is a ${/one/i.test(v.mutual) ? "one-way" : "mutual"} confidentiality agreement.` },
+      { h:"2. Definition of Confidential Information", p:`"Confidential Information" means any non-public information disclosed by one Party to the other, whether oral, written, or electronic, including business plans, technical data, customer lists, and trade secrets.` },
+      { h:"3. Obligations", p:`The receiving Party agrees to keep Confidential Information strictly confidential, to use it solely for the purpose of the parties' relationship, and not to disclose it to any third party without prior written consent.` },
+      { h:"4. Exclusions", p:`Confidential Information does not include information that is or becomes publicly available through no fault of the receiving Party, was rightfully known before disclosure, or is independently developed.` },
+      { h:"5. Term", p:`The obligations under this Agreement remain in effect for a period of three (3) years from the date of disclosure, unless otherwise agreed in writing.` },
+      { h:"6. Return of Materials", p:`Upon request, the receiving Party shall promptly return or destroy all materials containing Confidential Information.` },
+      { h:"7. Governing Law", p:`This Agreement is governed by the laws of ${v.jurisdiction}.` },
+      { h:"8. Signatures", p:`${v.partyA}\n\nBy: ____________________   Date: __________\n\n${v.partyB}\n\nBy: ____________________   Date: __________` },
+    ])} />;
+}
+
+function CopyrightNoticeGen() {
+  return <LegalDocTool filename="copyright-notice.txt"
+    fields={[
+      { key:"owner", label:"Copyright owner", default:"Acme Inc." },
+      { key:"year", label:"Year", default:String(YEAR) },
+      { key:"website", label:"Website (optional)" },
+      { key:"rights", label:"Rights statement", default:"All rights reserved." },
+    ]}
+    build={v => `© ${v.year} ${v.owner}. ${v.rights}\n\n` +
+      `Copyright © ${v.year} ${v.owner}\n${v.rights}\n\n` +
+      `All content on ${v.website || "this website"}, including text, graphics, logos, images, and software, is the property of ${v.owner} and is protected by international copyright laws. No part of this material may be reproduced, distributed, or transmitted in any form without the prior written permission of ${v.owner}.\n\n` +
+      `HTML:\n<p>&copy; ${v.year} ${v.owner}. ${v.rights}</p>\n`} />;
+}
+
+function DmcaNoticeGen() {
+  return <LegalDocTool filename="dmca-notice.txt"
+    fields={[
+      { key:"owner", label:"Your name / company", default:"Rights Holder" },
+      { key:"email", label:"Your contact email" },
+      { key:"work", label:"Original work (URL/description)", full:true, default:"https://example.com/original-work", type:"textarea" },
+      { key:"infringing", label:"Infringing material URL(s)", full:true, default:"https://infringer.com/stolen-page", type:"textarea" },
+    ]}
+    build={v => buildDocument("DMCA TAKEDOWN NOTICE", [
+      { h:"To Whom It May Concern", p:`I, ${v.owner}, am submitting this notice under the Digital Millennium Copyright Act (DMCA) to report copyright infringement.` },
+      { h:"1. Identification of Copyrighted Work", p:`The original copyrighted work is located at / described as:\n${v.work}` },
+      { h:"2. Identification of Infringing Material", p:`The infringing material that should be removed is located at:\n${v.infringing}` },
+      { h:"3. Contact Information", p:`I can be contacted at: ${v.email}` },
+      { h:"4. Good Faith Statement", p:`I have a good faith belief that the use of the copyrighted material described above is not authorized by the copyright owner, its agent, or the law.` },
+      { h:"5. Accuracy Statement", p:`I swear, under penalty of perjury, that the information in this notice is accurate and that I am the copyright owner or authorized to act on behalf of the owner.` },
+      { h:"6. Signature", p:`Signed: ${v.owner}\nDate: ${new Date().toISOString().slice(0,10)}` },
+    ])} />;
+}
+
+function GdprComplianceGen() {
+  return <LegalDocTool filename="gdpr-notice.txt"
+    fields={[
+      { key:"company", label:"Company / Controller name" },
+      { key:"email", label:"Data protection contact email" },
+      { key:"basis", label:"Lawful basis", default:"consent and legitimate interest" },
+      { key:"retention", label:"Retention period", default:"24 months" },
+    ]}
+    build={v => buildDocument("GDPR DATA PROCESSING NOTICE", [
+      { h:"1. Data Controller", p:`${v.company} is the data controller responsible for your personal data. For any data protection inquiries, contact ${v.email}.` },
+      { h:"2. Lawful Basis for Processing", p:`We process personal data on the basis of ${v.basis}, in accordance with Article 6 of the General Data Protection Regulation (GDPR).` },
+      { h:"3. Data We Process", p:`We may process identity data, contact data, technical data (IP address, device identifiers), and usage data relating to how you interact with our services.` },
+      { h:"4. Your Rights", p:`Under the GDPR you have the right to access, rectify, erase, restrict, and port your personal data, and to object to processing. You also have the right to withdraw consent at any time and to lodge a complaint with a supervisory authority.` },
+      { h:"5. Data Retention", p:`We retain personal data for ${v.retention}, or for as long as necessary to fulfil the purposes described in this notice and to comply with legal obligations.` },
+      { h:"6. International Transfers", p:`Where personal data is transferred outside the European Economic Area, we ensure appropriate safeguards such as Standard Contractual Clauses are in place.` },
+      { h:"7. Contact", p:`To exercise any of your rights, contact ${v.company} at ${v.email}.` },
+    ])} />;
+}
+
+function EulaGen() {
+  return <LegalDocTool filename="eula.txt"
+    fields={[
+      { key:"company", label:"Software company / licensor" },
+      { key:"product", label:"Software / app name", default:"MyApp" },
+      { key:"email", label:"Contact email" },
+      { key:"jurisdiction", label:"Governing jurisdiction" },
+    ]}
+    build={v => buildDocument("END USER LICENSE AGREEMENT (EULA)", [
+      { h:"1. License Grant", p:`${v.company} ("Licensor") grants you a non-exclusive, non-transferable, revocable license to install and use ${v.product} (the "Software") for your personal or internal business purposes, subject to this Agreement.` },
+      { h:"2. Restrictions", p:`You may not copy, modify, reverse engineer, decompile, distribute, sublicense, or create derivative works of the Software except as expressly permitted by law.` },
+      { h:"3. Ownership", p:`The Software is licensed, not sold. ${v.company} retains all right, title, and interest in and to the Software, including all intellectual property rights.` },
+      { h:"4. Updates", p:`Licensor may provide updates or upgrades to the Software at its discretion. This Agreement governs any updates unless accompanied by separate terms.` },
+      { h:"5. Termination", p:`This license is effective until terminated. It terminates automatically if you breach any term. Upon termination, you must cease all use and destroy all copies of the Software.` },
+      { h:"6. Disclaimer of Warranty", p:`The Software is provided "as is" without warranty of any kind. ${v.company} disclaims all warranties, express or implied, including merchantability and fitness for a particular purpose.` },
+      { h:"7. Limitation of Liability", p:`In no event shall ${v.company} be liable for any damages arising out of the use of or inability to use the Software.` },
+      { h:"8. Governing Law", p:`This Agreement is governed by the laws of ${v.jurisdiction}. Questions may be directed to ${v.email}.` },
+    ])} />;
+}
+
+// ---------- SVG & background generators ----------
+const seeded = s => { const x = Math.sin(s * 99991) * 10000; return x - Math.floor(x); };
+
+function SvgWaveGen() {
+  const [color, setColor] = useState("#0EA5E9");
+  const [height, setHeight] = useState(200);
+  const [amp, setAmp] = useState(40);
+  const [freq, setFreq] = useState(2);
+  const W = 1440;
+  const buildWave = (yBase, amplitude, phase) => {
+    const steps = 40; const pts = [];
+    for (let i = 0; i <= steps; i++) pts.push([(i / steps) * W, yBase + Math.sin((i / steps) * Math.PI * 2 * freq + phase) * amplitude]);
+    return `M0,${height} L0,${pts[0][1].toFixed(1)} ` + pts.map(p => `L${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(" ") + ` L${W},${height} Z`;
+  };
+  const svg = `<svg viewBox="0 0 ${W} ${height}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:auto;display:block">\n  <path d="${buildWave(height * 0.55, amp, 0)}" fill="${color}" fill-opacity="0.35"/>\n  <path d="${buildWave(height * 0.65, amp * 0.8, 1.5)}" fill="${color}" fill-opacity="0.6"/>\n  <path d="${buildWave(height * 0.75, amp * 0.6, 3)}" fill="${color}"/>\n</svg>`;
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Color</Label><input type="color" value={color} onChange={e => setColor(e.target.value)} style={{ width:"100%", height:40, background:"none", border:`1px solid ${C.border}`, borderRadius:8, cursor:"pointer" }} /></div>
+        <div><Label>Height: {height}px</Label><input type="range" min={100} max={400} value={height} onChange={e => setHeight(Number(e.target.value))} style={{ width:"100%", accentColor:C.blue }} /></div>
+      </Grid2>
+      <Grid2>
+        <div><Label>Amplitude: {amp}</Label><input type="range" min={5} max={100} value={amp} onChange={e => setAmp(Number(e.target.value))} style={{ width:"100%", accentColor:C.blue }} /></div>
+        <div><Label>Waves: {freq}</Label><input type="range" min={1} max={6} value={freq} onChange={e => setFreq(Number(e.target.value))} style={{ width:"100%", accentColor:C.blue }} /></div>
+      </Grid2>
+      <SvgOutput svg={svg} filename="wave.svg" />
+    </VStack>
+  );
+}
+
+function SvgBlobGen() {
+  const [color, setColor] = useState("#6366F1");
+  const [points, setPoints] = useState(6);
+  const [randomness, setRandomness] = useState(0.4);
+  const [seed, setSeed] = useState(1);
+  const S = 400;
+  const cx = S / 2, cy = S / 2, r = S * 0.34;
+  const pts = [];
+  for (let i = 0; i < points; i++) {
+    const ang = (i / points) * Math.PI * 2;
+    const rr = r * (1 - randomness + seeded(seed + i * 1.7) * randomness * 2);
+    pts.push([cx + Math.cos(ang) * rr, cy + Math.sin(ang) * rr]);
+  }
+  const mid = (a, b) => [((a[0] + b[0]) / 2), ((a[1] + b[1]) / 2)];
+  let start = mid(pts[points - 1], pts[0]);
+  let d = `M${start[0].toFixed(1)},${start[1].toFixed(1)} `;
+  for (let i = 0; i < points; i++) {
+    const cur = pts[i], next = pts[(i + 1) % points]; const m = mid(cur, next);
+    d += `Q${cur[0].toFixed(1)},${cur[1].toFixed(1)} ${m[0].toFixed(1)},${m[1].toFixed(1)} `;
+  }
+  d += "Z";
+  const svg = `<svg viewBox="0 0 ${S} ${S}" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;height:auto;display:block">\n  <path d="${d}" fill="${color}"/>\n</svg>`;
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Color</Label><input type="color" value={color} onChange={e => setColor(e.target.value)} style={{ width:"100%", height:40, background:"none", border:`1px solid ${C.border}`, borderRadius:8, cursor:"pointer" }} /></div>
+        <div><Label>Points: {points}</Label><input type="range" min={4} max={12} value={points} onChange={e => setPoints(Number(e.target.value))} style={{ width:"100%", accentColor:C.blue }} /></div>
+      </Grid2>
+      <div><Label>Randomness: {randomness.toFixed(2)}</Label><input type="range" min={0} max={0.8} step={0.05} value={randomness} onChange={e => setRandomness(Number(e.target.value))} style={{ width:"100%", accentColor:C.blue }} /></div>
+      <Btn variant="secondary" size="sm" onClick={() => setSeed(s => s + 1)}>🎲 Randomize Shape</Btn>
+      <SvgOutput svg={svg} filename="blob.svg" />
+    </VStack>
+  );
+}
+
+function SvgPatternGen() {
+  const [type, setType] = useState("dots");
+  const [fg, setFg] = useState("#0EA5E9");
+  const [bg, setBg] = useState("#0b0e14");
+  const [size, setSize] = useState(24);
+  let pat = "";
+  if (type === "dots") pat = `<circle cx="${size/2}" cy="${size/2}" r="${size*0.12}" fill="${fg}"/>`;
+  else if (type === "grid") pat = `<path d="M${size} 0 L0 0 0 ${size}" fill="none" stroke="${fg}" stroke-width="1"/>`;
+  else if (type === "stripes") pat = `<rect width="${size/2}" height="${size}" fill="${fg}"/>`;
+  else if (type === "zigzag") pat = `<path d="M0 ${size*0.75} L${size/2} ${size*0.25} L${size} ${size*0.75}" fill="none" stroke="${fg}" stroke-width="2"/>`;
+  else if (type === "cross") pat = `<path d="M${size/2} ${size*0.25} V${size*0.75} M${size*0.25} ${size/2} H${size*0.75}" stroke="${fg}" stroke-width="2"/>`;
+  const svg = `<svg viewBox="0 0 240 160" width="240" height="160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">\n  <defs>\n    <pattern id="p" width="${size}" height="${size}" patternUnits="userSpaceOnUse">\n      ${pat}\n    </pattern>\n  </defs>\n  <rect width="100%" height="100%" fill="${bg}"/>\n  <rect width="100%" height="100%" fill="url(#p)"/>\n</svg>`;
+  return (
+    <VStack>
+      <div><Label>Pattern</Label><SelectInput value={type} onChange={setType} options={[{value:"dots",label:"Dots"},{value:"grid",label:"Grid"},{value:"stripes",label:"Stripes"},{value:"zigzag",label:"Zigzag"},{value:"cross",label:"Cross"}]} style={{ width:"100%" }} /></div>
+      <Grid2>
+        <div><Label>Foreground</Label><input type="color" value={fg} onChange={e => setFg(e.target.value)} style={{ width:"100%", height:40, background:"none", border:`1px solid ${C.border}`, borderRadius:8, cursor:"pointer" }} /></div>
+        <div><Label>Background</Label><input type="color" value={bg} onChange={e => setBg(e.target.value)} style={{ width:"100%", height:40, background:"none", border:`1px solid ${C.border}`, borderRadius:8, cursor:"pointer" }} /></div>
+      </Grid2>
+      <div><Label>Tile size: {size}px</Label><input type="range" min={10} max={60} value={size} onChange={e => setSize(Number(e.target.value))} style={{ width:"100%", accentColor:C.blue }} /></div>
+      <SvgOutput svg={svg} filename="pattern.svg" />
+    </VStack>
+  );
+}
+
+function GradientGen() {
+  const [type, setType] = useState("linear");
+  const [angle, setAngle] = useState(135);
+  const [c1, setC1] = useState("#0EA5E9");
+  const [c2, setC2] = useState("#6366F1");
+  const [c3, setC3] = useState("");
+  const stops = [c1, c2, ...(c3 ? [c3] : [])].join(", ");
+  const value = type === "linear" ? `linear-gradient(${angle}deg, ${stops})` : `radial-gradient(circle, ${stops})`;
+  const css = `background: ${value};`;
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Type</Label><SelectInput value={type} onChange={setType} options={[{value:"linear",label:"Linear"},{value:"radial",label:"Radial"}]} style={{ width:"100%" }} /></div>
+        {type === "linear" ? <div><Label>Angle: {angle}°</Label><input type="range" min={0} max={360} value={angle} onChange={e => setAngle(Number(e.target.value))} style={{ width:"100%", accentColor:C.blue }} /></div> : <div />}
+      </Grid2>
+      <Grid3>
+        <div><Label>Color 1</Label><input type="color" value={c1} onChange={e => setC1(e.target.value)} style={{ width:"100%", height:40, background:"none", border:`1px solid ${C.border}`, borderRadius:8, cursor:"pointer" }} /></div>
+        <div><Label>Color 2</Label><input type="color" value={c2} onChange={e => setC2(e.target.value)} style={{ width:"100%", height:40, background:"none", border:`1px solid ${C.border}`, borderRadius:8, cursor:"pointer" }} /></div>
+        <div><Label>Color 3 (opt)</Label><input type="color" value={c3 || "#000000"} onChange={e => setC3(e.target.value)} style={{ width:"100%", height:40, background:"none", border:`1px solid ${C.border}`, borderRadius:8, cursor:"pointer" }} /></div>
+      </Grid3>
+      {c3 && <Btn variant="ghost" size="sm" onClick={() => setC3("")}>Remove third color</Btn>}
+      <CssOutput css={css} previewStyle={{ background:value }} />
+    </VStack>
+  );
+}
+
+function MeshGradientGen() {
+  const [seed, setSeed] = useState(1);
+  const palette = ["#0EA5E9","#6366F1","#EC4899","#F59E0B","#10B981","#8B5CF6","#EF4444","#14B8A6"];
+  const cols = shuffle(palette).slice(0, 4);
+  // seed only used to force re-shuffle via re-render
+  const layers = cols.map((c, i) => `radial-gradient(at ${rInt(5,95)}% ${rInt(5,95)}%, ${c} 0px, transparent 55%)`);
+  void seed;
+  const value = layers.join(",\n    ");
+  const css = `background-color: ${cols[0]};\nbackground-image:\n    ${value};`;
+  return (
+    <VStack>
+      <Btn variant="secondary" size="sm" onClick={() => setSeed(s => s + 1)}>🎲 Randomize Mesh</Btn>
+      <CssOutput css={css} previewStyle={{ backgroundColor:cols[0], backgroundImage:layers.join(",") }} />
+    </VStack>
+  );
+}
+
+function NoiseTextureGen() {
+  const [freq, setFreq] = useState(0.8);
+  const [opacity, setOpacity] = useState(0.35);
+  const [bg, setBg] = useState("#111827");
+  const svg = `<svg viewBox="0 0 240 160" width="240" height="160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">\n  <rect width="100%" height="100%" fill="${bg}"/>\n  <filter id="noise">\n    <feTurbulence type="fractalNoise" baseFrequency="${freq}" numOctaves="3" stitchTiles="stitch"/>\n  </filter>\n  <rect width="100%" height="100%" filter="url(#noise)" opacity="${opacity}"/>\n</svg>`;
+  return (
+    <VStack>
+      <div><Label>Base frequency: {freq.toFixed(2)}</Label><input type="range" min={0.1} max={1.5} step={0.05} value={freq} onChange={e => setFreq(Number(e.target.value))} style={{ width:"100%", accentColor:C.blue }} /></div>
+      <div><Label>Noise opacity: {opacity.toFixed(2)}</Label><input type="range" min={0.05} max={1} step={0.05} value={opacity} onChange={e => setOpacity(Number(e.target.value))} style={{ width:"100%", accentColor:C.blue }} /></div>
+      <div><Label>Background</Label><input type="color" value={bg} onChange={e => setBg(e.target.value)} style={{ width:"100%", height:40, background:"none", border:`1px solid ${C.border}`, borderRadius:8, cursor:"pointer" }} /></div>
+      <SvgOutput svg={svg} filename="noise.svg" />
+    </VStack>
+  );
+}
+
+function GeometricPatternGen() {
+  const [seed, setSeed] = useState(1);
+  const [c1, setC1] = useState("#0EA5E9");
+  const [c2, setC2] = useState("#6366F1");
+  const [bg, setBg] = useState("#0b0e14");
+  const W = 240, H = 160, cell = 40;
+  let shapes = "";
+  let k = 0;
+  for (let y = 0; y < H; y += cell) {
+    for (let x = 0; x < W; x += cell) {
+      const rnd = seeded(seed + k * 2.13);
+      const col = rnd > 0.5 ? c1 : c2;
+      if (rnd < 0.33) shapes += `<circle cx="${x + cell/2}" cy="${y + cell/2}" r="${cell*0.35}" fill="${col}"/>`;
+      else if (rnd < 0.66) shapes += `<polygon points="${x},${y+cell} ${x+cell/2},${y} ${x+cell},${y+cell}" fill="${col}"/>`;
+      else shapes += `<line x1="${x}" y1="${y}" x2="${x+cell}" y2="${y+cell}" stroke="${col}" stroke-width="3"/>`;
+      k++;
+    }
+  }
+  const svg = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">\n  <rect width="100%" height="100%" fill="${bg}"/>\n  ${shapes}\n</svg>`;
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Color 1</Label><input type="color" value={c1} onChange={e => setC1(e.target.value)} style={{ width:"100%", height:40, background:"none", border:`1px solid ${C.border}`, borderRadius:8, cursor:"pointer" }} /></div>
+        <div><Label>Color 2</Label><input type="color" value={c2} onChange={e => setC2(e.target.value)} style={{ width:"100%", height:40, background:"none", border:`1px solid ${C.border}`, borderRadius:8, cursor:"pointer" }} /></div>
+        <div><Label>Background</Label><input type="color" value={bg} onChange={e => setBg(e.target.value)} style={{ width:"100%", height:40, background:"none", border:`1px solid ${C.border}`, borderRadius:8, cursor:"pointer" }} /></div>
+      </Grid3>
+      <Btn variant="secondary" size="sm" onClick={() => setSeed(s => s + 1)}>🎲 Randomize</Btn>
+      <SvgOutput svg={svg} filename="geometric.svg" />
+    </VStack>
+  );
+}
+
+function AbstractBgGen() {
+  const [seed, setSeed] = useState(1);
+  const palette = ["#0EA5E9","#6366F1","#EC4899","#F59E0B","#10B981","#8B5CF6"];
+  const W = 300, H = 200;
+  let blobs = "";
+  for (let i = 0; i < 5; i++) {
+    const col = palette[Math.floor(seeded(seed + i * 3.1) * palette.length)];
+    const cx = seeded(seed + i * 7.3) * W, cy = seeded(seed + i * 5.9) * H, r = 40 + seeded(seed + i) * 70;
+    blobs += `<circle cx="${cx.toFixed(0)}" cy="${cy.toFixed(0)}" r="${r.toFixed(0)}" fill="${col}" fill-opacity="0.55"/>`;
+  }
+  const svg = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">\n  <rect width="100%" height="100%" fill="#0b0e14"/>\n  <g filter="url(#b)">${blobs}</g>\n  <defs><filter id="b" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="24"/></filter></defs>\n</svg>`;
+  return (
+    <VStack>
+      <Btn variant="secondary" size="sm" onClick={() => setSeed(s => s + 1)}>🎲 Randomize Background</Btn>
+      <SvgOutput svg={svg} filename="abstract-bg.svg" />
+    </VStack>
+  );
+}
+
+// ---------- Content & marketing copy generators ----------
+function useTopicTool(defaultTopic, buildFn) {
+  const [topic, setTopic] = useState(defaultTopic);
+  const [items, setItems] = useState([]);
+  const gen = () => setItems(buildFn(topic.trim() || defaultTopic));
+  useEffect(() => { setItems(buildFn(defaultTopic)); /* eslint-disable-next-line */ }, []);
+  return { topic, setTopic, items, gen };
+}
+
+function BlogTitleGen() {
+  const { topic, setTopic, items, gen } = useTopicTool("productivity", t => shuffle([
+    `${rInt(7,15)} Proven Ways to Improve Your ${cap(t)}`,
+    `The Ultimate Guide to ${cap(t)} in ${YEAR}`,
+    `How to Master ${cap(t)} (Even If You're a Beginner)`,
+    `Why ${cap(t)} Matters More Than You Think`,
+    `${cap(t)}: Everything You Need to Know`,
+    `The Beginner's Guide to ${cap(t)}`,
+    `${rInt(5,12)} Common ${cap(t)} Mistakes and How to Avoid Them`,
+    `${cap(t)} 101: A Complete Walkthrough`,
+    `Stop Doing These ${cap(t)} Mistakes Today`,
+    `The Secret to Better ${cap(t)} Nobody Talks About`,
+  ]).slice(0, 8));
+  return (
+    <VStack>
+      <div><Label>Topic / keyword</Label><Input value={topic} onChange={setTopic} placeholder="e.g. remote work" /></div>
+      <Btn onClick={gen}>⚡ Generate Titles</Btn>
+      <ContentList items={items} />
+    </VStack>
+  );
+}
+
+function YoutubeTitleGen() {
+  const { topic, setTopic, items, gen } = useTopicTool("photography", t => shuffle([
+    `I Tried ${cap(t)} for 30 Days — Here's What Happened`,
+    `The TRUTH About ${cap(t)} (Nobody Tells You This)`,
+    `${cap(t)}: ${rInt(5,10)} Tips That Actually Work`,
+    `Why Everyone Is Wrong About ${cap(t)}`,
+    `How I Got Better at ${cap(t)} FAST`,
+    `${cap(t)} for Beginners — Full Guide ${YEAR}`,
+    `Watch This BEFORE You Start ${cap(t)}`,
+    `The ${cap(t)} Mistake That's Ruining Your Results`,
+    `${rInt(3,7)} ${cap(t)} Hacks You Wish You Knew Sooner`,
+  ]).slice(0, 8));
+  return (
+    <VStack>
+      <div><Label>Video topic</Label><Input value={topic} onChange={setTopic} placeholder="e.g. street photography" /></div>
+      <Btn onClick={gen}>⚡ Generate Titles</Btn>
+      <ContentList items={items} />
+    </VStack>
+  );
+}
+
+function YoutubeDescriptionGen() {
+  const [title, setTitle] = useState("How to Edit Photos Like a Pro");
+  const [points, setPoints] = useState("Choosing the right software\nColor grading basics\nExporting for web");
+  const [link, setLink] = useState("https://example.com");
+  const [text, setText] = useState("");
+  const gen = () => {
+    const pts = points.split("\n").map(p => p.trim()).filter(Boolean);
+    let ts = 0;
+    const chapters = pts.map((p, i) => { const t = `${String(Math.floor(ts/60)).padStart(2,"0")}:${String(ts%60).padStart(2,"0")}`; ts += rInt(90, 180); return `${t} ${p}`; });
+    setText(
+`${title}
+
+In this video, we break down everything you need to know. Whether you're just getting started or looking to level up, this guide has you covered.
+
+⏱️ TIMESTAMPS
+00:00 Intro
+${chapters.join("\n")}
+
+🔗 RESOURCES
+Website: ${link}
+
+👍 If you found this helpful, like and subscribe for more content.
+
+#${(title.split(" ")[0] || "video").toLowerCase()} #tutorial #howto`);
+  };
+  useEffect(() => { gen(); /* eslint-disable-next-line */ }, []);
+  return (
+    <VStack>
+      <div><Label>Video title</Label><Input value={title} onChange={setTitle} /></div>
+      <div><Label>Key points (one per line)</Label><Textarea value={points} onChange={setPoints} rows={4} /></div>
+      <div><Label>Link</Label><Input value={link} onChange={setLink} /></div>
+      <Btn onClick={gen}>⚡ Generate Description</Btn>
+      <BlockOutput text={text} />
+    </VStack>
+  );
+}
+
+function YoutubeTagsGen() {
+  const { topic, setTopic, items, gen } = useTopicTool("cooking", t => {
+    const base = t.toLowerCase();
+    const mods = ["tutorial","tips","guide","for beginners","how to",YEAR+"",`best ${base}`,`${base} ideas`,`${base} tricks`,`learn ${base}`,`${base} explained`,`${base} basics`,`easy ${base}`,`${base} at home`,`${base} course`,`${base} step by step`,`${base} hacks`,`${base} mistakes`,`${base} tools`,`${base} review`];
+    const tags = Array.from(new Set([base, ...mods.map(m => m.includes(base) ? m : `${base} ${m}`)])).slice(0, 28);
+    return [tags.join(", ")];
+  });
+  return (
+    <VStack>
+      <div><Label>Niche / topic</Label><Input value={topic} onChange={setTopic} placeholder="e.g. home cooking" /></div>
+      <Btn onClick={gen}>⚡ Generate Tags</Btn>
+      <ContentList items={items} />
+    </VStack>
+  );
+}
+
+function InstagramCaptionGen() {
+  const [topic, setTopic] = useState("morning coffee");
+  const [mood, setMood] = useState("aesthetic");
+  const [items, setItems] = useState([]);
+  const gen = () => {
+    const t = topic.trim() || "life";
+    const moods = {
+      aesthetic: [`Chasing light and ${t}. ✨`, `A little ${t}, a lot of magic.`, `Slow mornings and ${t}. 🤍`],
+      funny: [`${cap(t)} > my problems 😌`, `Me + ${t} = unstoppable (kind of).`, `Powered by ${t} and questionable decisions.`],
+      motivational: [`Every day is a fresh start with ${t}. 🌱`, `Small moments like ${t} build big dreams.`, `Show up for your ${t}. Show up for you.`],
+    };
+    const tags = shuffle([`#${t.replace(/\s/g,"")}`, "#instagood", "#photooftheday", "#vibes", "#dailylife", "#moments", "#aesthetic", "#instadaily"]).slice(0, 6).join(" ");
+    setItems((moods[mood] || moods.aesthetic).map(c => `${c}\n\n${tags}`));
+  };
+  useEffect(() => { gen(); /* eslint-disable-next-line */ }, []);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Topic</Label><Input value={topic} onChange={setTopic} placeholder="e.g. sunset walk" /></div>
+        <div><Label>Mood</Label><SelectInput value={mood} onChange={setMood} options={[{value:"aesthetic",label:"Aesthetic"},{value:"funny",label:"Funny"},{value:"motivational",label:"Motivational"}]} style={{ width:"100%" }} /></div>
+      </Grid2>
+      <Btn onClick={gen}>⚡ Generate Captions</Btn>
+      <ContentList items={items} />
+    </VStack>
+  );
+}
+
+function InstagramHashtagGen() {
+  const { topic, setTopic, items, gen } = useTopicTool("travel", t => {
+    const base = t.toLowerCase().replace(/\s/g, "");
+    const generic = ["instagood","photooftheday","love","instadaily","picoftheday","beautiful","happy","art","photography","nature","style","inspiration","explore","trending","viral","aesthetic","dailypost","community","lifestyle","mood"];
+    const niche = [base, `${base}life`, `${base}lover`, `${base}gram`, `${base}daily`, `${base}addict`, `insta${base}`, `${base}ofinstagram`, `best${base}`, `${base}vibes`];
+    const tags = shuffle([...niche, ...generic]).slice(0, 30).map(x => `#${x}`);
+    return [tags.join(" ")];
+  });
+  return (
+    <VStack>
+      <div><Label>Niche / topic</Label><Input value={topic} onChange={setTopic} placeholder="e.g. fitness" /></div>
+      <Btn onClick={gen}>⚡ Generate 30 Hashtags</Btn>
+      <ContentList items={items} />
+    </VStack>
+  );
+}
+
+function TwitterBioGen() {
+  const [role, setRole] = useState("Software Engineer");
+  const [interests, setInterests] = useState("coffee, open source, running");
+  const [items, setItems] = useState([]);
+  const gen = () => {
+    const ints = interests.split(",").map(s => s.trim()).filter(Boolean);
+    const emoji = ["✨","🚀","☕","💡","📚","🎯"];
+    setItems(shuffle([
+      `${role} • ${ints.slice(0,3).join(" • ")} ${rPick(emoji)}`,
+      `${rPick(emoji)} ${role} building cool things. Into ${ints[0] || "life"} & ${ints[1] || "learning"}.`,
+      `${role} by day. ${cap(ints[0] || "dreamer")} always. ${rPick(emoji)}`,
+      `Helping people through ${ints[0] || "my work"}. ${role}. Opinions my own.`,
+      `${rPick(emoji)} ${role} | ${ints.join(" | ")}`,
+    ]).slice(0, 5));
+  };
+  useEffect(() => { gen(); /* eslint-disable-next-line */ }, []);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Role / profession</Label><Input value={role} onChange={setRole} /></div>
+        <div><Label>Interests (comma separated)</Label><Input value={interests} onChange={setInterests} /></div>
+      </Grid2>
+      <Btn onClick={gen}>⚡ Generate Bios</Btn>
+      <ContentList items={items} />
+    </VStack>
+  );
+}
+
+function LinkedinSummaryGen() {
+  const [role, setRole] = useState("Product Manager");
+  const [skills, setSkills] = useState("strategy, user research, roadmapping");
+  const [years, setYears] = useState("6");
+  const [text, setText] = useState("");
+  const gen = () => {
+    const sk = skills.split(",").map(s => s.trim()).filter(Boolean);
+    setText(
+`${role} with ${years}+ years of experience delivering results across fast-paced teams. I specialize in ${sk.slice(0,3).join(", ")}, and I'm passionate about turning complex problems into simple, impactful solutions.
+
+Throughout my career I have focused on ${sk[0] || "driving outcomes"} and collaborating with cross-functional partners to ship work that matters. I believe great results come from a mix of curiosity, clear communication, and continuous learning.
+
+Core strengths: ${sk.join(" • ")}.
+
+I'm always open to connecting with like-minded professionals. Feel free to reach out.`);
+  };
+  useEffect(() => { gen(); /* eslint-disable-next-line */ }, []);
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Role</Label><Input value={role} onChange={setRole} /></div>
+        <div><Label>Years exp.</Label><Input value={years} onChange={setYears} /></div>
+        <div><Label>Skills (comma)</Label><Input value={skills} onChange={setSkills} /></div>
+      </Grid3>
+      <Btn onClick={gen}>⚡ Generate Summary</Btn>
+      <BlockOutput text={text} />
+    </VStack>
+  );
+}
+
+function ProductDescriptionGen() {
+  const [name, setName] = useState("EcoBottle Pro");
+  const [features, setFeatures] = useState("keeps drinks cold 24h, BPA-free, leak-proof lid");
+  const [items, setItems] = useState([]);
+  const gen = () => {
+    const f = features.split(",").map(s => s.trim()).filter(Boolean);
+    const list = f.map(x => `• ${cap(x)}`).join("\n");
+    setItems([
+      `Meet the ${name} — designed to make your everyday better. ${f[0] ? cap(f[0]) + "." : ""} Thoughtfully crafted with quality you can feel.\n\n${list}`,
+      `Upgrade your routine with the ${name}. Built for people who want more from the essentials, it combines ${f.slice(0,2).join(" and ")} in one sleek package.\n\nKey features:\n${list}`,
+      `The ${name} isn't just another product — it's an upgrade. ${f[0] ? "Enjoy " + f[0] + "" : "Enjoy premium quality"}, plus everything you need and nothing you don't.\n\n${list}`,
+    ]);
+  };
+  useEffect(() => { gen(); /* eslint-disable-next-line */ }, []);
+  return (
+    <VStack>
+      <div><Label>Product name</Label><Input value={name} onChange={setName} /></div>
+      <div><Label>Features (comma separated)</Label><Textarea value={features} onChange={setFeatures} rows={2} /></div>
+      <Btn onClick={gen}>⚡ Generate Descriptions</Btn>
+      <ContentList items={items} />
+    </VStack>
+  );
+}
+
+function HeadlineGen() {
+  const { topic, setTopic, items, gen } = useTopicTool("email marketing", t => shuffle([
+    `The ${cap(t)} Strategy That Doubled Our Results`,
+    `${cap(t)} Made Simple: A No-Nonsense Guide`,
+    `${rInt(5,10)} ${cap(t)} Secrets the Experts Won't Share`,
+    `How to Win at ${cap(t)} Without Wasting Time`,
+    `${cap(t)}: The Complete ${YEAR} Playbook`,
+    `Everything You're Getting Wrong About ${cap(t)}`,
+    `Turn ${cap(t)} Into Your Biggest Advantage`,
+    `The Fastest Way to Improve Your ${cap(t)}`,
+  ]).slice(0, 7));
+  return (
+    <VStack>
+      <div><Label>Topic</Label><Input value={topic} onChange={setTopic} placeholder="e.g. content marketing" /></div>
+      <Btn onClick={gen}>⚡ Generate Headlines</Btn>
+      <ContentList items={items} />
+    </VStack>
+  );
+}
+
+function SloganGen() {
+  const { topic, setTopic, items, gen } = useTopicTool("coffee shop", t => shuffle([
+    `${cap(t)}. Done right.`,
+    `Your ${cap(t)}, elevated.`,
+    `Where ${cap(t)} meets passion.`,
+    `Think ${cap(t)}. Think better.`,
+    `${cap(t)} for the way you live.`,
+    `Simply ${cap(t)}.`,
+    `Powered by ${cap(t)}.`,
+    `The future of ${cap(t)} is here.`,
+  ]).slice(0, 7));
+  return (
+    <VStack>
+      <div><Label>Brand / product</Label><Input value={topic} onChange={setTopic} placeholder="e.g. sneakers" /></div>
+      <Btn onClick={gen}>⚡ Generate Slogans</Btn>
+      <ContentList items={items} />
+    </VStack>
+  );
+}
+
+function CtaGen() {
+  const { topic, setTopic, items, gen } = useTopicTool("newsletter", t => shuffle([
+    `Get Started Free`,
+    `Join Our ${cap(t)} Today`,
+    `Claim Your Spot`,
+    `Yes, I Want In!`,
+    `Sign Up in Seconds`,
+    `Unlock ${cap(t)} Now`,
+    `Start My Free Trial`,
+    `Grab It Before It's Gone`,
+    `Subscribe & Save`,
+    `Try ${cap(t)} Risk-Free`,
+  ]).slice(0, 8));
+  return (
+    <VStack>
+      <div><Label>Goal / offer</Label><Input value={topic} onChange={setTopic} placeholder="e.g. free trial" /></div>
+      <Btn onClick={gen}>⚡ Generate CTAs</Btn>
+      <ContentList items={items} />
+    </VStack>
+  );
+}
+
+function SubjectLineGen() {
+  const { topic, setTopic, items, gen } = useTopicTool("summer sale", t => shuffle([
+    `Don't miss this: ${cap(t)} 👀`,
+    `${cap(t)} — you're going to want to see this`,
+    `Quick question about ${t}...`,
+    `Last chance for ${t}`,
+    `Your ${t} is waiting`,
+    `${rInt(3,5)} things you need to know about ${t}`,
+    `We saved you a spot 🎟️ (${t})`,
+    `Open before it's too late: ${cap(t)}`,
+  ]).slice(0, 7));
+  return (
+    <VStack>
+      <div><Label>Topic / offer</Label><Input value={topic} onChange={setTopic} placeholder="e.g. product launch" /></div>
+      <Btn onClick={gen}>⚡ Generate Subject Lines</Btn>
+      <ContentList items={items} />
+    </VStack>
+  );
+}
+
+function BusinessNameGen() {
+  const { topic, setTopic, items, gen } = useTopicTool("cloud", t => {
+    const base = cap(t.split(" ")[0] || t);
+    const prefixes = ["Nova", "Peak", "Bright", "Ever", "Prime", "Zen", "Blue", "North"];
+    const suffixes = ["ly", "ify", "Labs", "Hub", "Works", "Loop", "Base", "Sphere", "Wave", "Forge"];
+    const out = new Set();
+    while (out.size < 10) {
+      const style = rInt(0, 2);
+      if (style === 0) out.add(`${rPick(prefixes)}${base}`);
+      else if (style === 1) out.add(`${base}${rPick(suffixes)}`);
+      else out.add(`${rPick(prefixes)} ${base}`);
+    }
+    return [...out];
+  });
+  return (
+    <VStack>
+      <div><Label>Keyword / industry</Label><Input value={topic} onChange={setTopic} placeholder="e.g. coffee" /></div>
+      <Btn onClick={gen}>⚡ Generate Names</Btn>
+      <ContentList items={items} />
+    </VStack>
+  );
+}
+
+function UsernameGen() {
+  const { topic, setTopic, items, gen } = useTopicTool("alex", t => {
+    const base = t.toLowerCase().replace(/[^a-z0-9]/g, "") || "user";
+    const adj = ["real", "the", "its", "official", "just", "iam"];
+    const suf = ["x", "hq", "dev", "pro", "yt", "_", "1", "cool"];
+    const out = new Set();
+    while (out.size < 10) {
+      const style = rInt(0, 3);
+      if (style === 0) out.add(`${base}_${rPick(suf)}`);
+      else if (style === 1) out.add(`${rPick(adj)}${base}`);
+      else if (style === 2) out.add(`${base}${rInt(10, 9999)}`);
+      else out.add(`${base}.${rPick(suf)}`);
+    }
+    return [...out];
+  });
+  return (
+    <VStack>
+      <div><Label>Name / keyword</Label><Input value={topic} onChange={setTopic} placeholder="e.g. jordan" /></div>
+      <Btn onClick={gen}>⚡ Generate Usernames</Btn>
+      <ContentList items={items} />
+    </VStack>
+  );
+}
+
+function ElevatorPitchGen() {
+  const [role, setRole] = useState("UX Designer");
+  const [value, setValue] = useState("help startups turn ideas into products users love");
+  const [items, setItems] = useState([]);
+  const gen = () => {
+    const r = role.trim() || "professional";
+    const v = value.trim() || "deliver great results";
+    setItems([
+      `Hi, I'm a ${r}. I ${v}. Over the years I've learned that the best outcomes come from truly understanding people's needs — and that's exactly what I bring to every project. I'd love to explore how I can help you.`,
+      `I'm a ${r} who helps ${v}. Think of me as the person who bridges the gap between an idea and something real people actually use. If that sounds useful, let's talk.`,
+      `As a ${r}, my job is simple: I ${v}. I combine strategy with hands-on execution so nothing gets lost between the plan and the result. Happy to share how that could work for you.`,
+    ]);
+  };
+  useEffect(() => { gen(); /* eslint-disable-next-line */ }, []);
+  return (
+    <VStack>
+      <div><Label>Your role</Label><Input value={role} onChange={setRole} /></div>
+      <div><Label>What you do / value you provide</Label><Textarea value={value} onChange={setValue} rows={2} /></div>
+      <Btn onClick={gen}>⚡ Generate Pitch</Btn>
+      <ContentList items={items} />
+    </VStack>
+  );
+}
 
 const TOOLS = [
 { id:"privacy-policy-gen", cat:"legal", name:"Privacy Policy Generator", desc:"Generate a full privacy policy online with company details, cookies, data collection, and third-party processing clauses.", icon:"📜", free:true },
@@ -448,8 +1281,7 @@ function Nav() {
       transition: "background 0.2s, border-color 0.2s",
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <span style={{ width: 8, height: 8, borderRadius: "50%", background: C.blue, boxShadow: `0 0 6px ${C.blue}80`, flexShrink: 0 }} />
-        <a href="https://toolsrift.com" style={{ fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 15, color: "#F8FAFC", textDecoration: "none", letterSpacing: "-0.01em" }}>ToolsRift</a>
+        <a href="/" aria-label="ToolsRift home" style={{display:"flex",alignItems:"center",flexShrink:0}}><img src="/logo.svg" alt="ToolsRift" style={{height:26,display:"block"}}/></a>
         <span style={{ color: "rgba(255,255,255,0.2)", fontSize: 13 }}>›</span>
         <span style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 14, fontWeight: 500, color: C.blue }}>{THEME?.name}</span>
       </div>

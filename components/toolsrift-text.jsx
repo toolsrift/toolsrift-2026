@@ -163,7 +163,7 @@ function useAppRouter() {
     const parts = path.split("/").filter(Boolean);
     if (!parts.length) return { page:"home" };
     if (parts[0]==="tool" && parts[1]) return { page:"tool", toolId:parts[1] };
-    if (parts[0]==="category" && parts[1]) return { page:"category", catId:parts[1] };
+    if (parts[0]==="category" && parts[1]) return { page:"home" };
     return { page:"home" };
   };
   const [route, setRoute] = useState(parse);
@@ -789,7 +789,7 @@ function PalindromeChecker() {
       <Input value={text} onChange={setText} placeholder="Type a word or phrase to check..." />
       {isPalin !== null && (
         <div style={{ textAlign:"center", padding:"24px", background:isPalin?"rgba(16,185,129,0.1)":"rgba(239,68,68,0.08)", border:`1px solid ${isPalin?"rgba(16,185,129,0.3)":"rgba(239,68,68,0.2)"}`, borderRadius:12 }} className="fade-in">
-          <div style={{ fontSize:40, marginBottom:8 }}>{isPalin?"🎉":"——"}</div>
+          <div style={{ fontSize:40, marginBottom:8 }}>{isPalin?"🎉":"❌"}</div>
           <div style={{ fontFamily:"'Sora',sans-serif", fontSize:20, fontWeight:700, color:isPalin?C.success:C.danger }}>
             {isPalin ? "Palindrome!" : "Not a Palindrome"}
           </div>
@@ -836,7 +836,7 @@ function AnagramChecker() {
       </Grid2>
       {result !== null && (
         <div style={{ textAlign:"center", padding:"24px", background:result?"rgba(16,185,129,0.1)":"rgba(239,68,68,0.08)", border:`1px solid ${result?"rgba(16,185,129,0.3)":"rgba(239,68,68,0.2)"}`, borderRadius:12 }} className="fade-in">
-          <div style={{ fontSize:36, marginBottom:8 }}>{result?"✅":"——"}</div>
+          <div style={{ fontSize:36, marginBottom:8 }}>{result?"✅":"❌"}</div>
           <div style={{ fontFamily:"'Sora',sans-serif", fontSize:18, fontWeight:700, color:result?C.success:C.danger }}>
             {result ? "These are Anagrams!" : "Not Anagrams"}
           </div>
@@ -848,7 +848,7 @@ function AnagramChecker() {
         <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6, marginTop:6 }}>
           {[["listen","silent"],["astronomer","moon starer"],["school master","the classroom"],["conversation","voices rant on"],["debit card","bad credit"],["the eyes","they see"]].map(([x,y])=>(
             <div key={x} style={{ cursor:"pointer", padding:"6px 10px", background:"rgba(255,255,255,0.03)", borderRadius:6, fontSize:12, color:C.muted }} onClick={()=>{setA(x);setB(y);}}>
-              <span style={{ color:C.text }}>{x}</span> —" <span style={{ color:C.text }}>{y}</span>
+              <span style={{ color:C.text }}>{x}</span> ↔ <span style={{ color:C.text }}>{y}</span>
             </div>
           ))}
         </div>
@@ -1543,7 +1543,7 @@ function BulletsToText() {
   const [text, setText] = useState("");
   const [output, setOutput] = useState("");
   const run = () => {
-    const lines = text.split("\n").map(l=>l.replace(/^\s*[•\-\*>—'▸◦‣——]\s*/,"").trim()).filter(Boolean);
+    const lines = text.split("\n").map(l=>l.replace(/^\s*[•\-\*>—'▸◦‣——]\s*/,"").trim()).filter(Boolean);
     setOutput(lines.join("\n"));
   };
   return (
@@ -2000,7 +2000,7 @@ function Breadcrumb({ tool }) {
   return (
     <>
       <nav style={{ display:"flex", alignItems:"center", gap:8, fontSize:12, color:C.muted, marginBottom:20 }}>
-        <a href="https://toolsrift.com" style={{ color:C.muted, textDecoration:"none" }}>—— ToolsRift</a>
+        <a href="https://toolsrift.com" style={{ color:C.muted, textDecoration:"none" }}>🏠 ToolsRift</a>
         <span>›</span>
         <a href={`#/category/${tool.cat}`} style={{ color:C.muted, textDecoration:"none" }}>{cat?.name}</a>
         <span>›</span>
@@ -2076,9 +2076,9 @@ function ToolPage({ toolId }) {
   }, [toolId]);
   if (!tool || !ToolComp) return (
     <div style={{ padding:40, textAlign:"center", color:C.muted }}>
-      <div style={{ fontSize:48, marginBottom:16 }}>—"</div>
+      <div style={{ fontSize:48, marginBottom:16 }}>🔍</div>
       <div style={{ fontSize:16, marginBottom:8, color:C.text }}>Tool not found</div>
-      <a href="#/" style={{ color:C.blue }}>— Back to home</a>
+      <a href="#/" style={{ color:C.blue }}>← Back to home</a>
     </div>
   );
   return (
@@ -2124,16 +2124,16 @@ function CategoryPage({ catId }) {
   const cat = CATEGORIES.find(c=>c.id===catId);
   const tools = TOOLS.filter(t=>t.cat===catId);
   useEffect(() => {
-    document.title = `${cat?.name} —" Free Text Tools | ToolsRift`;
+    document.title = `${cat?.name} — Free Text Tools | ToolsRift`;
   }, [catId]);
-  if (!cat) return <div style={{ padding:40, textAlign:"center", color:C.muted }}>Category not found. <a href="#/" style={{ color:C.blue }}>— Home</a></div>;
+  if (!cat) return <div style={{ padding:40, textAlign:"center", color:C.muted }}>Category not found. <a href="#/" style={{ color:C.blue }}>← Home</a></div>;
   return (
     <div style={{ maxWidth:900, margin:"0 auto", padding:"24px 20px 60px" }}>
       <nav style={{ fontSize:12, color:C.muted, marginBottom:20 }}>
-        <a href="#/" style={{ color:C.muted, textDecoration:"none" }}>—— ToolsRift</a> › <span style={{ color:C.text }}>{cat.name}</span>
+        <a href="#/" style={{ color:C.muted, textDecoration:"none" }}>🏠 ToolsRift</a> › <span style={{ color:C.text }}>{cat.name}</span>
       </nav>
       <h1 style={{ ...T.h1, marginBottom:6 }}>{cat.icon} {cat.name}</h1>
-      <p style={{ fontSize:14, color:C.muted, marginBottom:28 }}>{cat.desc} —" {tools.length} free tools</p>
+      <p style={{ fontSize:14, color:C.muted, marginBottom:28 }}>{cat.desc} — {tools.length} free tools</p>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))", gap:12 }}>
         {tools.map(t=>(
           <a key={t.id} href={`#/tool/${t.id}`} style={{ display:"flex", gap:12, padding:"14px 16px", background:C.surface, border:`1px solid ${C.border}`, borderRadius:10, textDecoration:"none", alignItems:"flex-start", transition:"border-color .15s, transform .1s" }}
@@ -2181,16 +2181,16 @@ function ToolDetailPage({ toolId }) {
   const acc = PAGE_THEME.color;
 
   useEffect(() => {
-    document.title = meta?.title || `${tool?.name} —" Free Text Tool | ToolsRift`;
+    document.title = meta?.title || `${tool?.name} — Free Text Tool | ToolsRift`;
     setDrawerOpen(false);
   }, [toolId]);
 
   if (!tool || !ToolComp) return (
     <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'}>
       <div style={{ padding:40, textAlign:'center', color:'#64748B', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
-        <div style={{ fontSize:48, marginBottom:16 }}>—"</div>
+        <div style={{ fontSize:48, marginBottom:16 }}>🔍</div>
         <p style={{ color:'#E2E8F0', marginBottom:8, fontSize:16 }}>Tool not found</p>
-        <a href="#/" style={{ color:acc }}>— Back to Text Tools</a>
+        <a href="#/" style={{ color:acc }}>← Back to Text Tools</a>
       </div>
     </CategoryLayout>
   );
@@ -2258,7 +2258,7 @@ function ToolDetailPage({ toolId }) {
             onMouseEnter={e => e.currentTarget.style.color='#E2E8F0'}
             onMouseLeave={e => e.currentTarget.style.color='#64748B'}
           >
-            — Back to Text Tools
+            ← Back to Text Tools
           </a>
           <ToolPageLayout theme={PAGE_THEME} tool={toolData}>
             <ToolComp />
@@ -2275,7 +2275,7 @@ function ToolDetailPage({ toolId }) {
           onClick={() => setDrawerOpen(d => !d)}
           style={{ background:acc, color:'#fff', border:'none', borderRadius:8, padding:'8px 16px', fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:"'Plus Jakarta Sans',sans-serif", minHeight:44, flexShrink:0 }}
         >
-          {drawerOpen ? '✕ Close' : '—"— All Tools'}
+          {drawerOpen ? '✕ Close' : '☰ All Tools'}
         </button>
       </div>
 

@@ -29,35 +29,57 @@ import TOOL_REGISTRY from '../../lib/toolRegistry'
 
 // Map category slug -> its component (static imports so webpack can bundle)
 const COMPONENTS = {
-  business:    dynamic(() => import('../../components/toolsrift-business'),      { ssr: false }),
-  colors:      dynamic(() => import('../../components/toolsrift-colors'),        { ssr: false }),
-  converters2: dynamic(() => import('../../components/toolsrift-converters2'),   { ssr: false }),
-  css:         dynamic(() => import('../../components/toolsrift-css'),           { ssr: false }),
-  devgen:      dynamic(() => import('../../components/toolsrift-gen-devconfig'), { ssr: false }),
-  devtools:    dynamic(() => import('../../components/toolsrift-devtools'),      { ssr: false }),
-  encoders:    dynamic(() => import('../../components/toolsrift-encoders'),      { ssr: false }),
-  encoding:    dynamic(() => import('../../components/toolsrift-encoding'),      { ssr: false }),
-  everyday:    dynamic(() => import('../../components/toolsrift-everyday'),      { ssr: false }),
-  fancy:       dynamic(() => import('../../components/toolsrift-fancy'),         { ssr: false }),
-  financecalc: dynamic(() => import('../../components/toolsrift-calc-finance'),  { ssr: false }),
-  formatters:  dynamic(() => import('../../components/toolsrift-formatters'),    { ssr: false }),
-  generators:  dynamic(() => import('../../components/toolsrift-gen-security'),  { ssr: false }),
-  generators2: dynamic(() => import('../../components/toolsrift-gen-content'),   { ssr: false }),
-  hash:        dynamic(() => import('../../components/toolsrift-hash'),          { ssr: false }),
-  html:        dynamic(() => import('../../components/toolsrift-html'),          { ssr: false }),
-  images:      dynamic(() => import('../../components/toolsrift-images'),        { ssr: false }),
-  js:          dynamic(() => import('../../components/toolsrift-js'),            { ssr: false }),
-  json:        dynamic(() => import('../../components/toolsrift-json'),          { ssr: false }),
-  mathcalc:    dynamic(() => import('../../components/toolsrift-calc-math'),     { ssr: false }),
-  pdf:         dynamic(() => import('../../components/toolsrift-pdf'),           { ssr: false }),
-  text:        dynamic(() => import('../../components/toolsrift-text'),          { ssr: false }),
-  units:       dynamic(() => import('../../components/toolsrift-units'),         { ssr: false }),
+  business:    dynamic(() => import('../../components/toolsrift-business'),      { ssr: false, loading: WidgetLoading }),
+  colors:      dynamic(() => import('../../components/toolsrift-colors'),        { ssr: false, loading: WidgetLoading }),
+  converters2: dynamic(() => import('../../components/toolsrift-converters2'),   { ssr: false, loading: WidgetLoading }),
+  css:         dynamic(() => import('../../components/toolsrift-css'),           { ssr: false, loading: WidgetLoading }),
+  devgen:      dynamic(() => import('../../components/toolsrift-gen-devconfig'), { ssr: false, loading: WidgetLoading }),
+  devtools:    dynamic(() => import('../../components/toolsrift-devtools'),      { ssr: false, loading: WidgetLoading }),
+  encoders:    dynamic(() => import('../../components/toolsrift-encoders'),      { ssr: false, loading: WidgetLoading }),
+  encoding:    dynamic(() => import('../../components/toolsrift-encoding'),      { ssr: false, loading: WidgetLoading }),
+  everyday:    dynamic(() => import('../../components/toolsrift-everyday'),      { ssr: false, loading: WidgetLoading }),
+  fancy:       dynamic(() => import('../../components/toolsrift-fancy'),         { ssr: false, loading: WidgetLoading }),
+  financecalc: dynamic(() => import('../../components/toolsrift-calc-finance'),  { ssr: false, loading: WidgetLoading }),
+  formatters:  dynamic(() => import('../../components/toolsrift-formatters'),    { ssr: false, loading: WidgetLoading }),
+  generators:  dynamic(() => import('../../components/toolsrift-gen-security'),  { ssr: false, loading: WidgetLoading }),
+  generators2: dynamic(() => import('../../components/toolsrift-gen-content'),   { ssr: false, loading: WidgetLoading }),
+  hash:        dynamic(() => import('../../components/toolsrift-hash'),          { ssr: false, loading: WidgetLoading }),
+  html:        dynamic(() => import('../../components/toolsrift-html'),          { ssr: false, loading: WidgetLoading }),
+  images:      dynamic(() => import('../../components/toolsrift-images'),        { ssr: false, loading: WidgetLoading }),
+  js:          dynamic(() => import('../../components/toolsrift-js'),            { ssr: false, loading: WidgetLoading }),
+  json:        dynamic(() => import('../../components/toolsrift-json'),          { ssr: false, loading: WidgetLoading }),
+  mathcalc:    dynamic(() => import('../../components/toolsrift-calc-math'),     { ssr: false, loading: WidgetLoading }),
+  pdf:         dynamic(() => import('../../components/toolsrift-pdf'),           { ssr: false, loading: WidgetLoading }),
+  text:        dynamic(() => import('../../components/toolsrift-text'),          { ssr: false, loading: WidgetLoading }),
+  units:       dynamic(() => import('../../components/toolsrift-units'),         { ssr: false, loading: WidgetLoading }),
 }
 
 const C = {
   bg: '#06090F', surface: '#0D1117', border: 'rgba(255,255,255,0.08)',
   borderLight: 'rgba(255,255,255,0.05)', text: '#F1F5F9', muted: '#94A3B8',
   dim: '#64748B', blue: '#3B82F6', indigo: '#6366F1',
+}
+
+// Branded loading state shown while a category widget chunk downloads/mounts,
+// so there is never a blank flash between the SEO fallback and the live tool.
+// (function declaration → hoisted, so the COMPONENTS map above can reference it)
+function WidgetLoading() {
+  return (
+    <div style={{
+      background: C.bg, minHeight: '80vh', display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center', gap: 16,
+    }}>
+      <style>{`@keyframes trspin{to{transform:rotate(360deg)}}`}</style>
+      <div style={{
+        width: 34, height: 34, borderRadius: '50%',
+        border: `3px solid ${C.border}`, borderTopColor: C.blue,
+        animation: 'trspin 0.7s linear infinite',
+      }} />
+      <div style={{ color: C.dim, fontSize: 13, fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}>
+        Loading…
+      </div>
+    </div>
+  )
 }
 
 export async function getStaticPaths() {
@@ -249,6 +271,16 @@ export default function ToolPage({ category, categoryName, tool, related }) {
             collection. It runs entirely in your browser — nothing to install, no signup, and your data
             never leaves your device.
           </p>
+
+          {/* Loading indicator — this fallback is visible only for the brief moment
+              before the interactive tool mounts. Showing a spinner here (instead of
+              only the article) makes that moment read as a clean "loading" state.
+              The surrounding prose stays in the DOM for crawlers. */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14, padding: '56px 0 8px' }}>
+            <style>{`@keyframes trspin{to{transform:rotate(360deg)}}`}</style>
+            <div style={{ width: 34, height: 34, borderRadius: '50%', border: `3px solid ${C.border}`, borderTopColor: C.blue, animation: 'trspin 0.7s linear infinite' }} />
+            <div style={{ color: C.dim, fontSize: 13 }}>Loading {tool.name}…</div>
+          </div>
 
           {/* How to use */}
           <h2 style={{ fontSize: 20, fontWeight: 700, fontFamily: "'Sora', sans-serif", margin: '32px 0 12px' }}>

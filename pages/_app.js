@@ -2,6 +2,8 @@ import '../styles/globals.css'
 import Head from 'next/head'
 import Script from 'next/script'
 import { useEffect } from 'react'
+import ScrollToTop from '../components/ScrollToTop'
+import CookieConsent from '../components/CookieConsent'
 
 export default function App({ Component, pageProps }) {
   useEffect(() => {
@@ -33,6 +35,8 @@ export default function App({ Component, pageProps }) {
       </Script>
 
       <Component {...pageProps} />
+      <ScrollToTop />
+      <CookieConsent />
     </>
   )
 }

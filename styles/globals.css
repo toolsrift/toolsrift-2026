@@ -96,3 +96,52 @@ button { cursor: pointer; }
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ── Category dashboard loading placeholder (reserves space above the SEO block) ── */
+@keyframes tr-rot { to { transform: rotate(360deg); } }
+.tr-cat-loading {
+  background: #06090F; min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+}
+.tr-spinner {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 3px solid rgba(255,255,255,0.08); border-top-color: #3B82F6;
+  animation: tr-rot 0.7s linear infinite;
+}
+
+/* ── Back-to-top button (global, rendered in _app.js) ── */
+.tr-to-top {
+  position: fixed; right: 20px; bottom: 84px; z-index: 400;
+  width: 44px; height: 44px; border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(13,17,23,0.82);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  color: #3B82F6; font-size: 20px; line-height: 1; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+  opacity: 0; transform: translateY(8px) scale(0.9);
+  transition: opacity .2s ease, transform .2s ease, background .2s ease, border-color .2s ease;
+  pointer-events: none;
+}
+.tr-to-top.tr-show { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+.tr-to-top:hover { background: rgba(59,130,246,0.16); border-color: rgba(59,130,246,0.5); }
+@media (min-width: 768px) { .tr-to-top { right: 28px; bottom: 28px; } }
+
+/* ── Cookie-consent banner (global, rendered in _app.js) ── */
+.tr-cookie {
+  position: fixed; z-index: 500;
+  left: clamp(12px, 3vw, 24px); bottom: clamp(12px, 3vw, 24px);
+  width: min(420px, calc(100vw - 24px));
+  background: rgba(13,17,23,0.97);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.55);
+  padding: 18px 18px 16px;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  color: #F1F5F9;
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  opacity: 0; transform: translateY(14px);
+  transition: opacity .25s ease, transform .25s ease;
+  pointer-events: none;
+}
+.tr-cookie.tr-cookie-show { opacity: 1; transform: translateY(0); pointer-events: auto; }

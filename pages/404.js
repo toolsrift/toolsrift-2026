@@ -1,11 +1,12 @@
 import Head from 'next/head'
+import SiteFooter from '../components/SiteFooter'
 
 export default function Custom404() {
   return (
     <>
       <Head>
         <title>404 — Page Not Found | ToolsRift</title>
-        <meta name="description" content="Page not found. Browse 590+ free online tools on ToolsRift." />
+        <meta name="description" content="Page not found. Browse 612+ free online tools on ToolsRift." />
         <meta name="robots" content="noindex" />
       </Head>
       <div style={{
@@ -46,7 +47,7 @@ export default function Custom404() {
           }}>
             ← Back to Home
           </a>
-          <a href="/#/tools" style={{
+          <a href="/tools" style={{
             padding: '13px 28px', borderRadius: 12, textDecoration: 'none',
             background: 'rgba(255,255,255,0.04)',
             border: '1px solid rgba(255,255,255,0.1)',
@@ -58,17 +59,15 @@ export default function Custom404() {
         <div style={{ marginTop: 48, display: 'flex', flexWrap: 'wrap',
           justifyContent: 'center', gap: '4px 16px' }}>
           {[['Text Tools','/text'],['PDF Tools','/pdf'],['Image Tools','/images'],
-            ['Dev Tools','/devtools'],['Calculators','/#/category/calculator']
+            ['Dev Tools','/devtools'],['Calculators','/mathcalc']
           ].map(([n,h]) => (
             <a key={h} href={h} style={{
               color: '#475569', textDecoration: 'none', fontSize: 13
             }}>{n}</a>
           ))}
         </div>
-        <div style={{ marginTop: 40, fontSize: 12, color: '#374151' }}>
-          © 2026 ToolsRift · Free online tools
-        </div>
       </div>
+      <SiteFooter />
     </>
   )
 }

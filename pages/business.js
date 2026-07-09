@@ -1,8 +1,9 @@
 import Head from 'next/head'
 import dynamic from 'next/dynamic'
+import CategoryLoading from '../components/CategoryLoading'
 import CategoryContent from '../components/CategoryContent'
 import categoryContent from '../lib/categoryContent'
-const ToolsRiftBusiness = dynamic(() => import('../components/toolsrift-business'), { ssr: false })
+const ToolsRiftBusiness = dynamic(() => import('../components/toolsrift-business'), { ssr: false, loading: CategoryLoading })
 export default function Business() {
   return (<><Head>
         <title>Free Business Tools — Invoices, Resumes &amp; More | ToolsRift</title>

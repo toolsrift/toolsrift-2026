@@ -10,9 +10,9 @@ export default function Pricing() {
     <>
       <Head>
         <title>Pro Plans Coming Soon — ToolsRift</title>
-        <meta name="description" content="All 590+ ToolsRift tools are completely free during our launch. Pro plans with advanced features will be available soon." />
+        <meta name="description" content="All 612+ ToolsRift tools are completely free during our launch. Pro plans with advanced features will be available soon." />
         <meta property="og:title" content="Pro Plans Coming Soon — ToolsRift" />
-        <meta property="og:description" content="All 590+ tools are completely free during our launch. Pro plans coming soon." />
+        <meta property="og:description" content="All 612+ tools are completely free during our launch. Pro plans coming soon." />
         <meta property="og:url" content="https://toolsrift.com/pricing" />
         <meta property="og:site_name" content="ToolsRift" />
         <meta name="twitter:card" content="summary_large_image" />
@@ -41,7 +41,7 @@ export default function Pricing() {
               Pro Plans —<br />Coming Soon
             </h1>
             <p style={{ fontSize: 16, color: S.muted, lineHeight: 1.8, marginBottom: 40 }}>
-              All 590+ tools are completely free during our launch. Pro plans with advanced features will be available soon.
+              All 612+ tools are completely free during our launch. Pro plans with advanced features will be available soon.
             </p>
             <a href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 32px', background: 'linear-gradient(135deg,#3B82F6,#6366F1)', color: '#fff', fontWeight: 700, fontSize: 15, textDecoration: 'none', borderRadius: 12, boxShadow: '0 8px 28px rgba(59,130,246,0.3)' }}>
               Browse Free Tools →

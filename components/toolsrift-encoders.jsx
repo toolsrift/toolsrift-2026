@@ -177,7 +177,7 @@ function useAppRouter() {
     const parts = path.split("/").filter(Boolean);
     if(!parts.length) return { page:"home" };
     if(parts[0]==="tool"&&parts[1]) return { page:"tool", toolId:parts[1] };
-    if(parts[0]==="category"&&parts[1]) return { page:"category", catId:parts[1] };
+    if(parts[0]==="category"&&parts[1]) return { page:"home" };
     return { page:"home" };
   };
   const [route, setRoute] = useState(parse);
@@ -260,10 +260,10 @@ const TOOL_META = {
   "jwt-decoder": { title:"JWT Decoder — Decode & Inspect JWT Tokens Online", desc:"Decode JSON Web Tokens (JWT) without a secret. View header, payload, and signature components.", faq:[["Is it safe to paste my JWT here?","Never paste production tokens in public tools. This tool runs entirely in your browser with no server transmission."],["Can it verify the signature?","Signature verification requires the secret key. This tool decodes the header and payload only."],["What are the three JWT parts?","Header (algorithm), Payload (claims/data), Signature (verification). Separated by dots."]] },
   "caesar-cipher": { title:"Caesar Cipher Encoder & Decoder — Classic ROT Shift Online", desc:"Encode or decode text with the Caesar shift cipher. Choose any shift from 1–25.", faq:[["What is the Caesar cipher?","A substitution cipher where each letter is shifted N positions in the alphabet. ROT13 is Caesar shift 13."],["How secure is the Caesar cipher?","Not secure at all — only 25 possible keys, easily broken by brute force or frequency analysis."],["Can I brute force all 25 shifts?","Yes — the tool shows all 25 possible decodings at once in brute force mode."]] },
   "vigenere-cipher": { title:"Vigenère Cipher Encoder & Decoder — Polyalphabetic Cipher", desc:"Encrypt and decrypt text using the Vigenère polyalphabetic substitution cipher with a keyword.", faq:[["What is the Vigenère cipher?","A series of Caesar ciphers with different shifts determined by the letters of a repeating keyword."],["How secure is Vigenère?","Much stronger than Caesar but still breakable via Kasiski examination for long ciphertexts. Not suitable for modern security."],["What should the key be?","A single word or phrase using only letters (A—Z). Longer keys are harder to crack."]] },
-  "atbash-cipher": { title:"Atbash Cipher Encoder & Decoder — Mirror Alphabet Cipher", desc:"Encode text with the Atbash cipher — mirror the alphabet (A—Z, B—Y). Symmetric encode/decode.", faq:[["What is the Atbash cipher?","A substitution cipher where each letter is mapped to its mirror: A—'Z, B—'Y, ..., Z—'A."],["Is it symmetric?","Yes — encoding and decoding use the exact same operation. Apply it twice to get the original."],["Where did Atbash originate?","Ancient Hebrew cryptography. 'Atbash' itself encodes the first and last Hebrew letters: Aleph-Tav-Bet-Shin."]] },
+  "atbash-cipher": { title:"Atbash Cipher Encoder & Decoder — Mirror Alphabet Cipher", desc:"Encode text with the Atbash cipher — mirror the alphabet (A—Z, B—Y). Symmetric encode/decode.", faq:[["What is the Atbash cipher?","A substitution cipher where each letter is mapped to its mirror: A→Z, B→Y, ..., Z→A."],["Is it symmetric?","Yes — encoding and decoding use the exact same operation. Apply it twice to get the original."],["Where did Atbash originate?","Ancient Hebrew cryptography. 'Atbash' itself encodes the first and last Hebrew letters: Aleph-Tav-Bet-Shin."]] },
   "morse-encoder": { title:"Morse Code Encoder & Decoder — Convert Text to Morse", desc:"Convert text to Morse code and back. Audio playback with adjustable speed and dot/dash customization.", faq:[["What is Morse code?","An encoding where letters are represented as sequences of dots (•) and dashes (—)."],["Can I hear the Morse code?","Yes — click Play to hear the Morse code using your browser's Web Audio API."],["What characters are supported?","A—Z, 0–9, and common punctuation: . , ? ' ! / ( ) & : ; = + - _ \" $ @"]] },
   "quoted-printable": { title:"Quoted-Printable Encoder — MIME Email Encoding", desc:"Encode text using MIME Quoted-Printable encoding for email headers and bodies. RFC 2045 compliant.", faq:[["What is Quoted-Printable?","A MIME encoding where most ASCII characters pass through unchanged, but non-ASCII bytes become =XX hex sequences."],["When is Quoted-Printable used?","In email bodies containing mostly ASCII with some special characters. More readable than Base64 for text content."],["What is the line length limit?","RFC 2045 requires lines to be no longer than 76 characters, with = as a soft line break."]] },
-  "xml-encode": { title:"XML Encoder & Decoder — Escape XML Special Characters", desc:"Encode and decode XML special characters. Escapes <, >, &, ', \" for safe XML content.", faq:[["Which characters must be escaped in XML?","& —' &amp;, < —' &lt;, > —' &gt;, \" —' &quot;, ' —' &apos;"],["Is XML encoding the same as HTML encoding?","Almost — XML uses &apos; while HTML prefers &#39;. XML requires stricter well-formedness."],["When is XML encoding needed?","When embedding user-provided text inside XML tags or attributes to prevent XML injection attacks."]] },
+  "xml-encode": { title:"XML Encoder & Decoder — Escape XML Special Characters", desc:"Encode and decode XML special characters. Escapes <, >, &, ', \" for safe XML content.", faq:[["Which characters must be escaped in XML?","& → &amp;, < → &lt;, > → &gt;, \" → &quot;, ' → &apos;"],["Is XML encoding the same as HTML encoding?","Almost — XML uses &apos; while HTML prefers &#39;. XML requires stricter well-formedness."],["When is XML encoding needed?","When embedding user-provided text inside XML tags or attributes to prevent XML injection attacks."]] },
 };
 
 // �"����� MORSE TABLE �������������������������������������������������������������������������������������������������������������������������"�
@@ -395,9 +395,9 @@ function Base64Image() {
         onDragEnter={()=>setDragging(true)} onDragLeave={()=>setDragging(false)} onDragOver={e=>e.preventDefault()} onDrop={onDrop}
         style={{ border:`2px dashed ${dragging?C.purple:C.border}`, borderRadius:12, padding:32, textAlign:"center", background:dragging?"rgba(139,92,246,0.08)":"rgba(255,255,255,0.02)", cursor:"pointer", transition:"all .15s" }}
         onClick={()=>document.getElementById("b64img-input").click()}>
-        <div style={{ fontSize:36, marginBottom:8 }}>🖼—</div>
+        <div style={{ fontSize:36, marginBottom:8 }}>🖼</div>
         <div style={{ fontSize:13, color:C.text, marginBottom:4 }}>Drag & drop an image here</div>
-        <div style={{ fontSize:12, color:C.muted }}>or click to browse —" PNG, JPG, GIF, SVG, WebP</div>
+        <div style={{ fontSize:12, color:C.muted }}>or click to browse — PNG, JPG, GIF, SVG, WebP</div>
         <input ref={fileRef} id="b64img-input" type="file" accept="image/*" onChange={onFile} style={{ display:"none" }} />
       </div>
       {error && <div style={{ color:C.danger, fontSize:13 }}>{error}</div>}
@@ -578,7 +578,7 @@ function BinaryDecode() {
       <IOPanel input={input} onInput={setInput} output={output} inputLabel="Binary (0s and 1s)" outputLabel="Decoded Text" error={error} outputMono={false} />
       <Card style={{ background:"rgba(139,92,246,0.05)" }}>
         <div style={{ fontSize:12, color:C.muted, lineHeight:1.7 }}>
-          <strong style={{ color:C.text }}>Format:</strong> Space-separate 8-bit groups —" <span style={{ fontFamily:"'JetBrains Mono',monospace", color:C.purple }}>01001000 01101001</span> —' "Hi"
+          <strong style={{ color:C.text }}>Format:</strong> Space-separate 8-bit groups — <span style={{ fontFamily:"'JetBrains Mono',monospace", color:C.purple }}>01001000 01101001</span> → "Hi"
         </div>
       </Card>
     </VStack>
@@ -774,7 +774,7 @@ function UnicodeLookup() {
         decimal: cp,
       });
     } else if(q.length>0) {
-      // treat as text —" show each character
+      // treat as text — show each character
       Array.from(q).slice(0,8).forEach(c=>{
         const cp2 = c.codePointAt(0);
         found.push({
@@ -808,11 +808,11 @@ function UnicodeLookup() {
           </div>
         </Card>
       ))}
-      {results.length===0&&query&&<div style={{ color:C.muted, fontSize:13 }}>No results —" click Lookup or press Enter</div>}
+      {results.length===0&&query&&<div style={{ color:C.muted, fontSize:13 }}>No results — click Lookup or press Enter</div>}
       <div>
-        <Label>Quick Reference —" Common Code Points</Label>
+        <Label>Quick Reference — Common Code Points</Label>
         <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginTop:6 }}>
-          {[["😀","U+1F600"],["——","U+2764"],["—","U+2713"],["©","U+00A9"],["€","U+20AC"],["中","U+4E2D"],["α","U+03B1"],["∞","U+221E"],["—","U+2190"],["★","U+2605"]].map(([c,u])=>(
+          {[["😀","U+1F600"],["❤","U+2764"],["✓","U+2713"],["©","U+00A9"],["€","U+20AC"],["中","U+4E2D"],["α","U+03B1"],["∞","U+221E"],["←","U+2190"],["★","U+2605"]].map(([c,u])=>(
             <button key={u} onClick={()=>{setQuery(u);setResults([]);}} style={{ padding:"6px 10px", background:"rgba(255,255,255,0.03)", border:`1px solid ${C.border}`, borderRadius:6, cursor:"pointer", fontSize:14, color:C.text, display:"flex", alignItems:"center", gap:6 }}>
               <span>{c}</span><span style={{ fontSize:10, color:C.muted, fontFamily:"'JetBrains Mono',monospace" }}>{u}</span>
             </button>
@@ -856,7 +856,7 @@ function JwtDecoder() {
       {decoded?.error && <div style={{ padding:"12px 14px", background:"rgba(239,68,68,0.1)", border:"1px solid rgba(239,68,68,0.2)", borderRadius:8, fontSize:13, color:C.danger }}>{decoded.error}</div>}
       {decoded&&!decoded.error&&(
         <>
-          {decoded.expired && <div style={{ padding:"10px 14px", background:"rgba(245,158,11,0.1)", border:"1px solid rgba(245,158,11,0.2)", borderRadius:8, fontSize:13, color:C.warn }}>⚠— This token has expired</div>}
+          {decoded.expired && <div style={{ padding:"10px 14px", background:"rgba(245,158,11,0.1)", border:"1px solid rgba(245,158,11,0.2)", borderRadius:8, fontSize:13, color:C.warn }}>⚠ This token has expired</div>}
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
             {[["Header (Algorithm & Type)", decoded.header, "#3B82F6"],["Payload (Claims & Data)", decoded.payload, C.purple]].map(([label, data, accent])=>(
               <Card key={label} style={{ border:`1px solid ${accent}30` }}>
@@ -886,7 +886,7 @@ function JwtDecoder() {
             <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:11, color:C.muted, wordBreak:"break-all", marginTop:6 }}>{decoded.sig||"(none)"}</div>
           </Card>
           <div style={{ padding:"10px 14px", background:"rgba(239,68,68,0.08)", border:"1px solid rgba(239,68,68,0.15)", borderRadius:8, fontSize:12, color:C.danger }}>
-            —"' Signature not verified —" verification requires the secret key. This tool only decodes the payload.
+            ⚠️ Signature not verified — verification requires the secret key. This tool only decodes the payload.
           </div>
         </>
       )}
@@ -919,7 +919,7 @@ function CaesarCipher() {
       <IOPanel input={input} onInput={setInput} output={output} inputLabel="Input Text" outputLabel={`${mode==="encode"?"Encoded":"Decoded"} (shift ${shift})`} inputMono={false} outputMono={false} />
       {input && (
         <details style={{ border:`1px solid ${C.border}`, borderRadius:8 }}>
-          <summary style={{ padding:"10px 14px", cursor:"pointer", fontSize:13, fontWeight:600, color:C.text }}>— Brute Force —" All 25 Shifts</summary>
+          <summary style={{ padding:"10px 14px", cursor:"pointer", fontSize:13, fontWeight:600, color:C.text }}>🔓 Brute Force — All 25 Shifts</summary>
           <div style={{ maxHeight:300, overflowY:"auto" }}>
             {allShifts.map(({ shift:s, text })=>(
               <div key={s} style={{ display:"flex", gap:12, padding:"6px 14px", borderTop:`1px solid ${C.border}`, fontSize:12 }}>
@@ -1054,12 +1054,12 @@ function MorseEncoder() {
   return (
     <VStack>
       <div style={{ display:"flex", gap:10, alignItems:"center", flexWrap:"wrap" }}>
-        <ModeToggle mode={mode} setMode={setMode} options={[["encode","Text —' Morse"],["decode","Morse —' Text"]]} />
+        <ModeToggle mode={mode} setMode={setMode} options={[["encode","Text → Morse"],["decode","Morse → Text"]]} />
         <div style={{ display:"flex", gap:6 }}>
           {["slow","medium","fast"].map(s=><Btn key={s} variant={speed===s?"secondary":"ghost"} size="sm" onClick={()=>setSpeed(s)}>{s}</Btn>)}
         </div>
         <Btn variant="secondary" size="sm" onClick={playMorse} disabled={playing}>
-          {playing?"—— Playing…":"▶ Play Audio"}
+          {playing?"🔊 Playing…":"▶ Play Audio"}
         </Btn>
       </div>
       <IOPanel input={input} onInput={setInput} output={mode==="encode"?encoded:decoded} inputLabel={mode==="encode"?"Plain Text (A—Z, 0–9)":"Morse Code (• — / format)"} outputLabel={mode==="encode"?"Morse Code":"Decoded Text"} inputMono={mode!=="encode"} outputMono={mode==="encode"} rows={5} />
@@ -1095,7 +1095,7 @@ function QuotedPrintable() {
       <IOPanel input={input} onInput={setInput} output={output} inputLabel={mode==="encode"?"Plain Text":"QP Encoded"} outputLabel={mode==="encode"?"Quoted-Printable":"Decoded Text"} inputMono={false} />
       <Card style={{ background:"rgba(59,130,246,0.05)", border:"1px solid rgba(59,130,246,0.12)" }}>
         <div style={{ fontSize:12, color:C.muted, lineHeight:1.8 }}>
-          <strong style={{ color:C.text }}>RFC 2045</strong> —" Printable ASCII passes through unchanged. Non-ASCII and = become <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>=XX</span> hex pairs. Lines are soft-wrapped at 76 chars with <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>=\r\n</span>.
+          <strong style={{ color:C.text }}>RFC 2045</strong> — Printable ASCII passes through unchanged. Non-ASCII and = become <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>=XX</span> hex pairs. Lines are soft-wrapped at 76 chars with <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>=\r\n</span>.
         </div>
       </Card>
     </VStack>
@@ -1137,7 +1137,7 @@ function Breadcrumb({ tool }) {
   return (
     <>
       <nav style={{ display:"flex", alignItems:"center", gap:8, fontSize:12, color:C.muted, marginBottom:20 }}>
-        <a href="https://toolsrift.com" style={{ color:C.muted, textDecoration:"none" }}>—— ToolsRift</a>
+        <a href="https://toolsrift.com" style={{ color:C.muted, textDecoration:"none" }}>🏠 ToolsRift</a>
         <span>›</span>
         <a href={`#/category/${tool.cat}`} style={{ color:C.muted, textDecoration:"none" }}>{cat?.name}</a>
         <span>›</span>
@@ -1207,12 +1207,12 @@ function ToolPage({ toolId }) {
   const meta = TOOL_META[toolId];
   const ToolComp = TOOL_COMPONENTS[toolId];
   // PHASE 1: All tools free, no gating. Re-enable in Phase 2.
-  useEffect(()=>{ document.title = meta?.title||`${tool?.name} —" Free Encoder | ToolsRift`; },[toolId]);
+  useEffect(()=>{ document.title = meta?.title||`${tool?.name} — Free Encoder | ToolsRift`; },[toolId]);
   if(!tool||!ToolComp) return (
     <div style={{ padding:40, textAlign:"center", color:C.muted }}>
-      <div style={{ fontSize:48, marginBottom:16 }}>—"</div>
+      <div style={{ fontSize:48, marginBottom:16 }}>🔍</div>
       <div style={{ fontSize:16, color:C.text, marginBottom:8 }}>Tool not found</div>
-      <a href="#/" style={{ color:C.purple }}>— Back to home</a>
+      <a href="#/" style={{ color:C.purple }}>← Back to home</a>
     </div>
   );
   return (
@@ -1232,7 +1232,7 @@ function ToolPage({ toolId }) {
       </Card>
       {meta?.howTo && (
         <div style={{ background:'rgba(59,130,246,0.05)', border:'1px solid rgba(59,130,246,0.12)', borderRadius:16, padding:'28px 32px', marginBottom:24, marginTop:24 }}>
-          <h2 style={{ fontSize:17, fontWeight:700, color:'#F1F5F9', margin:'0 0 12px', fontFamily:"'Sora', sans-serif" }}>—"— How to Use This Tool</h2>
+          <h2 style={{ fontSize:17, fontWeight:700, color:'#F1F5F9', margin:'0 0 12px', fontFamily:"'Sora', sans-serif" }}>📖 How to Use This Tool</h2>
           <p style={{ fontSize:14, color:'#94A3B8', lineHeight:1.8, margin:0 }}>{meta.howTo}</p>
         </div>
       )}
@@ -1257,15 +1257,15 @@ function ToolPage({ toolId }) {
 function CategoryPage({ catId }) {
   const cat = CATEGORIES.find(c=>c.id===catId);
   const tools = TOOLS.filter(t=>t.cat===catId);
-  useEffect(()=>{ document.title = `${cat?.name} —" Free Online Encoders | ToolsRift`; },[catId]);
-  if(!cat) return <div style={{ padding:40, textAlign:"center", color:C.muted }}>Category not found. <a href="#/" style={{ color:C.purple }}>— Home</a></div>;
+  useEffect(()=>{ document.title = `${cat?.name} — Free Online Encoders | ToolsRift`; },[catId]);
+  if(!cat) return <div style={{ padding:40, textAlign:"center", color:C.muted }}>Category not found. <a href="#/" style={{ color:C.purple }}>← Home</a></div>;
   return (
     <div style={{ maxWidth:920, margin:"0 auto", padding:"24px 20px 60px" }}>
       <nav style={{ fontSize:12, color:C.muted, marginBottom:20 }}>
-        <a href="#/" style={{ color:C.muted, textDecoration:"none" }}>—— ToolsRift</a> › <span style={{ color:C.text }}>{cat.name}</span>
+        <a href="#/" style={{ color:C.muted, textDecoration:"none" }}>🏠 ToolsRift</a> › <span style={{ color:C.text }}>{cat.name}</span>
       </nav>
       <h1 style={{ ...T.h1, marginBottom:6 }}>{cat.icon} {cat.name}</h1>
-      <p style={{ fontSize:14, color:C.muted, marginBottom:28 }}>{cat.desc} —" {tools.length} free tools</p>
+      <p style={{ fontSize:14, color:C.muted, marginBottom:28 }}>{cat.desc} — {tools.length} free tools</p>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))", gap:12 }}>
         {tools.map(t=>(
           <a key={t.id} href={`#/tool/${t.id}`} style={{ display:"flex", gap:12, padding:"14px 16px", background:C.surface, border:`1px solid ${C.border}`, borderRadius:10, textDecoration:"none", alignItems:"flex-start", transition:"all .15s" }}
@@ -1312,7 +1312,7 @@ const ENC_SPECIAL_CSS = `
 `;
 
 function CategoryHomePage() {
-  useEffect(() => { document.title = 'Free Encoder & Decoder Tools —" ToolsRift'; }, []);
+  useEffect(() => { document.title = 'Free Encoder & Decoder Tools — ToolsRift'; }, []);
 
   return (
     <CategoryLayout theme={PAGE_THEME} currentTool={null}>
@@ -1334,16 +1334,16 @@ function ToolDetailPage({ toolId }) {
   const acc = PAGE_THEME.color;
 
   useEffect(() => {
-    document.title = meta?.title || `${tool?.name} —" Free Encoder Tool | ToolsRift`;
+    document.title = meta?.title || `${tool?.name} — Free Encoder Tool | ToolsRift`;
     setDrawerOpen(false);
   }, [toolId]);
 
   if (!tool || !ToolComp) return (
     <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'}>
       <div style={{ padding:40, textAlign:'center', color:'#64748B', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
-        <div style={{ fontSize:48, marginBottom:16 }}>—"</div>
+        <div style={{ fontSize:48, marginBottom:16 }}>🔍</div>
         <p style={{ color:'#E2E8F0', marginBottom:8, fontSize:16 }}>Tool not found</p>
-        <a href="#/" style={{ color:acc }}>— Back to Encoders</a>
+        <a href="#/" style={{ color:acc }}>← Back to Encoders</a>
       </div>
     </CategoryLayout>
   );
@@ -1384,7 +1384,7 @@ function ToolDetailPage({ toolId }) {
           <a href="#/" style={{ display:'inline-flex', alignItems:'center', gap:6, color:'#64748B', fontSize:13, textDecoration:'none', marginBottom:16, fontFamily:"'Plus Jakarta Sans',sans-serif" }}
             onMouseEnter={e => e.currentTarget.style.color='#E2E8F0'}
             onMouseLeave={e => e.currentTarget.style.color='#64748B'}
-          >— Back to Encoders & Decoders</a>
+          >← Back to Encoders & Decoders</a>
           <ToolPageLayout theme={PAGE_THEME} tool={toolData}>
             <ToolComp />
           </ToolPageLayout>
@@ -1394,7 +1394,7 @@ function ToolDetailPage({ toolId }) {
       <div className="tre-mobile-bar" style={{ position:'fixed', bottom:0, left:0, right:0, zIndex:200, background:'rgba(6,9,15,0.96)', backdropFilter:'blur(12px)', borderTop:'1px solid rgba(255,255,255,0.06)', padding:'12px 16px', justifyContent:'space-between', alignItems:'center' }}>
         <span style={{ fontSize:13, color:'#94A3B8', fontFamily:"'Plus Jakarta Sans',sans-serif", overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', maxWidth:'60%' }}>{tool.icon} {tool.name}</span>
         <button onClick={() => setDrawerOpen(d => !d)} style={{ background:acc, color:'#fff', border:'none', borderRadius:8, padding:'8px 16px', fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:"'Plus Jakarta Sans',sans-serif", minHeight:44, flexShrink:0 }}>
-          {drawerOpen ? '✕ Close' : '—"— All Tools'}
+          {drawerOpen ? '✕ Close' : '☰ All Tools'}
         </button>
       </div>
 

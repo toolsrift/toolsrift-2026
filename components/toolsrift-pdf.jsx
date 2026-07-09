@@ -146,7 +146,7 @@ function useAppRouter() {
     const parts = path.split("/").filter(Boolean);
     if (!parts.length) return { page:"home" };
     if (parts[0]==="tool" && parts[1]) return { page:"tool", toolId:parts[1] };
-    if (parts[0]==="category" && parts[1]) return { page:"category", catId:parts[1] };
+    if (parts[0]==="category" && parts[1]) return { page:"home" };
     return { page:"home" };
   };
   const [route, setRoute] = useState(parse);
@@ -361,7 +361,7 @@ const TOOL_META = {
     faq: [
       ["What Word formats are supported?", "This tool supports modern DOCX format. For older DOC files, save them as DOCX in Word first, then convert."],
       ["Is formatting preserved?", "Basic formatting like fonts, styles, and paragraphs is preserved. Complex features like macros and advanced tables may not convert perfectly."],
-      ["Why is this a Pro feature?", "Word to PDF conversion requires document rendering libraries with licensing restrictions, so it's available in our Pro plan."]
+      ["Why isn't Word-to-PDF available in the browser?", "Converting Word documents to PDF needs full document-rendering libraries that can't run entirely client-side yet. As a free workaround, open the document in your word processor and use Print → Save as PDF."]
     ]
   },
   "pdf-password-protect": {
@@ -460,7 +460,7 @@ const TOOL_META = {
     faq: [
       ["What are PDF bookmarks?", "Bookmarks are a navigational table of contents in the PDF sidebar. They let readers quickly jump to specific sections."],
       ["Can I create nested bookmarks?", "Yes, create hierarchical bookmark structures with parent and child entries to organize complex documents."],
-      ["Why is this a Pro feature?", "Bookmark manipulation requires advanced PDF editing capabilities with licensing costs, available in our Pro plan."]
+      ["Why isn't bookmark editing available yet?", "Editing a PDF's outline/bookmark structure isn't supported by the in-browser PDF engine yet. It's free like every other tool — we're just still building it."]
     ]
   },
   "pdf-form-filler": {
@@ -469,7 +469,7 @@ const TOOL_META = {
     faq: [
       ["What types of form fields are supported?", "Text fields, checkboxes, radio buttons, dropdown menus, and signature fields are all supported."],
       ["Can I save partially completed forms?", "Yes, download the PDF at any time with the current form data. You can open and continue editing it later."],
-      ["Why is this a Pro feature?", "Form field manipulation requires advanced PDF libraries with licensing restrictions, available in our Pro plan."]
+      ["Why isn't form filling available yet?", "Interactive PDF form filling isn't supported by the in-browser engine yet. Most browsers can fill a fillable PDF directly — open it, fill the fields, then Print → Save as PDF."]
     ]
   }
 };
@@ -535,7 +535,7 @@ function PdfViewer() {
         <>
           <div style={{ display:"flex", gap:12, alignItems:"center", justifyContent:"space-between", flexWrap:"wrap" }}>
             <div style={{ display:"flex", gap:8, alignItems:"center" }}>
-              <Btn size="sm" onClick={() => setCurrentPage(Math.max(1, currentPage - 1))} disabled={currentPage <= 1}>— Prev</Btn>
+              <Btn size="sm" onClick={() => setCurrentPage(Math.max(1, currentPage - 1))} disabled={currentPage <= 1}>← Prev</Btn>
               <span style={{ fontSize:13, color:C.text }}>Page {currentPage} of {numPages}</span>
               <Btn size="sm" onClick={() => setCurrentPage(Math.min(numPages, currentPage + 1))} disabled={currentPage >= numPages}>Next —'</Btn>
             </div>
@@ -1581,20 +1581,19 @@ function PdfToText() {
         {converting ? 'Converting...' : 'Convert to Text File'}
       </Btn>
       <div style={{ padding:12, background:"rgba(245,158,11,0.1)", border:`1px solid rgba(245,158,11,0.3)`, borderRadius:8, fontSize:12, color:C.text }}>
-        —'— This extracts embedded text only. Scanned PDFs (images) require OCR.
+        ⚠️ This extracts embedded text only. Scanned PDFs (images) require OCR.
       </div>
     </VStack>
   );
 }
 
-// Word to PDF Component (Pro)
+// Word to PDF Component (not available client-side yet)
 function WordToPdf() {
   return (
     <div style={{ padding:48, textAlign:'center', background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:16 }}>
-      <div style={{ fontSize:48, marginBottom:14 }}>—''</div>
-      <div style={{ color:C.text, fontWeight:700, fontSize:18, marginBottom:8 }}>Pro Feature</div>
-      <div style={{ color:C.muted, fontSize:14, marginBottom:22, lineHeight:1.6 }}>Word to PDF conversion requires advanced document rendering and is available in our Pro plan.</div>
-      <Btn onClick={() => window.location.hash = '#/'}>View Pro Plans</Btn>
+      <div style={{ fontSize:40, marginBottom:12 }}>ℹ️</div>
+      <div style={{ color:C.text, fontWeight:700, fontSize:17, marginBottom:8 }}>Not available in your browser yet</div>
+      <div style={{ color:C.muted, fontSize:14, marginBottom:4, lineHeight:1.6 }}>Word-to-PDF conversion needs full document rendering that can't run entirely in your browser yet — and your files are never uploaded to any server. Tip: open the document in your word processor and choose Print → Save as PDF.</div>
     </div>
   );
 }
@@ -1603,35 +1602,16 @@ function WordToPdf() {
 function PdfPasswordProtect() {
   const [file, setFile] = useState(null);
   const [password, setPassword] = useState('');
-  const [protecting, setProtecting] = useState(false);
-
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js';
-    script.async = true;
-    document.body.appendChild(script);
-    return () => document.body.removeChild(script);
-  }, []);
+  const [notice, setNotice] = useState(false);
 
   const handleFile = (e) => {
     setFile(e.target.files[0]);
+    setNotice(false);
   };
 
-  const protectPdf = async () => {
+  const protectPdf = () => {
     if (!file || !password) return;
-    setProtecting(true);
-    try {
-      const arrayBuffer = await file.arrayBuffer();
-      const pdfDoc = await window.PDFLib.PDFDocument.load(arrayBuffer);
-      
-      // Note: pdf-lib doesn't support password encryption directly
-      // This is a simplified version - real implementation would need additional libraries
-      alert('Password protection requires server-side encryption libraries. For security, we recommend using desktop software like Adobe Acrobat or open-source tools like PDFtk for password protection.');
-      
-    } catch (err) {
-      alert('Error: ' + err.message);
-    }
-    setProtecting(false);
+    setNotice(true);
   };
 
   return (
@@ -1644,11 +1624,15 @@ function PdfPasswordProtect() {
         <Label>Password</Label>
         <Input value={password} onChange={setPassword} placeholder="Enter secure password" style={{ fontFamily:"'JetBrains Mono',monospace" }} />
       </div>
-      <Btn onClick={protectPdf} disabled={!file || !password || protecting}>
-        {protecting ? 'Protecting...' : 'Add Password Protection'}
-      </Btn>
-      <div style={{ padding:12, background:"rgba(245,158,11,0.1)", border:`1px solid rgba(245,158,11,0.3)`, borderRadius:8, fontSize:12, color:C.text }}>
-        —"' For production use, we recommend desktop tools for encryption. Browser-based encryption has security limitations.
+      <Btn onClick={protectPdf} disabled={!file || !password}>Add Password Protection</Btn>
+      {notice && (
+        <div style={{ padding:14, background:"rgba(245,158,11,0.1)", border:`1px solid rgba(245,158,11,0.3)`, borderRadius:8, fontSize:13, color:C.text, lineHeight:1.6 }}>
+          <strong>In-browser PDF encryption isn't available yet.</strong><br />
+          Standard PDF password protection needs an encryption engine that browsers can't run fully client-side, and ToolsRift never uploads your file to a server — so this tool can't lock your PDF right now. Your file stayed entirely on your device. A private, in-browser encryptor is on our roadmap.
+        </div>
+      )}
+      <div style={{ padding:12, background:"rgba(59,130,246,0.08)", border:`1px solid rgba(59,130,246,0.2)`, borderRadius:8, fontSize:12, color:C.text }}>
+        🔒 100% local — files are processed in your browser and never uploaded.
       </div>
     </VStack>
   );
@@ -1658,14 +1642,16 @@ function PdfPasswordProtect() {
 function PdfUnlock() {
   const [file, setFile] = useState(null);
   const [password, setPassword] = useState('');
+  const [notice, setNotice] = useState(false);
 
   const handleFile = (e) => {
     setFile(e.target.files[0]);
+    setNotice(false);
   };
 
   const unlockPdf = () => {
     if (!file || !password) return;
-    alert('PDF unlocking requires server-side processing or desktop software. Browser-based PDF libraries cannot decrypt password-protected PDFs for security reasons. Please use Adobe Acrobat or similar desktop software.');
+    setNotice(true);
   };
 
   return (
@@ -1679,8 +1665,14 @@ function PdfUnlock() {
         <Input value={password} onChange={setPassword} placeholder="Enter PDF password" style={{ fontFamily:"'JetBrains Mono',monospace" }} />
       </div>
       <Btn onClick={unlockPdf} disabled={!file || !password}>Unlock PDF</Btn>
-      <div style={{ padding:12, background:"rgba(245,158,11,0.1)", border:`1px solid rgba(245,158,11,0.3)`, borderRadius:8, fontSize:12, color:C.text }}>
-        —"" Browser-based PDF unlocking has security limitations. Use desktop software for best results.
+      {notice && (
+        <div style={{ padding:14, background:"rgba(245,158,11,0.1)", border:`1px solid rgba(245,158,11,0.3)`, borderRadius:8, fontSize:13, color:C.text, lineHeight:1.6 }}>
+          <strong>In-browser PDF unlocking isn't available yet.</strong><br />
+          Removing a PDF password means decrypting the file, which needs a decryption engine browsers can't run fully client-side — and ToolsRift never sends your file to a server to do it. This tool can't unlock your PDF right now; your file stayed on your device.
+        </div>
+      )}
+      <div style={{ padding:12, background:"rgba(59,130,246,0.08)", border:`1px solid rgba(59,130,246,0.2)`, borderRadius:8, fontSize:12, color:C.text }}>
+        🔒 100% local — nothing you upload ever leaves your browser.
       </div>
     </VStack>
   );
@@ -1769,14 +1761,13 @@ function PdfWatermark() {
   );
 }
 
-// PDF Redact Component (Pro)
+// PDF Redact Component (not available client-side yet)
 function PdfRedact() {
   return (
     <div style={{ padding:48, textAlign:'center', background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:16 }}>
-      <div style={{ fontSize:48, marginBottom:14 }}>—''</div>
-      <div style={{ color:C.text, fontWeight:700, fontSize:18, marginBottom:8 }}>Pro Feature</div>
-      <div style={{ color:C.muted, fontSize:14, marginBottom:22, lineHeight:1.6 }}>Secure PDF redaction with permanent content removal is available in our Pro plan.</div>
-      <Btn onClick={() => window.location.hash = '#/'}>View Pro Plans</Btn>
+      <div style={{ fontSize:40, marginBottom:12 }}>ℹ️</div>
+      <div style={{ color:C.text, fontWeight:700, fontSize:17, marginBottom:8 }}>Not available in your browser yet</div>
+      <div style={{ color:C.muted, fontSize:14, marginBottom:4, lineHeight:1.6 }}>Secure redaction must permanently remove the underlying content (not just cover it), which can't be done reliably client-side yet. To hide sensitive areas today, use the PDF Cropper or add a solid Watermark/box over the region — but for truly permanent redaction, flatten the page in dedicated software.</div>
     </div>
   );
 }
@@ -1784,20 +1775,50 @@ function PdfRedact() {
 // PDF Compressor Component
 function PdfCompressor() {
   const [file, setFile] = useState(null);
-  const [level, setLevel] = useState('medium');
   const [originalSize, setOriginalSize] = useState(0);
+  const [processing, setProcessing] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js';
+    script.async = true;
+    document.body.appendChild(script);
+    return () => document.body.removeChild(script);
+  }, []);
 
   const handleFile = (e) => {
     const selectedFile = e.target.files[0];
     if (!selectedFile) return;
     setFile(selectedFile);
     setOriginalSize((selectedFile.size / 1024).toFixed(2));
+    setResult(null);
+    setError('');
   };
 
-  const compressPdf = () => {
+  const compressPdf = async () => {
     if (!file) return;
-    alert('PDF compression requires image processing and recompression libraries. For best results, use desktop software like Adobe Acrobat, Smallpdf, or iLovePDF online service.');
+    if (!window.PDFLib) { setError('The PDF engine is still loading — please try again in a moment.'); return; }
+    setProcessing(true); setError(''); setResult(null);
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdfDoc = await window.PDFLib.PDFDocument.load(arrayBuffer);
+      const pdfBytes = await pdfDoc.save({ useObjectStreams: true });
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'compressed.pdf'; a.click();
+      URL.revokeObjectURL(url);
+      setResult({ before: file.size, after: pdfBytes.byteLength });
+    } catch (err) {
+      setError('Could not process this PDF: ' + err.message);
+    }
+    setProcessing(false);
   };
+
+  const saved = result ? Math.max(0, result.before - result.after) : 0;
+  const pct = result && result.before ? ((saved / result.before) * 100).toFixed(1) : '0';
 
   return (
     <VStack>
@@ -1806,17 +1827,19 @@ function PdfCompressor() {
         <input type="file" accept=".pdf" onChange={handleFile} style={{ display:"block", color:C.text, fontSize:13 }} />
         {originalSize > 0 && <div style={{ fontSize:12, color:C.muted, marginTop:4 }}>Original size: {originalSize} KB</div>}
       </div>
-      <div>
-        <Label>Compression Level</Label>
-        <SelectInput value={level} onChange={setLevel} options={[
-          { value:'low', label:'Low (Best Quality)' },
-          { value:'medium', label:'Medium (Balanced)' },
-          { value:'high', label:'High (Smallest Size)' }
-        ]} />
-      </div>
-      <Btn onClick={compressPdf} disabled={!file}>Compress PDF</Btn>
-      <div style={{ padding:12, background:"rgba(245,158,11,0.1)", border:`1px solid rgba(245,158,11,0.3)`, borderRadius:8, fontSize:12, color:C.text }}>
-        —'— For effective compression, we recommend using specialized services like Smallpdf or iLovePDF.
+      <Btn onClick={compressPdf} disabled={!file || processing}>{processing ? 'Optimizing...' : 'Compress & Download'}</Btn>
+      {result && (
+        <div style={{ padding:14, background:"rgba(16,185,129,0.1)", border:`1px solid rgba(16,185,129,0.3)`, borderRadius:8, fontSize:13, color:C.text, lineHeight:1.6 }}>
+          <strong>Optimized PDF downloaded.</strong><br />
+          {(result.before/1024).toFixed(1)} KB → {(result.after/1024).toFixed(1)} KB
+          {saved > 0 ? ` (${pct}% smaller).` : ' (already well-optimized — little structural overhead to remove).'}
+        </div>
+      )}
+      {error && (
+        <div style={{ padding:12, background:"rgba(239,68,68,0.1)", border:`1px solid rgba(239,68,68,0.3)`, borderRadius:8, fontSize:12, color:C.text }}>{error}</div>
+      )}
+      <div style={{ padding:12, background:"rgba(245,158,11,0.1)", border:`1px solid rgba(245,158,11,0.3)`, borderRadius:8, fontSize:12, color:C.text, lineHeight:1.6 }}>
+        ⚠️ This tool strips structural overhead in your browser. Deep re-compression of scanned or image-heavy PDFs isn't possible fully client-side yet — for those, shrink the images first with the ToolsRift <a href="/images" style={{ color:'#60A5FA' }}>Image Compressor</a>, then rebuild the PDF.
       </div>
     </VStack>
   );
@@ -1825,14 +1848,42 @@ function PdfCompressor() {
 // PDF Optimizer Component
 function PdfOptimizer() {
   const [file, setFile] = useState(null);
+  const [processing, setProcessing] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js';
+    script.async = true;
+    document.body.appendChild(script);
+    return () => document.body.removeChild(script);
+  }, []);
 
   const handleFile = (e) => {
     setFile(e.target.files[0]);
+    setResult(null);
+    setError('');
   };
 
-  const optimizePdf = () => {
+  const optimizePdf = async () => {
     if (!file) return;
-    alert('PDF linearization (fast web view) requires restructuring the PDF file format. This is best done with server-side tools like QPDF or Adobe Acrobat Pro.');
+    if (!window.PDFLib) { setError('The PDF engine is still loading — please try again in a moment.'); return; }
+    setProcessing(true); setError(''); setResult(null);
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdfDoc = await window.PDFLib.PDFDocument.load(arrayBuffer);
+      const pdfBytes = await pdfDoc.save({ useObjectStreams: true });
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'optimized.pdf'; a.click();
+      URL.revokeObjectURL(url);
+      setResult({ before: file.size, after: pdfBytes.byteLength });
+    } catch (err) {
+      setError('Could not optimize this PDF: ' + err.message);
+    }
+    setProcessing(false);
   };
 
   return (
@@ -1841,9 +1892,18 @@ function PdfOptimizer() {
         <Label>Upload PDF File</Label>
         <input type="file" accept=".pdf" onChange={handleFile} style={{ display:"block", color:C.text, fontSize:13 }} />
       </div>
-      <Btn onClick={optimizePdf} disabled={!file}>Optimize for Web</Btn>
+      <Btn onClick={optimizePdf} disabled={!file || processing}>{processing ? 'Optimizing...' : 'Optimize & Download'}</Btn>
+      {result && (
+        <div style={{ padding:14, background:"rgba(16,185,129,0.1)", border:`1px solid rgba(16,185,129,0.3)`, borderRadius:8, fontSize:13, color:C.text, lineHeight:1.6 }}>
+          <strong>Optimized PDF downloaded.</strong><br />
+          Re-serialized with compressed object streams. {(result.before/1024).toFixed(1)} KB → {(result.after/1024).toFixed(1)} KB.
+        </div>
+      )}
+      {error && (
+        <div style={{ padding:12, background:"rgba(239,68,68,0.1)", border:`1px solid rgba(239,68,68,0.3)`, borderRadius:8, fontSize:12, color:C.text }}>{error}</div>
+      )}
       <div style={{ padding:12, background:"rgba(16,185,129,0.1)", border:`1px solid rgba(16,185,129,0.3)`, borderRadius:8, fontSize:12, color:C.text }}>
-        ⚡ Optimization enables page-at-a-time loading in web browsers for faster viewing.
+        ⚡ Rewrites the PDF with object streams for smaller size and faster page-at-a-time web loading — entirely in your browser.
       </div>
     </VStack>
   );
@@ -2024,14 +2084,52 @@ function PdfPageNumbering() {
 function PdfMarginAdder() {
   const [file, setFile] = useState(null);
   const [margin, setMargin] = useState('20');
+  const [processing, setProcessing] = useState(false);
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js';
+    script.async = true;
+    document.body.appendChild(script);
+    return () => document.body.removeChild(script);
+  }, []);
 
   const handleFile = (e) => {
     setFile(e.target.files[0]);
+    setDone(false);
+    setError('');
   };
 
-  const addMargins = () => {
+  const addMargins = async () => {
     if (!file) return;
-    alert('Adding margins requires modifying page dimensions and scaling content. This is best done with specialized PDF libraries or desktop software like Adobe Acrobat.');
+    if (!window.PDFLib) { setError('The PDF engine is still loading — please try again in a moment.'); return; }
+    setProcessing(true); setError(''); setDone(false);
+    try {
+      const m = parseFloat(margin) || 0;
+      const arrayBuffer = await file.arrayBuffer();
+      const srcDoc = await window.PDFLib.PDFDocument.load(arrayBuffer);
+      const newDoc = await window.PDFLib.PDFDocument.create();
+      const count = srcDoc.getPageCount();
+      for (let i = 0; i < count; i++) {
+        const src = srcDoc.getPage(i);
+        const { width, height } = src.getSize();
+        const embedded = await newDoc.embedPage(src);
+        const np = newDoc.addPage([width + m * 2, height + m * 2]);
+        np.drawPage(embedded, { x: m, y: m, width, height });
+      }
+      const pdfBytes = await newDoc.save();
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'with-margins.pdf'; a.click();
+      URL.revokeObjectURL(url);
+      setDone(true);
+    } catch (err) {
+      setError('Could not add margins: ' + err.message);
+    }
+    setProcessing(false);
   };
 
   return (
@@ -2043,9 +2141,17 @@ function PdfMarginAdder() {
       <div>
         <Label>Margin Size (points)</Label>
         <Input value={margin} onChange={setMargin} placeholder="20" />
-        <div style={{ fontSize:11, color:C.muted, marginTop:4 }}>72 points = 1 inch</div>
+        <div style={{ fontSize:11, color:C.muted, marginTop:4 }}>72 points = 1 inch. White margins are added around every page.</div>
       </div>
-      <Btn onClick={addMargins} disabled={!file}>Add Margins</Btn>
+      <Btn onClick={addMargins} disabled={!file || processing}>{processing ? 'Adding Margins...' : 'Add Margins & Download'}</Btn>
+      {done && (
+        <div style={{ padding:14, background:"rgba(16,185,129,0.1)", border:`1px solid rgba(16,185,129,0.3)`, borderRadius:8, fontSize:13, color:C.text }}>
+          <strong>Done.</strong> Your PDF with {parseFloat(margin) || 0}pt margins has been downloaded.
+        </div>
+      )}
+      {error && (
+        <div style={{ padding:12, background:"rgba(239,68,68,0.1)", border:`1px solid rgba(239,68,68,0.3)`, borderRadius:8, fontSize:12, color:C.text }}>{error}</div>
+      )}
     </VStack>
   );
 }
@@ -2053,14 +2159,50 @@ function PdfMarginAdder() {
 // PDF Cropper Component
 function PdfCropper() {
   const [file, setFile] = useState(null);
+  const [crop, setCrop] = useState('20');
+  const [processing, setProcessing] = useState(false);
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js';
+    script.async = true;
+    document.body.appendChild(script);
+    return () => document.body.removeChild(script);
+  }, []);
 
   const handleFile = (e) => {
     setFile(e.target.files[0]);
+    setDone(false);
+    setError('');
   };
 
-  const cropPdf = () => {
+  const cropPdf = async () => {
     if (!file) return;
-    alert('PDF cropping requires modifying page media boxes and crop boxes. Use desktop software like Adobe Acrobat or specialized PDF tools for precise cropping.');
+    if (!window.PDFLib) { setError('The PDF engine is still loading — please try again in a moment.'); return; }
+    setProcessing(true); setError(''); setDone(false);
+    try {
+      const c = parseFloat(crop) || 0;
+      const arrayBuffer = await file.arrayBuffer();
+      const pdfDoc = await window.PDFLib.PDFDocument.load(arrayBuffer);
+      pdfDoc.getPages().forEach(p => {
+        const { width, height } = p.getSize();
+        const nw = Math.max(1, width - c * 2);
+        const nh = Math.max(1, height - c * 2);
+        p.setCropBox(c, c, nw, nh);
+      });
+      const pdfBytes = await pdfDoc.save();
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'cropped.pdf'; a.click();
+      URL.revokeObjectURL(url);
+      setDone(true);
+    } catch (err) {
+      setError('Could not crop this PDF: ' + err.message);
+    }
+    setProcessing(false);
   };
 
   return (
@@ -2069,34 +2211,42 @@ function PdfCropper() {
         <Label>Upload PDF File</Label>
         <input type="file" accept=".pdf" onChange={handleFile} style={{ display:"block", color:C.text, fontSize:13 }} />
       </div>
-      <Btn onClick={cropPdf} disabled={!file}>Crop PDF</Btn>
-      <div style={{ padding:12, background:"rgba(245,158,11,0.1)", border:`1px solid rgba(245,158,11,0.3)`, borderRadius:8, fontSize:12, color:C.text }}>
-        ✂— For precise cropping, we recommend Adobe Acrobat or similar desktop tools.
+      <div>
+        <Label>Crop Margin (points from each edge)</Label>
+        <Input value={crop} onChange={setCrop} placeholder="20" />
+        <div style={{ fontSize:11, color:C.muted, marginTop:4 }}>72 points = 1 inch. Trims the visible area evenly on all sides.</div>
       </div>
+      <Btn onClick={cropPdf} disabled={!file || processing}>{processing ? 'Cropping...' : 'Crop & Download'}</Btn>
+      {done && (
+        <div style={{ padding:14, background:"rgba(16,185,129,0.1)", border:`1px solid rgba(16,185,129,0.3)`, borderRadius:8, fontSize:13, color:C.text }}>
+          <strong>Done.</strong> Your cropped PDF has been downloaded.
+        </div>
+      )}
+      {error && (
+        <div style={{ padding:12, background:"rgba(239,68,68,0.1)", border:`1px solid rgba(239,68,68,0.3)`, borderRadius:8, fontSize:12, color:C.text }}>{error}</div>
+      )}
     </VStack>
   );
 }
 
-// PDF Bookmarks Component (Pro)
+// PDF Bookmarks Component (not available client-side yet)
 function PdfBookmarks() {
   return (
     <div style={{ padding:48, textAlign:'center', background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:16 }}>
-      <div style={{ fontSize:48, marginBottom:14 }}>—''</div>
-      <div style={{ color:C.text, fontWeight:700, fontSize:18, marginBottom:8 }}>Pro Feature</div>
-      <div style={{ color:C.muted, fontSize:14, marginBottom:22, lineHeight:1.6 }}>PDF bookmark management requires advanced document structure manipulation, available in our Pro plan.</div>
-      <Btn onClick={() => window.location.hash = '#/'}>View Pro Plans</Btn>
+      <div style={{ fontSize:40, marginBottom:12 }}>ℹ️</div>
+      <div style={{ color:C.text, fontWeight:700, fontSize:17, marginBottom:8 }}>Not available in your browser yet</div>
+      <div style={{ color:C.muted, fontSize:14, marginBottom:4, lineHeight:1.6 }}>Editing a PDF's bookmark/outline structure isn't supported by the in-browser PDF engine yet. Your files are never uploaded. We're working on adding this — check back soon.</div>
     </div>
   );
 }
 
-// PDF Form Filler Component (Pro)
+// PDF Form Filler Component (not available client-side yet)
 function PdfFormFiller() {
   return (
     <div style={{ padding:48, textAlign:'center', background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:16 }}>
-      <div style={{ fontSize:48, marginBottom:14 }}>—''</div>
-      <div style={{ color:C.text, fontWeight:700, fontSize:18, marginBottom:8 }}>Pro Feature</div>
-      <div style={{ color:C.muted, fontSize:14, marginBottom:22, lineHeight:1.6 }}>Interactive PDF form filling and field manipulation is available in our Pro plan.</div>
-      <Btn onClick={() => window.location.hash = '#/'}>View Pro Plans</Btn>
+      <div style={{ fontSize:40, marginBottom:12 }}>ℹ️</div>
+      <div style={{ color:C.text, fontWeight:700, fontSize:17, marginBottom:8 }}>Not available in your browser yet</div>
+      <div style={{ color:C.muted, fontSize:14, marginBottom:4, lineHeight:1.6 }}>Interactive PDF form filling isn't supported by the in-browser PDF engine yet. Your files are never uploaded. Tip: most browsers can fill and save a fillable PDF directly — open it, fill the fields, then Print → Save as PDF.</div>
     </div>
   );
 }
@@ -2136,7 +2286,7 @@ function Breadcrumb({ tool, cat }) {
   return (
     <>
       <div style={{ display:"flex", alignItems:"center", gap:6, fontSize:12, color:C.muted, marginBottom:20 }}>
-        <a href="https://toolsrift.com" style={{ color:C.muted, textDecoration:"none" }}>—— ToolsRift</a>
+        <a href="https://toolsrift.com" style={{ color:C.muted, textDecoration:"none" }}>🏠 ToolsRift</a>
         {cat && <><span>›</span><a href={`#/category/${cat.id}`} style={{ color:C.muted, textDecoration:"none" }}>{cat.name}</a></>}
         {tool && <><span>›</span><span style={{ color:C.text }}>{tool.name}</span></>}
       </div>
@@ -2153,97 +2303,19 @@ function Breadcrumb({ tool, cat }) {
   );
 }
 
-function ToolPage({ toolId }) {
-  const tool = TOOLS.find(t=>t.id===toolId);
-  const meta = TOOL_META[toolId];
-  const ToolComp = TOOL_COMPONENTS[toolId];
-  const cat = CATEGORIES.find(c=>c.id===tool?.cat);
-  // PHASE 1: all tools free, no gating
-  const [allowed] = useState(true);
-  // PHASE 2: const [upgradeReason, setUpgradeReason] = useState(null);
-  // PHASE 2: useEffect(() => { if (isLimitReached()) { setUpgradeReason('daily_limit'); setAllowed(false); return; } trackUse(toolId); setAllowed(true); setUpgradeReason(null); }, [toolId]);
-
-  useEffect(() => {
-    document.title = meta?.title || `${tool?.name} —" Free Tool | ToolsRift`;
-  }, [toolId]);
-
-  if (!tool || !ToolComp) return (
-    <div style={{ padding:40, textAlign:"center", color:C.muted }}>
-      <div style={{ fontSize:48, marginBottom:16 }}>—"</div>
-      <div style={{ fontSize:16, marginBottom:8, color:C.text }}>Tool not found</div>
-      <a href="#/" style={{ color:C.red }}>— Back to home</a>
-    </div>
-  );
-
-  return (
-    <div style={{ maxWidth:900, margin:"0 auto", padding:"24px 20px 60px" }}>
-      <Breadcrumb tool={tool} cat={cat} />
-      <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:24, gap:16 }}>
-        <div>
-          <h1 style={{ ...T.h1, marginBottom:6, display:"flex", alignItems:"center", gap:12 }}>
-            <span style={{ fontSize:28 }}>{tool.icon}</span> {tool.name}
-          </h1>
-          <p style={{ fontSize:14, color:C.muted, lineHeight:1.6, maxWidth:600 }}>{meta?.desc || tool.desc}</p>
-        </div>
-        <Badge color={tool.free?"green":"amber"}>{tool.free?"Free":"Pro"}</Badge>
-      </div>
-      {/* PHASE 2: {upgradeReason && <UpgradeModal reason={upgradeReason} onClose={() => setUpgradeReason(null)} />} */}
-      <Card className="fade-in"><ToolComp /></Card>
-      {meta?.howTo && (
-        <div style={{ background:'rgba(59,130,246,0.05)', border:'1px solid rgba(59,130,246,0.12)', borderRadius:16, padding:'28px 32px', marginBottom:24, marginTop:24 }}>
-          <h2 style={{ fontSize:17, fontWeight:700, color:'#F1F5F9', margin:'0 0 12px', fontFamily:"'Sora', sans-serif" }}>—"— How to Use This Tool</h2>
-          <p style={{ fontSize:14, color:'#94A3B8', lineHeight:1.8, margin:0 }}>{meta.howTo}</p>
-        </div>
-      )}
-      {meta?.faq && (
-        <div style={{ marginTop:48 }}>
-          <h2 style={{ ...T.h2, marginBottom:20 }}>Frequently Asked Questions</h2>
-          <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
-            {meta.faq.map(([q,a],i) => (
-              <details key={i} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:"14px 18px", cursor:"pointer" }}>
-                <summary style={{ fontWeight:600, fontSize:14, color:C.text, listStyle:"none", display:"flex", justifyContent:"space-between" }}>
-                  {q} <span style={{ color:C.muted }}>+</span>
-                </summary>
-                <p style={{ marginTop:10, fontSize:13, color:C.muted, lineHeight:1.7 }}>{a}</p>
-              </details>
-            ))}
-          </div>
-          <script type="application/ld+json">{JSON.stringify({
-            "@context":"https://schema.org",
-            "@type":"FAQPage",
-            "mainEntity":meta.faq.map(([q,a])=>({
-              "@type":"Question",
-              "name":q,
-              "acceptedAnswer":{"@type":"Answer","text":a}
-            }))
-          })}</script>
-        </div>
-      )}
-      <div style={{ marginBottom:48 }}>
-        <h2 style={{ fontSize:17, fontWeight:700, color:'#F1F5F9', margin:'0 0 14px', fontFamily:"'Sora', sans-serif" }}>—"— Related Tools</h2>
-        <div style={{ display:'flex', flexWrap:'wrap', gap:10 }}>
-          {TOOLS.filter(t => t.cat === tool.cat && t.id !== tool.id).slice(0,6).map(t => (
-            <a key={t.id} href={`#/tool/${t.id}`} style={{ padding:'8px 16px', borderRadius:20, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', color:'#94A3B8', textDecoration:'none', fontSize:13, fontWeight:500 }}>{t.name}</a>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function CategoryPage({ catId }) {
   const cat = CATEGORIES.find(c => c.id === catId);
   const catTools = TOOLS.filter(t => t.cat === catId);
 
   useEffect(() => {
-    document.title = `${cat?.name || 'Category'} —" PDF Tools | ToolsRift`;
+    document.title = `${cat?.name || 'Category'} — PDF Tools | ToolsRift`;
   }, [catId]);
 
   if (!cat) return (
     <div style={{ padding:40, textAlign:"center", color:C.muted }}>
-      <div style={{ fontSize:48, marginBottom:16 }}>—"</div>
+      <div style={{ fontSize:48, marginBottom:16 }}>🔍</div>
       <div style={{ fontSize:16, marginBottom:8, color:C.text }}>Category not found</div>
-      <a href="#/" style={{ color:C.red }}>— Back to home</a>
+      <a href="#/" style={{ color:C.red }}>← Back to home</a>
     </div>
   );
 
@@ -2277,10 +2349,10 @@ function CategoryPage({ catId }) {
 
 const PAGE_THEME = getCategoryById('pdf');
 
-// �"��� Category home: search + responsive ToolCard grid �������������������������������������������������"�
+// ─── Category home: search + responsive ToolCard grid ───
 function CategoryHomePage() {
   useEffect(() => {
-    document.title = 'Free PDF Tools Online —" ToolsRift';
+    document.title = 'Free PDF Tools Online — ToolsRift';
   }, []);
 
   return (
@@ -2295,7 +2367,7 @@ function CategoryHomePage() {
   );
 }
 
-// �"��� Tool detail: sidebar nav + ToolPageLayout wrapper �����������������������������������������������"�
+// ─── Tool detail: sidebar nav + ToolPageLayout wrapper ───
 function ToolDetailPage({ toolId }) {
   const tool     = TOOLS.find(t => t.id === toolId);
   const meta     = TOOL_META[toolId];
@@ -2304,16 +2376,16 @@ function ToolDetailPage({ toolId }) {
   const acc = PAGE_THEME.color;
 
   useEffect(() => {
-    document.title = meta?.title || `${tool?.name} —" Free PDF Tool | ToolsRift`;
+    document.title = meta?.title || `${tool?.name} — Free PDF Tool | ToolsRift`;
     setDrawerOpen(false);
   }, [toolId]);
 
   if (!tool || !ToolComp) return (
     <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'}>
       <div style={{ padding:40, textAlign:'center', color:'#64748B', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
-        <div style={{ fontSize:48, marginBottom:16 }}>—"</div>
+        <div style={{ fontSize:48, marginBottom:16 }}>🔍</div>
         <p style={{ color:'#E2E8F0', marginBottom:8, fontSize:16 }}>Tool not found</p>
-        <a href="#/" style={{ color:acc }}>— Back to PDF Tools</a>
+        <a href="#/" style={{ color:acc }}>← Back to PDF Tools</a>
       </div>
     </CategoryLayout>
   );
@@ -2381,7 +2453,7 @@ function ToolDetailPage({ toolId }) {
             onMouseEnter={e => e.currentTarget.style.color='#E2E8F0'}
             onMouseLeave={e => e.currentTarget.style.color='#64748B'}
           >
-            — Back to PDF Tools
+            ← Back to PDF Tools
           </a>
           <ToolPageLayout theme={PAGE_THEME} tool={toolData}>
             <ToolComp />
@@ -2398,7 +2470,7 @@ function ToolDetailPage({ toolId }) {
           onClick={() => setDrawerOpen(d => !d)}
           style={{ background:acc, color:'#fff', border:'none', borderRadius:8, padding:'8px 16px', fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:"'Plus Jakarta Sans',sans-serif", minHeight:44, flexShrink:0 }}
         >
-          {drawerOpen ? '✕ Close' : '—"— All Tools'}
+          {drawerOpen ? '✕ Close' : '☰ All Tools'}
         </button>
       </div>
 
@@ -2422,7 +2494,7 @@ function ToolDetailPage({ toolId }) {
   );
 }
 
-// �"��� Main app �����������������������������������������������������������������������������������������������������������������������������������"�
+// ─── Main app ───
 function ToolsRiftPDF() {
   const route = useAppRouter();
   return (

@@ -1,8 +1,9 @@
 import Head from 'next/head'
 import dynamic from 'next/dynamic'
+import CategoryLoading from '../components/CategoryLoading'
 import CategoryContent from '../components/CategoryContent'
 import categoryContent from '../lib/categoryContent'
-const ToolsRiftHash = dynamic(() => import('../components/toolsrift-hash'), { ssr: false })
+const ToolsRiftHash = dynamic(() => import('../components/toolsrift-hash'), { ssr: false, loading: CategoryLoading })
 export default function Hash() {
   return (<><Head>
         <title>Free Hash Generator — MD5, SHA1, SHA256, SHA512 &amp; More | ToolsRift</title>

@@ -73,7 +73,11 @@ function SelectInput({ value, onChange, options, style={} }) {
   return (
     <select value={value} onChange={e => onChange(e.target.value)}
       style={{ background:"rgba(255,255,255,0.04)", border:`1px solid ${C.border}`, borderRadius:8, padding:"9px 14px", color:C.text, fontSize:13, fontFamily:"'Plus Jakarta Sans',sans-serif", outline:"none", cursor:"pointer", ...style }}>
-      {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+      {options.map(o => {
+        const val = Array.isArray(o) ? o[0] : o.value;
+        const lab = Array.isArray(o) ? o[1] : o.label;
+        return <option key={val} value={val}>{lab}</option>;
+      })}
     </select>
   );
 }
@@ -131,6 +135,52 @@ function VStack({ children, gap=12 }) {
   return <div style={{ display:"flex", flexDirection:"column", gap }}>{children}</div>;
 }
 
+function DataTable({ columns=[], rows=[] }) {
+  return (
+    <div style={{ overflowX:"auto", border:`1px solid ${C.border}`, borderRadius:10 }}>
+      <table style={{ width:"100%", borderCollapse:"collapse", fontFamily:"'JetBrains Mono',monospace", fontSize:13 }}>
+        <thead>
+          <tr>
+            {columns.map((col, i) => (
+              <th key={i} style={{ textAlign:"left", padding:"10px 14px", color:C.muted, fontWeight:600, borderBottom:`1px solid ${C.border}`, background:"rgba(255,255,255,0.02)" }}>{col}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, ri) => (
+            <tr key={ri}>
+              {(Array.isArray(row) ? row : [row]).map((cell, ci) => (
+                <td key={ci} style={{ padding:"10px 14px", color:C.text, borderBottom:ri < rows.length-1 ? `1px solid ${C.border}` : "none" }}>{cell}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function Breadcrumb({ tool, cat }) {
+  return (
+    <>
+      <div style={{ display:"flex", alignItems:"center", gap:6, fontSize:12, color:C.muted, marginBottom:20 }}>
+        <a href="https://toolsrift.com" style={{ color:C.muted, textDecoration:"none" }}>🏠 ToolsRift</a>
+        {cat && <><span>›</span><a href={`#/category/${cat.id}`} style={{ color:C.muted, textDecoration:"none" }}>{cat.name}</a></>}
+        {tool && <><span>›</span><span style={{ color:C.text }}>{tool.name}</span></>}
+      </div>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://toolsrift.com" },
+          ...(cat ? [{ "@type": "ListItem", "position": 2, "name": cat.name, "item": `https://toolsrift.com/everyday` }] : []),
+          ...(tool ? [{ "@type": "ListItem", "position": 3, "name": tool.name || tool.id || "" }] : [])
+        ]
+      }) }} />
+    </>
+  );
+}
+
 function StatBox({ value, label }) {
   return (
     <div style={{ background:"rgba(255,255,255,0.03)", border:`1px solid ${C.border}`, borderRadius:8, padding:"12px 10px", textAlign:"center" }}>
@@ -147,7 +197,7 @@ function useAppRouter() {
     const parts = path.split("/").filter(Boolean);
     if (!parts.length) return { page:"home" };
     if (parts[0]==="tool" && parts[1]) return { page:"tool", toolId:parts[1] };
-    if (parts[0]==="category" && parts[1]) return { page:"category", catId:parts[1] };
+    if (parts[0]==="category" && parts[1]) return { page:"home" };
     return { page:"home" };
   };
   const [route, setRoute] = useState(parse);
@@ -874,8 +924,7 @@ function Nav() {
   return (
     <nav style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"0 24px", height:56, borderBottom:`1px solid ${scrolled?"rgba(99,102,241,0.2)":C.border}`, position:"sticky", top:0, background:`rgba(6,9,15,${scrolled?0.97:0.85})`, backdropFilter:"blur(12px)", zIndex:100, transition:"background 0.2s,border-color 0.2s" }}>
       <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-        <span style={{ width:8, height:8, borderRadius:"50%", background:C.indigo, boxShadow:`0 0 6px ${C.indigo}80`, flexShrink:0 }}/>
-        <a href="https://toolsrift.com" style={{ fontFamily:"'Sora',sans-serif", fontWeight:700, fontSize:15, color:C.text, textDecoration:"none", letterSpacing:"-0.01em" }}>ToolsRift</a>
+        <a href="/" aria-label="ToolsRift home" style={{display:"flex",alignItems:"center",flexShrink:0}}><img src="/logo.svg" alt="ToolsRift" style={{height:26,display:"block"}}/></a>
         <span style={{ color:"rgba(255,255,255,0.2)", fontSize:14 }}>›</span>
         <a href="#/" style={{ fontFamily:"'Plus Jakarta Sans',sans-serif", fontSize:13, fontWeight:500, color:C.indigo, textDecoration:"none" }}>{THEME?.name||"Everyday Tools"}</a>
       </div>

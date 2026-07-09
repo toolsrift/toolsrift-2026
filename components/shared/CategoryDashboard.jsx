@@ -222,7 +222,7 @@ function ExploreOthers({ theme }) {
           <div style={{
             fontFamily: theme.fonts.head, fontSize: FS.xl, fontWeight: 700,
             color: COLORS.textBright, letterSpacing: '-0.015em',
-          }}>1,600+ free tools across 23 categories</div>
+          }}>612+ free tools across 23 categories</div>
         </div>
         <div style={{
           display: 'grid', gap: 10,
@@ -283,8 +283,15 @@ export default function CategoryDashboard({
   const [activeSub, setActiveSub] = useState('all');
 
   const handleClick = (id) => {
-    if (onToolClick) onToolClick(id);
-    else window.location.hash = `#/tool/${id}`;
+    if (onToolClick) { onToolClick(id); return; }
+    // Set the hash AND fire hashchange synchronously. The browser otherwise
+    // delays the hashchange event by ~60ms while the main thread is busy, and
+    // during that gap useAppRouter still shows this dashboard — the "category
+    // screen flashes before the tool" bug. Dispatching it now swaps to the tool
+    // in the same tick. The browser's own (duplicate) event later is a no-op.
+    window.scrollTo(0, 0);
+    window.location.hash = `#/tool/${id}`;
+    window.dispatchEvent(new Event('hashchange'));
   };
 
   const trending = useMemo(() => {

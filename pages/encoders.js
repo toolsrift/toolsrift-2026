@@ -1,8 +1,9 @@
 import Head from 'next/head'
 import dynamic from 'next/dynamic'
+import CategoryLoading from '../components/CategoryLoading'
 import CategoryContent from '../components/CategoryContent'
 import categoryContent from '../lib/categoryContent'
-const ToolsRiftEncoders = dynamic(() => import('../components/toolsrift-encoders'), { ssr: false })
+const ToolsRiftEncoders = dynamic(() => import('../components/toolsrift-encoders'), { ssr: false, loading: CategoryLoading })
 export default function Encoders() {
   return (<><Head>
         <title>Free Encoder &amp; Decoder — Base64, URL, JWT | ToolsRift</title>

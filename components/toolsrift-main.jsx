@@ -58,7 +58,7 @@ const STEPS = [
 ];
 
 const FREE_PILLARS = [
-  { icon: '🛠️', tint: '#3B82F6', title: '1,600+ Free Tools', desc: 'Every tool is free. No daily limits, no paywalls, no sign-up required.' },
+  { icon: '🛠️', tint: '#3B82F6', title: '612+ Free Tools', desc: 'Every tool is free. No daily limits, no paywalls, no sign-up required.' },
   { icon: '📢', tint: '#F59E0B', title: 'Ad-Supported',       desc: 'ToolsRift is funded by non-intrusive display ads. Fair deal.' },
   { icon: '🔐', tint: '#10B981', title: 'Local Data',         desc: 'All processing happens in your browser. Zero server uploads.' },
 ];
@@ -89,7 +89,9 @@ function LandingPage() {
       <HowItWorks />
       <FreeForeverSection />
       <FinalCTA />
-      <LandingFooter />
+      {/* Footer is rendered once at the bottom of HomepageContent (server-side),
+          appended after this component in pages/index.js — so it is never
+          stranded above the "About the platform" SEO section. */}
     </div>
   );
 }
@@ -175,20 +177,8 @@ export function LandingNav({ mobileOpen, setMobileOpen }) {
           transition: 'all .25s ease',
         }}
       >
-        <a href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <motion.span
-            animate={{ boxShadow: ['0 0 0 #22D3EE66', '0 0 14px #22D3EEcc', '0 0 0 #22D3EE66'] }}
-            transition={{ duration: 2.5, repeat: Infinity }}
-            style={{ width: 10, height: 10, borderRadius: '50%', background: '#22D3EE' }}
-          />
-          <span style={{
-            fontSize: 19, fontWeight: 700, letterSpacing: '-0.02em',
-            background: 'linear-gradient(135deg,#22D3EE,#A78BFA,#F472B6)',
-            backgroundSize: '200% 100%',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-            animation: 'tr-gradientShift 6s ease infinite',
-            fontFamily: "'Sora',sans-serif",
-          }}>ToolsRift</span>
+        <a href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }} aria-label="ToolsRift home">
+          <img src="/logo.svg" alt="ToolsRift" style={{ height: 30, display: 'block' }} />
         </a>
 
         <div className="tr-nav-links" style={{ alignItems: 'center', gap: 28 }}>
@@ -196,7 +186,7 @@ export function LandingNav({ mobileOpen, setMobileOpen }) {
           <CategoriesDropdown />
           <a href="/#why"       style={navLinkStyle}>Why</a>
           <a href="/about"      style={navLinkStyle}>About</a>
-          <a href="/roadmap"    style={navLinkStyle}>Roadmap</a>
+          <a href="/contact"    style={navLinkStyle}>Contact</a>
         </div>
 
         <button
@@ -221,7 +211,7 @@ export function LandingNav({ mobileOpen, setMobileOpen }) {
             style={{ overflow: 'hidden', background: '#0A0F1A', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
           >
             <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 14 }}>
-              {[['All Tools', '/tools'], ['Why ToolsRift', '/#why'], ['About', '/about'], ['Roadmap', '/roadmap']].map(([l, h]) => (
+              {[['All Tools', '/tools'], ['Why ToolsRift', '/#why'], ['About', '/about'], ['Contact', '/contact']].map(([l, h]) => (
                 <a key={h} href={h} onClick={() => setMobileOpen(false)} style={{ color: '#94A3B8', fontSize: 15, textDecoration: 'none', minHeight: 44, display: 'flex', alignItems: 'center' }}>{l}</a>
               ))}
             </div>
@@ -270,7 +260,7 @@ function HeroSection({ query, setQuery, filteredCount }) {
             }}
           >
             <span style={{ fontSize: 14 }}>✨</span>
-            <CountUp to={1600} suffix="+" /> Free Tools · 23 Categories · No signup
+            <CountUp to={612} suffix="+" /> Free Tools · 23 Categories · No signup
           </motion.div>
         </BlurUp>
 
@@ -298,7 +288,7 @@ function HeroSection({ query, setQuery, filteredCount }) {
             margin: '20px auto 0', color: '#94A3B8',
             fontSize: FS.lg, maxWidth: 640, lineHeight: 1.55,
           }}>
-            1,600+ free online tools — calculators, PDF, image, code, design, dev. Instant results, fully in your browser.
+            612+ free online tools — calculators, PDF, image, code, design, dev. Instant results, fully in your browser.
           </p>
         </FadeUp>
 
@@ -361,7 +351,7 @@ function HeroSection({ query, setQuery, filteredCount }) {
                 boxShadow: '0 8px 32px rgba(99,102,241,0.4)',
                 fontFamily: 'inherit', textDecoration: 'none',
               }}>
-                ⚡ Explore 1,600+ tools →
+                ⚡ Explore 612+ tools →
               </a>
             </Link>
             <a href="/#why" style={{
@@ -381,7 +371,7 @@ function HeroSection({ query, setQuery, filteredCount }) {
             justifyContent: 'center', gap: 'clamp(16px,5vw,48px)',
           }}>
             {[
-              { v: 1600, suffix: '+', label: 'Tools' },
+              { v: 612, suffix: '+', label: 'Tools' },
               { v: 23,   suffix: '',  label: 'Categories' },
               { v: 100,  suffix: '%', label: 'Free' },
               { v: 0,    suffix: '',  label: 'Sign-ups' },
@@ -777,7 +767,7 @@ function FinalCTA() {
           Start using <span style={{
             backgroundImage: 'linear-gradient(135deg,#22D3EE,#A78BFA,#F472B6)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-          }}>1,600 free tools</span> right now.
+          }}>612 free tools</span> right now.
         </h2>
         <p style={{ marginTop: 18, fontSize: FS.lg, color: '#94A3B8', position: 'relative', zIndex: 1 }}>
           No account. No install. No limits. Just open and use.
@@ -807,7 +797,7 @@ export function LandingFooter() {
   const cols = [
     { title: 'Top Categories', links: CATEGORY_THEMES.slice(0, 8).map(t => [t.name, t.pageRoute]) },
     { title: 'More Categories', links: CATEGORY_THEMES.slice(8, 16).map(t => [t.name, t.pageRoute]) },
-    { title: 'Company', links: [['About', '/about'], ['Contact', '/contact'], ['Roadmap', '/roadmap'], ['Pricing', '/pricing']] },
+    { title: 'Company', links: [['About', '/about'], ['Contact', '/contact']] },
     { title: 'Legal', links: [['Privacy Policy', '/privacy-policy'], ['Terms of Service', '/terms'], ['Cookie Policy', '/cookies'], ['Disclaimer', '/disclaimer']] },
   ];
   return (
@@ -824,14 +814,11 @@ export function LandingFooter() {
           marginBottom: 36,
         }}>
           <div>
-            <div style={{
-              fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em',
-              background: 'linear-gradient(135deg,#22D3EE,#A78BFA,#F472B6)',
-              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-              fontFamily: "'Sora',sans-serif", display: 'inline-block', marginBottom: 12,
-            }}>ToolsRift</div>
+            <a href="/" style={{ display: 'inline-block', marginBottom: 12 }} aria-label="ToolsRift home">
+              <img src="/logo.svg" alt="ToolsRift" style={{ height: 30, display: 'block' }} />
+            </a>
             <p style={{ color: '#94A3B8', fontSize: 14, lineHeight: 1.6, margin: 0, maxWidth: 280 }}>
-              1,600+ free online tools. No signup. No limits. Built with ♥ in India.
+              612+ free online tools. No signup. No limits. Built with ♥ in India.
             </p>
           </div>
           {cols.map((c, ci) => (

@@ -195,7 +195,7 @@ function JsonEditor({ value, onChange, label, height=320, readOnly=false, showHi
 
 // �"����� ROUTER �������������������������������������������������������������������������������������������������������������������������������������"�
 function useAppRouter() {
-  const parse=()=>{const h=window.location.hash||"#/";const path=h.replace(/^#/,"")||"/";const parts=path.split("/").filter(Boolean);if(!parts.length)return{page:"home"};if(parts[0]==="tool"&&parts[1])return{page:"tool",toolId:parts[1]};if(parts[0]==="category"&&parts[1])return{page:"category",catId:parts[1]};return{page:"home"};};
+  const parse=()=>{const h=window.location.hash||"#/";const path=h.replace(/^#/,"")||"/";const parts=path.split("/").filter(Boolean);if(!parts.length)return{page:"home"};if(parts[0]==="tool"&&parts[1])return{page:"tool",toolId:parts[1]};if(parts[0]==="category"&&parts[1])return{page:"home"};return{page:"home"};};
   const[route,setRoute]=useState(parse);
   useEffect(()=>{const fn=()=>setRoute(parse());window.addEventListener("hashchange",fn);return()=>window.removeEventListener("hashchange",fn);},[]);
   useEffect(()=>{const fn=e=>{const a=e.target.closest("a[href]");if(!a)return;const h=a.getAttribute("href");if(h&&h.startsWith("#/")){e.preventDefault();window.location.hash=h;}};document.addEventListener("click",fn);return()=>document.removeEventListener("click",fn);},[]);
@@ -668,7 +668,7 @@ function JsonValidator() {
       <JsonEditor value={input} onChange={setInput} label="JSON to Validate" height={300}/>
       {result&&(
         <div className="fade-in" style={{padding:"20px 24px",background:result.valid?"rgba(16,185,129,0.08)":"rgba(239,68,68,0.08)",border:`1px solid ${result.valid?"rgba(16,185,129,0.3)":"rgba(239,68,68,0.25)"}`,borderRadius:12,textAlign:"center"}}>
-          <div style={{fontSize:40,marginBottom:8}}>{result.valid?"✅":"——"}</div>
+          <div style={{fontSize:40,marginBottom:8}}>{result.valid?"✅":"❌"}</div>
           <div style={{fontFamily:"'Sora',sans-serif",fontSize:20,fontWeight:700,color:result.valid?C.green:C.danger}}>{result.valid?"Valid JSON":"Invalid JSON"}</div>
           {result.valid&&<div style={{marginTop:12,display:"flex",gap:16,justifyContent:"center",flexWrap:"wrap"}}>
             {[["Type",result.type],["Keys",result.keys],["Max Depth",result.depth],["Chars",result.chars]].map(([l,v])=><div key={l} style={{textAlign:"center"}}><div style={{color:C.amber,fontWeight:700,fontSize:18}}>{v}</div><div style={{fontSize:11,color:C.muted}}>{l}</div></div>)}
@@ -679,7 +679,7 @@ function JsonValidator() {
       <Card>
         <Label>Common JSON Errors</Label>
         <div style={{display:"flex",flexDirection:"column",gap:6,marginTop:8}}>
-          {[["Trailing comma",`{"a":1, "b":2,}  — remove last comma`],["Single quotes",`{'key':'val'}  — must use double quotes`],["Unquoted key",`{key:"val"}  — keys must be quoted`],["Comments",`{"a":1 // comment}  — JSON has no comments`]].map(([l,ex])=>(
+          {[["Trailing comma",`{"a":1, "b":2,}  — remove last comma`],["Single quotes",`{'key':'val'}  — must use double quotes`],["Unquoted key",`{key:"val"}  — keys must be quoted`],["Comments",`{"a":1 // comment}  — JSON has no comments`]].map(([l,ex])=>(
             <div key={l} style={{fontSize:12,padding:"6px 10px",background:"rgba(255,255,255,0.02)",borderRadius:6}}>
               <span style={{color:C.danger,fontWeight:600}}>{l}:</span><span style={{fontFamily:"'JetBrains Mono',monospace",color:C.muted,marginLeft:8}}>{ex}</span>
             </div>
@@ -1047,6 +1047,7 @@ function JsonToTable() {
 function JsonToMarkdown() {
   const [input,setInput]=useState(JSON.stringify([{Name:"Alice",Role:"Admin",Age:28},{Name:"Bob",Role:"Editor",Age:34}],null,2));
   const [error,setError]=useState("");
+  const esc=v=>String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
   const output=useMemo(()=>{
     if(!input.trim()) return "";
     try{
@@ -1072,9 +1073,9 @@ function JsonToMarkdown() {
         <Card>
           <Label>Preview</Label>
           <div style={{overflowX:"auto",marginTop:8}} dangerouslySetInnerHTML={{__html:output.split("\n").reduce((acc,line,i)=>{
-            if(i===0) return `<table style="border-collapse:collapse;font-size:13px;width:100%"><thead><tr>${line.split("|").filter(Boolean).map(c=>`<th style="padding:8px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.1);color:#94A3B8;font-size:11px;text-transform:uppercase">${c.trim()}</th>`).join("")}</tr></thead><tbody>`;
+            if(i===0) return `<table style="border-collapse:collapse;font-size:13px;width:100%"><thead><tr>${line.split("|").filter(Boolean).map(c=>`<th style="padding:8px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.1);color:#94A3B8;font-size:11px;text-transform:uppercase">${esc(c.trim())}</th>`).join("")}</tr></thead><tbody>`;
             if(i===1) return acc;
-            return acc+`<tr>${line.split("|").filter(Boolean).map(c=>`<td style="padding:7px 12px;border-bottom:1px solid rgba(255,255,255,0.04);color:#E2E8F0">${c.trim()}</td>`).join("")}</tr>`;
+            return acc+`<tr>${line.split("|").filter(Boolean).map(c=>`<td style="padding:7px 12px;border-bottom:1px solid rgba(255,255,255,0.04);color:#E2E8F0">${esc(c.trim())}</td>`).join("")}</tr>`;
           },"")+"</tbody></table>"}}/>
         </Card>
       )}
@@ -1160,14 +1161,14 @@ function JsonDiff() {
                 <span style={{color,fontFamily:"'JetBrains Mono',monospace",fontSize:13,minWidth:16}}>{icon}</span>
                 <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:12,color:"#60A5FA",minWidth:140}}>{d.path}</span>
                 <span style={{fontSize:12,color:C.muted,flex:1}}>
-                  {d.type==="change"?<><span style={{color:"#FCA5A5"}}>{JSON.stringify(d.from)}</span><span style={{color:C.muted}}> —' </span><span style={{color:"#34D399"}}>{JSON.stringify(d.to)}</span></>:
+                  {d.type==="change"?<><span style={{color:"#FCA5A5"}}>{JSON.stringify(d.from)}</span><span style={{color:C.muted}}> → </span><span style={{color:"#34D399"}}>{JSON.stringify(d.to)}</span></>:
                   d.type==="add"?<span style={{color:"#34D399"}}>{JSON.stringify(d.value)}</span>:
                   <span style={{color:"#FCA5A5"}}>{JSON.stringify(d.value)}</span>}
                 </span>
               </div>
             );
           })}
-          {diff.filter(d=>d.type!=="same").length===0&&<div style={{padding:20,textAlign:"center",color:C.green}}>— No differences found —" JSON objects are identical</div>}
+          {diff.filter(d=>d.type!=="same").length===0&&<div style={{padding:20,textAlign:"center",color:C.green}}>— No differences found — JSON objects are identical</div>}
         </div>
       )}
     </VStack>
@@ -1251,7 +1252,7 @@ function JsonSchema() {
       <Btn onClick={validate}>Validate Against Schema</Btn>
       {result&&(
         <div className="fade-in" style={{padding:"16px 20px",background:result.valid?"rgba(16,185,129,0.08)":"rgba(239,68,68,0.08)",border:`1px solid ${result.valid?"rgba(16,185,129,0.3)":"rgba(239,68,68,0.25)"}`,borderRadius:12}}>
-          <div style={{fontFamily:"'Sora',sans-serif",fontSize:18,fontWeight:700,color:result.valid?C.green:C.danger,marginBottom:result.errors.length?10:0}}>{result.valid?"✅ Valid — data matches the schema":"—— Invalid — validation errors found"}</div>
+          <div style={{fontFamily:"'Sora',sans-serif",fontSize:18,fontWeight:700,color:result.valid?C.green:C.danger,marginBottom:result.errors.length?10:0}}>{result.valid?"✅ Valid — data matches the schema":"❌ Invalid — validation errors found"}</div>
           {result.errors.map((e,i)=><div key={i} style={{fontFamily:"'JetBrains Mono',monospace",fontSize:12,color:"#FCA5A5",marginTop:4}}>• {e}</div>)}
         </div>
       )}
@@ -1281,7 +1282,7 @@ function JsonSorter() {
   return (
     <VStack>
       <div style={{display:"flex",gap:10,alignItems:"center"}}>
-        <ModeToggle mode={dir} setMode={setDir} options={[["asc","A —' Z"],["desc","Z —' A"]]}/>
+        <ModeToggle mode={dir} setMode={setDir} options={[["asc","A → Z"],["desc","Z → A"]]}/>
         <span style={{fontSize:12,color:C.muted}}>Sorts all object keys recursively</span>
       </div>
       <ErrorBox msg={error}/>
@@ -1461,7 +1462,7 @@ function JsonArrayTools() {
           <Grid3>
             <div><Label>Filter Key</Label><SelectInput value={filterKey} onChange={setFilterKey} options={[{value:"",label:"All"},...(headers||[]).map(h=>({value:h,label:h}))]}/></div>
             <div><Label>Filter Value</Label><Input value={filterVal} onChange={setFilterVal} placeholder="e.g. admin"/></div>
-            <div><Label>Sort By</Label><div style={{display:"flex",gap:6}}><SelectInput value={sortKey} onChange={setSortKey} options={[{value:"",label:"None"},...(headers||[]).map(h=>({value:h,label:h}))]}/><Btn variant="secondary" size="sm" onClick={()=>setSortDir(d=>d==="asc"?"desc":"asc")}>{sortDir==="asc"?"—'":"—"}</Btn></div></div>
+            <div><Label>Sort By</Label><div style={{display:"flex",gap:6}}><SelectInput value={sortKey} onChange={setSortKey} options={[{value:"",label:"None"},...(headers||[]).map(h=>({value:h,label:h}))]}/><Btn variant="secondary" size="sm" onClick={()=>setSortDir(d=>d==="asc"?"desc":"asc")}>{sortDir==="asc"?"↑":"↓"}</Btn></div></div>
           </Grid3>
           <div style={{display:"flex",gap:8}}>
             <Badge color="amber">{filtered?.length} filtered</Badge>
@@ -1576,7 +1577,7 @@ function Breadcrumb({ tool }) {
   return (
     <>
       <nav style={{display:"flex",alignItems:"center",gap:8,fontSize:12,color:C.muted,marginBottom:20}}>
-        <a href="https://toolsrift.com" style={{color:C.muted,textDecoration:"none"}}>—— ToolsRift</a><span>›</span>
+        <a href="https://toolsrift.com" style={{color:C.muted,textDecoration:"none"}}>🏠 ToolsRift</a><span>›</span>
         <a href={`#/category/${tool.cat}`} style={{color:C.muted,textDecoration:"none"}}>{cat?.name}</a><span>›</span>
         <span style={{color:C.text}}>{tool.name}</span>
       </nav>
@@ -1638,8 +1639,8 @@ function ToolPage({ toolId }) {
   const meta=TOOL_META[toolId];
   const ToolComp=TOOL_COMPONENTS[toolId];
   // PHASE 1: All tools free, no gating. Re-enable in Phase 2.
-  useEffect(()=>{document.title=meta?.title||`${tool?.name} —" Free JSON Tool | ToolsRift`;},[toolId]);
-  if(!tool||!ToolComp) return <div style={{padding:40,textAlign:"center",color:C.muted}}>Tool not found. <a href="#/" style={{color:C.amber}}>— Home</a></div>;
+  useEffect(()=>{document.title=meta?.title||`${tool?.name} — Free JSON Tool | ToolsRift`;},[toolId]);
+  if(!tool||!ToolComp) return <div style={{padding:40,textAlign:"center",color:C.muted}}>Tool not found. <a href="#/" style={{color:C.amber}}>← Home</a></div>;
   return (
     <div style={{maxWidth:1100,margin:"0 auto",padding:"24px 20px 60px"}}>
       <Breadcrumb tool={tool}/>
@@ -1655,7 +1656,7 @@ function ToolPage({ toolId }) {
       <Card className="fade-in"><ToolComp/></Card>
       {meta?.howTo && (
         <div style={{ background:'rgba(59,130,246,0.05)', border:'1px solid rgba(59,130,246,0.12)', borderRadius:16, padding:'28px 32px', marginBottom:24, marginTop:24 }}>
-          <h2 style={{ fontSize:17, fontWeight:700, color:'#F1F5F9', margin:'0 0 12px', fontFamily:"'Sora', sans-serif" }}>—"— How to Use This Tool</h2>
+          <h2 style={{ fontSize:17, fontWeight:700, color:'#F1F5F9', margin:'0 0 12px', fontFamily:"'Sora', sans-serif" }}>📖 How to Use This Tool</h2>
           <p style={{ fontSize:14, color:'#94A3B8', lineHeight:1.8, margin:0 }}>{meta.howTo}</p>
         </div>
       )}
@@ -1679,13 +1680,13 @@ function ToolPage({ toolId }) {
 function CategoryPage({ catId }) {
   const cat=CATEGORIES.find(c=>c.id===catId);
   const tools=TOOLS.filter(t=>t.cat===catId);
-  useEffect(()=>{document.title=`${cat?.name} —" Free JSON Tools | ToolsRift`;},[catId]);
-  if(!cat) return <div style={{padding:40,textAlign:"center",color:C.muted}}>Not found. <a href="#/" style={{color:C.amber}}>— Home</a></div>;
+  useEffect(()=>{document.title=`${cat?.name} — Free JSON Tools | ToolsRift`;},[catId]);
+  if(!cat) return <div style={{padding:40,textAlign:"center",color:C.muted}}>Not found. <a href="#/" style={{color:C.amber}}>← Home</a></div>;
   return (
     <div style={{maxWidth:1100,margin:"0 auto",padding:"24px 20px 60px"}}>
-      <nav style={{fontSize:12,color:C.muted,marginBottom:20}}><a href="#/" style={{color:C.muted,textDecoration:"none"}}>—— ToolsRift</a> › <span style={{color:C.text}}>{cat.name}</span></nav>
+      <nav style={{fontSize:12,color:C.muted,marginBottom:20}}><a href="#/" style={{color:C.muted,textDecoration:"none"}}>🏠 ToolsRift</a> › <span style={{color:C.text}}>{cat.name}</span></nav>
       <h1 style={{...T.h1,marginBottom:6}}>{cat.icon} {cat.name}</h1>
-      <p style={{fontSize:14,color:C.muted,marginBottom:28}}>{cat.desc} —" {tools.length} free tools</p>
+      <p style={{fontSize:14,color:C.muted,marginBottom:28}}>{cat.desc} — {tools.length} free tools</p>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:12}}>
         {tools.map(t=>(
           <a key={t.id} href={`#/tool/${t.id}`} style={{display:"flex",gap:12,padding:"14px 16px",background:C.surface,border:`1px solid ${C.border}`,borderRadius:10,textDecoration:"none",alignItems:"flex-start",transition:"all .15s"}}
@@ -1702,7 +1703,7 @@ function CategoryPage({ catId }) {
 
 const PAGE_THEME = getCategoryById('code');
 
-// DEV badge overlay —" shared for dev-focused categories
+// DEV badge overlay — shared for dev-focused categories
 function DevBadge() {
   return (
     <span style={{
@@ -1726,7 +1727,7 @@ const JSON_SPECIAL_CSS = `
   @media(max-width:768px){.trj-sidebar{display:none}}
   .trj-mobile-bar{display:none}
   @media(max-width:768px){.trj-mobile-bar{display:flex}}
-  /* Dev mono overrides —" output areas */
+  /* Dev mono overrides — output areas */
   .trj-tool-area pre,
   .trj-tool-area code,
   .trj-tool-area textarea{
@@ -1739,7 +1740,7 @@ const JSON_SPECIAL_CSS = `
 `;
 
 function CategoryHomePage() {
-  useEffect(() => { document.title = 'Free JSON Tools Online —" ToolsRift'; }, []);
+  useEffect(() => { document.title = 'Free JSON Tools Online — ToolsRift'; }, []);
 
   return (
     <CategoryLayout theme={PAGE_THEME} currentTool={null}>
@@ -1761,16 +1762,16 @@ function ToolDetailPage({ toolId }) {
   const acc = PAGE_THEME.color;
 
   useEffect(() => {
-    document.title = meta?.title || `${tool?.name} —" Free JSON Tool | ToolsRift`;
+    document.title = meta?.title || `${tool?.name} — Free JSON Tool | ToolsRift`;
     setDrawerOpen(false);
   }, [toolId]);
 
   if (!tool || !ToolComp) return (
     <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'}>
       <div style={{ padding:40, textAlign:'center', color:'#64748B', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
-        <div style={{ fontSize:48, marginBottom:16 }}>—"</div>
+        <div style={{ fontSize:48, marginBottom:16 }}>🔍</div>
         <p style={{ color:'#E2E8F0', marginBottom:8, fontSize:16 }}>Tool not found</p>
-        <a href="#/" style={{ color:acc }}>— Back to JSON Tools</a>
+        <a href="#/" style={{ color:acc }}>← Back to JSON Tools</a>
       </div>
     </CategoryLayout>
   );
@@ -1811,7 +1812,7 @@ function ToolDetailPage({ toolId }) {
           <a href="#/" style={{ display:'inline-flex', alignItems:'center', gap:6, color:'#64748B', fontSize:13, textDecoration:'none', marginBottom:16, fontFamily:"'Plus Jakarta Sans',sans-serif" }}
             onMouseEnter={e => e.currentTarget.style.color='#E2E8F0'}
             onMouseLeave={e => e.currentTarget.style.color='#64748B'}
-          >— Back to JSON Tools</a>
+          >← Back to JSON Tools</a>
           <ToolPageLayout theme={PAGE_THEME} tool={toolData}>
             <ToolComp />
           </ToolPageLayout>
@@ -1821,7 +1822,7 @@ function ToolDetailPage({ toolId }) {
       <div className="trj-mobile-bar" style={{ position:'fixed', bottom:0, left:0, right:0, zIndex:200, background:'rgba(6,9,15,0.96)', backdropFilter:'blur(12px)', borderTop:'1px solid rgba(255,255,255,0.06)', padding:'12px 16px', justifyContent:'space-between', alignItems:'center' }}>
         <span style={{ fontSize:13, color:'#94A3B8', fontFamily:"'Plus Jakarta Sans',sans-serif", overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', maxWidth:'60%' }}>{tool.icon} {tool.name}</span>
         <button onClick={() => setDrawerOpen(d => !d)} style={{ background:acc, color:'#fff', border:'none', borderRadius:8, padding:'8px 16px', fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:"'Plus Jakarta Sans',sans-serif", minHeight:44, flexShrink:0 }}>
-          {drawerOpen ? '✕ Close' : '—"— All Tools'}
+          {drawerOpen ? '✕ Close' : '☰ All Tools'}
         </button>
       </div>
 

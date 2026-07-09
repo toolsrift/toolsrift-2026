@@ -196,6 +196,20 @@ function VStack({ children, gap = 12 }) {
   return <div style={{ display: "flex", flexDirection: "column", gap }}>{children}</div>;
 }
 
+function CopyBtn({ text }) {
+  const [done, setDone] = useState(false);
+  if (text == null || text === "" || text === "—" || text === "∞") return null;
+  return (
+    <button
+      onClick={() => navigator.clipboard?.writeText(String(text)).then(() => { setDone(true); setTimeout(() => setDone(false), 2000); }).catch(() => {})}
+      title="Copy result"
+      style={{ background: "transparent", border: `1px solid ${C.border}`, color: done ? C.success : C.blue, borderRadius: 6, padding: "3px 9px", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'Plus Jakarta Sans',sans-serif", display: "inline-flex", alignItems: "center", gap: 4, whiteSpace: "nowrap", flexShrink: 0 }}
+    >
+      {done ? "✓ Copied" : "⧉ Copy"}
+    </button>
+  );
+}
+
 function BigResult({ value, label }) {
   return (
     <div
@@ -207,7 +221,10 @@ function BigResult({ value, label }) {
         borderRadius: 12,
       }}
     >
-      <div style={{ fontFamily: "'Sora',sans-serif", fontSize: "clamp(28px,4vw,32px)", fontWeight: 700, color: C.blue }}>{value}</div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
+        <div style={{ fontFamily: "'Sora',sans-serif", fontSize: "clamp(28px,4vw,32px)", fontWeight: 700, color: C.blue, overflowWrap: "anywhere", wordBreak: "break-word", maxWidth: "100%", minWidth: 0 }}>{value}</div>
+        <CopyBtn text={value} />
+      </div>
       <div style={{ fontSize: 13, color: "#64748B", marginTop: 4 }}>{label}</div>
     </div>
   );
@@ -1774,8 +1791,7 @@ function Nav() {
       transition: "background 0.2s, border-color 0.2s",
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <span style={{ width: 8, height: 8, borderRadius: "50%", background: C.blue, boxShadow: `0 0 6px ${C.blue}80`, flexShrink: 0 }} />
-        <a href="https://toolsrift.com" style={{ fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 15, color: "#F8FAFC", textDecoration: "none", letterSpacing: "-0.01em" }}>ToolsRift</a>
+        <a href="/" aria-label="ToolsRift home" style={{display:"flex",alignItems:"center",flexShrink:0}}><img src="/logo.svg" alt="ToolsRift" style={{height:26,display:"block"}}/></a>
         <span style={{ color: "rgba(255,255,255,0.2)", fontSize: 13 }}>›</span>
         <span style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 14, fontWeight: 500, color: C.blue }}>{THEME?.name}</span>
       </div>

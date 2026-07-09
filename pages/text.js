@@ -2,7 +2,8 @@ import Head from 'next/head'
 import dynamic from 'next/dynamic'
 import CategoryContent from '../components/CategoryContent'
 import categoryContent from '../lib/categoryContent'
-const ToolsRiftText = dynamic(() => import('../components/toolsrift-text'), { ssr: false })
+import CategoryLoading from '../components/CategoryLoading'
+const ToolsRiftText = dynamic(() => import('../components/toolsrift-text'), { ssr: false, loading: CategoryLoading })
 
 // NOTE: getServerSideProps was removed on purpose.
 // It only computed an `isApp` prop that the tool component never used,

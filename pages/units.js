@@ -1,8 +1,9 @@
 import Head from 'next/head'
 import dynamic from 'next/dynamic'
+import CategoryLoading from '../components/CategoryLoading'
 import CategoryContent from '../components/CategoryContent'
 import categoryContent from '../lib/categoryContent'
-const ToolsRiftUnits = dynamic(() => import('../components/toolsrift-units'), { ssr: false })
+const ToolsRiftUnits = dynamic(() => import('../components/toolsrift-units'), { ssr: false, loading: CategoryLoading })
 export default function Units() {
   return (<><Head>
         <title>Free Unit Converter — Length, Weight, Temperature &amp; More | ToolsRift</title>

@@ -325,7 +325,7 @@ function StatRow({ label, value, mono=true, accent="" }) {
 
 // ─── ROUTER ───────────────────────────────────────────────────────────────────
 function useAppRouter() {
-  const parse=()=>{const h=window.location.hash||"#/";const path=h.replace(/^#/,"")||"/";const parts=path.split("/").filter(Boolean);if(!parts.length)return{page:"home"};if(parts[0]==="tool"&&parts[1])return{page:"tool",toolId:parts[1]};if(parts[0]==="category"&&parts[1])return{page:"category",catId:parts[1]};return{page:"home"};};
+  const parse=()=>{const h=window.location.hash||"#/";const path=h.replace(/^#/,"")||"/";const parts=path.split("/").filter(Boolean);if(!parts.length)return{page:"home"};if(parts[0]==="tool"&&parts[1])return{page:"tool",toolId:parts[1]};if(parts[0]==="category"&&parts[1])return{page:"home"};return{page:"home"};};
   const[route,setRoute]=useState(parse);
   useEffect(()=>{const fn=()=>setRoute(parse());window.addEventListener("hashchange",fn);return()=>window.removeEventListener("hashchange",fn);},[]);
   useEffect(()=>{const fn=e=>{const a=e.target.closest("a[href]");if(!a)return;const h=a.getAttribute("href");if(h&&h.startsWith("#/")){e.preventDefault();window.location.hash=h;}};document.addEventListener("click",fn);return()=>document.removeEventListener("click",fn);},[]);
@@ -1554,8 +1554,7 @@ function Nav() {
   return (
     <nav style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"0 24px",height:56,borderBottom:`1px solid ${scrolled?"rgba(168,85,247,0.2)":C.border}`,position:"sticky",top:0,background:`rgba(6,9,15,${scrolled?0.97:0.85})`,backdropFilter:"blur(12px)",zIndex:100,transition:"background 0.2s,border-color 0.2s"}}>
       <div style={{display:"flex",alignItems:"center",gap:10}}>
-        <span style={{width:8,height:8,borderRadius:"50%",background:C.pink,boxShadow:`0 0 6px ${C.pink}80`,flexShrink:0}}/>
-        <a href="https://toolsrift.com" style={{fontFamily:"'Sora',sans-serif",fontWeight:700,fontSize:15,color:C.text,textDecoration:"none",letterSpacing:"-0.01em"}}>ToolsRift</a>
+        <a href="/" aria-label="ToolsRift home" style={{display:"flex",alignItems:"center",flexShrink:0}}><img src="/logo.svg" alt="ToolsRift" style={{height:26,display:"block"}}/></a>
         <span style={{color:"rgba(255,255,255,0.2)",fontSize:14}}>›</span>
         <a href="#/" style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,fontWeight:500,color:C.pink,textDecoration:"none"}}>{THEME?.name||"Color Tools"}</a>
       </div>

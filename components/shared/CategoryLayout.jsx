@@ -8,6 +8,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { COLORS, FS, MQ } from '../../lib/designTokens';
+import SiteFooter from '../SiteFooter';
 
 // ── Sticky top nav (single line, no decorative animations) ──────────────────
 function CategoryHeader({ theme }) {
@@ -190,110 +191,6 @@ function Stat({ label, value, accent }) {
   );
 }
 
-// ── Footer (with full legal page links for AdSense compliance) ──────────────
-function CategoryFooter({ theme }) {
-  const linkGroups = [
-    {
-      title: 'Tools',
-      links: [
-        { label: 'All categories', href: '/' },
-        { label: 'PDF Tools',     href: '/pdf' },
-        { label: 'Image Tools',   href: '/images' },
-        { label: 'Text Tools',    href: '/text' },
-        { label: 'Developer Tools', href: '/devtools' },
-      ],
-    },
-    {
-      title: 'Company',
-      links: [
-        { label: 'About',    href: '/about' },
-        { label: 'Contact',  href: '/contact' },
-        { label: 'Roadmap',  href: '/roadmap' },
-      ],
-    },
-    {
-      title: 'Legal',
-      links: [
-        { label: 'Privacy Policy',     href: '/privacy-policy' },
-        { label: 'Terms of Service',   href: '/terms' },
-        { label: 'Cookie Policy',      href: '/cookies' },
-        { label: 'Disclaimer',         href: '/disclaimer' },
-      ],
-    },
-  ];
-
-  return (
-    <footer
-      style={{
-        borderTop: `1px solid ${COLORS.borderLight}`,
-        background: `linear-gradient(180deg, transparent, ${theme.color}05)`,
-        padding: '48px clamp(16px, 4vw, 32px) 28px',
-        marginTop: 64,
-        fontFamily: theme.fonts.body,
-      }}
-    >
-      <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-        <div
-          style={{
-            display: 'grid',
-            gap: 32,
-            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
-            marginBottom: 36,
-          }}
-        >
-          <div>
-            <a href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, textDecoration: 'none', marginBottom: 12 }}>
-              <img src="/logo.svg" alt="ToolsRift" style={{ height: 28 }} />
-            </a>
-            <p style={{ color: COLORS.muted, fontSize: 13, lineHeight: 1.65, margin: 0, maxWidth: 280 }}>
-              544+ free online tools across 34 categories. Runs in your browser. No sign-up.
-            </p>
-          </div>
-
-          {linkGroups.map((g) => (
-            <div key={g.title}>
-              <div
-                style={{
-                  color: COLORS.text, fontSize: 12, fontWeight: 700,
-                  textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14,
-                  fontFamily: theme.fonts.head,
-                }}
-              >
-                {g.title}
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {g.links.map(({ label, href }) => (
-                  <a
-                    key={href}
-                    href={href}
-                    style={{ color: COLORS.muted, fontSize: 13, textDecoration: 'none', transition: 'color 0.15s' }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = theme.color)}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = COLORS.muted)}
-                  >
-                    {label}
-                  </a>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div
-          style={{
-            paddingTop: 22,
-            borderTop: `1px solid ${COLORS.borderLight}`,
-            display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10,
-            color: COLORS.dim, fontSize: 12,
-          }}
-        >
-          <span>© 2026 ToolsRift · Free online tools, powered by ads.</span>
-          <span>Made with ♥ in Hyderabad, India</span>
-        </div>
-      </div>
-    </footer>
-  );
-}
-
 // ── Root ────────────────────────────────────────────────────────────────────
 export default function CategoryLayout({ theme, currentTool, children }) {
   return (
@@ -317,7 +214,10 @@ export default function CategoryLayout({ theme, currentTool, children }) {
         {children}
       </main>
 
-      <CategoryFooter theme={theme} />
+      {/* Footer renders here ONLY on tool detail pages. On category LANDING
+          pages the footer is rendered at the END of the server-side SEO block
+          (CategoryContent) so it is never stranded above that content. */}
+      {currentTool && <SiteFooter accent={theme.color} fonts={theme.fonts} />}
     </div>
   );
 }

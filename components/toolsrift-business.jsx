@@ -608,6 +608,7 @@ function RoiCalculator(){
       <Res label="Return Ratio" value={`${fmt(inv?ret/inv:0,2)}x`} mono color={ret>inv?S.green:S.red}/>
       <Res label="Performance" value={roi>=500?"🏆 Exceptional":roi>=200?"🔥 Excellent":roi>=100?"✅ Good":roi>=0?"⚠️ Low":"❌ Negative"} color={roi>=100?S.green:roi>=0?S.orange:S.red}/>
     </>}
+    {!(invested&&returned)&&<div style={{padding:16,background:S.accentLight,borderRadius:8,color:S.muted,fontSize:14,textAlign:"center"}}>Enter values above to see your ROI</div>}
   </V>);
 }
 
@@ -625,22 +626,23 @@ function BreakEvenCalc(){
       <NumInput label="Selling Price per Unit ($)" value={price} onChange={setPrice} placeholder="50"/>
       <NumInput label="Variable Cost per Unit ($)" value={variable} onChange={setVariable} placeholder="20"/>
     </G3>
-    {fixed&&price&&variable&&contribution>0&&<>
-      <G2>
-        <Big label="Break-Even Units" value={fmt(beUnits,0)} sub="units to sell"/>
-        <Big label="Break-Even Revenue" value={$(beRevenue)} color={S.blue}/>
-      </G2>
-      <Res label="Contribution Margin per Unit" value={$(contribution)} mono color={S.green}/>
-      <Res label="Contribution Margin %" value={`${fmt(margin)}%`} mono/>
-      <Res label="Fixed Costs" value={$(fc)} mono/>
-      <Lab>Profit at Different Sales Volumes</Lab>
-      {[0.5,1,1.5,2,3].map(mult=>{
-        const units=Math.ceil(beUnits*mult);
-        const profit=units*contribution-fc;
-        return<Res key={mult} label={`${units} units`} value={$(profit)} mono color={profit>=0?S.green:S.red}/>;
-      })}
-    </>}
-    {contribution<=0&&price&&variable&&<div style={{padding:16,background:"rgba(239,68,68,0.1)",borderRadius:8,color:S.red,fontSize:14,textAlign:"center"}}>⚠️ Selling price must exceed variable cost to break even.</div>}
+    {price&&variable&&contribution<=0
+      ?<div style={{padding:16,background:"rgba(239,68,68,0.1)",borderRadius:8,color:S.red,fontSize:14,textAlign:"center"}}>⚠️ Break-even not achievable — price must exceed variable cost per unit</div>
+      :fixed&&price&&variable?<>
+        <G2>
+          <Big label="Break-Even Units" value={fmt(beUnits,0)} sub="units to sell"/>
+          <Big label="Break-Even Revenue" value={$(beRevenue)} color={S.blue}/>
+        </G2>
+        <Res label="Contribution Margin per Unit" value={$(contribution)} mono color={S.green}/>
+        <Res label="Contribution Margin %" value={`${fmt(margin)}%`} mono/>
+        <Res label="Fixed Costs" value={$(fc)} mono/>
+        <Lab>Profit at Different Sales Volumes</Lab>
+        {[0.5,1,1.5,2,3].map(mult=>{
+          const units=Math.ceil(beUnits*mult);
+          const profit=units*contribution-fc;
+          return<Res key={mult} label={`${units} units`} value={$(profit)} mono color={profit>=0?S.green:S.red}/>;
+        })}
+      </>:<div style={{padding:16,background:S.accentLight,borderRadius:8,color:S.muted,fontSize:14,textAlign:"center"}}>Enter values above to see your break-even point</div>}
   </V>);
 }
 
@@ -694,6 +696,9 @@ function Breadcrumbs({items}){
 }
 
 // ─── NAV ──────────────────────────────────────────────────────
+// NOTE: Nav + SiteFooter below are retained for reference/Phase 2, but are NOT
+// rendered — every route is wrapped by the shared CategoryLayout, which supplies
+// its own header + footer. Rendering these too produced duplicate chrome (BUG 1).
 function Nav() {
   const [isDark] = useState(true);
   const [scrolled, setScrolled] = useState(false);
@@ -764,7 +769,11 @@ function SiteFooter({currentPage}){
 // ─── MAIN APP ──────────────────────────────────────────────────
 function ToolsRiftBusiness(){
   const {page,toolId}=useAppRouter();
-  const showChrome = page !== "landing" && page !== "tool";
+  // BUG 1/2 FIX: Every route below is wrapped by the shared CategoryLayout, which
+  // provides its own full-width sticky header + footer. So we must NOT also render
+  // the local <Nav/> + <SiteFooter/> (that caused two headers/footers on #/tools),
+  // and CategoryLayout is returned at the component top level (full width) instead of
+  // being squeezed inside a 920px-constrained <main>.
   const activeTool=toolId?TOOLS.find(t=>t.id===toolId):null;
   const ToolComp=toolId?TOOL_COMPONENTS[toolId]:null;
   const seo=toolId?SEO[toolId]:null;
@@ -797,36 +806,32 @@ function ToolsRiftBusiness(){
           .tr-nav-badge{display:none!important}
         }
       `}</style>
-      {showChrome && <Nav/>}
-      <main style={{maxWidth:920,margin:"0 auto",padding:"24px 24px 20px"}}>
-        {page==="tool"&&activeTool&&ToolComp?(
-          <CategoryLayout theme={PAGE_THEME} currentTool={activeTool.id}>
-            <ToolPageLayout
-              theme={PAGE_THEME}
-              tool={{
-                id: activeTool.id,
-                name: activeTool.name,
-                icon: activeTool.icon,
-                description: seo?.desc || activeTool.desc,
-                howTo: seo?.howTo,
-                faq: seo?.faq,
-              }}
-              related={TOOLS.filter(t=>t.id!==activeTool.id).slice(0,8)}
-            >
-              <ToolComp/>
-            </ToolPageLayout>
-          </CategoryLayout>
-        ):(
-          <CategoryLayout theme={PAGE_THEME} currentTool={null}>
-            <CategoryDashboard
-              theme={PAGE_THEME}
-              tools={TOOLS}
-              searchPlaceholder="Search business tools..."
-            />
-          </CategoryLayout>
-        )}
-      </main>
-      {showChrome && <SiteFooter currentPage="business"/>}
+      {page==="tool"&&activeTool&&ToolComp?(
+        <CategoryLayout theme={PAGE_THEME} currentTool={activeTool.id}>
+          <ToolPageLayout
+            theme={PAGE_THEME}
+            tool={{
+              id: activeTool.id,
+              name: activeTool.name,
+              icon: activeTool.icon,
+              description: seo?.desc || activeTool.desc,
+              howTo: seo?.howTo,
+              faq: seo?.faq,
+            }}
+            related={TOOLS.filter(t=>t.id!==activeTool.id).slice(0,8)}
+          >
+            <ToolComp/>
+          </ToolPageLayout>
+        </CategoryLayout>
+      ):(
+        <CategoryLayout theme={PAGE_THEME} currentTool={null}>
+          <CategoryDashboard
+            theme={PAGE_THEME}
+            tools={TOOLS}
+            searchPlaceholder="Search business tools..."
+          />
+        </CategoryLayout>
+      )}
     </div>
   );
 }

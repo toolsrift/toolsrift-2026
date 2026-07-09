@@ -58,8 +58,8 @@ const n = (v) => {
   return Number.isFinite(x) ? x : 0;
 };
 const round = (x, p = 2) => (Number.isFinite(x) ? Number(x.toFixed(p)) : 0);
-const inr = (x) => `₹${(Number(x) || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
-const curr = (x) => `$${(Number(x) || 0).toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+const inr = (x) => Number.isFinite(Number(x)) ? `₹${(Number(x) || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}` : "—";
+const curr = (x) => Number.isFinite(Number(x)) ? `$${(Number(x) || 0).toLocaleString(undefined, { maximumFractionDigits: 2 })}` : "—";
 const pct = (x) => `${round(x, 2)}%`;
 
 function Badge({ children, color = "blue" }) {
@@ -110,10 +110,26 @@ function VStack({ children, gap = 12 }) { return <div style={{ display: "flex", 
 function Grid2({ children }) { return <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>{children}</div>; }
 function Grid3({ children }) { return <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>{children}</div>; }
 
+function CopyBtn({ text }) {
+  const [done, setDone] = useState(false);
+  if (text == null || text === "" || text === "—" || text === "∞") return null;
+  return (
+    <button
+      onClick={() => navigator.clipboard?.writeText(String(text)).then(() => { setDone(true); setTimeout(() => setDone(false), 2000); }).catch(() => {})}
+      title="Copy result"
+      style={{ background: "transparent", border: `1px solid ${C.border}`, color: done ? C.success : C.blue, borderRadius: 6, padding: "3px 9px", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'Plus Jakarta Sans',sans-serif", display: "inline-flex", alignItems: "center", gap: 4, whiteSpace: "nowrap", flexShrink: 0 }}
+    >
+      {done ? "✓ Copied" : "⧉ Copy"}
+    </button>
+  );
+}
 function BigResult({ value, label, sub }) {
   return (
     <div style={{ textAlign: "center", padding: "20px 24px", background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)", borderRadius: 12 }}>
-      <div style={{ fontFamily: "'Sora',sans-serif", fontSize: "clamp(28px,4vw,32px)", color: C.blue, fontWeight: 700 }}>{value}</div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
+        <div style={{ fontFamily: "'Sora',sans-serif", fontSize: "clamp(28px,4vw,32px)", color: C.blue, fontWeight: 700, overflowWrap: "anywhere", wordBreak: "break-word", maxWidth: "100%", minWidth: 0 }}>{value}</div>
+        <CopyBtn text={value} />
+      </div>
       <div style={{ fontSize: 13, color: "#64748B", marginTop: 4 }}>{label}</div>
       {sub ? <div style={{ marginTop: 4, color: C.muted, fontSize: 12 }}>{sub}</div> : null}
     </div>
@@ -123,14 +139,24 @@ function Result({ children }) {
   return <div style={{ background: "rgba(0,0,0,0.28)", border: `1px solid ${C.border}`, borderRadius: 8, padding: "12px", color: C.text, fontFamily: "'JetBrains Mono',monospace", whiteSpace: "pre-wrap", lineHeight: 1.6, fontSize: 12 }}>{children}</div>;
 }
 function DataTable({ columns, rows }) {
+  // Cap rendered rows so an extreme input (e.g. 10000 "years") can never
+  // freeze the browser by rendering thousands of DOM rows. The computed
+  // result values above the table are unaffected — only the breakdown is capped.
+  const MAX_ROWS = 200;
+  const shown = rows.length > MAX_ROWS ? rows.slice(0, MAX_ROWS) : rows;
   return (
     <div style={{ overflowX: "auto" }}>
       <table style={{ width: "100%" }}>
         <thead><tr>{columns.map((c) => <th key={c}>{c}</th>)}</tr></thead>
         <tbody>
-          {rows.map((r, i) => <tr key={i}>{r.map((v, j) => <td key={j}>{v}</td>)}</tr>)}
+          {shown.map((r, i) => <tr key={i}>{r.map((v, j) => <td key={j}>{v}</td>)}</tr>)}
         </tbody>
       </table>
+      {rows.length > MAX_ROWS && (
+        <div style={{ fontSize: 12, color: "#64748B", padding: "8px 4px" }}>
+          Showing first {MAX_ROWS} of {rows.length} rows.
+        </div>
+      )}
     </div>
   );
 }
@@ -2406,8 +2432,7 @@ function Nav() {
       transition: "background 0.2s, border-color 0.2s",
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <span style={{ width: 8, height: 8, borderRadius: "50%", background: C.blue, boxShadow: `0 0 6px ${C.blue}80`, flexShrink: 0 }} />
-        <a href="https://toolsrift.com" style={{ fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 15, color: "#F8FAFC", textDecoration: "none", letterSpacing: "-0.01em" }}>ToolsRift</a>
+        <a href="/" aria-label="ToolsRift home" style={{display:"flex",alignItems:"center",flexShrink:0}}><img src="/logo.svg" alt="ToolsRift" style={{height:26,display:"block"}}/></a>
         <span style={{ color: "rgba(255,255,255,0.2)", fontSize: 13 }}>›</span>
         <span style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 14, fontWeight: 500, color: C.blue }}>{THEME?.name}</span>
       </div>

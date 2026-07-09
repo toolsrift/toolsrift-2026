@@ -102,10 +102,10 @@ export default function PrivacyPolicy() {
         <meta property="og:url" content="https://toolsrift.com/privacy-policy" />
         <meta property="og:site_name" content="ToolsRift" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta property="og:image" content="https://toolsrift.com/og-image.svg" />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta name="twitter:image" content="https://toolsrift.com/og-image.svg" />
+        <meta property="og:image" content="https://toolsrift.com/og-image.png" />
+        <meta property="og:image:width" content="1500" />
+        <meta property="og:image:height" content="782" />
+        <meta name="twitter:image" content="https://toolsrift.com/og-image.png" />
         <link rel="canonical" href="https://toolsrift.com/privacy-policy" />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",

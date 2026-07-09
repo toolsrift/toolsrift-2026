@@ -1,7 +1,7 @@
 {
   "name": "ToolsRift \u2014 Free Online Tools",
   "short_name": "ToolsRift",
-  "description": "1000+ free online tools for text, images, PDF, calculators and more",
+  "description": "612+ free online tools for text, images, PDF, calculators and more",
   "start_url": "/",
   "id": "com.toolsrift.main",
   "display": "standalone",

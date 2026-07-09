@@ -2,6 +2,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import TOOL_REGISTRY from '../lib/toolRegistry'
+import SiteFooter from './SiteFooter'
 
 const C = {
   bg: '#06090F',
@@ -395,6 +396,11 @@ export default function CategoryContent({ data }) {
         )}
 
       </div>
+
+      {/* Footer at the very bottom of the category landing page (server-rendered).
+          On tool detail pages this component returns null and CategoryLayout
+          renders the footer instead — so there is exactly one, always last. */}
+      <SiteFooter accent={C.blue} />
     </>
   )
 }

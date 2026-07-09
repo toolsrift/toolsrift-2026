@@ -113,7 +113,7 @@ function CopyBtn({ text, style={} }) {
   };
   return errMsg
     ? <span style={{fontSize:12,color:'#EF4444'}}>{errMsg}</span>
-    : <Btn variant={copied?"secondary":"ghost"} size="sm" onClick={copy} style={style}>{copied ? "— Copied" : "Copy"}</Btn>;
+    : <Btn variant={copied?"secondary":"ghost"} size="sm" onClick={copy} style={style}>{copied ? "✓ Copied" : "Copy"}</Btn>;
 }
 
 function Grid2({ children }) { return <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16 }}>{children}</div>; }
@@ -135,7 +135,7 @@ function useAppRouter() {
     const parts = path.split("/").filter(Boolean);
     if (!parts.length) return { page:"home" };
     if (parts[0]==="tool" && parts[1]) return { page:"tool", toolId:parts[1] };
-    if (parts[0]==="category" && parts[1]) return { page:"category", catId:parts[1] };
+    if (parts[0]==="category" && parts[1]) return { page:"home" };
     return { page:"home" };
   };
   const [route, setRoute] = useState(parse);
@@ -198,7 +198,7 @@ const TOOLS = [
   { id:"gradient-image", cat:"generators", name:"Gradient Image", desc:"Generate gradient background images", icon:"🌈", free:true },
   { id:"solid-color-image", cat:"generators", name:"Solid Color Image", desc:"Generate solid color image at any size", icon:"🟩", free:true },
   { id:"noise-texture", cat:"generators", name:"Noise Texture", desc:"Generate noise/grain textures", icon:"⚡", free:true },
-  { id:"checkerboard", cat:"generators", name:"Checkerboard", desc:"Generate checkerboard pattern images", icon:"🔍", free:true },
+  { id:"checkerboard", cat:"generators", name:"Checkerboard", desc:"Generate checkerboard pattern images", icon:"🏁", free:true },
   { id:"favicon-generator", cat:"generators", name:"Favicon Generator", desc:"Create favicon from any image", icon:"⚡", free:true },
   { id:"og-image-preview", cat:"generators", name:"OG Image Preview", desc:"Preview Open Graph social card", icon:"🖼️", free:true },
   { id:"qr-code-generator", cat:"generators", name:"QR Code Generator", desc:"Generate QR codes as downloadable images", icon:"▦", free:true },
@@ -222,7 +222,7 @@ const TOOLS = [
 
 const TOOL_META = TOOLS.reduce((acc, t) => {
   acc[t.id] = {
-    title: `Free ${t.name} —" ${t.desc} Online | ToolsRift`,
+    title: `Free ${t.name} — Edit Images Online | ToolsRift`,
     desc: `Use our free ${t.name.toLowerCase()} tool to ${t.desc.toLowerCase()}. No signup required, works 100% in your browser. Fast, secure, and easy to use.`,
     faq: [
       [`How do I use this ${t.name.toLowerCase()}?`, `Simply select your image or enter your settings, and the tool will instantly process your request right in your browser.`],
@@ -716,27 +716,125 @@ function PdfToImage() {
 }
 
 function ImageToPdf() {
-  const [file, setFile] = useState(null); const [pdf, setPdf] = useState(null);
-  const run = () => { if(!file) return; setPdf("Data URL representation of basic PDF requires library. Use browser print instead."); };
-  return <Lab file={file} setFile={setFile} onProcess={run} customOutput={pdf?<Result>{pdf}</Result>:null}><Label>Feature mock - use browser print to PDF natively.</Label></Lab>;
+  const [file, setFile] = useState(null); const [show, setShow] = useState(false);
+  const run = () => { if(!file) return; setShow(true); };
+  return <Lab file={file} setFile={setFile} onProcess={run} customOutput={show ? (
+    <div style={{ width:'100%' }}>
+      <div style={{ padding:14, background:'rgba(245,158,11,0.1)', border:'1px solid rgba(245,158,11,0.3)', borderRadius:8, fontSize:13, color:C.text, lineHeight:1.6, textAlign:'left' }}>
+        <strong>In-browser image → PDF export isn't ready yet.</strong><br />
+        Writing a PDF file needs a PDF engine we don't yet run fully client-side, and ToolsRift never uploads your image to a server. For now, the fastest private way to turn this image into a PDF: open it, press Ctrl / Cmd + P, and choose "Save as PDF". A built-in, in-browser exporter is on the way.
+      </div>
+    </div>
+  ) : null}><Label>Combine an image into a PDF (in-browser export coming soon)</Label></Lab>;
 }
 
 function ScreenshotTaker() {
-  const [out, setOut] = useState(null);
+  const [out, setOut] = useState(null); const [err, setErr] = useState("");
   const run = async () => {
+    setErr("");
     try {
       const stream = await navigator.mediaDevices.getDisplayMedia({video:true}); const v = document.createElement('video'); v.srcObject = stream; await v.play();
       const cvs = document.createElement('canvas'); cvs.width=v.videoWidth; cvs.height=v.videoHeight; cvs.getContext('2d').drawImage(v,0,0);
       stream.getTracks().forEach(t=>t.stop()); setOut({dataUrl:cvs.toDataURL(),w:cvs.width,h:cvs.height});
-    } catch(e){}
+    } catch(e){
+      setErr(e && e.name === 'NotAllowedError'
+        ? "Screen capture was denied or cancelled. Click the button again and allow screen sharing to capture."
+        : "Screen capture isn't available in this browser, or the request was cancelled. Try again or use a different browser.");
+    }
   };
-  return <Lab isGenerator onProcess={run} output={out}><Label>Prompts for screen capture permission</Label></Lab>;
+  return <Lab isGenerator onProcess={run} output={out} customOutput={err ? (
+    <div style={{ padding:14, background:'rgba(239,68,68,0.1)', border:'1px solid rgba(239,68,68,0.3)', borderRadius:8, fontSize:13, color:C.text, lineHeight:1.6, textAlign:'left', width:'100%' }}>{err}</div>
+  ) : null}><Label>Prompts for screen capture permission</Label></Lab>;
+}
+
+// EXIF/TIFF metadata parsing (JPEG APP1) — pure client-side, no external library
+const EXIF_TAGS = {
+  0x0110:'Model', 0x010F:'Make', 0x0112:'Orientation', 0x0131:'Software',
+  0x0132:'DateTime', 0x011A:'XResolution', 0x011B:'YResolution', 0x0128:'ResolutionUnit',
+  0x829A:'ExposureTime', 0x829D:'FNumber', 0x8827:'ISO', 0x9003:'DateTimeOriginal', 0x920A:'FocalLength'
+};
+function parseExifData(buffer) {
+  const view = new DataView(buffer);
+  if (view.byteLength < 4 || view.getUint16(0) !== 0xFFD8) return {};
+  let offset = 2;
+  while (offset + 4 <= view.byteLength) {
+    const marker = view.getUint16(offset);
+    if ((marker & 0xFF00) !== 0xFF00 || marker === 0xFFDA) break;
+    const size = view.getUint16(offset + 2);
+    if (marker === 0xFFE1 && offset + 10 <= view.byteLength && view.getUint32(offset + 4) === 0x45786966) {
+      return readTiff(view, offset + 10);
+    }
+    offset += 2 + size;
+  }
+  return {};
+}
+function readTiff(view, tiff) {
+  const out = {};
+  try {
+    const little = view.getUint16(tiff) === 0x4949;
+    const g16 = o => view.getUint16(o, little);
+    const g32 = o => view.getUint32(o, little);
+    const readIFD = (dir) => {
+      const n = g16(dir);
+      for (let i = 0; i < n; i++) {
+        const e = dir + 2 + i * 12;
+        const tag = g16(e), type = g16(e + 2), count = g32(e + 4), vo = e + 8;
+        if (tag === 0x8769) { try { readIFD(tiff + g32(vo)); } catch (_) {} continue; }
+        const name = EXIF_TAGS[tag];
+        if (!name) continue;
+        const total = ({ 1:1, 2:1, 3:2, 4:4, 5:8 }[type] || 1) * count;
+        const dat = total <= 4 ? vo : tiff + g32(vo);
+        let val;
+        if (type === 2) { let s = ''; for (let k = 0; k < count; k++) { const c = view.getUint8(dat + k); if (!c) break; s += String.fromCharCode(c); } val = s.trim(); }
+        else if (type === 3) val = g16(dat);
+        else if (type === 4) val = g32(dat);
+        else if (type === 5) { const num = g32(dat), den = g32(dat + 4); val = den ? Math.round((num / den) * 1000) / 1000 : num; }
+        else val = g16(dat);
+        if (name === 'Orientation') val = ({ 1:'Normal', 3:'Rotated 180°', 6:'Rotated 90° CW', 8:'Rotated 90° CCW' }[val]) || val;
+        if (name === 'ResolutionUnit') val = ({ 1:'None', 2:'inch', 3:'cm' }[val]) || val;
+        out[name] = val;
+      }
+    };
+    readIFD(tiff + g32(tiff + 4));
+  } catch (_) {}
+  return out;
 }
 
 function ExifReader() {
-  const [file, setFile] = useState(null); const [txt, setTxt] = useState("");
-  const run = () => { if(!file) return; setTxt("EXIF parsing requires a heavy library. Client-side JS can read ArrayBuffer, but full EXIF data is omitted for bundle size. Last modified: "+new Date(file.lastModified).toLocaleString()); };
-  return <Lab file={file} setFile={setFile} onProcess={run} customOutput={txt?<Result>{txt}</Result>:null}><Label>Reads metadata</Label></Lab>;
+  const [file, setFile] = useState(null); const [data, setData] = useState(null);
+  const run = () => {
+    if (!file) return;
+    const r = new FileReader();
+    r.onload = e => {
+      let exif = {};
+      try { exif = parseExifData(e.target.result); } catch (_) { exif = {}; }
+      const url = URL.createObjectURL(file); const img = new Image();
+      img.onload = () => {
+        setData({ fileInfo: {
+          'File name': file.name, 'Type': file.type || 'unknown',
+          'Size': (file.size / 1024).toFixed(1) + ' KB',
+          'Dimensions': img.width + ' × ' + img.height + ' px',
+          'Last modified': new Date(file.lastModified).toLocaleString()
+        }, exif });
+        URL.revokeObjectURL(url);
+      };
+      img.onerror = () => { setData({ fileInfo: { 'File name': file.name, 'Size': (file.size / 1024).toFixed(1) + ' KB' }, exif }); URL.revokeObjectURL(url); };
+      img.src = url;
+    };
+    r.readAsArrayBuffer(file);
+  };
+  const rows = data ? [...Object.entries(data.fileInfo), ...Object.entries(data.exif)] : [];
+  return <Lab file={file} setFile={setFile} onProcess={run} customOutput={data ? (
+    <div style={{ width:'100%', textAlign:'left' }}>
+      {rows.map(([k, v]) => (
+        <div key={k} style={{ display:'flex', justifyContent:'space-between', gap:12, padding:'6px 0', borderBottom:`1px solid ${C.border}`, fontSize:12 }}>
+          <span style={{ color:C.muted }}>{k}</span>
+          <span style={{ color:C.text, fontFamily:"'JetBrains Mono',monospace", wordBreak:'break-all', textAlign:'right' }}>{String(v)}</span>
+        </div>
+      ))}
+      {Object.keys(data.exif).length === 0 && <div style={{ color:C.muted, fontSize:12, marginTop:10 }}>No embedded EXIF/camera metadata found in this image.</div>}
+    </div>
+  ) : null}><Label>Reads file info and embedded EXIF metadata</Label></Lab>;
 }
 
 function ExifRemover() {
@@ -746,7 +844,51 @@ function ExifRemover() {
   return <Lab file={file} setFile={setFile} onProcess={run} output={out}><Label>Redrawing removes all embedded EXIF naturally</Label></Lab>;
 }
 
-function DpiChecker() { return <ExifReader />; } // DPI needs EXIF
+function DpiChecker() {
+  const [file, setFile] = useState(null); const [info, setInfo] = useState(null);
+  const run = () => {
+    if (!file) return;
+    const r = new FileReader();
+    r.onload = e => {
+      const buf = e.target.result; let dpi = null, source = 'No DPI metadata — defaults to 96 DPI on the web';
+      try {
+        const dv = new DataView(buf);
+        if (dv.getUint16(0) === 0xFFD8) {
+          let o = 2;
+          while (o + 4 <= dv.byteLength) {
+            const marker = dv.getUint16(o);
+            if ((marker & 0xFF00) !== 0xFF00 || marker === 0xFFDA) break;
+            const size = dv.getUint16(o + 2);
+            if (marker === 0xFFE0 && o + 16 <= dv.byteLength && dv.getUint32(o + 4) === 0x4A464946) {
+              const units = dv.getUint8(o + 11), xd = dv.getUint16(o + 12), yd = dv.getUint16(o + 14);
+              if (units === 1) { dpi = xd + ' × ' + yd + ' DPI'; source = 'JFIF density (dots per inch)'; }
+              else if (units === 2) { dpi = Math.round(xd * 2.54) + ' × ' + Math.round(yd * 2.54) + ' DPI'; source = 'JFIF density (converted from dots/cm)'; }
+              else { dpi = xd + ' : ' + yd + ' aspect ratio (no absolute DPI)'; source = 'JFIF (no physical units)'; }
+              break;
+            }
+            o += 2 + size;
+          }
+        }
+        if (!dpi) {
+          const ex = parseExifData(buf);
+          if (ex && ex.XResolution) { dpi = ex.XResolution + ' × ' + (ex.YResolution || ex.XResolution) + (ex.ResolutionUnit === 'cm' ? ' DPcm' : ' DPI'); source = 'EXIF resolution tags'; }
+        }
+      } catch (_) {}
+      const url = URL.createObjectURL(file); const img = new Image();
+      img.onload = () => { setInfo({ dpi: dpi || '96 DPI (assumed)', source, px: img.width + ' × ' + img.height + ' px' }); URL.revokeObjectURL(url); };
+      img.onerror = () => { setInfo({ dpi: dpi || 'Unknown', source, px: '—' }); URL.revokeObjectURL(url); };
+      img.src = url;
+    };
+    r.readAsArrayBuffer(file);
+  };
+  return <Lab file={file} setFile={setFile} onProcess={run} customOutput={info ? (
+    <div style={{ width:'100%', textAlign:'center' }}>
+      <div style={{ fontFamily:"'Sora',sans-serif", fontSize:22, fontWeight:700, color:C.rose }}>{info.dpi}</div>
+      <div style={{ fontSize:12, color:C.muted, marginTop:6 }}>Pixel dimensions: {info.px}</div>
+      <div style={{ fontSize:12, color:C.muted, marginTop:4 }}>Source: {info.source}</div>
+    </div>
+  ) : null}><Label>Reads DPI/PPI from JFIF or EXIF metadata</Label></Lab>;
+}
 
 function ColorSpace() {
   const [file, setFile] = useState(null); const [out, setOut] = useState(null);
@@ -773,7 +915,7 @@ function Breadcrumb({ tool, cat }) {
   return (
     <>
       <div style={{ display:"flex", alignItems:"center", gap:6, fontSize:12, color:C.muted, marginBottom:20 }}>
-        <a href="https://toolsrift.com" style={{ color:C.muted, textDecoration:"none" }}>—— ToolsRift</a>
+        <a href="https://toolsrift.com" style={{ color:C.muted, textDecoration:"none" }}>🏠 ToolsRift</a>
         {cat && <><span>›</span><a href={`#/category/${cat.id}`} style={{ color:C.muted, textDecoration:"none" }}>{cat.name}</a></>}
         {tool && <><span>›</span><span style={{ color:C.text }}>{tool.name}</span></>}
       </div>
@@ -787,66 +929,6 @@ function Breadcrumb({ tool, cat }) {
         ]
       }) }} />
     </>
-  );
-}
-
-function ToolPage({ toolId }) {
-  const tool = TOOLS.find(t=>t.id===toolId); const meta = TOOL_META[toolId]; const ToolComp = TOOL_COMPONENTS[toolId]; const cat = CATEGORIES.find(c=>c.id===tool?.cat);
-  // PHASE 1: all tools free, no gating
-  const [allowed, setAllowed] = useState(true);
-  // PHASE 2: const [upgradeReason, setUpgradeReason] = useState(null);
-  // PHASE 2: useEffect(() => { if (isLimitReached()) { setUpgradeReason('daily_limit'); setAllowed(false); return; } trackUse(toolId); setAllowed(true); setUpgradeReason(null); }, [toolId]);
-  useEffect(() => { document.title = meta?.title || `${tool?.name} —" Free Tool | ToolsRift`; }, [toolId, meta, tool]);
-  if (!tool || !ToolComp) return <div style={{ padding:40, textAlign:"center", color:C.muted }}><div style={{ fontSize:48, marginBottom:16 }}>—</div><div style={{ fontSize:16, marginBottom:8, color:C.text }}>Tool not found</div><a href="#/" style={{ color:C.rose }}>— Back to home</a></div>;
-  return (
-    <div style={{ maxWidth:900, margin:"0 auto", padding:"24px 20px 60px" }}>
-      <Breadcrumb tool={tool} cat={cat} />
-      <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:24, gap:16 }}>
-        <div>
-          <h1 style={{ ...T.h1, marginBottom:6, display:"flex", alignItems:"center", gap:12 }}><span style={{ fontSize:28 }}>{tool.icon}</span> {tool.name}</h1>
-          <p style={{ fontSize:14, color:C.muted, lineHeight:1.6, maxWidth:600 }}>{meta?.desc || tool.desc}</p>
-        </div>
-        <Badge color={tool.free?"green":"amber"}>{tool.free?"Free":"Pro"}</Badge>
-      </div>
-      {/* PHASE 2: {upgradeReason && <UpgradeModal reason={upgradeReason} onClose={() => setUpgradeReason(null)} />} */}
-      <Card className="fade-in"><ToolComp /></Card>
-      {meta?.howTo && (
-        <div style={{ background:'rgba(59,130,246,0.05)', border:'1px solid rgba(59,130,246,0.12)', borderRadius:16, padding:'28px 32px', marginBottom:24, marginTop:24 }}>
-          <h2 style={{ fontSize:17, fontWeight:700, color:'#F1F5F9', margin:'0 0 12px', fontFamily:"'Sora', sans-serif" }}>—"— How to Use This Tool</h2>
-          <p style={{ fontSize:14, color:'#94A3B8', lineHeight:1.8, margin:0 }}>{meta.howTo}</p>
-        </div>
-      )}
-      {meta?.faq && (
-        <div style={{ marginTop:48 }}>
-          <h2 style={{ ...T.h2, marginBottom:20 }}>Frequently Asked Questions</h2>
-          <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
-            {meta.faq.map(([q,a],i) => (
-              <details key={i} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:"14px 18px", cursor:"pointer" }}>
-                <summary style={{ fontWeight:600, fontSize:14, color:C.text, listStyle:"none", display:"flex", justifyContent:"space-between" }}>{q} <span style={{ color:C.muted }}>+</span></summary>
-                <p style={{ marginTop:10, fontSize:13, color:C.muted, lineHeight:1.7 }}>{a}</p>
-              </details>
-            ))}
-          </div>
-          <script type="application/ld+json">{JSON.stringify({
-            "@context":"https://schema.org",
-            "@type":"FAQPage",
-            "mainEntity":meta.faq.map(([q,a])=>({
-              "@type":"Question",
-              "name":q,
-              "acceptedAnswer":{"@type":"Answer","text":a}
-            }))
-          })}</script>
-        </div>
-      )}
-      <div style={{ marginBottom:48 }}>
-        <h2 style={{ fontSize:17, fontWeight:700, color:'#F1F5F9', margin:'0 0 14px', fontFamily:"'Sora', sans-serif" }}>—"— Related Tools</h2>
-        <div style={{ display:'flex', flexWrap:'wrap', gap:10 }}>
-          {TOOLS.filter(t => t.cat === tool.cat && t.id !== tool.id).slice(0,6).map(t => (
-            <a key={t.id} href={`#/tool/${t.id}`} style={{ padding:'8px 16px', borderRadius:20, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', color:'#94A3B8', textDecoration:'none', fontSize:13, fontWeight:500 }}>{t.name}</a>
-          ))}
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -878,10 +960,10 @@ function CategoryPage({ catId }) {
 
 const PAGE_THEME = getCategoryById('image');
 
-// �"��� Category home: search + responsive ToolCard grid �������������������������������������������������"�
+// ─── Category home: search + responsive ToolCard grid ───
 function CategoryHomePage() {
   useEffect(() => {
-    document.title = 'Free Image Tools Online —" ToolsRift';
+    document.title = 'Free Image Tools Online — ToolsRift';
   }, []);
 
   return (
@@ -896,7 +978,7 @@ function CategoryHomePage() {
   );
 }
 
-// �"��� Tool detail: sidebar nav + ToolPageLayout wrapper �����������������������������������������������"�
+// ─── Tool detail: sidebar nav + ToolPageLayout wrapper ───
 function ToolDetailPage({ toolId }) {
   const tool     = TOOLS.find(t => t.id === toolId);
   const meta     = TOOL_META[toolId];
@@ -905,16 +987,16 @@ function ToolDetailPage({ toolId }) {
   const acc = PAGE_THEME.color;
 
   useEffect(() => {
-    document.title = meta?.title || `${tool?.name} —" Free Image Tool | ToolsRift`;
+    document.title = meta?.title || `${tool?.name} — Free Image Tool | ToolsRift`;
     setDrawerOpen(false);
   }, [toolId]);
 
   if (!tool || !ToolComp) return (
     <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'}>
       <div style={{ padding:40, textAlign:'center', color:'#64748B', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
-        <div style={{ fontSize:48, marginBottom:16 }}>—"</div>
+        <div style={{ fontSize:48, marginBottom:16 }}>🔍</div>
         <p style={{ color:'#E2E8F0', marginBottom:8, fontSize:16 }}>Tool not found</p>
-        <a href="#/" style={{ color:acc }}>— Back to Image Tools</a>
+        <a href="#/" style={{ color:acc }}>← Back to Image Tools</a>
       </div>
     </CategoryLayout>
   );
@@ -982,7 +1064,7 @@ function ToolDetailPage({ toolId }) {
             onMouseEnter={e => e.currentTarget.style.color='#E2E8F0'}
             onMouseLeave={e => e.currentTarget.style.color='#64748B'}
           >
-            — Back to Image Tools
+            ← Back to Image Tools
           </a>
           <ToolPageLayout theme={PAGE_THEME} tool={toolData}>
             <ToolComp />
@@ -999,7 +1081,7 @@ function ToolDetailPage({ toolId }) {
           onClick={() => setDrawerOpen(d => !d)}
           style={{ background:acc, color:'#fff', border:'none', borderRadius:8, padding:'8px 16px', fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:"'Plus Jakarta Sans',sans-serif", minHeight:44, flexShrink:0 }}
         >
-          {drawerOpen ? '✕ Close' : '—"— All Tools'}
+          {drawerOpen ? '✕ Close' : '☰ All Tools'}
         </button>
       </div>
 
@@ -1023,7 +1105,7 @@ function ToolDetailPage({ toolId }) {
   );
 }
 
-// �"��� Main app �����������������������������������������������������������������������������������������������������������������������������������"�
+// ─── Main app ───
 function ToolsRiftImages() {
   const route = useAppRouter();
   return (

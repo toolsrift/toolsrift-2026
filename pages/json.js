@@ -1,8 +1,9 @@
 import Head from 'next/head'
 import dynamic from 'next/dynamic'
+import CategoryLoading from '../components/CategoryLoading'
 import CategoryContent from '../components/CategoryContent'
 import categoryContent from '../lib/categoryContent'
-const ToolsRiftJson = dynamic(() => import('../components/toolsrift-json'), { ssr: false })
+const ToolsRiftJson = dynamic(() => import('../components/toolsrift-json'), { ssr: false, loading: CategoryLoading })
 export default function Json() {
   return (<><Head>
         <title>Free JSON Tools — Format, Validate, Minify | ToolsRift</title>

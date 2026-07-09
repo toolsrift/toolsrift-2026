@@ -1,8 +1,9 @@
 import Head from 'next/head'
 import dynamic from 'next/dynamic';
+import CategoryLoading from '../components/CategoryLoading'
 import CategoryContent from '../components/CategoryContent'
 import categoryContent from '../lib/categoryContent'
-const ToolsRiftFancy = dynamic(() => import('../components/toolsrift-fancy'), { ssr: false });
+const ToolsRiftFancy = dynamic(() => import('../components/toolsrift-fancy'), { ssr: false, loading: CategoryLoading });
 export default function FancyPage() {
   return (
     <>

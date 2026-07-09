@@ -65,6 +65,25 @@ export function ToolSchemas({ theme, tool }) {
   );
 }
 
+// ── Fast in-app hash navigation ─────────────────────────────────────────────
+// Related-tool / sidebar links point at `${pageRoute}#/tool/<id>`. When the user
+// is already ON that category page, changing only the hash normally waits for the
+// browser's hashchange event, which it delays ~60ms while the main thread is busy
+// — so the previous view lingers (a visible flash). Setting the hash and firing
+// hashchange ourselves swaps to the tool in the same tick. When on a different
+// path we do nothing and let the browser navigate normally.
+function fastHashNav(e, pageRoute, id) {
+  if (typeof window === 'undefined') return;
+  if (window.location.pathname !== pageRoute) return;
+  const target = `#/tool/${id}`;
+  e.preventDefault();
+  window.scrollTo(0, 0);
+  if (window.location.hash !== target) {
+    window.location.hash = target;
+    window.dispatchEvent(new Event('hashchange'));
+  }
+}
+
 // ── Ad slot placeholder (kept as a no-op stub for forward compatibility) ────
 // Renders nothing. The previous visual placeholder was removed at user request.
 function AdSlot() { return null; }
@@ -277,6 +296,7 @@ function RelatedTools({ theme, related = [] }) {
             <StaggerItem key={t.id}>
               <motion.a
                 href={`${theme.pageRoute}#/tool/${t.id}`}
+                onClick={(e) => fastHashNav(e, theme.pageRoute, t.id)}
                 whileHover={{ y: -3, borderColor: theme.color, background: theme.tint06 }}
                 transition={SPRING.smooth}
                 style={{
@@ -363,6 +383,7 @@ function ToolSidebar({ theme, tool, related = [] }) {
           <a
             key={t.id}
             href={`${theme.pageRoute}#/tool/${t.id}`}
+            onClick={(e) => fastHashNav(e, theme.pageRoute, t.id)}
             style={{
               display: 'flex', alignItems: 'center', gap: 10, minHeight: 40,
               padding: '9px 16px', textDecoration: 'none',

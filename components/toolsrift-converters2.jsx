@@ -91,6 +91,20 @@ function DataTable({ columns, rows }) {
   );
 }
 
+function CopyBtn({ text }) {
+  const [done, setDone] = useState(false);
+  if (text == null || text === "" || text === "—") return null;
+  return (
+    <button
+      onClick={() => navigator.clipboard?.writeText(String(text)).then(() => { setDone(true); setTimeout(() => setDone(false), 2000); }).catch(() => {})}
+      title="Copy value"
+      style={{ background: "transparent", border: `1px solid ${C.border}`, color: done ? "#22C55E" : C.blue, borderRadius: 6, padding: "2px 7px", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'Plus Jakarta Sans',sans-serif", flexShrink: 0, lineHeight: 1.4 }}
+    >
+      {done ? "✓" : "⧉"}
+    </button>
+  );
+}
+
 function ConverterGrid({ title, units, state, onEdit, formula, activeKey }) {
   return (
     <VStack>
@@ -111,7 +125,10 @@ function ConverterGrid({ title, units, state, onEdit, formula, activeKey }) {
           return (
             <div key={u.key} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 12px", background: isActive ? "rgba(6,182,212,0.08)" : idx % 2 === 0 ? "#0F172A" : "#1a2234", borderLeft: isActive ? "3px solid #06B6D4" : "3px solid transparent" }}>
               <span style={{ fontSize: 12, color: isActive ? C.blue : C.muted, fontWeight: isActive ? 600 : 400 }}>{u.label}</span>
-              <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 13, color: isActive ? C.blue : C.text, fontWeight: 600 }}>{state[u.key] ?? "—"}</span>
+              <span style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+                <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 13, color: isActive ? C.blue : C.text, fontWeight: 600, overflowWrap: "anywhere", wordBreak: "break-word", textAlign: "right" }}>{state[u.key] ?? "—"}</span>
+                <CopyBtn text={state[u.key]} />
+              </span>
             </div>
           );
         })}

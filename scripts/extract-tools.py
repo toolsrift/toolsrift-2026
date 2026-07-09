@@ -17,7 +17,7 @@ MAP = {
  'mathcalc':'toolsrift-calc-math','pdf':'toolsrift-pdf','text':'toolsrift-text','units':'toolsrift-units',
 }
 
-cc = open('lib/categoryContent.js').read()
+cc = open('lib/categoryContent.js', encoding='utf-8').read()
 names = {m.group(1): m.group(2) for m in
          re.finditer(r"(\w+):\s*\{[^{}]*?categoryName:\s*['\"]([^'\"]+)['\"]", cc)}
 

@@ -147,7 +147,7 @@ const path = h.replace(/^#/, "") || "/";
 const parts = path.split("/").filter(Boolean);
 if (!parts.length) return { page:"home" };
 if (parts[0]==="tool" && parts[1]) return { page:"tool", toolId:parts[1] };
-if (parts[0]==="category" && parts[1]) return { page:"category", catId:parts[1] };
+if (parts[0]==="category" && parts[1]) return { page:"home" };
 return { page:"home" };
 };
 const [route, setRoute] = useState(parse);
@@ -1703,8 +1703,7 @@ function Nav() {
       transition: "background 0.2s, border-color 0.2s",
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <span style={{ width: 8, height: 8, borderRadius: "50%", background: C.blue, boxShadow: `0 0 6px ${C.blue}80`, flexShrink: 0 }} />
-        <a href="https://toolsrift.com" style={{ fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 15, color: "#F8FAFC", textDecoration: "none", letterSpacing: "-0.01em" }}>ToolsRift</a>
+        <a href="/" aria-label="ToolsRift home" style={{display:"flex",alignItems:"center",flexShrink:0}}><img src="/logo.svg" alt="ToolsRift" style={{height:26,display:"block"}}/></a>
         <span style={{ color: "rgba(255,255,255,0.2)", fontSize: 13 }}>›</span>
         <span style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 14, fontWeight: 500, color: C.blue }}>{THEME?.name}</span>
       </div>

@@ -1,5 +1,5 @@
 ﻿import { useEffect, useMemo, useState } from "react";
-// PHASE 1: import { trackUse, isLimitReached, getRemaining, DAILY_LIMIT } from "../lib/usage";
+// PHASE 2: import { trackUse, isLimitReached, getRemaining, DAILY_LIMIT } from "../lib/usage";
 import { getCategoryById } from '../lib/categoryThemes';
 import CategoryLayout from './shared/CategoryLayout';
 import CategoryDashboard from './shared/CategoryDashboard';
@@ -197,7 +197,7 @@ function Breadcrumb({ tool, cat }) {
   return (
     <>
       <div style={{ display: "flex", gap: 6, fontSize: 12, color: C.muted, marginBottom: 16 }}>
-        <a href="https://toolsrift.com" style={{ color: C.muted, textDecoration: "none" }}>—— ToolsRift</a>
+        <a href="https://toolsrift.com" style={{ color: C.muted, textDecoration: "none" }}>🏠 ToolsRift</a>
         {cat && <><span>›</span><a href={`#/category/${cat.id}`} style={{ color: C.muted, textDecoration: "none" }}>{cat.name}</a></>}
         {tool && <><span>›</span><span style={{ color: C.text }}>{tool.name}</span></>}
       </div>
@@ -216,7 +216,7 @@ function Breadcrumb({ tool, cat }) {
 
 function ToolPage({ toolId }) {
   const tool = TOOLS.find((t) => t.id === toolId);
-  const meta = null; // TOOL_META placeholder —" add per-tool SEO meta here in future
+  const meta = null; // TOOL_META placeholder — add per-tool SEO meta here in future
   const ToolComp = TOOL_COMPONENTS[toolId];
   const cat = CATEGORIES.find((c) => c.id === tool?.cat);
   // PHASE 2: const [upgradeReason, setUpgradeReason] = useState(null);
@@ -236,17 +236,17 @@ function ToolPage({ toolId }) {
         <Badge>Dev Tools</Badge>
       </div>
       {/* PHASE 2: {upgradeReason && <UpgradeModal reason={upgradeReason} onClose={() => setUpgradeReason(null)} />} */}
-      {/* PHASE 1: All tools are free —" always render tool directly */}
+      {/* PHASE 1: All tools are free — always render tool directly */}
       <Card className="fade-in"><ToolComp /></Card>
       {meta?.howTo && (
         <div style={{ background:'rgba(59,130,246,0.05)', border:'1px solid rgba(59,130,246,0.12)', borderRadius:16, padding:'28px 32px', marginBottom:24, marginTop:24 }}>
-          <h2 style={{ fontSize:17, fontWeight:700, color:'#F1F5F9', margin:'0 0 12px', fontFamily:"'Sora', sans-serif" }}>—"— How to Use This Tool</h2>
+          <h2 style={{ fontSize:17, fontWeight:700, color:'#F1F5F9', margin:'0 0 12px', fontFamily:"'Sora', sans-serif" }}>📖 How to Use This Tool</h2>
           <p style={{ fontSize:14, color:'#94A3B8', lineHeight:1.8, margin:0 }}>{meta.howTo}</p>
         </div>
       )}
       {meta?.faq && meta.faq.length > 0 && (
         <div style={{ marginBottom:24 }}>
-          <h2 style={{ fontSize:17, fontWeight:700, color:'#F1F5F9', margin:'0 0 16px', fontFamily:"'Sora', sans-serif" }}>—" Frequently Asked Questions</h2>
+          <h2 style={{ fontSize:17, fontWeight:700, color:'#F1F5F9', margin:'0 0 16px', fontFamily:"'Sora', sans-serif" }}>❓ Frequently Asked Questions</h2>
           <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
             {meta.faq.map(([q,a],i) => (
               <details key={i} style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:12, overflow:'hidden' }}>
@@ -269,7 +269,7 @@ function ToolPage({ toolId }) {
         </div>
       )}
       <div style={{ marginBottom:48 }}>
-        <h2 style={{ fontSize:17, fontWeight:700, color:'#F1F5F9', margin:'0 0 14px', fontFamily:"'Sora', sans-serif" }}>—"— Related Tools</h2>
+        <h2 style={{ fontSize:17, fontWeight:700, color:'#F1F5F9', margin:'0 0 14px', fontFamily:"'Sora', sans-serif" }}>🔗 Related Tools</h2>
         <div style={{ display:'flex', flexWrap:'wrap', gap:10 }}>
           {TOOLS.filter(t => t.cat === tool.cat && t.id !== tool.id).slice(0,6).map(t => (
             <a key={t.id} href={`#/tool/${t.id}`} style={{ padding:'8px 16px', borderRadius:20, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', color:'#94A3B8', textDecoration:'none', fontSize:13, fontWeight:500 }}>{t.name}</a>
@@ -361,7 +361,7 @@ const DEV_SPECIAL_CSS = `
 `;
 
 function CategoryHomePage() {
-  useEffect(() => { document.title = 'Free Developer Tools —" ToolsRift'; }, []);
+  useEffect(() => { document.title = 'Free Developer Tools — ToolsRift'; }, []);
 
   return (
     <CategoryLayout theme={PAGE_THEME} currentTool={null}>
@@ -382,16 +382,16 @@ function ToolDetailPage({ toolId }) {
   const acc = PAGE_THEME.color;
 
   useEffect(() => {
-    document.title = `${tool?.name || toolId} —" Free Developer Tool | ToolsRift`;
+    document.title = `${tool?.name || toolId} — Free Developer Tool | ToolsRift`;
     setDrawerOpen(false);
   }, [toolId]);
 
   if (!tool || !ToolComp) return (
     <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'}>
       <div style={{ padding:40, textAlign:'center', color:'#64748B', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
-        <div style={{ fontSize:48, marginBottom:16 }}>—"</div>
+        <div style={{ fontSize:48, marginBottom:16 }}>🔍</div>
         <p style={{ color:'#E2E8F0', marginBottom:8, fontSize:16 }}>Tool not found</p>
-        <a href="#/" style={{ color:acc }}>— Back to Developer Tools</a>
+        <a href="#/" style={{ color:acc }}>← Back to Developer Tools</a>
       </div>
     </CategoryLayout>
   );
@@ -419,7 +419,7 @@ function ToolDetailPage({ toolId }) {
                     onMouseEnter={e => { if (!isActive) e.currentTarget.style.background='rgba(255,255,255,0.03)'; }}
                     onMouseLeave={e => { if (!isActive) e.currentTarget.style.background='transparent'; }}
                   >
-                    <span style={{ fontSize:15, flexShrink:0 }}>{t.icon||'—"—'}</span>
+                    <span style={{ fontSize:15, flexShrink:0 }}>{t.icon||'·'}</span>
                     <span style={{ fontSize:13, fontWeight:isActive?600:400, color:isActive?'#F1F5F9':'#94A3B8', lineHeight:1.3, fontFamily:"'Plus Jakarta Sans',sans-serif" }}>{t.name}</span>
                   </a>
                 );
@@ -432,7 +432,7 @@ function ToolDetailPage({ toolId }) {
           <a href="#/" style={{ display:'inline-flex', alignItems:'center', gap:6, color:'#64748B', fontSize:13, textDecoration:'none', marginBottom:16, fontFamily:"'Plus Jakarta Sans',sans-serif" }}
             onMouseEnter={e => e.currentTarget.style.color='#E2E8F0'}
             onMouseLeave={e => e.currentTarget.style.color='#64748B'}
-          >— Back to Developer Tools</a>
+          >← Back to Developer Tools</a>
           <ToolPageLayout theme={PAGE_THEME} tool={toolData}>
             <ToolComp />
           </ToolPageLayout>
@@ -440,9 +440,9 @@ function ToolDetailPage({ toolId }) {
       </div>
 
       <div className="trd-mobile-bar" style={{ position:'fixed', bottom:0, left:0, right:0, zIndex:200, background:'rgba(6,9,15,0.96)', backdropFilter:'blur(12px)', borderTop:'1px solid rgba(255,255,255,0.06)', padding:'12px 16px', justifyContent:'space-between', alignItems:'center' }}>
-        <span style={{ fontSize:13, color:'#94A3B8', fontFamily:"'Plus Jakarta Sans',sans-serif", overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', maxWidth:'60%' }}>{tool.icon||'—"—'} {tool.name}</span>
+        <span style={{ fontSize:13, color:'#94A3B8', fontFamily:"'Plus Jakarta Sans',sans-serif", overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', maxWidth:'60%' }}>{tool.icon||'·'} {tool.name}</span>
         <button onClick={() => setDrawerOpen(d => !d)} style={{ background:acc, color:'#fff', border:'none', borderRadius:8, padding:'8px 16px', fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:"'Plus Jakarta Sans',sans-serif", minHeight:44, flexShrink:0 }}>
-          {drawerOpen ? '✕ Close' : '—"— All Tools'}
+          {drawerOpen ? '✕ Close' : '☰ All Tools'}
         </button>
       </div>
 
@@ -454,7 +454,7 @@ function ToolDetailPage({ toolId }) {
               <a key={t.id} href={`#/tool/${t.id}`} onClick={() => setDrawerOpen(false)}
                 style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 20px', minHeight:52, textDecoration:'none', background:isActive?`${acc}18`:'transparent', borderLeft:isActive?`3px solid ${acc}`:'3px solid transparent' }}
               >
-                <span style={{ fontSize:20 }}>{t.icon||'—"—'}</span>
+                <span style={{ fontSize:20 }}>{t.icon||'·'}</span>
                 <span style={{ fontSize:14, fontWeight:isActive?600:400, color:isActive?'#F1F5F9':'#94A3B8', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>{t.name}</span>
               </a>
             );
@@ -506,7 +506,7 @@ function UnixTimestampTool() {
 
   return (
     <VStack>
-      <SectionTitle icon="——" title="Unix Timestamp Converter" subtitle="Convert Unix timestamp — human-readable date, with live current timestamp." />
+      <SectionTitle icon="⏱️" title="Unix Timestamp Converter" subtitle="Convert Unix timestamp — human-readable date, with live current timestamp." />
       <Grid2>
         <div>
           <Label>Unix Timestamp (seconds)</Label>
@@ -626,7 +626,7 @@ function CronParserTool() {
 
   return (
     <VStack>
-      <SectionTitle icon="—" title="Cron Parser" subtitle="Parse cron expression and show next 10 run times." />
+      <SectionTitle icon="⏰" title="Cron Parser" subtitle="Parse cron expression and show next 10 run times." />
       <div>
         <Label>Cron Expression</Label>
         <Input value={expr} onChange={setExpr} placeholder="m h dom mon dow" />
@@ -662,7 +662,7 @@ function CronGenTool() {
 
   return (
     <VStack>
-      <SectionTitle icon="🛠—" title="Cron Generator" subtitle="Generate cron expression from dropdown controls." />
+      <SectionTitle icon="🛠️" title="Cron Generator" subtitle="Generate cron expression from dropdown controls." />
       <Grid3>
         <div>
           <Label>Minute Mode</Label>
@@ -726,7 +726,7 @@ function TimezoneDevTool() {
 
   return (
     <VStack>
-      <SectionTitle icon="—" title="Timezone Dev" subtitle="Current time in major timezones, live-updating." />
+      <SectionTitle icon="🌐" title="Timezone Dev" subtitle="Current time in major timezones, live-updating." />
       <DataTable columns={["Timezone", "Current Time"]} rows={rows} />
     </VStack>
   );
@@ -790,7 +790,7 @@ function DateFormatCalcTool() {
 
   return (
     <VStack>
-      <SectionTitle icon="—" title="Date Format Calculator" subtitle="Convert dates into 20+ standard and custom formats." />
+      <SectionTitle icon="📅" title="Date Format Calculator" subtitle="Convert dates into 20+ standard and custom formats." />
       <Grid2>
         <div><Label>Date Input</Label><Input value={input} onChange={setInput} placeholder="ISO, RFC, or parseable date string" /></div>
         <div><Label>Custom Pattern</Label><Input value={custom} onChange={setCustom} placeholder="YYYY-MM-DD HH:mm:ss" /></div>
@@ -834,7 +834,7 @@ function UrlParserTool() {
 
   return (
     <VStack>
-      <SectionTitle icon="—" title="URL Parser" subtitle="Fully parse protocol, host, port, path, query, fragment." />
+      <SectionTitle icon="🔗" title="URL Parser" subtitle="Fully parse protocol, host, port, path, query, fragment." />
       <div><Label>URL</Label><Input value={url} onChange={setUrl} /></div>
       <DataTable columns={["Part", "Value"]} rows={rows} />
     </VStack>
@@ -867,7 +867,7 @@ function QueryStringBuilderTool() {
 
   return (
     <VStack>
-      <SectionTitle icon="—" title="Query String Builder" subtitle="Build and encode/decode key-value query strings." />
+      <SectionTitle icon="🔍" title="Query String Builder" subtitle="Build and encode/decode key-value query strings." />
       {pairs.map((p, i) => (
         <Grid3 key={i}>
           <div><Label>Key</Label><Input value={p.key} onChange={(v) => update(i, "key", v)} /></div>
@@ -925,7 +925,7 @@ function UserAgentParserTool() {
 
   return (
     <VStack>
-      <SectionTitle icon="🕵—" title="User-Agent Parser" subtitle="Extract browser, OS, device, and engine details." />
+      <SectionTitle icon="🕵️" title="User-Agent Parser" subtitle="Extract browser, OS, device, and engine details." />
       <div><Label>User-Agent String</Label><Textarea value={ua} onChange={setUa} rows={5} /></div>
       <DataTable columns={["Field", "Value"]} rows={[
         ["Browser", `${parsed.browser} ${parsed.browserVer}`],
@@ -1029,7 +1029,7 @@ function CidrCalcTool() {
 
   return (
     <VStack>
-      <SectionTitle icon="—" title="CIDR Calculator" subtitle="Compute network range, broadcast, netmask and hosts." />
+      <SectionTitle icon="🌐" title="CIDR Calculator" subtitle="Compute network range, broadcast, netmask and hosts." />
       <div><Label>CIDR Notation</Label><Input value={cidr} onChange={setCidr} /></div>
       {"err" in out ? (
         <Card><div style={{ color: "#FCA5A5" }}>{out.err}</div></Card>
@@ -1068,7 +1068,7 @@ function HttpStatusCodesTool() {
 
   return (
     <VStack>
-      <SectionTitle icon="—" title="HTTP Status Codes" subtitle="Searchable reference of HTTP response status codes." />
+      <SectionTitle icon="🔢" title="HTTP Status Codes" subtitle="Searchable reference of HTTP response status codes." />
       <div><Label>Search</Label><Input value={q} onChange={setQ} placeholder="e.g. 404, timeout, created" /></div>
       <DataTable columns={["Code", "Description", "Class"]} rows={rows} maxHeight={460} />
     </VStack>
@@ -1313,7 +1313,7 @@ function CurlBuilderTool() {
 
   return (
     <VStack>
-      <SectionTitle icon="—" title="cURL Builder" subtitle="Build cURL commands from method, URL, headers, and body input." />
+      <SectionTitle icon="🌐" title="cURL Builder" subtitle="Build cURL commands from method, URL, headers, and body input." />
       <Grid2>
         <div>
           <Label>Method</Label>
@@ -1435,7 +1435,7 @@ ${Object.entries(p.headers).map(([k, v]) => `  req.Header.Set("${k}", "${v}")`).
 
   return (
     <VStack>
-      <SectionTitle icon="—" title="cURL to Code" subtitle="Convert cURL command into Python / JavaScript / PHP / Go snippets." />
+      <SectionTitle icon="💻" title="cURL to Code" subtitle="Convert cURL command into Python / JavaScript / PHP / Go snippets." />
       <div><Label>cURL Command</Label><Textarea value={curl} onChange={setCurl} rows={9} /></div>
       <Grid2>
         <div>
@@ -1498,7 +1498,7 @@ function JwtDebuggerTool() {
     try {
       const data = `${h}.${p}`;
       const sig = await hmacSHA256(secret, data);
-      setVerifyRes(sig === s ? "✅ Signature valid (HS256)" : "—— Signature mismatch");
+      setVerifyRes(sig === s ? "✅ Signature valid (HS256)" : "❌ Signature mismatch");
     } catch {
       setVerifyRes("Verification failed");
     }
@@ -1506,7 +1506,7 @@ function JwtDebuggerTool() {
 
   return (
     <VStack>
-      <SectionTitle icon="—" title="JWT Debugger" subtitle="Decode header/payload/signature and verify HS256 signature." />
+      <SectionTitle icon="🔑" title="JWT Debugger" subtitle="Decode header/payload/signature and verify HS256 signature." />
       <div><Label>JWT Token</Label><Textarea value={token} onChange={setToken} rows={7} /></div>
       <Grid2>
         <div><Label>Secret (for HS256 verify)</Label><Input value={secret} onChange={setSecret} /></div>
@@ -1630,7 +1630,7 @@ function CrontabGuruTool() {
 
   return (
     <VStack>
-      <SectionTitle icon="—" title="Crontab Guru (Visual Builder)" subtitle="Build cron schedule visually and get human-readable explanation + next runs." />
+      <SectionTitle icon="⏰" title="Crontab Guru (Visual Builder)" subtitle="Build cron schedule visually and get human-readable explanation + next runs." />
       <Grid3>
         <div><Label>Minute</Label><Input value={minute} onChange={setMinute} /></div>
         <div><Label>Hour</Label><Input value={hour} onChange={setHour} /></div>
@@ -1728,7 +1728,7 @@ const CSS_UNITS = [
   ["em", "Relative", "Relative to font-size", "font-size: 1.25em"],
   ["rem", "Relative", "Relative to root font-size", "font-size: 1.25rem"],
   ["ex", "Relative", "x-height of element font", "font-size: 2ex"],
-  ["ch", "Relative", "Width of “0— glyph", "width: 20ch"],
+  ["ch", "Relative", "Width of “0” glyph", "width: 20ch"],
   ["lh", "Relative", "Line height of element", "margin-top: 2lh"],
   ["rlh", "Relative", "Root line height", "margin-top: 1rlh"],
   ["vw", "Viewport", "1% viewport width", "width: 50vw"],
@@ -1885,7 +1885,7 @@ function AsciiTableTool() {
 
   return (
     <VStack>
-      <SectionTitle icon="—" title="ASCII Table" subtitle="Complete 0–127 table. Searchable, scrollable, and clicking a row copies the character." />
+      <SectionTitle icon="🔤" title="ASCII Table" subtitle="Complete 0–127 table. Searchable, scrollable, and clicking a row copies the character." />
       <div><Label>Search / Filter</Label><Input value={q} onChange={setQ} placeholder="e.g. 65, A, DEL, 01000001" /></div>
       {copied && <div style={{ color: "#93C5FD", fontSize: 12 }}>{copied}</div>}
       <div style={{ maxHeight: 460, overflow: "auto", border: `1px solid ${C.border}`, borderRadius: 10 }}>
@@ -1947,7 +1947,7 @@ function CssUnitsRefTool() {
 
   return (
     <VStack>
-      <SectionTitle icon="—" title="CSS Units Reference" subtitle="Searchable guide to CSS units with live preview." />
+      <SectionTitle icon="📐" title="CSS Units Reference" subtitle="Searchable guide to CSS units with live preview." />
       <div><Label>Search / Filter</Label><Input value={q} onChange={setQ} placeholder="px, rem, viewport, absolute..." /></div>
 
       <Card>
@@ -2014,7 +2014,7 @@ function LinuxCommandsRefTool() {
 
   return (
     <VStack>
-      <SectionTitle icon="——" title="Linux Commands Reference" subtitle="Search Linux commands with practical examples." />
+      <SectionTitle icon="🐧" title="Linux Commands Reference" subtitle="Search Linux commands with practical examples." />
       <div><Label>Search / Filter</Label><Input value={q} onChange={setQ} placeholder="grep, ssh, tar..." /></div>
       <DataTable columns={["Command", "Description", "Example"]} rows={rows} maxHeight={500} />
     </VStack>
@@ -2085,7 +2085,7 @@ function HttpHeadersRefTool() {
 
   return (
     <VStack>
-      <SectionTitle icon="—" title="HTTP Headers Reference" subtitle="Common request/response headers and descriptions." />
+      <SectionTitle icon="📋" title="HTTP Headers Reference" subtitle="Common request/response headers and descriptions." />
       <div><Label>Search / Filter</Label><Input value={q} onChange={setQ} placeholder="content-type, auth, cache..." /></div>
       <DataTable columns={["Header", "Type", "Description"]} rows={rows} maxHeight={500} />
     </VStack>
@@ -2199,7 +2199,7 @@ function LoremIpsumAdvTool() {
 
   return (
     <VStack>
-      <SectionTitle icon="——" title="Lorem Ipsum Advanced" subtitle="Generate lorem ipsum by words, sentences, or paragraphs with custom length." />
+      <SectionTitle icon="📝" title="Lorem Ipsum Advanced" subtitle="Generate lorem ipsum by words, sentences, or paragraphs with custom length." />
       <Grid2>
         <div>
           <Label>Mode</Label>
@@ -2260,7 +2260,7 @@ function HashGeneratorAdvTool() {
 
   return (
     <VStack>
-      <SectionTitle icon="#—⃣" title="Hash Generator Advanced" subtitle="Generate MD5, SHA1, SHA256, SHA512 side by side from text input." />
+      <SectionTitle icon="#️⃣" title="Hash Generator Advanced" subtitle="Generate MD5, SHA1, SHA256, SHA512 side by side from text input." />
       <div><Label>Input Text</Label><Textarea value={text} onChange={setText} rows={6} /></div>
       <DataTable columns={["Algorithm", "Hash"]} rows={[
         ["MD5", hashes.md5],
@@ -2361,7 +2361,7 @@ function TextShadowGenTool() {
 
   return (
     <VStack>
-      <SectionTitle icon="—" title="Text Shadow Generator" subtitle="Generate text-shadow CSS with a live text preview." />
+      <SectionTitle icon="✨" title="Text Shadow Generator" subtitle="Generate text-shadow CSS with a live text preview." />
       <Grid2>
         <div><Label>Preview Text</Label><Input value={text} onChange={setText} /></div>
         <div><Label>Color</Label><Input value={color} onChange={setColor} /></div>
@@ -2391,7 +2391,7 @@ function BorderRadiusGenTool() {
 
   return (
     <VStack>
-      <SectionTitle icon="—" title="Border Radius Generator" subtitle="Set each corner independently with live preview." />
+      <SectionTitle icon="🔲" title="Border Radius Generator" subtitle="Set each corner independently with live preview." />
       <Grid2>
         <div><Label>Top Left</Label><Input value={tl} onChange={setTl} /></div>
         <div><Label>Top Right</Label><Input value={tr} onChange={setTr} /></div>
@@ -2426,7 +2426,7 @@ gap: ${gap}px;`;
 
   return (
     <VStack>
-      <SectionTitle icon="—" title="Flexbox Generator" subtitle="Visual flex controls with live layout preview and CSS output." />
+      <SectionTitle icon="📐" title="Flexbox Generator" subtitle="Visual flex controls with live layout preview and CSS output." />
       <Grid3>
         <div><Label>Direction</Label><SelectInput value={dir} onChange={setDir} options={[
           { value: "row", label: "row" }, { value: "column", label: "column" }, { value: "row-reverse", label: "row-reverse" }, { value: "column-reverse", label: "column-reverse" },
@@ -2528,7 +2528,7 @@ function AnimationGenTool() {
 
   return (
     <VStack>
-      <SectionTitle icon="🎞—" title="Animation Generator" subtitle="Generate @keyframes animation CSS with live preview." />
+      <SectionTitle icon="🎞️" title="Animation Generator" subtitle="Generate @keyframes animation CSS with live preview." />
       <Grid3>
         <div><Label>Name</Label><Input value={name} onChange={setName} /></div>
         <div><Label>Duration (s)</Label><Input value={duration} onChange={setDuration} /></div>
@@ -2598,7 +2598,7 @@ function MetaTagsAdvTool() {
 
   return (
     <VStack>
-      <SectionTitle icon="——" title="Meta Tags Advanced Generator" subtitle="Generate complete SEO, Open Graph, and Twitter meta tags with preview." />
+      <SectionTitle icon="🏷️" title="Meta Tags Advanced Generator" subtitle="Generate complete SEO, Open Graph, and Twitter meta tags with preview." />
       <Grid2>
         <div><Label>Page Title</Label><Input value={title} onChange={setTitle} /></div>
         <div><Label>Site Name</Label><Input value={site} onChange={setSite} /></div>
