@@ -184,6 +184,12 @@ const TOOLS = [
   { id:"leetspeak-translator", cat:"encoding", name:"Leetspeak Translator", desc:"Convert text to and from leetspeak (l33t) with light and heavy substitution modes", icon:"1337", free:true },
   { id:"a1z26-cipher", cat:"encoding", name:"A1Z26 Cipher", desc:"Encode letters to numbers (A=1, Z=26) and decode number sequences back to text", icon:"🔢", free:true },
   { id:"rail-fence-cipher", cat:"encoding", name:"Rail Fence Cipher", desc:"Encrypt and decrypt text with the zigzag rail fence transposition cipher (2-10 rails)", icon:"🚧", free:true },
+  { id:"bacon-cipher", cat:"encoding", name:"Bacon Cipher", desc:"Encode text into Baconian a/b groups of five and decode Bacon cipher back to text", icon:"🥓", free:true },
+  { id:"affine-cipher", cat:"encoding", name:"Affine Cipher", desc:"Encrypt and decrypt with the affine cipher using multiplier and shift keys (a coprime to 26)", icon:"➗", free:true },
+  { id:"polybius-square", cat:"encoding", name:"Polybius Square Cipher", desc:"Convert letters to row-column number pairs with the 5×5 Polybius square (I/J shared)", icon:"⬜", free:true },
+  { id:"tap-code", cat:"encoding", name:"Tap Code Translator", desc:"Encode text as prisoner tap-code row,column taps and decode taps back to letters (K→C)", icon:"👊", free:true },
+  { id:"beaufort-cipher", cat:"encoding", name:"Beaufort Cipher", desc:"Encrypt and decrypt with the reciprocal Beaufort cipher using a keyword", icon:"🧭", free:true },
+  { id:"gronsfeld-cipher", cat:"encoding", name:"Gronsfeld Cipher", desc:"Encrypt and decrypt with the Gronsfeld cipher using a numeric digit key", icon:"🔢", free:true },
 ];
 
 const CATEGORIES = [
@@ -315,6 +321,60 @@ const TOOL_META = {
       ["How does the rail fence cipher work?", "Characters are written diagonally down and up across a number of 'rails' (rows) in a zigzag pattern, then read off row by row to produce the ciphertext. It's a transposition cipher — it rearranges letters rather than substituting them."],
       ["How many rails should I use?", "Any number from 2 to 10. More rails create a more scrambled result. Note that using 1 rail leaves the text unchanged (identity)."],
       ["Does decryption restore the exact original?", "Yes — the tool reconstructs the zigzag pattern from the ciphertext length, so decoding an encoded message with the same rail count returns your exact original text, including spaces and punctuation."]
+    ]
+  },
+  "bacon-cipher": {
+    title: "Free Bacon Cipher – Baconian a/b Encoder & Decoder | ToolsRift",
+    desc: "Encode text into Baconian cipher (groups of five a/b letters) and decode Bacon cipher back to text. Uses the modern 26-letter distinct alphabet.",
+    faq: [
+      ["What is the Bacon cipher?", "The Baconian cipher, devised by Francis Bacon in 1605, is a steganographic cipher that encodes each letter as a group of five characters using only two symbols (here 'a' and 'b'), like a 5-bit binary code."],
+      ["Which alphabet does this tool use?", "The modern 26-letter version, where every letter gets its own distinct code (A=aaaaa … Z=bbaab). The original 24-letter version merged I/J and U/V; this tool avoids that ambiguity for a perfect round-trip."],
+      ["How do I decode a Bacon message?", "Paste the a/b groups (spaces optional) into decode mode. Any characters that are not 'a' or 'b' are ignored, and every group of five is converted back to a letter."]
+    ]
+  },
+  "affine-cipher": {
+    title: "Free Affine Cipher – Encrypt & Decrypt Online | ToolsRift",
+    desc: "Encrypt and decrypt text with the affine cipher using multiplier (a) and shift (b) keys. The multiplier must be coprime with 26 for a reversible cipher.",
+    faq: [
+      ["How does the affine cipher work?", "Each letter's position x (0–25) is transformed with the formula E(x) = (a·x + b) mod 26. Decryption uses the modular inverse of a: D(y) = a⁻¹·(y − b) mod 26."],
+      ["Why must 'a' be coprime with 26?", "Only values of a that share no common factor with 26 (1, 3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25) have a modular inverse, which is required to decrypt the message uniquely."],
+      ["What happens to spaces and punctuation?", "Only A–Z letters are transformed. Spaces, digits, and punctuation pass through unchanged, preserving the layout of your text."]
+    ]
+  },
+  "polybius-square": {
+    title: "Free Polybius Square Cipher – Letter to Number Encoder | ToolsRift",
+    desc: "Convert letters to row-column number pairs using the classic 5×5 Polybius square. I and J share a cell. Decode number pairs back to text instantly.",
+    faq: [
+      ["What is the Polybius square?", "A 5×5 grid that maps each letter to a two-digit coordinate (row, column). Because 26 letters don't fit in 25 cells, I and J share one cell — a convention dating to Ancient Greece."],
+      ["How is 'HELLO' encoded?", "H is row 2 column 3 → 23, E → 15, L → 31, L → 31, O → 34, giving '23 15 31 31 34'."],
+      ["What happens to J when decoding?", "Every 24 (the I/J cell) decodes as 'I'. If your original text contained a J, it will read back as I — this is inherent to the classic square."]
+    ]
+  },
+  "tap-code": {
+    title: "Free Tap Code Translator – Prisoner Tap Cipher | ToolsRift",
+    desc: "Encode text as tap code (row, column taps on a 5×5 grid) and decode taps back to letters. K is sent as C. Famously used by POWs to communicate.",
+    faq: [
+      ["What is tap code?", "A knock-based cipher on a 5×5 Polybius-style grid where each letter is signalled as a number of taps for the row, a pause, then taps for the column. It was used by American POWs in Vietnam."],
+      ["Why is there no K?", "The 25-cell grid omits K; the letter K is sent using the code for C. When decoding, the C cell always returns C."],
+      ["How is the output formatted?", "Each letter is shown as 'row,column' (for example T = 4,4). You can read each number as that many taps separated by a short pause."]
+    ]
+  },
+  "beaufort-cipher": {
+    title: "Free Beaufort Cipher – Reciprocal Keyword Encoder | ToolsRift",
+    desc: "Encrypt and decrypt text with the Beaufort cipher using a keyword. The Beaufort cipher is reciprocal — encoding and decoding use the same operation.",
+    faq: [
+      ["How does the Beaufort cipher differ from Vigenère?", "Beaufort computes each ciphertext letter as C = (K − P) mod 26 instead of Vigenère's (P + K). This makes it reciprocal: applying the same keyword again decrypts the message."],
+      ["What can I use as a key?", "Any keyword made of letters. It is repeated across the message; only alphabetic characters are enciphered, and non-letters pass through unchanged."],
+      ["Do I need a separate decrypt mode?", "Not really — because Beaufort is reciprocal, encrypting the ciphertext with the same key restores the plaintext. The mode toggle is provided for clarity."]
+    ]
+  },
+  "gronsfeld-cipher": {
+    title: "Free Gronsfeld Cipher – Numeric Key Encoder & Decoder | ToolsRift",
+    desc: "Encrypt and decrypt text with the Gronsfeld cipher using a numeric digit key. A simple Vigenère variant where each digit shifts a letter by 0–9 places.",
+    faq: [
+      ["What is the Gronsfeld cipher?", "A variant of the Vigenère cipher that uses a key made of digits (0–9) instead of letters. Each digit shifts the corresponding letter forward by that many positions."],
+      ["What is a valid key?", "Any string of digits, such as '31415'. The key repeats across the message. Non-digit characters in the key are ignored."],
+      ["How is 'PROCEED' encrypted with key 31415?", "P+3=S, R+1=S, O+4=S, C+1=D, E+5=J, E+3=H, D+1=E, giving 'SSSDJHE'. Decoding with the same key reverses each shift."]
     ]
   }
 };
@@ -1252,6 +1312,248 @@ function RailFenceCipher() {
   );
 }
 
+// ── Bacon Cipher (modern 26-letter distinct alphabet) ──
+function baconEncode(text) {
+  const out = [];
+  for (const ch of text.toUpperCase()) {
+    if (ch >= "A" && ch <= "Z") {
+      const n = ch.charCodeAt(0) - 65;
+      out.push(n.toString(2).padStart(5, "0").replace(/0/g, "a").replace(/1/g, "b"));
+    }
+  }
+  return out.join(" ");
+}
+function baconDecode(code) {
+  const bits = code.toLowerCase().replace(/[^ab]/g, "");
+  let out = "";
+  for (let i = 0; i + 5 <= bits.length; i += 5) {
+    const n = parseInt(bits.substr(i, 5).replace(/a/g, "0").replace(/b/g, "1"), 2);
+    if (n < 26) out += String.fromCharCode(65 + n);
+  }
+  return out;
+}
+function BaconCipher() {
+  const [mode, setMode] = useState("encode");
+  const [input, setInput] = useState("");
+  const output = useMemo(() => !input ? "" : mode === "encode" ? baconEncode(input) : baconDecode(input), [input, mode]);
+  return (
+    <VStack>
+      <div>
+        <Label>Mode</Label>
+        <SelectInput value={mode} onChange={setMode} options={[{ value:"encode", label:"Encode (text → a/b groups)" }, { value:"decode", label:"Decode (a/b groups → text)" }]} />
+      </div>
+      <div>
+        <Label>{mode === "encode" ? "Your Text" : "Bacon Cipher (a/b)"}</Label>
+        <Textarea value={input} onChange={setInput} rows={6} placeholder={mode === "encode" ? "HELLO" : "aaaaa aaaab aaaba"} />
+      </div>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>{mode === "encode" ? "Encoded" : "Decoded"}</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Result>{output}</Result>
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// ── Affine Cipher ──
+function affineInverse(a, m) {
+  let [oldR, r] = [a, m], [oldS, s] = [1, 0];
+  while (r) { const q = Math.floor(oldR / r); [oldR, r] = [r, oldR - q * r]; [oldS, s] = [s, oldS - q * s]; }
+  return ((oldS % m) + m) % m;
+}
+function AffineCipher() {
+  const [mode, setMode] = useState("encode");
+  const [input, setInput] = useState("");
+  const [a, setA] = useState("5");
+  const [b, setB] = useState("8");
+  const COPRIME = [1,3,5,7,9,11,15,17,19,21,23,25];
+  const av = parseInt(a) || 0, bv = ((parseInt(b) || 0) % 26 + 26) % 26;
+  const valid = COPRIME.includes(av);
+  const output = useMemo(() => {
+    if (!input || !valid) return "";
+    if (mode === "encode") return input.toUpperCase().replace(/[A-Z]/g, c => String.fromCharCode(65 + ((av * (c.charCodeAt(0) - 65) + bv) % 26)));
+    const ai = affineInverse(av, 26);
+    return input.toUpperCase().replace(/[A-Z]/g, c => String.fromCharCode(65 + ((ai * ((c.charCodeAt(0) - 65) - bv) % 26 + 26 * 26) % 26)));
+  }, [input, mode, av, bv, valid]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Mode</Label><SelectInput value={mode} onChange={setMode} options={[{ value:"encode", label:"Encrypt" }, { value:"decode", label:"Decrypt" }]} /></div>
+        <div style={{ display:"flex", gap:10 }}>
+          <div style={{ flex:1 }}><Label>Multiplier a</Label><Input value={a} onChange={setA} placeholder="5" /></div>
+          <div style={{ flex:1 }}><Label>Shift b</Label><Input value={b} onChange={setB} placeholder="8" /></div>
+        </div>
+      </Grid2>
+      {!valid && <div style={{ fontSize:12, color:C.warn }}>Multiplier <b>a</b> must be coprime with 26: {COPRIME.join(", ")}.</div>}
+      <div><Label>Your Text</Label><Textarea value={input} onChange={setInput} rows={6} placeholder="AFFINECIPHER" /></div>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>{mode === "encode" ? "Encrypted" : "Decrypted"}</Label><CopyBtn text={output} />
+          </div>
+          <Result mono={false}>{output}</Result>
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// ── Polybius Square (5×5, I/J shared) ──
+const POLYBIUS = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
+function PolybiusSquare() {
+  const [mode, setMode] = useState("encode");
+  const [input, setInput] = useState("");
+  const output = useMemo(() => {
+    if (!input) return "";
+    if (mode === "encode") {
+      const out = [];
+      for (const ch of input.toUpperCase()) {
+        const c = ch === "J" ? "I" : ch;
+        const idx = POLYBIUS.indexOf(c);
+        if (idx >= 0) out.push(`${Math.floor(idx / 5) + 1}${idx % 5 + 1}`);
+      }
+      return out.join(" ");
+    }
+    const nums = input.replace(/[^0-9]/g, "");
+    let out = "";
+    for (let i = 0; i + 2 <= nums.length; i += 2) {
+      const r = +nums[i] - 1, c = +nums[i + 1] - 1;
+      if (r >= 0 && r < 5 && c >= 0 && c < 5) out += POLYBIUS[r * 5 + c];
+    }
+    return out;
+  }, [input, mode]);
+  return (
+    <VStack>
+      <div><Label>Mode</Label><SelectInput value={mode} onChange={setMode} options={[{ value:"encode", label:"Encode (text → numbers)" }, { value:"decode", label:"Decode (numbers → text)" }]} /></div>
+      <div>
+        <Label>{mode === "encode" ? "Your Text" : "Number Pairs"}</Label>
+        <Textarea value={input} onChange={setInput} rows={5} placeholder={mode === "encode" ? "HELLO" : "23 15 31 31 34"} />
+      </div>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}><Label>{mode === "encode" ? "Encoded" : "Decoded"}</Label><CopyBtn text={output} /></div>
+          <Result>{output}</Result>
+        </div>
+      )}
+      <Card>
+        <div style={{ fontSize:12, color:C.muted, lineHeight:1.7 }}>
+          <b style={{ color:C.text }}>The 5×5 square</b> reads A–Z left-to-right, top-to-bottom, with <b>I and J</b> sharing cell 24. Each letter becomes a two-digit row-column code.
+        </div>
+      </Card>
+    </VStack>
+  );
+}
+
+// ── Tap Code (5×5, K→C) ──
+const TAPGRID = "ABCDEFGHIJLMNOPQRSTUVWXYZ";
+function TapCode() {
+  const [mode, setMode] = useState("encode");
+  const [input, setInput] = useState("");
+  const output = useMemo(() => {
+    if (!input) return "";
+    if (mode === "encode") {
+      const out = [];
+      for (const ch of input.toUpperCase()) {
+        const c = ch === "K" ? "C" : ch;
+        const idx = TAPGRID.indexOf(c);
+        if (idx >= 0) out.push(`${Math.floor(idx / 5) + 1},${idx % 5 + 1}`);
+      }
+      return out.join("  ");
+    }
+    let out = "";
+    for (const m of input.matchAll(/(\d)\s*,\s*(\d)/g)) {
+      const r = +m[1] - 1, c = +m[2] - 1;
+      if (r >= 0 && r < 5 && c >= 0 && c < 5) out += TAPGRID[r * 5 + c];
+    }
+    return out;
+  }, [input, mode]);
+  return (
+    <VStack>
+      <div><Label>Mode</Label><SelectInput value={mode} onChange={setMode} options={[{ value:"encode", label:"Encode (text → taps)" }, { value:"decode", label:"Decode (taps → text)" }]} /></div>
+      <div>
+        <Label>{mode === "encode" ? "Your Text" : "Tap Pairs (row,column)"}</Label>
+        <Textarea value={input} onChange={setInput} rows={5} placeholder={mode === "encode" ? "WATER" : "5,2  1,1  4,4  1,5  4,2"} />
+      </div>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}><Label>{mode === "encode" ? "Tap Code" : "Decoded"}</Label><CopyBtn text={output} /></div>
+          <Result>{output}</Result>
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// ── Beaufort Cipher (reciprocal) ──
+function beaufortRun(text, key) {
+  const k = key.toUpperCase().replace(/[^A-Z]/g, "");
+  if (!k) return text;
+  let ki = 0;
+  return text.toUpperCase().replace(/[A-Z]/g, c => {
+    const p = c.charCodeAt(0) - 65, kk = k.charCodeAt(ki % k.length) - 65; ki++;
+    return String.fromCharCode(65 + (((kk - p) % 26 + 26) % 26));
+  });
+}
+function BeaufortCipher() {
+  const [mode, setMode] = useState("encode");
+  const [input, setInput] = useState("");
+  const [key, setKey] = useState("KEY");
+  const output = useMemo(() => !input ? "" : beaufortRun(input, key), [input, key]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Mode</Label><SelectInput value={mode} onChange={setMode} options={[{ value:"encode", label:"Encrypt" }, { value:"decode", label:"Decrypt" }]} /></div>
+        <div><Label>Keyword</Label><Input value={key} onChange={setKey} placeholder="KEY" /></div>
+      </Grid2>
+      <div><Label>Your Text</Label><Textarea value={input} onChange={setInput} rows={6} placeholder="HELLOWORLD" /></div>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}><Label>{mode === "encode" ? "Encrypted" : "Decrypted"}</Label><CopyBtn text={output} /></div>
+          <Result mono={false}>{output}</Result>
+        </div>
+      )}
+      <Card><div style={{ fontSize:12, color:C.muted, lineHeight:1.7 }}>Beaufort is <b style={{ color:C.text }}>reciprocal</b> — running the ciphertext through the same key returns the original text.</div></Card>
+    </VStack>
+  );
+}
+
+// ── Gronsfeld Cipher (numeric key) ──
+function gronsfeldRun(text, key, decode) {
+  const digits = key.replace(/\D/g, "").split("").map(Number);
+  if (!digits.length) return text;
+  let ki = 0;
+  return text.toUpperCase().replace(/[A-Z]/g, c => {
+    const p = c.charCodeAt(0) - 65, k = digits[ki % digits.length]; ki++;
+    const shift = decode ? -k : k;
+    return String.fromCharCode(65 + (((p + shift) % 26 + 26) % 26));
+  });
+}
+function GronsfeldCipher() {
+  const [mode, setMode] = useState("encode");
+  const [input, setInput] = useState("");
+  const [key, setKey] = useState("31415");
+  const output = useMemo(() => !input ? "" : gronsfeldRun(input, key, mode === "decode"), [input, key, mode]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Mode</Label><SelectInput value={mode} onChange={setMode} options={[{ value:"encode", label:"Encrypt" }, { value:"decode", label:"Decrypt" }]} /></div>
+        <div><Label>Numeric Key</Label><Input value={key} onChange={setKey} placeholder="31415" /></div>
+      </Grid2>
+      <div><Label>Your Text</Label><Textarea value={input} onChange={setInput} rows={6} placeholder="PROCEED" /></div>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}><Label>{mode === "encode" ? "Encrypted" : "Decrypted"}</Label><CopyBtn text={output} /></div>
+          <Result mono={false}>{output}</Result>
+        </div>
+      )}
+    </VStack>
+  );
+}
+
 const TOOL_COMPONENTS = {
   "morse-code": MorseCode,
   "nato-alphabet": NatoAlphabet,
@@ -1267,6 +1569,12 @@ const TOOL_COMPONENTS = {
   "leetspeak-translator": LeetspeakTranslator,
   "a1z26-cipher": A1Z26Cipher,
   "rail-fence-cipher": RailFenceCipher,
+  "bacon-cipher": BaconCipher,
+  "affine-cipher": AffineCipher,
+  "polybius-square": PolybiusSquare,
+  "tap-code": TapCode,
+  "beaufort-cipher": BeaufortCipher,
+  "gronsfeld-cipher": GronsfeldCipher,
 };
 
 function Breadcrumb({ tool, cat }) {

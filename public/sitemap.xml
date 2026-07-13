@@ -213,6 +213,12 @@
   <url><loc>https://toolsrift.com/encoding/leetspeak-translator</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/encoding/a1z26-cipher</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/encoding/rail-fence-cipher</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/encoding/bacon-cipher</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/encoding/affine-cipher</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/encoding/polybius-square</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/encoding/tap-code</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/encoding/beaufort-cipher</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/encoding/gronsfeld-cipher</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/everyday</loc><lastmod>2026-07-13</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://toolsrift.com/everyday/age-calculator</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/everyday/date-difference</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
@@ -409,6 +415,9 @@
   <url><loc>https://toolsrift.com/hash/adler32</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/hash/fnv-hash</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/hash/djb2-hash</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/hash/crc16</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/hash/luhn-validator</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/hash/isbn-validator</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/hash/password-generator</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/hash/passphrase-gen</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/hash/password-strength</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
@@ -551,6 +560,7 @@
   <url><loc>https://toolsrift.com/json/jsonl-converter</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/json/json-to-go</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/json/json-to-python</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/json/json-to-sql</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/mathcalc</loc><lastmod>2026-07-13</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://toolsrift.com/mathcalc/area-calc</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/mathcalc/perimeter-calc</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
@@ -636,6 +646,8 @@
   <url><loc>https://toolsrift.com/text/unique-words</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/text/palindrome-checker</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/text/anagram-checker</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/text/count-occurrences</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/text/duplicate-word-finder</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/text/text-reverser</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/text/text-sorter</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/text/remove-duplicates</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
@@ -651,6 +663,9 @@
   <url><loc>https://toolsrift.com/text/case-converter</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/text/remove-accents</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/text/invisible-char-remover</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/text/strip-html-tags</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/text/remove-numbers</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/text/remove-line-breaks</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/text/url-slug</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/text/add-line-numbers</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/text/remove-line-numbers</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
@@ -671,6 +686,7 @@
   <url><loc>https://toolsrift.com/text/url-extractor</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/text/hashtag-extractor</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/text/sentence-splitter</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/text/extract-column</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/text/text-to-morse</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/text/morse-to-text</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/text/text-diff</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>

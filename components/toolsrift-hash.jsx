@@ -335,6 +335,9 @@ const TOOLS = [
   {id:"adler32",         cat:"checksum", name:"Adler-32 Checksum",        desc:"Compute Adler-32 checksums for data verification",      icon:"✅",  free:true},
   {id:"fnv-hash",        cat:"checksum", name:"FNV Hash",                 desc:"Generate FNV-1a 32-bit non-cryptographic hash values",  icon:"⚡",  free:true},
   {id:"djb2-hash",       cat:"checksum", name:"DJB2 Hash",                desc:"Compute the classic DJB2 string hash algorithm",        icon:"🧮",  free:true},
+  {id:"crc16",           cat:"checksum", name:"CRC-16 Checksum",          desc:"Calculate CRC-16/ARC (IBM) cyclic redundancy check values",  icon:"⚡",  free:true},
+  {id:"luhn-validator",  cat:"checksum", name:"Luhn Validator & Check Digit", desc:"Validate credit card / IMEI numbers with the Luhn algorithm and compute the check digit", icon:"💳", free:true},
+  {id:"isbn-validator",  cat:"checksum", name:"ISBN Validator & Check Digit", desc:"Validate ISBN-10 and ISBN-13 book numbers and compute their check digits", icon:"📚", free:true},
   {id:"password-generator", cat:"crypto", name:"Password Generator",     desc:"Generate strong random passwords with custom rules",    icon:"🔑",  free:true},
   {id:"passphrase-gen",  cat:"crypto",   name:"Passphrase Generator",     desc:"Generate memorable diceware-style passphrases",         icon:"⚡",  free:true},
   {id:"password-strength",cat:"crypto",  name:"Password Strength Tester", desc:"Analyse password strength and crack time estimate",     icon:"🔑",  free:true},
@@ -366,6 +369,9 @@ const TOOL_META = {
   "password-generator":{title:"Strong Password Generator — Free Online Tool",   desc:"Generate strong, random passwords with custom length and character sets. Cryptographically secure random generation.", faq:[["How long should my password be?","At least 16 characters. 20+ characters significantly increases security."],["What characters should I include?","Use uppercase, lowercase, numbers, and symbols for maximum entropy."],["Is this generator truly random?","Yes — it uses window.crypto.getRandomValues() which is cryptographically secure."]]},
   "uuid-generator": {title:"UUID / GUID Generator — Free Online UUID v4 Tool",  desc:"Generate RFC 4122 compliant UUID v4 random identifiers. Generate one or multiple UUIDs at once.", faq:[["What is a UUID?","A Universally Unique Identifier — a 128-bit label guaranteed to be unique across space and time."],["What is UUID v4?","Version 4 UUIDs are randomly generated. Version 1 uses timestamp+MAC address."],["What is the collision probability?","For v4 UUIDs, the probability of collision is astronomically low — 1 in 5.3×10³⁶."]]},
   "hmac-generator": {title:"HMAC-SHA256 Generator — Online HMAC Tool",          desc:"Generate HMAC-SHA256 message authentication codes with a secret key. Used for API authentication.", faq:[["What is HMAC?","Hash-based Message Authentication Code — combines a cryptographic hash with a secret key to authenticate messages."],["How is HMAC different from a hash?","HMAC requires a secret key. Without the key, you cannot reproduce the MAC, unlike a plain hash."],["Where is HMAC used?","API authentication (AWS Signature, Stripe webhooks), JWT signing, and cookie signing."]]},
+  "crc16":          {title:"CRC-16 Checksum Calculator — CRC-16/ARC Online",     desc:"Calculate CRC-16/ARC (IBM) cyclic redundancy check values from text. Used in Modbus, USB, and legacy data-link protocols.", faq:[["Which CRC-16 variant is this?","CRC-16/ARC (also called CRC-16/IBM): polynomial 0x8005 reflected (0xA001), initial value 0x0000, no final XOR. The check value of '123456789' is 0xBB3D."],["What is a CRC used for?","Detecting accidental changes to data during storage or transmission. It is an error-detection code, not a cryptographic hash."],["Is CRC-16 secure?","No — CRCs are trivial to forge. Use them only for integrity checks against random corruption, never for security."]]},
+  "luhn-validator": {title:"Luhn Algorithm Validator — Credit Card & IMEI Check", desc:"Validate credit card, IMEI, and other numbers with the Luhn (mod 10) algorithm, and compute the check digit for a partial number.", faq:[["What is the Luhn algorithm?","A simple checksum (mod 10) formula that validates identification numbers such as credit cards, IMEI numbers, and some national IDs. It catches most single-digit typos and adjacent transpositions."],["Does a valid Luhn mean a real card?","No — Luhn only verifies the check digit is consistent. It does not mean the card exists or is active. No data is sent anywhere; validation runs entirely in your browser."],["How is the check digit calculated?","Enter the number without its last digit and the tool appends the digit that makes the full number pass the Luhn check."]]},
+  "isbn-validator": {title:"ISBN Validator — ISBN-10 & ISBN-13 Check Digit",     desc:"Validate ISBN-10 and ISBN-13 book identifiers and compute their check digits. Handles hyphens, spaces, and the ISBN-10 'X' digit.", faq:[["What is an ISBN check digit?","The last digit of an ISBN is a checksum. ISBN-10 uses a weighted mod-11 sum (with 'X' meaning 10); ISBN-13 uses an alternating 1/3 weighted mod-10 sum."],["Can this convert ISBN-10 to ISBN-13?","This tool validates and computes check digits. An ISBN-10 becomes ISBN-13 by prefixing '978' and recomputing the final check digit, which the ISBN-13 mode will do for you."],["Are hyphens required?","No — hyphens and spaces are ignored. Only the digits (and a trailing X for ISBN-10) are used in the calculation."]]},
 };
 
 // �"����� WORD LIST for passphrases �����������������������������������������������������������������������������������������������"�
@@ -664,6 +670,138 @@ function Djb2Hash() {
     <VStack>
       <Textarea value={input} onChange={setInput} placeholder="Enter text…" mono={false} rows={5} />
       <HashOutput label="DJB2 Hash" value={result} accent="#FB923C" />
+    </VStack>
+  );
+}
+
+// CRC-16/ARC (IBM): reflected poly 0xA001, init 0x0000, no final XOR
+function crc16arc(str) {
+  const bytes = new TextEncoder().encode(str);
+  let crc = 0x0000;
+  for (const b of bytes) {
+    crc ^= b;
+    for (let i = 0; i < 8; i++) crc = (crc & 1) ? ((crc >>> 1) ^ 0xA001) : (crc >>> 1);
+  }
+  return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, "0");
+}
+function Crc16Tool() {
+  const [input, setInput] = useState("");
+  const result = input ? crc16arc(input) : "";
+  return (
+    <VStack>
+      <Textarea value={input} onChange={setInput} placeholder="Enter text to compute CRC-16…" mono={false} rows={5} />
+      <HashOutput label="CRC-16/ARC Checksum" value={result} accent={C.teal} />
+      {result && <Grid3><StatBox value="16" label="Bits" accent={C.teal}/><StatBox value="4" label="Hex Chars" accent={C.teal}/><StatBox value={`0x${result}`} label="Hex Value" accent={C.teal}/></Grid3>}
+      <Card><div style={{fontSize:12,color:C.muted,lineHeight:1.8}}><strong style={{color:C.text}}>CRC-16/ARC</strong> (poly 0x8005, init 0x0000) is a 16-bit cyclic redundancy check used in Modbus, USB, and many legacy protocols. The standard check value of "123456789" is <strong style={{color:C.text}}>0xBB3D</strong>. Not for cryptographic use.</div></Card>
+    </VStack>
+  );
+}
+
+// Luhn (mod 10)
+function luhnIsValid(num) {
+  const d = num.replace(/\D/g, "");
+  if (d.length < 2) return false;
+  let sum = 0, alt = false;
+  for (let i = d.length - 1; i >= 0; i--) {
+    let n = +d[i];
+    if (alt) { n *= 2; if (n > 9) n -= 9; }
+    sum += n; alt = !alt;
+  }
+  return sum % 10 === 0;
+}
+function luhnCheckDigit(partial) {
+  const d = partial.replace(/\D/g, "");
+  let sum = 0, alt = true;
+  for (let i = d.length - 1; i >= 0; i--) {
+    let n = +d[i];
+    if (alt) { n *= 2; if (n > 9) n -= 9; }
+    sum += n; alt = !alt;
+  }
+  return (10 - (sum % 10)) % 10;
+}
+function LuhnValidator() {
+  const [input, setInput] = useState("");
+  const digits = input.replace(/\D/g, "");
+  const has = digits.length >= 2;
+  const valid = has && luhnIsValid(digits);
+  const checkDigit = digits.length >= 1 ? luhnCheckDigit(digits) : null;
+  return (
+    <VStack>
+      <div><Label>Number (spaces / dashes ignored)</Label><Input value={input} onChange={setInput} placeholder="4532 0151 1283 0366" mono /></div>
+      {has && (
+        <div className="fade-in" style={{textAlign:"center",padding:"22px",background:valid?"rgba(16,185,129,0.08)":"rgba(239,68,68,0.06)",border:`1px solid ${valid?"rgba(16,185,129,0.3)":"rgba(239,68,68,0.2)"}`,borderRadius:12}}>
+          <div style={{fontSize:38,marginBottom:6}}>{valid?"✅":"❌"}</div>
+          <div style={{fontFamily:"'Sora',sans-serif",fontSize:19,fontWeight:700,color:valid?C.green:C.danger}}>{valid?"Passes the Luhn check":"Fails the Luhn check"}</div>
+          <div style={{fontSize:12,color:C.muted,marginTop:6}}>{digits.length} digits</div>
+        </div>
+      )}
+      {checkDigit !== null && (
+        <Card>
+          <div style={{fontSize:12,color:C.muted,lineHeight:1.8}}>
+            <strong style={{color:C.text}}>Treating your input as a body without a check digit</strong>, the digit that would make it valid is:
+            <span style={{display:"inline-block",marginLeft:8,padding:"2px 12px",borderRadius:6,background:"rgba(20,184,166,0.15)",color:C.teal,fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:15}}>{checkDigit}</span>
+            <span style={{marginLeft:8}}>→ full number <strong style={{color:C.text,fontFamily:"'JetBrains Mono',monospace"}}>{digits}{checkDigit}</strong></span>
+          </div>
+        </Card>
+      )}
+      <Card><div style={{fontSize:12,color:C.muted,lineHeight:1.8}}>The <strong style={{color:C.text}}>Luhn algorithm</strong> validates credit cards, IMEI numbers and more. It only checks the checksum digit — it does not confirm a number is real or active. Everything runs locally in your browser.</div></Card>
+    </VStack>
+  );
+}
+
+// ISBN
+function isbn10Valid(s) {
+  const d = s.replace(/[^0-9Xx]/g, "").toUpperCase();
+  if (d.length !== 10) return false;
+  let sum = 0;
+  for (let i = 0; i < 10; i++) { const c = d[i]; const v = c === "X" ? 10 : +c; if (c !== "X" && isNaN(v)) return false; if (c === "X" && i !== 9) return false; sum += (10 - i) * v; }
+  return sum % 11 === 0;
+}
+function isbn13Valid(s) {
+  const d = s.replace(/\D/g, "");
+  if (d.length !== 13) return false;
+  let sum = 0;
+  for (let i = 0; i < 13; i++) sum += (+d[i]) * (i % 2 === 0 ? 1 : 3);
+  return sum % 10 === 0;
+}
+function isbn10CheckDigit(first9) {
+  const d = first9.replace(/[^0-9]/g, "").slice(0, 9);
+  let sum = 0; for (let i = 0; i < d.length; i++) sum += (10 - i) * (+d[i]);
+  const r = (11 - (sum % 11)) % 11; return r === 10 ? "X" : String(r);
+}
+function isbn13CheckDigit(first12) {
+  const d = first12.replace(/\D/g, "").slice(0, 12);
+  let sum = 0; for (let i = 0; i < d.length; i++) sum += (+d[i]) * (i % 2 === 0 ? 1 : 3);
+  return String((10 - (sum % 10)) % 10);
+}
+function IsbnValidator() {
+  const [input, setInput] = useState("");
+  const clean = input.replace(/[^0-9Xx]/g, "").toUpperCase();
+  const kind = clean.length === 13 ? 13 : clean.length === 10 ? 10 : 0;
+  const valid = kind === 13 ? isbn13Valid(clean) : kind === 10 ? isbn10Valid(clean) : false;
+  const bodyLen = clean.replace(/[^0-9]/g, "").length;
+  let computed = null;
+  if (bodyLen === 12) computed = { type: "ISBN-13", digit: isbn13CheckDigit(clean) };
+  else if (bodyLen === 9) computed = { type: "ISBN-10", digit: isbn10CheckDigit(clean) };
+  return (
+    <VStack>
+      <div><Label>ISBN (hyphens / spaces ignored)</Label><Input value={input} onChange={setInput} placeholder="978-0-306-40615-7" mono /></div>
+      {kind > 0 && (
+        <div className="fade-in" style={{textAlign:"center",padding:"22px",background:valid?"rgba(16,185,129,0.08)":"rgba(239,68,68,0.06)",border:`1px solid ${valid?"rgba(16,185,129,0.3)":"rgba(239,68,68,0.2)"}`,borderRadius:12}}>
+          <div style={{fontSize:38,marginBottom:6}}>{valid?"✅":"❌"}</div>
+          <div style={{fontFamily:"'Sora',sans-serif",fontSize:19,fontWeight:700,color:valid?C.green:C.danger}}>{valid?`Valid ISBN-${kind}`:`Invalid ISBN-${kind} check digit`}</div>
+        </div>
+      )}
+      {kind === 0 && clean.length > 0 && <div style={{fontSize:12,color:C.warn}}>An ISBN must have 10 or 13 digits — you entered {clean.length}.</div>}
+      {computed && (
+        <Card>
+          <div style={{fontSize:12,color:C.muted,lineHeight:1.8}}>
+            <strong style={{color:C.text}}>As an {computed.type} body</strong>, the correct check digit is:
+            <span style={{display:"inline-block",marginLeft:8,padding:"2px 12px",borderRadius:6,background:"rgba(20,184,166,0.15)",color:C.teal,fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:15}}>{computed.digit}</span>
+          </div>
+        </Card>
+      )}
+      <Card><div style={{fontSize:12,color:C.muted,lineHeight:1.8}}><strong style={{color:C.text}}>ISBN-10</strong> uses a weighted mod-11 checksum (with X = 10); <strong style={{color:C.text}}>ISBN-13</strong> uses an alternating 1/3 weighted mod-10 checksum shared with EAN-13 barcodes.</div></Card>
     </VStack>
   );
 }
@@ -1488,6 +1626,9 @@ const TOOL_COMPONENTS = {
   "adler32":           Adler32Tool,
   "fnv-hash":          FnvHash,
   "djb2-hash":         Djb2Hash,
+  "crc16":             Crc16Tool,
+  "luhn-validator":    LuhnValidator,
+  "isbn-validator":    IsbnValidator,
   "password-generator":PasswordGenerator,
   "passphrase-gen":    PassphraseGen,
   "password-strength": PasswordStrength,
