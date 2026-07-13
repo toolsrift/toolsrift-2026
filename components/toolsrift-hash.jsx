@@ -11,9 +11,9 @@ import ToolPageLayout from './shared/ToolPageLayout';
 // �"����� TOKENS �������������������������������������������������������������������������������������������������������������������������������������"�
 const C = {
   bg:"#06090F", surface:"#0D1117", border:"rgba(255,255,255,0.06)",
-  green:"#10B981", greenD:"#059669", text:"#E2E8F0", muted:"#64748B",
-  blue:"#3B82F6", purple:"#8B5CF6", warn:"#F59E0B", danger:"#EF4444",
-  teal:"#14B8A6", emerald:"#10B981",
+  green:"#7C3AED", greenD:"#6D28D9", text:"#E2E8F0", muted:"#64748B",
+  blue:"#7C3AED", purple:"#8B5CF6", warn:"#F59E0B", danger:"#EF4444",
+  teal:"#14B8A6", emerald:"#7C3AED",
 };
 
 const GLOBAL_CSS = `
@@ -22,11 +22,11 @@ const GLOBAL_CSS = `
   ::-webkit-scrollbar{width:6px;height:6px}
   ::-webkit-scrollbar-track{background:transparent}
   ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px}
-  ::selection{background:rgba(16,185,129,0.3)}
+  ::selection{background:rgba(124,58,237,0.3)}
   button:hover{filter:brightness(1.1)}
   select option{background:#0D1117}
   textarea{resize:vertical}
-  input[type=range]{accent-color:#10B981}
+  input[type=range]{accent-color:#7C3AED}
   .fade-in{animation:fadeIn .22s ease}
   @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
   .spin{animation:spin 1s linear infinite}
@@ -57,11 +57,11 @@ function Btn({ children, onClick, variant="primary", size="md", disabled, style=
   const base={display:"inline-flex",alignItems:"center",justifyContent:"center",gap:6,border:"none",cursor:disabled?"not-allowed":"pointer",borderRadius:8,fontWeight:600,transition:"all .15s",fontFamily:"'Plus Jakarta Sans',sans-serif",opacity:disabled?0.5:1};
   const sz={sm:{padding:"6px 14px",fontSize:12},md:{padding:"9px 20px",fontSize:13},lg:{padding:"12px 28px",fontSize:14}}[size];
   const v={
-    primary:{background:`linear-gradient(135deg,${C.green},${C.greenD})`,color:"#fff",boxShadow:"0 2px 8px rgba(16,185,129,0.3)"},
+    primary:{background:`linear-gradient(135deg,${C.green},${C.greenD})`,color:"#fff",boxShadow:"0 2px 8px rgba(124,58,237,0.3)"},
     secondary:{background:"rgba(255,255,255,0.05)",color:C.text,border:`1px solid ${C.border}`},
     ghost:{background:"transparent",color:C.muted},
     danger:{background:"rgba(239,68,68,0.15)",color:"#FCA5A5"},
-    blue:{background:`linear-gradient(135deg,${C.blue},#2563EB)`,color:"#fff",boxShadow:"0 2px 8px rgba(59,130,246,0.25)"},
+    blue:{background:`linear-gradient(135deg,${C.blue},#6D28D9)`,color:"#fff",boxShadow:"0 2px 8px rgba(124,58,237,0.25)"},
   }[variant];
   return <button style={{...base,...sz,...v,...style}} onClick={onClick} disabled={disabled}>{children}</button>;
 }
@@ -373,6 +373,28 @@ const TOOL_META = {
   "crc16":          {title:"CRC-16 Checksum Calculator — CRC-16/ARC Online",     desc:"Calculate CRC-16/ARC (IBM) cyclic redundancy check values from text. Used in Modbus, USB, and legacy data-link protocols.", faq:[["Which CRC-16 variant is this?","CRC-16/ARC (also called CRC-16/IBM): polynomial 0x8005 reflected (0xA001), initial value 0x0000, no final XOR. The check value of '123456789' is 0xBB3D."],["What is a CRC used for?","Detecting accidental changes to data during storage or transmission. It is an error-detection code, not a cryptographic hash."],["Is CRC-16 secure?","No — CRCs are trivial to forge. Use them only for integrity checks against random corruption, never for security."]]},
   "luhn-validator": {title:"Luhn Algorithm Validator — Credit Card & IMEI Check", desc:"Validate credit card, IMEI, and other numbers with the Luhn (mod 10) algorithm, and compute the check digit for a partial number.", faq:[["What is the Luhn algorithm?","A simple checksum (mod 10) formula that validates identification numbers such as credit cards, IMEI numbers, and some national IDs. It catches most single-digit typos and adjacent transpositions."],["Does a valid Luhn mean a real card?","No — Luhn only verifies the check digit is consistent. It does not mean the card exists or is active. No data is sent anywhere; validation runs entirely in your browser."],["How is the check digit calculated?","Enter the number without its last digit and the tool appends the digit that makes the full number pass the Luhn check."]]},
   "isbn-validator": {title:"ISBN Validator — ISBN-10 & ISBN-13 Check Digit",     desc:"Validate ISBN-10 and ISBN-13 book identifiers and compute their check digits. Handles hyphens, spaces, and the ISBN-10 'X' digit.", faq:[["What is an ISBN check digit?","The last digit of an ISBN is a checksum. ISBN-10 uses a weighted mod-11 sum (with 'X' meaning 10); ISBN-13 uses an alternating 1/3 weighted mod-10 sum."],["Can this convert ISBN-10 to ISBN-13?","This tool validates and computes check digits. An ISBN-10 becomes ISBN-13 by prefixing '978' and recomputing the final check digit, which the ISBN-13 mode will do for you."],["Are hyphens required?","No — hyphens and spaces are ignored. Only the digits (and a trailing X for ISBN-10) are used in the calculation."]]},
+  "sha1-hash":      {title:"SHA-1 Hash Generator — Free Online SHA1 Tool", desc:"Generate SHA-1 hash digests from any text. SHA-1 produces a 160-bit (40 hex character) digest, once common for Git and TLS.", keywords:"sha1 hash generator, sha-1 online, sha1 checksum", howTo:"Type or paste your text and the SHA-1 digest is calculated instantly in your browser. Click copy to grab the 40-character hex hash.", faq:[["How long is a SHA-1 hash?","40 hexadecimal characters, or 160 bits."],["Is SHA-1 still safe to use?","No — SHA-1 is broken for security because practical collisions exist. Use SHA-256 or SHA-512 instead. SHA-1 is fine for non-security checksums and Git object IDs."],["Where is SHA-1 still used?","Git uses SHA-1 to identify commits and objects, and some legacy systems still rely on it for integrity checks."]]},
+  "sha512-hash":    {title:"SHA-512 Hash Generator — Free Online SHA512 Tool", desc:"Generate SHA-512 cryptographic hashes from text. SHA-512 is part of the SHA-2 family and produces a 512-bit (128 hex character) digest.", keywords:"sha512 hash generator, sha-512 online, sha512 checksum", howTo:"Enter your text and the SHA-512 digest appears immediately. Everything runs locally, so your input never leaves the browser.", faq:[["How long is a SHA-512 hash?","128 hexadecimal characters, or 512 bits."],["Is SHA-512 more secure than SHA-256?","Both are secure members of SHA-2. SHA-512 has a larger digest and is often faster on 64-bit CPUs, but SHA-256 is sufficient for most uses."],["Can I reverse a SHA-512 hash?","No — it is a one-way function. You cannot recover the original input from the digest."]]},
+  "sha384-hash":    {title:"SHA-384 Hash Generator — Free Online SHA384 Tool", desc:"Generate SHA-384 hash digests from any text. SHA-384 is a truncated SHA-512 variant producing a 384-bit (96 hex character) digest.", keywords:"sha384 hash generator, sha-384 online, sha384 digest", howTo:"Paste your text to compute its SHA-384 digest instantly. Copy the 96-character hex result with one click.", faq:[["How is SHA-384 different from SHA-512?","SHA-384 uses the SHA-512 algorithm with different initial values and truncates the output to 384 bits, which resists length-extension attacks."],["How long is a SHA-384 hash?","96 hexadecimal characters, or 384 bits."],["Where is SHA-384 used?","It appears in TLS cipher suites and code-signing where a digest longer than SHA-256 but shorter than SHA-512 is desired."]]},
+  "hash-compare":   {title:"Hash Comparator — Verify & Compare Two Hashes Online", desc:"Compare two hash strings to confirm they match. Ideal for verifying file downloads and checksums without case or whitespace mistakes.", keywords:"hash comparator, compare hashes, checksum verify", howTo:"Paste the expected hash in one box and the actual hash in the other. The tool normalizes case and spacing and tells you instantly whether they match.", faq:[["Why compare hashes?","To verify that a downloaded file or copied value is identical to the original — a single differing character means the data changed."],["Does case matter?","No — the comparator ignores case and surrounding whitespace so 'ABC123' and 'abc123' are treated as equal."],["Does it send my hashes anywhere?","No — the comparison happens entirely in your browser with no network requests."]]},
+  "crc32":          {title:"CRC32 Checksum Calculator — Free Online CRC-32 Tool", desc:"Calculate CRC32 (IEEE 802.3) cyclic redundancy check values from text. Used in ZIP archives, PNG images and Ethernet frames.", keywords:"crc32 calculator, crc-32 checksum, crc32 online", howTo:"Type or paste your text and the 8-character CRC32 value is computed live. Copy the hex result for use in file or frame integrity checks.", faq:[["What is CRC32?","A 32-bit cyclic redundancy check that detects accidental changes to data. ZIP, gzip and PNG all use it."],["Is CRC32 a secure hash?","No — CRC32 is designed to catch random corruption, not tampering. It is trivial to forge, so never use it for security."],["What is the CRC32 of '123456789'?","The standard IEEE CRC32 of that test string is 0xCBF43926."]]},
+  "adler32":        {title:"Adler-32 Checksum Calculator — Free Online Tool", desc:"Compute Adler-32 checksums from text. Adler-32 is the fast checksum used inside zlib and PNG, trading a little reliability for speed.", keywords:"adler-32 checksum, adler32 calculator, zlib checksum", howTo:"Enter your text and the Adler-32 checksum is calculated instantly as an 8-character hex value you can copy.", faq:[["What is Adler-32?","A checksum invented by Mark Adler for zlib. It sums bytes in two running totals, making it faster than CRC32 but slightly weaker."],["Where is Adler-32 used?","Inside the zlib/DEFLATE format and PNG image streams to detect data corruption."],["Is Adler-32 good for short data?","It is weak for very short messages because the sums stay small, so CRC32 is preferred when detecting tiny changes matters."]]},
+  "fnv-hash":       {title:"FNV Hash Generator — FNV-1a 32-bit Online Tool", desc:"Generate FNV-1a 32-bit non-cryptographic hashes from text. FNV is fast and simple, popular for hash tables and bucketing.", keywords:"fnv hash, fnv-1a generator, fnv 32-bit", howTo:"Paste your text to see its FNV-1a 32-bit hash as a hex value. The result updates live and can be copied instantly.", faq:[["What is FNV-1a?","Fowler–Noll–Vo is a simple, fast non-cryptographic hash. The 1a variant XORs the byte before multiplying by the FNV prime."],["When should I use FNV?","For hash tables, checksums and load distribution where speed matters and cryptographic strength is not needed."],["Is FNV secure?","No — it is easy to find collisions, so never use FNV for passwords, signatures or security tokens."]]},
+  "djb2-hash":      {title:"DJB2 Hash Generator — Classic String Hash Online", desc:"Compute the classic DJB2 string hash by Daniel J. Bernstein. A fast, simple non-cryptographic hash widely used in symbol tables.", keywords:"djb2 hash, bernstein hash, string hash online", howTo:"Type your text and the DJB2 hash is computed live using the hash*33 + c algorithm, shown as a number and hex value.", faq:[["What is the DJB2 algorithm?","It starts at 5381 and for each character sets hash = hash*33 + c. The magic constants give a good spread for short strings."],["Is DJB2 cryptographic?","No — it is a fast general-purpose hash for hash tables, not for security."],["Why the number 5381?","It is the empirically chosen seed by Daniel J. Bernstein that produced few collisions in his tests."]]},
+  "passphrase-gen": {title:"Passphrase Generator — Memorable Diceware Passwords", desc:"Generate memorable diceware-style passphrases from random words. Long, easy to remember and far stronger than short complex passwords.", keywords:"passphrase generator, diceware passphrase, memorable password", howTo:"Choose how many words you want and click generate. Each word is picked with cryptographically secure randomness for a passphrase you can actually remember.", faq:[["Why are passphrases stronger?","A four-to-six word passphrase has enormous entropy yet is easy to memorize, unlike a short string of random symbols."],["What is diceware?","A method of building passphrases by selecting random words from a list, originally chosen with physical dice."],["Are the words truly random?","Yes — words are selected using crypto.getRandomValues(), not Math.random(), so the choice is cryptographically secure."]]},
+  "password-strength":{title:"Password Strength Tester — Estimate Crack Time Online", desc:"Analyze password strength and estimate how long it would take to crack. Get entropy, character-set and length feedback instantly.", keywords:"password strength tester, crack time estimate, password entropy", howTo:"Type a password and the tester scores it live, estimating entropy and brute-force crack time without ever sending the password anywhere.", faq:[["How is strength measured?","From length, character variety and entropy in bits, then converted into an estimated brute-force cracking time."],["Is it safe to type my real password?","Yes — the analysis runs entirely in your browser and nothing is transmitted or stored."],["What makes a strong password?","Length above all — a long passphrase beats a short password with symbols. Aim for 16 or more characters."]]},
+  "random-string":  {title:"Random String Generator — Secure Tokens Online", desc:"Generate cryptographically random strings and tokens with custom length and character sets. Great for salts, IDs and test data.", keywords:"random string generator, secure token, random hex generator", howTo:"Pick the length and character set, then generate. Strings are produced with crypto.getRandomValues() so they are safe for cryptographic use.", faq:[["Are the strings cryptographically secure?","Yes — they use the browser Web Crypto API rather than Math.random(), making them suitable for salts and tokens."],["Can I choose the characters?","Yes — select from letters, digits and symbols, or restrict to hex or alphanumeric only."],["What are these strings good for?","Salts, API keys, nonces, one-off passwords, unique IDs and randomized test fixtures."]]},
+  "hash-file":      {title:"File Hash Calculator — MD5, SHA-1 & SHA-256 Online", desc:"Calculate MD5, SHA-1 and SHA-256 hashes for any uploaded file. Verify downloads and integrity fully in-browser with no uploads.", keywords:"file hash calculator, file checksum, sha256 file hash", howTo:"Drag a file onto the drop zone or click to browse. The tool reads it locally and shows the MD5, SHA-1 and SHA-256 digests at once.", faq:[["Is my file uploaded to a server?","No — the file is read and hashed entirely in your browser, so it never leaves your device."],["Which algorithms are computed?","MD5, SHA-1 and SHA-256 are all calculated simultaneously for the same file."],["How do I verify a download?","Compare the SHA-256 shown here with the checksum published by the software vendor; they must match exactly."]]},
+  "bcrypt-hash":    {title:"Bcrypt Hash Generator — Free Online Bcrypt Tool", desc:"Generate real bcrypt password hashes with a random salt and adjustable cost factor. The industry standard for secure password storage.", keywords:"bcrypt hash generator, bcrypt online, password hashing", howTo:"Enter a password, choose a cost factor, and generate a bcrypt hash with a built-in random salt that is safe to store in your database.", faq:[["Why use bcrypt for passwords?","Bcrypt is deliberately slow and includes a salt, so it resists brute-force and rainbow-table attacks far better than MD5 or SHA."],["What is the cost factor?","The work factor (rounds) — each increment doubles the hashing time. 10 to 12 is a common, sensible range."],["Do I need to store the salt separately?","No — bcrypt embeds the salt and cost inside the hash string, so a single value is all you store."]]},
+  "token-generator":{title:"API Token Generator — Secure Keys & Bearer Tokens", desc:"Generate secure API keys and bearer tokens with custom prefixes and lengths. Cryptographically random, ready for authentication.", keywords:"api token generator, bearer token, secret key generator", howTo:"Choose a length and optional prefix, then generate. Tokens use secure randomness so they are safe to use as real API keys and secrets.", faq:[["How random are the tokens?","They are generated with the Web Crypto API, giving cryptographically secure randomness suitable for production secrets."],["Should tokens have a prefix?","A short prefix like sk_ or pk_ helps identify a token's type and scope at a glance, as many API providers do."],["How long should a token be?","32 characters or more of random alphanumerics gives ample entropy for bearer tokens and API keys."]]},
+  "otp-generator":  {title:"TOTP Code Generator — RFC 6238 Authenticator Codes", desc:"Generate real RFC 6238 TOTP codes from a Base32 secret that match Google Authenticator and Authy. Great for testing 2FA flows.", keywords:"totp generator, otp code, rfc 6238 authenticator", howTo:"Paste your Base32 secret and the current 6-digit code appears, refreshing every 30 seconds exactly like an authenticator app.", faq:[["What is TOTP?","Time-based One-Time Password (RFC 6238) derives a 6-digit code from a shared secret and the current time, changing every 30 seconds."],["Will these codes match my authenticator?","Yes — for the same Base32 secret the codes match Google Authenticator, Authy and similar apps."],["Is my secret sent anywhere?","No — codes are computed locally with HMAC-SHA1 and the secret never leaves your browser."]]},
+  "caesar-hash":    {title:"Simple String Hash — Compare Non-Crypto Algorithms", desc:"Hash text with several simple non-cryptographic algorithms at once and compare their outputs. Handy for learning and quick bucketing.", keywords:"simple string hash, non-cryptographic hash, hash comparison", howTo:"Type your text and see it hashed by multiple lightweight algorithms side by side, so you can compare speed and distribution.", faq:[["What are non-cryptographic hashes for?","Hash tables, checksums, sharding and deduplication — anywhere you need a fast fingerprint but not security."],["Why compare several algorithms?","Different algorithms distribute values differently; seeing them together helps you pick one for hash tables or bucketing."],["Are these safe for passwords?","No — never use simple hashes for passwords. Use bcrypt, scrypt or Argon2 instead."]]},
+  "xor-cipher":     {title:"XOR Cipher — Encrypt & Decrypt Text Online", desc:"Encrypt and decrypt text with the XOR bitwise cipher using a repeating key. Symmetric, reversible and fully in-browser.", keywords:"xor cipher, xor encryption, xor decrypt online", howTo:"Enter your text and a key, and the XOR result is produced instantly. Run the output back through with the same key to decrypt it.", faq:[["How does an XOR cipher work?","Each byte of the text is XORed with a byte of the repeating key. Applying the same key again reverses the operation."],["Is XOR encryption secure?","With a short reused key, no — it is easily broken. Only a truly random key as long as the message (a one-time pad) is secure."],["Why is XOR reversible?","Because a XOR b XOR b equals a, so encrypting and decrypting use the exact same step with the same key."]]},
+  "binary-converter":{title:"Number Base Converter — Binary, Octal, Decimal, Hex", desc:"Convert numbers between binary, octal, decimal and hexadecimal instantly. See all four bases update together as you type.", keywords:"number base converter, binary to hex, decimal to binary", howTo:"Enter a value in any base field and the binary, octal, decimal and hex equivalents update live. Copy whichever representation you need.", faq:[["Which bases are supported?","Binary (base 2), octal (base 8), decimal (base 10) and hexadecimal (base 16), all converted at once."],["Can I convert hex back to decimal?","Yes — type into the hex field and the decimal, octal and binary values update automatically."],["Does it handle large numbers?","It converts standard integer values; very large numbers may exceed JavaScript's safe integer range and lose precision."]]},
+  "color-hash":     {title:"Text to Color Hash — Deterministic Color from Text", desc:"Turn any text into a deterministic color hash. The same input always maps to the same color — perfect for avatars and tags.", keywords:"text to color, color hash, string to hex color", howTo:"Type any text and a repeatable color is derived from its hash, shown as a swatch with its HEX value to copy.", faq:[["How is the color generated?","The text is hashed and the resulting number is mapped to a HEX color, so identical text always yields the same color."],["What is a color hash used for?","Assigning consistent colors to usernames, tags, avatars and categories without storing a color for each one."],["Will the same text always give the same color?","Yes — the mapping is deterministic, so the same string produces an identical color every time."]]},
+  "pbkdf2-generator":{title:"PBKDF2 Key Derivation — Derive Keys Online", desc:"Derive a key from a password using PBKDF2-HMAC with SHA-256, SHA-384 or SHA-512, a salt and configurable iterations. Runs in-browser.", keywords:"pbkdf2 generator, key derivation, pbkdf2 hmac", howTo:"Enter a password and salt, pick the hash and iteration count, and PBKDF2 derives a hex key locally using the Web Crypto API.", faq:[["What is PBKDF2?","Password-Based Key Derivation Function 2 stretches a password with many HMAC iterations and a salt to produce a strong cryptographic key."],["Why increase the iteration count?","More iterations slow down each guess, making brute-force attacks against the derived key far more expensive."],["What salt should I use?","A unique random salt per password. It prevents rainbow-table attacks and should be stored alongside the derived key."]]},
+  "sha3-keccak":    {title:"SHA-3 / Keccak Hash Generator — SHA3 & Keccak-256", desc:"Generate SHA3-256, SHA3-384, SHA3-512 and Keccak-256 digests from text. Keccak-256 is the hash used across Ethereum.", keywords:"sha-3 generator, keccak-256, ethereum hash", howTo:"Paste your text and choose a variant to compute its SHA-3 or Keccak-256 digest instantly, shown as a hex string to copy.", faq:[["How is SHA-3 different from SHA-2?","SHA-3 uses the sponge-based Keccak construction rather than the Merkle–Damgård design of SHA-2, giving it a different security profile."],["What is Keccak-256 used for?","Ethereum uses Keccak-256 for addresses, function selectors and state hashing. Note it differs slightly from the final SHA3-256 standard."],["Are SHA-3 hashes reversible?","No — like all cryptographic hashes they are one-way and cannot be reversed to the original input."]]},
+  "hash-identifier":{title:"Hash Identifier — Detect Hash Type Online", desc:"Identify the likely algorithm behind a hash from its length and character set. Quickly tell MD5, SHA-1, SHA-256, bcrypt and more apart.", keywords:"hash identifier, detect hash type, identify hash algorithm", howTo:"Paste a hash and the tool inspects its length and format to list the most likely algorithms that could have produced it.", faq:[["How does it identify a hash?","It examines the length, character set and any prefix (like $2b$ for bcrypt) to shortlist the algorithms that match."],["Can it be certain of the type?","Not always — many algorithms share the same length. A 32-character hex string could be MD5 or an NTLM hash, so it lists candidates."],["Does it crack the hash?","No — it only guesses the algorithm from the format; it does not attempt to reverse or crack the value."]]},
 };
 
 // �"����� WORD LIST for passphrases �����������������������������������������������������������������������������������������������"�
@@ -534,7 +556,7 @@ function SingleHash({ algo }) {
           <StatBox value={new TextEncoder().encode(input).length} label="Input Bytes" />
         </Grid3>
       )}
-      <Card style={{background:"rgba(16,185,129,0.04)",border:"1px solid rgba(16,185,129,0.12)"}}>
+      <Card style={{background:"rgba(124,58,237,0.04)",border:"1px solid rgba(124,58,237,0.12)"}}>
         <div style={{fontSize:12,color:C.muted,lineHeight:1.8}}>
           {algo==="md5"&&<><strong style={{color:C.text}}>MD5</strong> — Fast 128-bit hash. <span style={{color:C.warn}}>Not secure for passwords or signatures.</span> Use for checksums only.</>}
           {algo==="sha1"&&<><strong style={{color:C.text}}>SHA-1</strong> — 160-bit hash. <span style={{color:C.warn}}>Deprecated for security use.</span> Still used in Git commits and legacy systems.</>}
@@ -574,7 +596,7 @@ function HmacGenerator() {
           <StatBox value={key.length} label="Key Length" />
         </Grid3>
       )}
-      <Card style={{background:"rgba(16,185,129,0.05)"}}>
+      <Card style={{background:"rgba(124,58,237,0.05)"}}>
         <div style={{fontSize:12,color:C.muted,lineHeight:1.8}}>
           <strong style={{color:C.text}}>HMAC-SHA256</strong> combines your secret key with the message. Anyone without the key cannot produce a valid signature — unlike plain SHA-256 which anyone can compute.
         </div>
@@ -852,7 +874,7 @@ function PasswordGenerator() {
         <div style={{display:"flex",gap:8,flexWrap:"wrap",marginTop:6}}>
           {[["upper","A—Z"],["lower","a'z"],["numbers","0–9"],["symbols","!@#$…"]].map(([k,l])=>(
             <button key={k} onClick={()=>setOpts(o=>({...o,[k]:!o[k]}))}
-              style={{padding:"6px 14px",borderRadius:6,border:`1px solid ${opts[k]?"rgba(16,185,129,0.5)":C.border}`,background:opts[k]?"rgba(16,185,129,0.1)":"transparent",color:opts[k]?C.green:C.muted,fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
+              style={{padding:"6px 14px",borderRadius:6,border:`1px solid ${opts[k]?"rgba(124,58,237,0.5)":C.border}`,background:opts[k]?"rgba(124,58,237,0.1)":"transparent",color:opts[k]?C.green:C.muted,fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
               {l}
             </button>
           ))}
@@ -1060,23 +1082,24 @@ function UuidGenerator() {
     return `${h.slice(0,8)}-${h.slice(8,12)}-${h.slice(12,16)}-${h.slice(16,20)}-${h.slice(20)}`;
   }
   const [upper, setUpper] = useState(false);
-  const [noBraces, setNoBraces] = useState(false);
+  const [braces, setBraces] = useState(false);
   const [count, setCount] = useState(5);
   const [uuids, setUuids] = useState([]);
   const generate = useCallback(()=>{
     setUuids(Array.from({length:count},()=>{
       let u=uuidv4();
       if(upper) u=u.toUpperCase();
-      if(noBraces) return u;
+      if(braces) u=`{${u}}`;
       return u;
     }));
-  },[count,upper,noBraces]);
+  },[count,upper,braces]);
   useEffect(()=>generate(),[]);
   return (
     <VStack>
       <div style={{display:"flex",gap:10,flexWrap:"wrap",alignItems:"center"}}>
         <SelectInput value={count} onChange={v=>setCount(Number(v))} options={[1,5,10,25,50].map(n=>({value:n,label:`${n} UUID${n>1?"s":""}`}))} />
         <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:13,color:C.text}}><input type="checkbox" checked={upper} onChange={e=>setUpper(e.target.checked)} /> Uppercase</label>
+        <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:13,color:C.text}}><input type="checkbox" checked={braces} onChange={e=>setBraces(e.target.checked)} /> Braces</label>
         <Btn onClick={generate}>↻ Generate</Btn>
         <CopyBtn text={uuids.join("\n")} />
       </div>
@@ -1200,7 +1223,7 @@ function BcryptHash() {
       {result && (
         <HashOutput label={`Bcrypt Hash (cost=${cost})`} value={result} accent={C.green} />
       )}
-      <Card style={{background:"rgba(16,185,129,0.04)"}}>
+      <Card style={{background:"rgba(124,58,237,0.04)"}}>
         <div style={{fontSize:12,color:C.muted,lineHeight:1.8}}>
           <strong style={{color:C.text}}>Bcrypt</strong> is the industry standard for password hashing — intentionally slow, with a crypto-random salt built into every hash. Use cost 10–12 for production. This generates real <code style={{fontFamily:"'JetBrains Mono',monospace"}}>$2a$</code> bcrypt hashes locally that verify with any bcrypt library; higher cost factors take noticeably longer.
         </div>
@@ -1229,7 +1252,7 @@ function TokenGenerator() {
       <div><Label>Token Format</Label>
         <div style={{display:"flex",flexDirection:"column",gap:6,marginTop:6}}>
           {Object.entries(FORMATS).map(([k,{label}])=>(
-            <label key={k} style={{display:"flex",alignItems:"center",gap:10,cursor:"pointer",padding:"8px 12px",background:format===k?"rgba(16,185,129,0.1)":"rgba(255,255,255,0.02)",border:`1px solid ${format===k?"rgba(16,185,129,0.4)":C.border}`,borderRadius:7}}>
+            <label key={k} style={{display:"flex",alignItems:"center",gap:10,cursor:"pointer",padding:"8px 12px",background:format===k?"rgba(124,58,237,0.1)":"rgba(255,255,255,0.02)",border:`1px solid ${format===k?"rgba(124,58,237,0.4)":C.border}`,borderRadius:7}}>
               <input type="radio" checked={format===k} onChange={()=>setFormat(k)} /><span style={{fontSize:13,color:C.text}}>{label}</span>
             </label>
           ))}
@@ -1274,7 +1297,7 @@ function OtpGenerator() {
     <VStack>
       <div><Label>TOTP Secret Key (Base32)</Label><Input value={secret} onChange={setSecret} placeholder="Base32 secret (e.g. JBSWY3DPEHPK3PXP)" mono /></div>
       {err && <div style={{padding:12,background:"rgba(239,68,68,0.1)",border:"1px solid rgba(239,68,68,0.3)",borderRadius:8,fontSize:13,color:C.text}}>{err}</div>}
-      <div style={{textAlign:"center",padding:"32px 20px",background:"rgba(16,185,129,0.06)",border:"1px solid rgba(16,185,129,0.2)",borderRadius:12}} className="fade-in">
+      <div style={{textAlign:"center",padding:"32px 20px",background:"rgba(124,58,237,0.06)",border:"1px solid rgba(124,58,237,0.2)",borderRadius:12}} className="fade-in">
         <div style={{fontSize:11,color:C.muted,marginBottom:8,letterSpacing:"0.1em"}}>CURRENT OTP CODE</div>
         <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:52,fontWeight:700,color:C.green,letterSpacing:"0.2em"}}>{code}</div>
         <div style={{marginTop:12,fontSize:13,color:C.muted}}>Refreshes in <strong style={{color:C.text}}>{remaining}s</strong></div>
@@ -1283,7 +1306,7 @@ function OtpGenerator() {
         </div>
       </div>
       <CopyBtn text={code} style={{alignSelf:"center"}} />
-      <Card style={{background:"rgba(59,130,246,0.04)"}}>
+      <Card style={{background:"rgba(124,58,237,0.04)"}}>
         <div style={{fontSize:12,color:C.muted,lineHeight:1.8}}>
           <strong style={{color:C.text}}>TOTP</strong> (Time-based One-Time Password — RFC 6238) generates a 6-digit code that changes every 30 seconds from the current time and a shared Base32 secret. These codes match Google Authenticator and Authy for the same secret. Computed locally with HMAC-SHA1 — the secret never leaves your browser.
         </div>
@@ -1510,7 +1533,7 @@ function Pbkdf2Generator() {
       <Btn onClick={derive} disabled={!pwd||busy}>{busy?"⚙ Deriving…":"Derive Key"}</Btn>
       {err && <div style={{padding:12,background:"rgba(239,68,68,0.1)",border:"1px solid rgba(239,68,68,0.3)",borderRadius:8,fontSize:13,color:C.text}}>{err}</div>}
       {result && <HashOutput label={`Derived key (${keyLen}-bit, hex)`} value={result} accent={C.green} />}
-      <Card style={{background:"rgba(59,130,246,0.04)"}}>
+      <Card style={{background:"rgba(124,58,237,0.04)"}}>
         <div style={{fontSize:12,color:C.muted,lineHeight:1.8}}>
           <strong style={{color:C.text}}>PBKDF2</strong> stretches a password into a key using many HMAC iterations plus a salt, making brute force expensive. Computed locally with the browser's native WebCrypto — spec-correct and interoperable. Use ≥100,000 iterations (SHA-256) for password storage; higher is stronger but slower.
         </div>
@@ -1609,7 +1632,7 @@ function HashIdentifier() {
           </div>
         </div>
       )}
-      <Card style={{background:"rgba(59,130,246,0.04)"}}>
+      <Card style={{background:"rgba(124,58,237,0.04)"}}>
         <div style={{fontSize:12,color:C.muted,lineHeight:1.8}}>
           Identification is by length and format only — many algorithms share a digest length (e.g. MD5, MD4 and NTLM are all 32 hex chars), so results are ranked guesses, not certainties.
         </div>
@@ -1706,7 +1729,7 @@ function RelatedTools({ currentId }) {
       <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:10}}>
         {related.map(t=>(
           <a key={t.id} href={`#/tool/${t.id}`} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:"rgba(255,255,255,0.02)",border:`1px solid ${C.border}`,borderRadius:8,textDecoration:"none",transition:"border-color .15s"}}
-            onMouseEnter={e=>e.currentTarget.style.borderColor="rgba(16,185,129,0.4)"} onMouseLeave={e=>e.currentTarget.style.borderColor=C.border}>
+            onMouseEnter={e=>e.currentTarget.style.borderColor="rgba(124,58,237,0.4)"} onMouseLeave={e=>e.currentTarget.style.borderColor=C.border}>
             <span style={{fontSize:20}}>{t.icon}</span>
             <div><div style={{fontSize:13,fontWeight:600,color:C.text}}>{t.name}</div><div style={{fontSize:11,color:C.muted}}>{t.desc}</div></div>
           </a>
@@ -1737,7 +1760,7 @@ function ToolPage({ toolId }) {
       </div>
       <Card className="fade-in"><ToolComp /></Card>
       {meta?.howTo && (
-        <div style={{ background:'rgba(59,130,246,0.05)', border:'1px solid rgba(59,130,246,0.12)', borderRadius:16, padding:'28px 32px', marginBottom:24, marginTop:24 }}>
+        <div style={{ background:'rgba(124,58,237,0.05)', border:'1px solid rgba(124,58,237,0.12)', borderRadius:16, padding:'28px 32px', marginBottom:24, marginTop:24 }}>
           <h2 style={{ fontSize:17, fontWeight:700, color:'#F1F5F9', margin:'0 0 12px', fontFamily:"'Sora', sans-serif" }}>📖 How to Use This Tool</h2>
           <p style={{ fontSize:14, color:'#94A3B8', lineHeight:1.8, margin:0 }}>{meta.howTo}</p>
         </div>
@@ -1772,7 +1795,7 @@ function CategoryPage({ catId }) {
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:12}}>
         {tools.map(t=>(
           <a key={t.id} href={`#/tool/${t.id}`} style={{display:"flex",gap:12,padding:"14px 16px",background:C.surface,border:`1px solid ${C.border}`,borderRadius:10,textDecoration:"none",alignItems:"flex-start",transition:"all .15s"}}
-            onMouseEnter={e=>{e.currentTarget.style.borderColor="rgba(16,185,129,0.4)";e.currentTarget.style.transform="translateY(-1px)";}} onMouseLeave={e=>{e.currentTarget.style.borderColor=C.border;e.currentTarget.style.transform="";}}>
+            onMouseEnter={e=>{e.currentTarget.style.borderColor="rgba(124,58,237,0.4)";e.currentTarget.style.transform="translateY(-1px)";}} onMouseLeave={e=>{e.currentTarget.style.borderColor=C.border;e.currentTarget.style.transform="";}}>
             <span style={{fontSize:24,marginTop:2}}>{t.icon}</span>
             <div><div style={{fontSize:13,fontWeight:600,color:C.text,marginBottom:3}}>{t.name}</div><div style={{fontSize:12,color:C.muted,lineHeight:1.5}}>{t.desc}</div></div>
           </a>
@@ -1789,7 +1812,7 @@ function DevBadge() {
   return (
     <span style={{
       position:'absolute', top:8, right:8, pointerEvents:'none',
-      background:'rgba(16,185,129,0.15)', color:'#10B981',
+      background:'rgba(124,58,237,0.15)', color:'#7C3AED',
       fontSize:10, fontWeight:700, padding:'2px 6px', borderRadius:4,
       letterSpacing:'0.04em', fontFamily:"'Plus Jakarta Sans',sans-serif",
     }}>DEV</span>

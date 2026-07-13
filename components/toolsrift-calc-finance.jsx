@@ -2903,9 +2903,721 @@ Object.assign(TOOL_COMPONENTS, {
 // ───── END INVESTMENT & BUSINESS FINANCE BATCH ───────────────────────────────
 
 
+// ───── PER-TOOL SEO METADATA (title / desc / keywords / faq / howTo) ─────────
+const TOOL_META = {
+  // ── Finance ──
+  "investment-return-calc": {
+    title: "Free Investment Return Calculator — CAGR & Growth",
+    desc: "Calculate investment returns, CAGR and total gain from your start value, end value and holding period, with a year-by-year growth table. Not financial advice.",
+    keywords: "investment return calculator, cagr calculator, roi calculator, compound growth, investment gain",
+    faq: [
+      ["How is CAGR calculated?", "CAGR uses the formula (End Value / Start Value) ^ (1 / years) − 1. It smooths uneven yearly returns into one constant annual growth rate."],
+      ["What is the difference between total return and CAGR?", "Total return is the overall percentage gain across the whole period, while CAGR expresses that same growth as an equivalent annual rate for easy comparison."],
+      ["Are these projections guaranteed?", "No. Returns are estimates based on the numbers you enter and assume steady growth. Actual market returns vary year to year. This is not financial advice."]
+    ],
+    howTo: "Enter your initial investment, final value and the number of years held. The calculator instantly shows total gain, CAGR and a year-by-year value table."
+  },
+  "rd-calc": {
+    title: "Free RD Calculator — Recurring Deposit Maturity",
+    desc: "Calculate Recurring Deposit maturity value and interest earned from your monthly deposit, interest rate and tenure, with quarterly compounding and a year-wise table.",
+    keywords: "rd calculator, recurring deposit calculator, rd maturity calculator, rd interest calculator",
+    faq: [
+      ["How is RD maturity calculated?", "Each monthly deposit earns compound interest for its remaining months. Indian banks typically compound quarterly, so every instalment grows at rate/4 per quarter until maturity."],
+      ["Is RD interest taxable?", "Yes. Interest earned on a Recurring Deposit is added to your income and taxed at your slab rate, and TDS may apply if annual interest crosses the bank's threshold."],
+      ["Can I change my monthly RD amount?", "No. A standard RD requires a fixed monthly deposit for the full tenure. To vary amounts you would open a separate RD or a flexible deposit product."]
+    ],
+    howTo: "Enter your monthly deposit, the annual interest rate and the tenure in months or years. The calculator shows maturity value, total invested and interest earned."
+  },
+  "ppf-calc": {
+    title: "Free PPF Calculator — Maturity & Interest Online",
+    desc: "Project your Public Provident Fund maturity value with annual compounding over a 15-year term, showing year-wise balance, total invested and tax-free interest earned.",
+    keywords: "ppf calculator, public provident fund calculator, ppf maturity calculator, ppf interest calculator",
+    faq: [
+      ["How is PPF interest calculated?", "PPF interest is compounded annually on the lowest balance between the 5th and last day of each month, then credited at year-end. The default 15-year term can be extended in 5-year blocks."],
+      ["Is PPF maturity tax-free?", "Yes. PPF follows the EEE (Exempt-Exempt-Exempt) status, so contributions, annual interest and the final maturity amount are all fully tax-free in India."],
+      ["What is the PPF deposit limit?", "You can deposit between ₹500 and ₹1.5 lakh per financial year. Deposits above ₹1.5 lakh earn no interest and are not eligible for section 80C benefits."]
+    ],
+    howTo: "Enter your yearly PPF contribution, the current interest rate and the term in years. The calculator shows year-wise balance and the tax-free maturity value."
+  },
+  "gratuity-calc": {
+    title: "Free Gratuity Calculator — Indian Payout Estimate",
+    desc: "Estimate your gratuity payout under the Payment of Gratuity Act from your last drawn salary and years of service, using the standard 15/26 formula. Not legal advice.",
+    keywords: "gratuity calculator, gratuity formula, gratuity india, end of service benefit calculator",
+    faq: [
+      ["What is the gratuity formula?", "For covered employees, gratuity = last drawn (basic + DA) × 15/26 × years of service. The 15/26 factor treats 15 days' wages for each completed year based on a 26-day month."],
+      ["When am I eligible for gratuity?", "Under the Act you generally need at least 5 continuous years of service, except in cases of death or disablement where the 5-year rule is waived."],
+      ["Is gratuity tax-free?", "Gratuity is tax-exempt up to a statutory ceiling (₹20 lakh for most employees). Amounts above the exemption limit are added to taxable income. This is not legal advice."]
+    ],
+    howTo: "Enter your last drawn basic salary plus dearness allowance and your completed years of service. The calculator applies the 15/26 formula to estimate your gratuity."
+  },
+  "take-home-pay-calc": {
+    title: "Free Take Home Pay Calculator — Net Salary",
+    desc: "Work out your net monthly take-home pay after tax, provident fund and other deductions from your gross salary, so you know exactly what lands in your account.",
+    keywords: "take home pay calculator, net salary calculator, in hand salary, paycheck calculator",
+    faq: [
+      ["How is take-home pay calculated?", "Take-home pay is gross salary minus all deductions such as income tax, provident fund, professional tax and insurance. What remains is your net in-hand amount."],
+      ["Why is my take-home lower than my CTC?", "CTC includes employer contributions and benefits you never receive as cash, such as the employer PF share and gratuity, which are deducted before your net pay."],
+      ["Does this include tax accurately?", "It gives a close estimate based on the deductions you enter. Exact tax depends on your regime, exemptions and investments, so treat the result as a guide."]
+    ],
+    howTo: "Enter your gross salary and each deduction such as tax, provident fund and other withholdings. The calculator subtracts them to show your net take-home pay."
+  },
+  "hourly-to-annual-calc": {
+    title: "Free Hourly to Annual Salary Calculator Online",
+    desc: "Convert an hourly wage into weekly, monthly and annual salary based on hours worked per week and weeks worked per year, and reverse it back to an hourly rate.",
+    keywords: "hourly to annual salary, wage calculator, hourly to yearly, salary converter, hourly rate calculator",
+    faq: [
+      ["How do I convert hourly pay to annual salary?", "Multiply your hourly rate by hours worked per week, then by weeks worked per year. For example, ₹500/hour × 40 hours × 52 weeks equals ₹10,40,000 a year."],
+      ["How many working hours are in a year?", "A common full-time assumption is 40 hours × 52 weeks = 2,080 hours per year, though paid holidays and leave can reduce actual hours worked."],
+      ["Does this account for overtime or bonuses?", "No. It converts a flat hourly rate into salary. Overtime, bonuses and shift premiums should be added separately to the base figure."]
+    ],
+    howTo: "Enter your hourly wage, hours worked per week and weeks worked per year. The calculator shows equivalent weekly, monthly and annual earnings instantly."
+  },
+  "income-tax-calc": {
+    title: "Free Income Tax Calculator India — Old vs New",
+    desc: "Compare your income tax under the old and new Indian regimes side by side from your income, deductions and exemptions, to see which one saves you more. Not tax advice.",
+    keywords: "income tax calculator india, old vs new regime, tax slab calculator, income tax estimate",
+    faq: [
+      ["How does the old regime differ from the new regime?", "The old regime offers deductions and exemptions like 80C, HRA and standard deduction with higher slab rates, while the new regime has lower rates but removes most deductions."],
+      ["Which tax regime should I choose?", "It depends on your deductions. If your eligible deductions are large, the old regime often wins; with few deductions the new regime's lower rates usually cost less."],
+      ["Is this calculation exact?", "It is a close estimate using standard slabs and the inputs you provide. Cess, surcharge and special cases can change the final figure, so this is not tax advice."]
+    ],
+    howTo: "Enter your annual income and eligible deductions. The calculator computes tax under both the old and new regimes and highlights the cheaper option."
+  },
+  "tip-calc": {
+    title: "Free Tip Calculator — Gratuity & Bill Split",
+    desc: "Calculate the tip on any bill by percentage and split the total fairly among any number of people, showing tip amount, grand total and each person's exact share.",
+    keywords: "tip calculator, gratuity calculator, bill split calculator, tip splitter, restaurant tip",
+    faq: [
+      ["How much should I tip?", "Tipping norms vary by country, but 10–20% of the pre-tax bill is common in many places. Enter any percentage to see the exact tip amount."],
+      ["How does the bill split work?", "The calculator adds your chosen tip to the bill, then divides the total by the number of people so everyone pays an equal share including gratuity."],
+      ["Should I tip on the pre-tax or post-tax amount?", "Either is acceptable, but tipping on the pre-tax subtotal is common. Enter whichever bill figure you prefer as the base amount."]
+    ],
+    howTo: "Enter the bill amount, choose a tip percentage and the number of people. The calculator shows the tip, grand total and per-person share instantly."
+  },
+  "markup-calc": {
+    title: "Free Markup Calculator — Cost, Price & Margin",
+    desc: "Calculate selling price, markup percentage and profit margin from cost and price, and see the difference between markup on cost and margin on revenue for pricing.",
+    keywords: "markup calculator, margin calculator, selling price calculator, profit markup, cost plus pricing",
+    faq: [
+      ["What is the difference between markup and margin?", "Markup is profit as a percentage of cost, while margin is profit as a percentage of selling price. A 50% markup equals a 33.3% margin on the same item."],
+      ["How is selling price from markup calculated?", "Selling price = cost × (1 + markup%). For a ₹100 cost with 40% markup, the price is ₹100 × 1.40 = ₹140."],
+      ["How do I find markup from cost and price?", "Markup% = (price − cost) / cost × 100. If cost is ₹100 and price ₹140, the markup is ₹40 / ₹100 = 40%."]
+    ],
+    howTo: "Enter any two of cost, selling price or markup percentage. The calculator solves for the missing value and shows both markup and profit margin."
+  },
+  "depreciation-calc": {
+    title: "Free Depreciation Calculator — Straight & Reducing",
+    desc: "Build a depreciation schedule for an asset using straight-line or reducing-balance methods from cost, salvage value and useful life, with year-wise book value.",
+    keywords: "depreciation calculator, straight line depreciation, reducing balance depreciation, asset depreciation schedule",
+    faq: [
+      ["How does straight-line depreciation work?", "It spreads cost evenly: annual depreciation = (cost − salvage value) / useful life. The asset loses the same amount of value every year."],
+      ["How does reducing-balance depreciation work?", "It applies a fixed percentage to the remaining book value each year, so depreciation is highest early on and shrinks over the asset's life."],
+      ["What is salvage value?", "Salvage value is the estimated resale or scrap value at the end of an asset's useful life. Only cost minus salvage is depreciated over time."]
+    ],
+    howTo: "Enter the asset cost, salvage value and useful life, then choose straight-line or reducing-balance. The calculator produces a year-by-year depreciation schedule."
+  },
+  "future-value-calc": {
+    title: "Free Future Value Calculator — Compound Growth",
+    desc: "Calculate the future value of a present sum with compound interest from your principal, rate, term and compounding frequency, with a year-by-year growth table.",
+    keywords: "future value calculator, compound interest calculator, fv calculator, investment growth, time value of money",
+    faq: [
+      ["What is the future value formula?", "Future value = principal × (1 + r/n) ^ (n×t), where r is the annual rate, n the compounds per year and t the number of years."],
+      ["How does compounding frequency affect future value?", "More frequent compounding grows money faster because interest is added and starts earning interest sooner. Monthly beats yearly for the same nominal rate."],
+      ["Does this include regular contributions?", "This tool compounds a single lump sum. For recurring monthly investments, use the SIP or savings goal calculator instead."]
+    ],
+    howTo: "Enter your present amount, annual interest rate, number of years and compounding frequency. The calculator shows the future value and a growth table."
+  },
+  "present-value-calc": {
+    title: "Free Present Value Calculator — Discount Future Cash",
+    desc: "Find the present value of a future amount by discounting it at your chosen rate and compounding frequency, showing the discount factor and value for each year.",
+    keywords: "present value calculator, pv calculator, discounted cash flow, time value of money, discount rate calculator",
+    faq: [
+      ["What is the present value formula?", "Present value = future value / (1 + r/n) ^ (n×t). It answers how much a future sum is worth in today's money at a given discount rate."],
+      ["Why is future money worth less today?", "Money available now can be invested to earn returns, and inflation erodes purchasing power, so a rupee today is worth more than the same rupee in the future."],
+      ["What discount rate should I use?", "Use a rate that reflects your opportunity cost or required return, such as an expected investment return or a borrowing rate. Higher rates lower present value."]
+    ],
+    howTo: "Enter the future value, discount rate, number of years and compounding frequency. The calculator shows the present value and a year-wise discount table."
+  },
+  "savings-goal-calc": {
+    title: "Free Savings Goal Calculator — Monthly Target",
+    desc: "Find the monthly saving needed to reach a target amount by a deadline, accounting for interest earned and any starting balance, with a year-wise growth breakdown.",
+    keywords: "savings goal calculator, monthly savings calculator, savings target, how much to save, goal planner",
+    faq: [
+      ["How is the required monthly saving calculated?", "The tool uses the future value of an annuity formula, factoring in your interest rate and existing balance, then solves for the monthly deposit that hits your goal."],
+      ["Does a starting balance reduce my monthly saving?", "Yes. Any current savings grow with interest toward your goal, so a larger starting balance lowers the monthly amount you still need to set aside."],
+      ["What if my interest rate is zero?", "With no interest, the required monthly saving is simply the remaining goal divided by the number of months until your deadline."]
+    ],
+    howTo: "Enter your goal amount, current savings, expected return and time frame. The calculator shows the monthly saving needed and a year-by-year progress table."
+  },
+  "debt-payoff-calc": {
+    title: "Free Debt Payoff Calculator — Time & Interest",
+    desc: "Find how long it takes to clear a debt and the total interest you will pay from your balance, interest rate and monthly payment, with a reducing-balance schedule.",
+    keywords: "debt payoff calculator, loan payoff calculator, debt free calculator, interest paid calculator",
+    faq: [
+      ["How is debt payoff time calculated?", "Each month interest is charged on the outstanding balance, your payment covers that interest first, and the rest reduces principal until the balance reaches zero."],
+      ["How can I pay off debt faster?", "Increase your monthly payment or make lump-sum prepayments. Because interest is charged on the balance, extra principal payments cut both time and total interest."],
+      ["What happens if my payment is too low?", "If your monthly payment does not cover the monthly interest, the balance never falls. The calculator flags when a payment is insufficient to make progress."]
+    ],
+    howTo: "Enter your outstanding balance, annual interest rate and monthly payment. The calculator shows payoff time, total interest and a month-by-month schedule."
+  },
+  "credit-card-payoff-calc": {
+    title: "Free Credit Card Payoff Calculator — Interest Saved",
+    desc: "Compare paying only the minimum versus a fixed monthly amount on your credit card, revealing payoff time and interest saved so you can escape revolving debt faster.",
+    keywords: "credit card payoff calculator, minimum payment calculator, credit card interest calculator, pay off credit card",
+    faq: [
+      ["Why is paying only the minimum so costly?", "Minimum payments barely exceed monthly interest, so the balance falls slowly and interest keeps compounding, often stretching payoff over many years and huge interest."],
+      ["How is credit card interest calculated?", "Interest is charged monthly on your balance at your card's periodic rate (APR ÷ 12). Any unpaid balance carries over and accrues interest the next cycle."],
+      ["Does a fixed payment really help?", "Yes. Paying a steady amount above the minimum shortens payoff dramatically and slashes total interest, because more of each payment attacks the principal."]
+    ],
+    howTo: "Enter your card balance, APR, minimum payment percent and a fixed payment amount. The calculator compares both strategies for time and interest cost."
+  },
+  "car-loan-calc": {
+    title: "Free Car Loan Calculator — EMI & Amortization",
+    desc: "Calculate car loan EMI, total interest and true ownership cost from price, down payment, rate and tenure, with a full month-wise amortization schedule.",
+    keywords: "car loan calculator, auto loan emi calculator, vehicle loan calculator, car emi calculator",
+    faq: [
+      ["How is car loan EMI calculated?", "EMI uses the reducing-balance formula EMI = P × r × (1+r)^n / ((1+r)^n − 1), where P is the loan amount, r the monthly rate and n the number of months."],
+      ["How does a down payment affect my EMI?", "A larger down payment reduces the loan principal, which lowers both your monthly EMI and the total interest paid over the loan term."],
+      ["What is the total cost of ownership shown here?", "It adds your down payment plus every EMI over the loan, revealing the full amount you pay for the car including all financing interest."]
+    ],
+    howTo: "Enter the car price, down payment, interest rate and tenure. The calculator shows your EMI, total interest and a month-by-month amortization table."
+  },
+  "student-loan-calc": {
+    title: "Free Student Loan Calculator — Repayment Plans",
+    desc: "Compare standard versus income-based student loan repayment from your balance, interest rate and term, showing monthly payment, total interest and payoff timeline.",
+    keywords: "student loan calculator, education loan emi, student loan repayment, loan interest calculator",
+    faq: [
+      ["How is a standard student loan payment calculated?", "Standard repayment uses the fixed EMI formula so equal monthly payments clear the balance over the term, with interest charged on the reducing balance each month."],
+      ["What is income-based repayment?", "Income-based repayment caps monthly payments at a share of your income, which can lower payments but often extends the term and increases total interest paid."],
+      ["Should I prepay my student loan?", "Prepaying reduces principal and saves interest, but weigh it against tax benefits on education loan interest and any higher-return uses of the money."]
+    ],
+    howTo: "Enter your loan balance, interest rate and repayment term. The calculator compares standard and income-based plans for payment size and total interest."
+  },
+  "break-even-calc": {
+    title: "Free Break-even Calculator — Units & Revenue",
+    desc: "Find your break-even point in units and revenue from fixed costs, price per unit and variable cost per unit, so you know exactly when a product turns profitable.",
+    keywords: "break even calculator, break even point, break even analysis, contribution margin calculator",
+    faq: [
+      ["What is the break-even formula?", "Break-even units = fixed costs / (price per unit − variable cost per unit). The denominator is the contribution margin each unit adds toward covering fixed costs."],
+      ["What is contribution margin?", "Contribution margin is the selling price minus the variable cost per unit. It is the amount each sale contributes to covering fixed costs and then profit."],
+      ["What if price is below variable cost?", "Then every sale loses money and there is no break-even point. You must raise the price or cut variable cost until the contribution margin is positive."]
+    ],
+    howTo: "Enter your fixed costs, selling price per unit and variable cost per unit. The calculator shows the break-even quantity and the revenue needed to reach it."
+  },
+  "net-worth-calc": {
+    title: "Free Net Worth Calculator — Assets vs Liabilities",
+    desc: "Calculate your personal net worth by subtracting total liabilities from total assets, giving a clear snapshot of your financial health at a single point in time.",
+    keywords: "net worth calculator, personal net worth, assets minus liabilities, financial health calculator",
+    faq: [
+      ["How is net worth calculated?", "Net worth = total assets − total liabilities. Add up everything you own, such as cash, investments and property, then subtract all debts you owe."],
+      ["What counts as an asset versus a liability?", "Assets are things of value you own like savings, investments and property. Liabilities are debts you owe such as loans, mortgages and credit card balances."],
+      ["Can net worth be negative?", "Yes. If your debts exceed the value of what you own, net worth is negative. Reducing liabilities and building assets moves it back into positive territory."]
+    ],
+    howTo: "Enter the value of your assets and the total of your liabilities. The calculator subtracts them to show your current net worth instantly."
+  },
+  "budget-calc": {
+    title: "Free Budget Planner — Income vs Expense Tracker",
+    desc: "Plan your monthly budget by comparing total income against expenses, revealing your surplus or deficit and savings rate with a clear visual breakdown of where money goes.",
+    keywords: "budget calculator, budget planner, income expense calculator, monthly budget, savings rate calculator",
+    faq: [
+      ["How does the budget planner work?", "It totals your income and your expenses, then subtracts expenses from income to show whether you have a surplus to save or a deficit to fix."],
+      ["What is a good savings rate?", "Many planners suggest saving at least 20% of income, following guides like the 50/30/20 rule. The right rate depends on your goals and cost of living."],
+      ["What should I do about a budget deficit?", "A deficit means you spend more than you earn. Cut discretionary expenses, increase income, or both, until expenses fall below your monthly income."]
+    ],
+    howTo: "Enter your monthly income and each expense category. The calculator shows your surplus or deficit, savings rate and a visual breakdown of spending."
+  },
+  "discount-calculator": {
+    title: "Free Discount Calculator — Sale Price & Savings",
+    desc: "Calculate the final sale price and money saved from a discount percentage, or work out the discount percent from a sale price, with optional stacked second discounts.",
+    keywords: "discount calculator, sale price calculator, percent off calculator, savings calculator, stacked discount",
+    faq: [
+      ["How is a discounted price calculated?", "Sale price = original price × (1 − discount%). For ₹1,000 at 20% off, you pay ₹1,000 × 0.80 = ₹800 and save ₹200."],
+      ["How do stacked discounts work?", "Stacked discounts apply one after another, not added together. A 20% then 10% off is 0.80 × 0.90 = 0.72, an effective 28% off, not 30%."],
+      ["How do I find the discount percentage?", "Discount% = (original − sale) / original × 100. If an item drops from ₹1,000 to ₹750, that is a 25% discount."]
+    ],
+    howTo: "Enter the original price and discount percentage, or a sale price to find the percent off. Add a second discount to see the stacked final price and savings."
+  },
+  "emi-calc": {
+    title: "Free EMI Calculator — Loan EMI & Interest Online",
+    desc: "Calculate the monthly EMI, total interest and full year-wise schedule for any loan from the amount, interest rate and tenure, using the standard reducing-balance method.",
+    keywords: "emi calculator, loan emi calculator, monthly emi, loan interest calculator, reducing balance emi",
+    faq: [
+      ["How is EMI calculated?", "EMI = P × r × (1+r)^n / ((1+r)^n − 1), where P is the loan amount, r is the monthly interest rate (annual rate ÷ 12) and n is the number of monthly instalments."],
+      ["What is a reducing-balance loan?", "Interest each month is charged only on the remaining principal, not the original amount. As you repay, the interest portion shrinks and principal repayment grows."],
+      ["Does a longer tenure reduce my EMI?", "Yes, a longer tenure lowers the monthly EMI but increases total interest paid, because the outstanding balance accrues interest over more months."]
+    ],
+    howTo: "Enter the loan amount, annual interest rate and tenure. The calculator instantly shows your EMI, total interest, total payable and a year-wise schedule."
+  },
+  "home-loan-emi-calc": {
+    title: "Free Home Loan EMI Calculator — Interest Split",
+    desc: "Calculate home loan EMI with a principal and interest breakdown plus a yearly balance table from your loan amount, rate and tenure, using reducing-balance interest.",
+    keywords: "home loan emi calculator, housing loan calculator, mortgage emi calculator, home loan interest",
+    faq: [
+      ["How is home loan EMI split between principal and interest?", "Early EMIs are mostly interest because the balance is high; over time more of each EMI goes to principal as the outstanding amount and its interest shrink."],
+      ["How can I reduce total interest on a home loan?", "Make prepayments, choose a shorter tenure, or pay a higher EMI. Reducing the principal early cuts the interest charged over the remaining term significantly."],
+      ["Are home loan payments tax-deductible?", "In India, principal repayment can qualify under section 80C and interest under section 24(b), within limits. Confirm current rules as this is not tax advice."]
+    ],
+    howTo: "Enter your home loan amount, interest rate and tenure. The calculator shows your EMI, the principal-interest split and a year-wise outstanding balance table."
+  },
+  "sip-calc": {
+    title: "Free SIP Calculator — Mutual Fund SIP Returns",
+    desc: "Estimate the maturity value of a monthly mutual fund SIP from your contribution, expected return and duration, showing total invested and wealth gained. Not investment advice.",
+    keywords: "sip calculator, mutual fund sip calculator, sip returns calculator, systematic investment plan",
+    faq: [
+      ["How is SIP maturity calculated?", "SIP uses the future value of an annuity: M = P × (((1+i)^n − 1) / i) × (1+i), where P is the monthly amount, i the monthly return and n the number of months."],
+      ["Are SIP returns guaranteed?", "No. SIPs invest in market-linked mutual funds, so the expected return you enter is only an assumption. Actual returns vary and can be negative. Not investment advice."],
+      ["What is rupee cost averaging?", "By investing a fixed amount monthly, you buy more units when prices are low and fewer when high, averaging your cost and reducing timing risk over the long run."]
+    ],
+    howTo: "Enter your monthly SIP amount, expected annual return and investment period. The calculator shows maturity value, total invested and wealth gained."
+  },
+  "step-up-sip-calc": {
+    title: "Free Step-up SIP Calculator — Annual Increase",
+    desc: "Project SIP returns when you raise your monthly investment by a fixed percentage each year, showing how the step-up boosts your final corpus. Not investment advice.",
+    keywords: "step up sip calculator, top up sip calculator, increasing sip calculator, sip step up returns",
+    faq: [
+      ["What is a step-up SIP?", "A step-up or top-up SIP increases your monthly contribution by a set percentage every year, letting your investment grow with your income for a much larger corpus."],
+      ["How does the annual step-up affect returns?", "Because later contributions are larger and still compound, even a small yearly step-up like 10% can significantly raise the final maturity value over a long period."],
+      ["Are these results guaranteed?", "No. The expected return is an assumption and market-linked funds fluctuate, so actual results will differ. This tool is for planning, not investment advice."]
+    ],
+    howTo: "Enter your starting monthly SIP, the annual step-up percentage, expected return and duration. The calculator projects the stepped-up maturity value."
+  },
+  "lumpsum-calc": {
+    title: "Free Lumpsum Calculator — One-Time Investment",
+    desc: "Calculate the future value of a one-time lumpsum investment with annual compounding from your amount, expected return and period, with a year-by-year value table.",
+    keywords: "lumpsum calculator, lumpsum investment calculator, mutual fund lumpsum, one time investment returns",
+    faq: [
+      ["How is lumpsum growth calculated?", "It uses compound interest: maturity = principal × (1 + r)^n, where r is the annual expected return and n is the number of years the money stays invested."],
+      ["Lumpsum or SIP — which is better?", "Lumpsum suits a large amount you can invest at once, while SIP spreads risk over time. The best choice depends on your cash flow and market timing comfort."],
+      ["Are the returns assured?", "No. Market-linked investments do not guarantee returns, so the expected rate you enter is only an estimate. Actual value may be higher or lower."]
+    ],
+    howTo: "Enter your one-time investment amount, expected annual return and number of years. The calculator shows the maturity value and a year-wise growth table."
+  },
+  "swp-calc": {
+    title: "Free SWP Calculator — Systematic Withdrawal Plan",
+    desc: "See how long your investment corpus lasts with a systematic withdrawal plan, from your starting amount, monthly withdrawal and expected return, with a depletion table.",
+    keywords: "swp calculator, systematic withdrawal plan, retirement withdrawal calculator, corpus withdrawal calculator",
+    faq: [
+      ["How does an SWP work?", "You invest a lumpsum and withdraw a fixed amount each month. The remaining balance keeps earning returns, so the corpus depletes slower than plain withdrawals."],
+      ["Will my corpus ever run out?", "It depends on the balance between returns and withdrawals. If withdrawals exceed the growth, the corpus shrinks each month and eventually reaches zero."],
+      ["Can withdrawals continue indefinitely?", "If the expected return earns more than you withdraw, the corpus can grow or stay stable, allowing withdrawals to continue for a very long time or perpetually."]
+    ],
+    howTo: "Enter your invested corpus, monthly withdrawal amount and expected annual return. The calculator shows how many months the corpus lasts with a depletion table."
+  },
+  "gst-calc": {
+    title: "Free GST Calculator — Add or Remove GST Online",
+    desc: "Add or remove GST from any amount with an automatic CGST and SGST split across all Indian GST rates, showing the net price, tax amount and gross total clearly.",
+    keywords: "gst calculator, gst india calculator, cgst sgst calculator, add gst, remove gst, reverse gst",
+    faq: [
+      ["How do I add GST to a price?", "GST amount = price × rate%. The gross = price + GST. For ₹1,000 at 18% GST, tax is ₹180 and the total payable is ₹1,180."],
+      ["How is GST removed from a gross amount?", "Net price = gross / (1 + rate%). For ₹1,180 including 18% GST, the base price is ₹1,180 / 1.18 = ₹1,000 and the GST portion is ₹180."],
+      ["What are CGST and SGST?", "For intra-state sales, GST splits equally into Central GST and State GST. An 18% rate becomes 9% CGST plus 9% SGST, which this tool shows automatically."]
+    ],
+    howTo: "Enter the amount, choose a GST rate and select add or remove GST. The calculator shows the net price, GST amount with CGST/SGST split and gross total."
+  },
+  "fd-calc": {
+    title: "Free FD Calculator — Fixed Deposit Maturity Online",
+    desc: "Calculate fixed deposit maturity and interest with quarterly compounding like Indian banks, from your deposit amount, interest rate and tenure, with a growth table.",
+    keywords: "fd calculator, fixed deposit calculator, fd maturity calculator, fd interest calculator, bank fd",
+    faq: [
+      ["How is FD interest compounded?", "Most Indian banks compound FD interest quarterly. The maturity uses A = P × (1 + r/4)^(4×t), where r is the annual rate and t the tenure in years."],
+      ["Is FD interest taxable?", "Yes. FD interest is added to your income and taxed at your slab rate, and banks deduct TDS if annual interest exceeds the applicable threshold."],
+      ["What is the difference between cumulative and payout FD?", "A cumulative FD reinvests interest until maturity for compounding, while a payout FD pays interest periodically, so its final amount is just the principal returned."]
+    ],
+    howTo: "Enter your deposit amount, annual interest rate and tenure. The calculator applies quarterly compounding to show maturity value and total interest earned."
+  },
+  "hra-calc": {
+    title: "Free HRA Exemption Calculator — Metro & Non-Metro",
+    desc: "Calculate your House Rent Allowance tax exemption using the three-rule method from salary, HRA received, rent paid and city type for metro or non-metro. Not tax advice.",
+    keywords: "hra calculator, hra exemption calculator, house rent allowance, hra tax exemption, section 10 13a",
+    faq: [
+      ["How is HRA exemption calculated?", "Exemption is the least of three: actual HRA received, rent paid minus 10% of salary, and 50% of salary for metro cities (40% for non-metro). The smallest amount is exempt."],
+      ["What counts as a metro city for HRA?", "For HRA, metro cities are Delhi, Mumbai, Kolkata and Chennai, which allow the 50% of salary limit. All other cities use the 40% non-metro limit."],
+      ["Which salary is used for HRA?", "The salary here means basic pay plus dearness allowance (and commission if it is a fixed percentage of turnover), not your full gross salary. This is not tax advice."]
+    ],
+    howTo: "Enter your basic salary, HRA received, annual rent paid and whether you live in a metro city. The calculator shows your exempt and taxable HRA."
+  },
+  "ctc-to-inhand-calc": {
+    title: "Free CTC to In-Hand Salary Calculator — New Regime",
+    desc: "Convert your annual CTC into monthly in-hand take-home salary under the new tax regime, accounting for provident fund, tax and other deductions. Not tax advice.",
+    keywords: "ctc to in hand calculator, ctc calculator, in hand salary calculator, take home from ctc, salary breakup",
+    faq: [
+      ["Why is in-hand salary lower than CTC?", "CTC includes employer contributions like the employer PF share and gratuity that you never receive as cash, plus your own deductions for PF and income tax."],
+      ["How is in-hand salary estimated here?", "The tool subtracts employer PF, employee PF, professional tax and estimated income tax under the new regime from your CTC to arrive at monthly take-home."],
+      ["Is the tax figure exact?", "It is a close estimate using new-regime slabs. Actual tax depends on your full salary structure and any special components, so treat it as a guide, not tax advice."]
+    ],
+    howTo: "Enter your annual CTC and any known components. The calculator estimates deductions under the new regime and shows your monthly in-hand salary."
+  },
+  "nps-calc": {
+    title: "Free NPS Calculator — Pension & Corpus Estimate",
+    desc: "Estimate your National Pension System corpus, tax-free lumpsum and monthly pension at retirement from your contribution, expected return and annuity choice. Not advice.",
+    keywords: "nps calculator, national pension system calculator, nps pension calculator, retirement corpus calculator",
+    faq: [
+      ["How is the NPS corpus calculated?", "Monthly contributions compound at your expected return until retirement using the annuity future-value formula, building the total corpus available at age 60."],
+      ["How much of the NPS corpus is tax-free?", "At maturity you can withdraw up to 60% of the corpus tax-free as a lumpsum; the remaining 40% must buy an annuity that pays your monthly pension."],
+      ["How is the monthly pension estimated?", "The annuity portion is multiplied by an assumed annuity rate to estimate monthly pension. Actual pension depends on the annuity plan and prevailing rates."]
+    ],
+    howTo: "Enter your monthly contribution, expected return, current age and annuity rate. The calculator shows the corpus, tax-free lumpsum and monthly pension."
+  },
+  "ssy-calc": {
+    title: "Free Sukanya Samriddhi Calculator — SSY Maturity",
+    desc: "Calculate Sukanya Samriddhi Yojana maturity value for your daughter with 15 years of deposits and a 21-year term, using annual compounding. Tax-free under EEE status.",
+    keywords: "sukanya samriddhi calculator, ssy calculator, sukanya yojana maturity, girl child savings calculator",
+    faq: [
+      ["How does the SSY scheme work?", "You deposit each year for 15 years, but the account matures after 21 years from opening. Interest compounds annually and the full maturity amount is tax-free."],
+      ["How much can I deposit in SSY each year?", "You can deposit between ₹250 and ₹1.5 lakh per financial year. Deposits qualify for section 80C benefits and the account earns a government-set interest rate."],
+      ["When can the SSY corpus be withdrawn?", "The account matures 21 years after opening, or on the girl's marriage after age 18. Partial withdrawal is allowed for higher education after she turns 18."]
+    ],
+    howTo: "Enter your yearly SSY deposit, the interest rate and the girl's age. The calculator projects the tax-free maturity value at the end of the 21-year term."
+  },
+  "inflation-calc": {
+    title: "Free Inflation Calculator — Future Cost of Money",
+    desc: "See how inflation erodes purchasing power and what today's expenses will cost in the future, from an amount, inflation rate and number of years, with a year-wise table.",
+    keywords: "inflation calculator, future cost calculator, purchasing power calculator, cost of living calculator",
+    faq: [
+      ["How is future cost from inflation calculated?", "Future cost = present cost × (1 + inflation rate)^years. At 6% inflation, an item costing ₹1,000 today would cost about ₹1,791 in ten years."],
+      ["How does inflation reduce purchasing power?", "As prices rise, the same money buys fewer goods. ₹100 today buys less each year, which is why savings must earn more than inflation to grow in real terms."],
+      ["Why should I plan for inflation?", "Ignoring inflation understates future expenses like retirement or education. Factoring it in helps you set realistic savings and investment targets that keep pace."]
+    ],
+    howTo: "Enter a current amount, the expected inflation rate and number of years. The calculator shows the future cost and the drop in purchasing power over time."
+  },
+  "simple-vs-compound-calc": {
+    title: "Free Simple vs Compound Interest Calculator",
+    desc: "Compare simple and compound interest side by side from your principal, rate and term, revealing the extra wealth compounding builds year after year with a growth table.",
+    keywords: "simple vs compound interest, compound interest calculator, interest comparison, power of compounding",
+    faq: [
+      ["What is the difference between simple and compound interest?", "Simple interest is charged only on the original principal, while compound interest is charged on principal plus accumulated interest, so it grows faster over time."],
+      ["What are the two formulas?", "Simple interest = P × r × t. Compound interest gives A = P × (1 + r)^t. The gap between them widens the longer the money stays invested."],
+      ["When does compounding matter most?", "Over long periods and at higher rates. Early years look similar, but compounding pulls far ahead the longer you stay invested, which is why time is so valuable."]
+    ],
+    howTo: "Enter your principal, interest rate and number of years. The calculator shows simple and compound interest side by side with a year-by-year comparison table."
+  },
+  "loan-prepayment-calc": {
+    title: "Free Loan Prepayment Calculator — Interest Saved",
+    desc: "Calculate the interest saved and tenure reduced by paying an extra amount toward your loan each month, from your balance, rate, EMI and extra payment. Not financial advice.",
+    keywords: "loan prepayment calculator, part payment calculator, prepay loan calculator, interest saved calculator",
+    faq: [
+      ["How does prepayment save interest?", "Extra payments go straight to principal, so the outstanding balance falls faster. Since interest is charged on the balance, less principal means far less total interest."],
+      ["Does prepayment reduce EMI or tenure?", "This tool keeps the EMI the same and shortens the tenure, which usually saves the most interest. Some lenders instead lower the EMI while keeping the tenure."],
+      ["Are there prepayment charges?", "Floating-rate home loans in India generally have no prepayment penalty, but fixed-rate or other loans may. Check your loan terms before prepaying."]
+    ],
+    howTo: "Enter your loan balance, interest rate, current EMI and the extra monthly payment. The calculator shows the interest saved and months cut from your tenure."
+  },
+  "rule-of-72-calc": {
+    title: "Free Rule of 72 Calculator — Doubling Time",
+    desc: "Estimate how many years it takes for money to double at a given rate using the Rule of 72, alongside the exact compounding answer for an accurate comparison.",
+    keywords: "rule of 72 calculator, doubling time calculator, money doubling calculator, compound growth rule",
+    faq: [
+      ["What is the Rule of 72?", "It is a shortcut: divide 72 by the annual interest rate to estimate the years needed to double your money. At 8%, that is 72 ÷ 8 = about 9 years."],
+      ["How accurate is the Rule of 72?", "It is a close approximation for rates between roughly 6% and 10%. For very high or low rates the exact logarithmic formula, also shown here, is more precise."],
+      ["What is the exact doubling formula?", "The precise time to double is ln(2) / ln(1 + r), where r is the annual rate. This calculator shows both the Rule of 72 estimate and this exact value."]
+    ],
+    howTo: "Enter an annual interest or growth rate. The calculator shows the Rule of 72 doubling-time estimate next to the exact compounding answer for comparison."
+  },
+  "npv-calc": {
+    title: "Free NPV Calculator — Net Present Value Online",
+    desc: "Calculate the Net Present Value of a project by discounting a series of yearly cash flows at your required rate of return, to judge whether an investment adds value.",
+    keywords: "npv calculator, net present value calculator, discounted cash flow calculator, capital budgeting, dcf",
+    faq: [
+      ["How is NPV calculated?", "NPV sums each year's cash flow discounted to today: NPV = Σ CFt / (1 + r)^t, minus the initial outlay. A positive NPV means the project adds value."],
+      ["What does a positive or negative NPV mean?", "A positive NPV means the discounted returns exceed the cost, so the project is worth doing. A negative NPV means it destroys value at your required rate."],
+      ["How do I choose a discount rate?", "Use your required rate of return or cost of capital. A higher discount rate lowers NPV, reflecting greater risk or a higher opportunity cost of funds."]
+    ],
+    howTo: "Enter the initial investment, your discount rate and each year's cash flow. The calculator discounts them all and shows the project's Net Present Value."
+  },
+  "irr-calc": {
+    title: "Free IRR Calculator — Internal Rate of Return",
+    desc: "Compute the Internal Rate of Return of an investment's cash flows, solved numerically so that Net Present Value equals zero, to gauge a project's true annual yield.",
+    keywords: "irr calculator, internal rate of return calculator, cash flow return, project return calculator",
+    faq: [
+      ["What is IRR?", "The Internal Rate of Return is the discount rate at which a project's Net Present Value equals zero. It represents the effective annual return of its cash flows."],
+      ["How is IRR calculated?", "There is no closed formula, so IRR is found numerically by testing discount rates until NPV reaches zero. This tool iterates to converge on that rate."],
+      ["How do I use IRR to decide?", "Compare IRR with your required rate or cost of capital. If IRR exceeds it, the project is generally worthwhile; if lower, it may not justify the investment."]
+    ],
+    howTo: "Enter the initial investment and each year's cash flow. The calculator iterates to find the discount rate where NPV equals zero, giving the IRR."
+  },
+  "payback-period-calc": {
+    title: "Free Payback Period Calculator — Recovery Time",
+    desc: "Find how long an investment takes to recover its initial cost from annual cash inflows, shown in years and months, to compare how quickly projects return their outlay.",
+    keywords: "payback period calculator, investment recovery calculator, roi payback, capital recovery period",
+    faq: [
+      ["What is the payback period?", "It is the time needed for cumulative cash inflows to equal the initial investment. A shorter payback means you recover your money faster with less risk."],
+      ["How is the payback period calculated?", "Cash inflows are added year by year until they reach the initial cost. The fractional final year is prorated to express the answer in years and months."],
+      ["What is the drawback of the payback method?", "Payback ignores the time value of money and any cash flows after recovery, so pair it with NPV or IRR for a complete view of a project's profitability."]
+    ],
+    howTo: "Enter the initial investment and each year's cash inflow. The calculator adds them until the cost is recovered and shows the payback period in years and months."
+  },
+  "dividend-yield-calc": {
+    title: "Free Dividend Yield Calculator — Stock Income",
+    desc: "Calculate the annual dividend yield of a stock from its dividend per share and current price, plus the yearly income on your holding. Not investment advice.",
+    keywords: "dividend yield calculator, stock yield calculator, dividend income calculator, dividend per share",
+    faq: [
+      ["How is dividend yield calculated?", "Dividend yield = annual dividend per share / current share price × 100. A ₹10 dividend on a ₹200 share is a 5% yield."],
+      ["What is a good dividend yield?", "It varies by sector and market. A very high yield can signal a falling share price or unsustainable payout, so weigh yield against the company's stability."],
+      ["Does yield change with the share price?", "Yes. Since price is in the denominator, yield rises when the share price falls and falls when the price rises, even if the dividend amount stays the same."]
+    ],
+    howTo: "Enter the annual dividend per share, the current share price and your number of shares. The calculator shows the dividend yield and your yearly income."
+  },
+  "pe-ratio-calc": {
+    title: "Free P/E Ratio Calculator — Price to Earnings",
+    desc: "Calculate the price-to-earnings ratio and earnings yield of a stock from its share price and earnings per share, to help gauge how expensively it is valued.",
+    keywords: "pe ratio calculator, price to earnings calculator, earnings yield calculator, stock valuation ratio",
+    faq: [
+      ["How is the P/E ratio calculated?", "P/E ratio = share price / earnings per share. A ₹200 stock earning ₹10 per share has a P/E of 20, meaning investors pay ₹20 for every ₹1 of earnings."],
+      ["What does a high or low P/E mean?", "A high P/E can signal strong growth expectations or an overvalued stock, while a low P/E may mean it is undervalued or that growth prospects are weak."],
+      ["What is earnings yield?", "Earnings yield is the inverse of P/E: EPS / price × 100. It expresses earnings as a percentage of price, making it easy to compare with bond or interest yields."]
+    ],
+    howTo: "Enter the current share price and earnings per share. The calculator shows the P/E ratio and the corresponding earnings yield instantly."
+  },
+  "dividend-payout-ratio-calc": {
+    title: "Free Dividend Payout Ratio Calculator Online",
+    desc: "Calculate the share of net income paid out as dividends and the retention ratio kept for growth, from dividends and earnings, to assess a company's payout policy.",
+    keywords: "dividend payout ratio calculator, payout ratio, retention ratio calculator, dividend policy calculator",
+    faq: [
+      ["How is the dividend payout ratio calculated?", "Payout ratio = total dividends / net income × 100, or dividend per share / earnings per share. It shows how much profit is returned to shareholders."],
+      ["What is the retention ratio?", "The retention ratio is the profit kept in the business: 100% minus the payout ratio. Retained earnings fund growth, debt repayment and reinvestment."],
+      ["What payout ratio is healthy?", "It depends on the company's stage. Mature firms often pay out more, while growth firms retain most earnings. A payout above 100% is unsustainable long term."]
+    ],
+    howTo: "Enter total dividends and net income, or per-share figures. The calculator shows the dividend payout ratio and the retention ratio kept for growth."
+  },
+  "salary-hike-calc": {
+    title: "Free Salary Hike Calculator — Raise Percentage",
+    desc: "Calculate your new salary after a percentage raise, or find the hike percentage between an old and new salary, along with the exact increment amount you gained.",
+    keywords: "salary hike calculator, salary increment calculator, pay raise calculator, hike percentage calculator",
+    faq: [
+      ["How is a salary hike percentage calculated?", "Hike% = (new salary − old salary) / old salary × 100. A jump from ₹50,000 to ₹60,000 is a ₹10,000 increment, a 20% hike."],
+      ["How do I find my new salary from a hike percent?", "New salary = old salary × (1 + hike%). A 15% raise on ₹40,000 gives ₹40,000 × 1.15 = ₹46,000."],
+      ["Should I compare CTC or in-hand for a hike?", "Compare like with like. A CTC hike may not fully reach your in-hand pay because of taxes and deductions, so check both figures when evaluating an offer."]
+    ],
+    howTo: "Enter your old salary with either a hike percentage or your new salary. The calculator shows the new pay, the hike percent and the increment amount."
+  },
+  "overtime-pay-calc": {
+    title: "Free Overtime Pay Calculator — Time and a Half",
+    desc: "Calculate total pay from regular plus overtime hours at any overtime multiplier such as time-and-a-half or double time, from your hourly rate and hours worked.",
+    keywords: "overtime pay calculator, overtime calculator, time and a half calculator, double time pay",
+    faq: [
+      ["How is overtime pay calculated?", "Overtime pay = overtime hours × hourly rate × overtime multiplier. At time-and-a-half, a ₹200/hour rate pays ₹300 for each overtime hour."],
+      ["What is time-and-a-half versus double time?", "Time-and-a-half pays 1.5× your normal rate for overtime hours, while double time pays 2×. This tool lets you set any multiplier that applies to you."],
+      ["How is total pay worked out?", "Total pay adds regular pay (regular hours × rate) to overtime pay (overtime hours × rate × multiplier), giving your full earnings for the period."]
+    ],
+    howTo: "Enter your hourly rate, regular hours, overtime hours and the overtime multiplier. The calculator shows regular pay, overtime pay and total earnings."
+  },
+  "currency-denomination-calc": {
+    title: "Free Cash Denomination Breakdown Calculator",
+    desc: "Break any amount into the fewest currency notes and coins for INR or USD, ideal for cash handling, petty cash, salary disbursement and till preparation.",
+    keywords: "cash denomination calculator, currency breakdown calculator, note counter, cash count calculator, denomination breakup",
+    faq: [
+      ["How does the denomination breakdown work?", "The calculator applies a greedy method, using the largest note first and moving down, so any amount is split into the fewest possible notes and coins."],
+      ["Which currencies are supported?", "It supports Indian Rupee (INR) and US Dollar (USD) denominations. Select a currency to break your amount into that country's standard notes and coins."],
+      ["Where is this useful?", "It helps cashiers, accountants and businesses plan cash for salary payouts, petty cash, ATMs and till floats without manually counting each denomination."]
+    ],
+    howTo: "Choose a currency and enter the total amount. The calculator lists how many of each note and coin make up the amount using the fewest pieces."
+  },
+  "effective-annual-rate-calc": {
+    title: "Free Effective Annual Rate Calculator — APY",
+    desc: "Calculate the effective annual rate (APY) from a nominal interest rate and its compounding frequency, including continuous compounding, to compare rates fairly.",
+    keywords: "effective annual rate calculator, apy calculator, ear calculator, nominal to effective rate, continuous compounding",
+    faq: [
+      ["What is the effective annual rate?", "The EAR, or APY, is the true annual return once compounding is included. It is always at least the nominal rate and higher when compounding is more frequent."],
+      ["How is EAR calculated?", "EAR = (1 + i/n)^n − 1, where i is the nominal annual rate and n the number of compounding periods per year. For continuous compounding, EAR = e^i − 1."],
+      ["Why compare EAR instead of nominal rates?", "Two loans or deposits with the same nominal rate can differ if one compounds monthly and another yearly. EAR normalizes them so you compare true annual cost or yield."]
+    ],
+    howTo: "Enter the nominal annual rate and choose a compounding frequency, up to continuous. The calculator shows the effective annual rate (APY) for true comparison."
+  },
+  "annualized-return-calc": {
+    title: "Free Annualized Return Calculator — Holding Yield",
+    desc: "Calculate the holding period return and annualized return of an investment from its buy value, sell value, income and days held, to compare investments on a yearly basis.",
+    keywords: "annualized return calculator, holding period return, cagr from dates, investment return calculator",
+    faq: [
+      ["What is holding period return?", "It is the total percentage gain over the time you held an investment: (sell value + income − buy value) / buy value × 100, regardless of how long you held it."],
+      ["How is the annualized return calculated?", "The holding period return is scaled to a yearly rate using (1 + HPR)^(365/days) − 1, so investments held for different durations can be compared fairly."],
+      ["Why annualize returns?", "A 10% gain in 6 months is far better than 10% over 3 years. Annualizing puts every investment on the same yearly basis so comparisons are meaningful."]
+    ],
+    howTo: "Enter your buy value, sell value, any income received and the number of days held. The calculator shows the holding period and annualized return."
+  },
+  // ── Health & Fitness ──
+  "tdee-calc": {
+    title: "Free TDEE Calculator — Daily Calorie Needs",
+    desc: "Estimate your Total Daily Energy Expenditure from age, sex, height, weight and activity level using the Mifflin-St Jeor equation. For guidance only, not medical advice.",
+    keywords: "tdee calculator, daily calorie calculator, maintenance calories, mifflin st jeor calculator, energy expenditure",
+    faq: [
+      ["What is TDEE?", "Total Daily Energy Expenditure is the calories you burn per day, including your basal metabolic rate plus activity. It is your maintenance calorie level."],
+      ["How is TDEE calculated?", "This tool finds BMR with the Mifflin-St Jeor equation, then multiplies by an activity factor (1.2 sedentary to about 1.9 very active) to estimate TDEE."],
+      ["How do I use TDEE for weight goals?", "Eat below your TDEE to lose weight and above it to gain. A deficit or surplus of around 500 calories a day changes weight by roughly half a kilo per week."]
+    ],
+    howTo: "Enter your age, sex, height, weight and activity level. The calculator applies the Mifflin-St Jeor formula to estimate your daily maintenance calories."
+  },
+  "macro-calc": {
+    title: "Free Macro Calculator — Protein, Carbs & Fat",
+    desc: "Split a daily calorie goal into protein, carbohydrate and fat grams using your chosen ratio, to plan meals for cutting, bulking or maintenance. Not medical advice.",
+    keywords: "macro calculator, macronutrient calculator, protein carb fat calculator, iifym calculator, diet macros",
+    faq: [
+      ["How are macros calculated from calories?", "Each gram of protein and carbohydrate provides 4 calories and each gram of fat provides 9. Your calorie goal is split by the ratio you pick into grams of each."],
+      ["What macro ratio should I use?", "A common balanced split is around 30% protein, 40% carbs and 30% fat, but athletes and specific diets vary widely. Adjust to your goals and preferences."],
+      ["Why is protein important?", "Protein preserves muscle, especially in a calorie deficit, and keeps you full. Many plans target roughly 1.6–2.2 g of protein per kg of body weight."]
+    ],
+    howTo: "Enter your daily calorie goal and choose a macro ratio. The calculator converts it into grams of protein, carbohydrate and fat for your meal plan."
+  },
+  "protein-intake-calc": {
+    title: "Free Protein Intake Calculator — Daily Grams",
+    desc: "Find your recommended daily protein in grams based on body weight and activity or goal, from sedentary maintenance to muscle building. Guidance only, not medical advice.",
+    keywords: "protein intake calculator, daily protein calculator, protein per kg, muscle protein calculator, protein needs",
+    faq: [
+      ["How much protein do I need per day?", "General health needs about 0.8 g per kg of body weight, active people 1.2–1.6 g, and those building muscle often aim for 1.6–2.2 g per kg."],
+      ["Is protein based on body weight or calories?", "Protein targets are usually set per kilogram of body weight because muscle maintenance scales with body mass rather than total calorie intake."],
+      ["Can I eat too much protein?", "For healthy people, moderately high protein is generally safe, but very high intakes offer little extra benefit. Those with kidney issues should seek medical advice."]
+    ],
+    howTo: "Enter your body weight and choose your activity level or goal. The calculator shows a recommended daily protein range in grams for that goal."
+  },
+  "heart-rate-zone-calc": {
+    title: "Free Heart Rate Zone Calculator — Training Zones",
+    desc: "Calculate your five heart rate training zones from your age and resting heart rate, to guide fat-burning, endurance and peak workouts. For guidance only, not medical advice.",
+    keywords: "heart rate zone calculator, training zone calculator, max heart rate calculator, fat burn zone, cardio zones",
+    faq: [
+      ["How is maximum heart rate estimated?", "A common estimate is 220 minus your age, though individual maximums vary. Some tools also use the Karvonen method with your resting heart rate for more accuracy."],
+      ["What are the five heart rate zones?", "Zones range from very light recovery (about 50–60% of max) up to peak effort (90–100%), each targeting different goals like fat burn, endurance or performance."],
+      ["What is the Karvonen method?", "Karvonen uses heart rate reserve (max minus resting) to set zones, giving more personalised targets than a plain percentage of maximum heart rate."]
+    ],
+    howTo: "Enter your age and resting heart rate. The calculator estimates your maximum heart rate and shows the five training zones with their heart rate ranges."
+  },
+  "vo2max-calc": {
+    title: "Free VO2 Max Calculator — Cardio Fitness Estimate",
+    desc: "Estimate your VO2 max, a key measure of aerobic fitness, using the Cooper test distance or your resting heart rate method. For general guidance, not medical advice.",
+    keywords: "vo2 max calculator, aerobic fitness calculator, cooper test calculator, cardio fitness, vo2max estimate",
+    faq: [
+      ["What is VO2 max?", "VO2 max is the maximum volume of oxygen your body can use during intense exercise, measured in ml/kg/min. A higher value indicates better aerobic fitness."],
+      ["How does the Cooper test estimate VO2 max?", "It uses the distance run in 12 minutes: VO2 max ≈ (distance in metres − 504.9) / 44.73. The farther you run, the higher your estimated VO2 max."],
+      ["How accurate are these estimates?", "Field estimates are approximations and can differ from a lab test. Use them to track your own progress over time rather than as an exact clinical figure."]
+    ],
+    howTo: "Choose the Cooper 12-minute distance or resting heart rate method and enter your values. The calculator estimates your VO2 max in ml/kg/min."
+  },
+  "pace-calc": {
+    title: "Free Pace Calculator — Running Speed & Time",
+    desc: "Convert between pace, speed, distance and time for running, cycling and walking. Enter any two values to solve the third, in metric or imperial units.",
+    keywords: "pace calculator, running pace calculator, speed distance time calculator, race pace, min per km calculator",
+    faq: [
+      ["How is running pace calculated?", "Pace = time / distance, usually expressed as minutes per kilometre or mile. Running 10 km in 50 minutes is a pace of 5 minutes per kilometre."],
+      ["What is the difference between pace and speed?", "Pace is time per unit distance (min/km), while speed is distance per unit time (km/h). Both describe the same effort from opposite angles."],
+      ["How do I find my finish time?", "Enter your target pace and the race distance, and the calculator multiplies them to project your total finish time for the event."]
+    ],
+    howTo: "Enter any two of pace, speed, distance or time. The calculator solves for the remaining value and lets you switch between metric and imperial units."
+  },
+  "blood-alcohol-calc": {
+    title: "Free Blood Alcohol Calculator — BAC Estimate",
+    desc: "Estimate your blood alcohol concentration from drinks, body weight, sex and time using the Widmark formula. A rough guide only — never use it to decide if you can drive.",
+    keywords: "blood alcohol calculator, bac calculator, widmark formula calculator, alcohol level estimate, drink calculator",
+    faq: [
+      ["How is BAC estimated?", "This tool uses the Widmark formula: BAC = (alcohol grams / (body weight × distribution ratio)) minus the alcohol metabolised over the time since drinking."],
+      ["How accurate is a BAC estimate?", "It is only a rough approximation. Actual BAC depends on food, metabolism, medication and health, so never rely on it to judge whether you are fit to drive."],
+      ["How long does alcohol take to leave the body?", "The body clears alcohol at roughly 0.015 BAC per hour on average, but this varies by person. Only time reduces BAC — coffee and water do not speed it up."]
+    ],
+    howTo: "Enter the number and size of drinks, your body weight, sex and time elapsed. The calculator applies the Widmark formula for an approximate BAC. Never drink and drive."
+  },
+  "sleep-calc": {
+    title: "Free Sleep Calculator — Best Bed & Wake Times",
+    desc: "Find the best times to sleep or wake based on 90-minute sleep cycles, so you rise between cycles feeling refreshed rather than groggy. For general guidance only.",
+    keywords: "sleep calculator, sleep cycle calculator, bedtime calculator, wake up time calculator, 90 minute cycles",
+    faq: [
+      ["How does the sleep cycle calculator work?", "Sleep runs in roughly 90-minute cycles. The tool counts back or forward in 90-minute blocks (plus time to fall asleep) so you wake between cycles, not mid-cycle."],
+      ["Why does waking between cycles feel better?", "Waking during deep sleep leaves you groggy. Waking at the end of a cycle, in lighter sleep, tends to feel more refreshing even with the same total hours."],
+      ["How many sleep cycles do I need?", "Most adults do best with 5 to 6 complete cycles, about 7.5 to 9 hours. The calculator suggests times that give whole cycles within that range."]
+    ],
+    howTo: "Enter the time you want to wake up or the time you plan to sleep. The calculator suggests ideal bed or wake times aligned to 90-minute sleep cycles."
+  },
+  "blood-pressure-calc": {
+    title: "Free Blood Pressure Classifier — BP Category Chart",
+    desc: "Classify a blood pressure reading into categories from normal to hypertensive crisis using your systolic and diastolic values, with a reference chart. Not medical advice.",
+    keywords: "blood pressure calculator, bp classifier, hypertension calculator, systolic diastolic chart, bp category",
+    faq: [
+      ["How is blood pressure classified?", "Readings use systolic over diastolic. Common categories are normal, elevated, and stage 1 and stage 2 hypertension, with very high readings flagged as a crisis."],
+      ["What do systolic and diastolic mean?", "Systolic is the top number, the pressure when the heart beats, and diastolic is the bottom number, the pressure between beats when the heart rests."],
+      ["Is this a diagnosis?", "No. This tool only classifies a single reading against standard ranges. Diagnosing high blood pressure needs repeated measurements and a doctor's assessment."]
+    ],
+    howTo: "Enter your systolic and diastolic numbers. The calculator places the reading into its blood pressure category and shows a reference chart. Not medical advice."
+  },
+  "blood-sugar-converter": {
+    title: "Free Blood Sugar Converter — mg/dL to mmol/L",
+    desc: "Convert blood glucose between mg/dL and mmol/L and see the general category for the reading, useful when comparing lab results across regions. Not medical advice.",
+    keywords: "blood sugar converter, glucose converter, mg/dl to mmol/l, blood glucose calculator, sugar level converter",
+    faq: [
+      ["How do I convert mg/dL to mmol/L?", "Divide the mg/dL value by 18 to get mmol/L, and multiply mmol/L by 18 to go back. For example, 90 mg/dL equals 5.0 mmol/L."],
+      ["Why do countries use different units?", "The United States and a few others report glucose in mg/dL, while most of the world uses mmol/L. Converting lets you compare readings from different sources."],
+      ["What are normal blood sugar ranges?", "Fasting glucose is often considered normal around 70–99 mg/dL (3.9–5.5 mmol/L), but targets vary by person. Always confirm ranges with your doctor."]
+    ],
+    howTo: "Enter a glucose value in either mg/dL or mmol/L. The calculator converts it to the other unit and shows the general category for the reading."
+  },
+  "bmi-calculator": {
+    title: "Free BMI Calculator — Body Mass Index Online",
+    desc: "Calculate Body Mass Index from weight and height in metric or imperial units, with both WHO and Asian-Indian category tables. A screening guide, not medical advice.",
+    keywords: "bmi calculator, body mass index calculator, bmi chart, weight category calculator, asian bmi calculator",
+    faq: [
+      ["How is BMI calculated?", "BMI = weight in kilograms / (height in metres)². For imperial, BMI = 703 × weight in pounds / (height in inches)². The result is compared against category ranges."],
+      ["What are the BMI categories?", "WHO ranges are underweight below 18.5, normal 18.5–24.9, overweight 25–29.9 and obese 30 or above. Asian-Indian cut-offs flag risk at lower BMI values."],
+      ["What are the limitations of BMI?", "BMI does not distinguish muscle from fat or account for body composition, so athletes may read high. Treat it as a rough screening tool, not a diagnosis."]
+    ],
+    howTo: "Enter your weight and height in metric or imperial units. The calculator computes your BMI and shows the WHO and Asian-Indian weight categories."
+  },
+  // ── Everyday / Unit ──
+  "aspect-ratio-calc": {
+    title: "Free Aspect Ratio Calculator — Resize Dimensions",
+    desc: "Find the aspect ratio of a width and height, or compute a missing dimension that keeps the same ratio, ideal for images, video, screens and design layouts.",
+    keywords: "aspect ratio calculator, resize calculator, image ratio calculator, 16:9 calculator, proportional resize",
+    faq: [
+      ["How is aspect ratio calculated?", "Aspect ratio is width divided by height, simplified to whole numbers using the greatest common divisor. 1920×1080 simplifies to a 16:9 ratio."],
+      ["How do I resize while keeping the ratio?", "Enter the original width and height plus one new dimension, and the calculator finds the other so the image or video is not stretched or squashed."],
+      ["What are common aspect ratios?", "16:9 for widescreen video, 4:3 for older displays, 1:1 for square social posts, and 21:9 for ultrawide. Photos often use 3:2 or 4:3."]
+    ],
+    howTo: "Enter a width and height to see the simplified aspect ratio, or enter one new dimension to get the matching value that preserves the ratio."
+  },
+  "ppi-dpi-calc": {
+    title: "Free PPI/DPI Calculator — Pixel Density Online",
+    desc: "Calculate a screen's pixels per inch from its resolution and diagonal size, to compare display sharpness across phones, monitors and TVs. Fast and accurate.",
+    keywords: "ppi calculator, dpi calculator, pixel density calculator, screen ppi, display sharpness calculator",
+    faq: [
+      ["How is PPI calculated?", "PPI = √(width² + height²) in pixels / diagonal screen size in inches. It combines the resolution and physical size to measure pixel density."],
+      ["What is the difference between PPI and DPI?", "PPI (pixels per inch) describes screen pixel density, while DPI (dots per inch) refers to print resolution. The terms are often used interchangeably for displays."],
+      ["Why does PPI matter?", "Higher PPI means sharper images and text, as individual pixels become harder to see. Small high-resolution screens like phones have very high PPI."]
+    ],
+    howTo: "Enter the horizontal and vertical resolution in pixels and the diagonal screen size in inches. The calculator shows the display's pixels per inch."
+  },
+  "fuel-cost-calc": {
+    title: "Free Fuel Cost Calculator — Trip Fuel Estimate",
+    desc: "Estimate the fuel cost of any trip from distance, your vehicle's fuel efficiency and the fuel price, so you can budget journeys and compare routes or vehicles.",
+    keywords: "fuel cost calculator, trip fuel calculator, gas cost calculator, mileage cost calculator, petrol cost",
+    faq: [
+      ["How is trip fuel cost calculated?", "Fuel used = distance / fuel efficiency, then cost = fuel used × price per unit. For 300 km at 15 km/l and ₹100/l, that is 20 litres costing ₹2,000."],
+      ["What efficiency figure should I enter?", "Use your vehicle's real-world mileage in km per litre (or miles per gallon), which is often lower than the official rating in city driving."],
+      ["Can I compare two vehicles?", "Yes. Run the same trip with each vehicle's efficiency to see the cost difference, which helps when choosing a car or planning a long journey."]
+    ],
+    howTo: "Enter the trip distance, your vehicle's fuel efficiency and the price per litre or gallon. The calculator shows the fuel needed and the total trip cost."
+  },
+  "electricity-cost-calc": {
+    title: "Free Electricity Cost Calculator — Appliance Bill",
+    desc: "Estimate an appliance's electricity cost from its wattage, hours of use and your unit tariff, revealing daily, monthly and yearly running costs to cut your power bill.",
+    keywords: "electricity cost calculator, appliance energy calculator, power bill calculator, kwh cost calculator, energy cost",
+    faq: [
+      ["How is electricity cost calculated?", "Energy in kWh = watts × hours / 1000, then cost = kWh × tariff. A 1000 W device run 3 hours uses 3 kWh; at ₹8 per unit that is ₹24 a day."],
+      ["What is a kWh?", "A kilowatt-hour is the energy of 1000 watts running for one hour, and it is the unit your electricity provider bills. The tariff is the price per kWh."],
+      ["How can I lower my electricity bill?", "Reduce running hours, use lower-wattage or energy-efficient appliances, and target the biggest consumers like heaters, air conditioners and geysers first."]
+    ],
+    howTo: "Enter the appliance wattage, hours used per day and your cost per unit. The calculator shows daily, monthly and yearly electricity costs."
+  },
+  "ohms-law-calc": {
+    title: "Free Ohm's Law Calculator — Volts, Amps, Ohms",
+    desc: "Solve any of voltage, current, resistance or power using Ohm's law. Enter any two known values and the calculator computes the remaining electrical quantities.",
+    keywords: "ohms law calculator, voltage current resistance calculator, power calculator, v=ir calculator, electrical calculator",
+    faq: [
+      ["What is Ohm's law?", "Ohm's law states V = I × R: voltage equals current times resistance. From any two values you can find the third, and power follows as P = V × I."],
+      ["How is electrical power calculated?", "Power P = V × I, and by substitution P = I² × R or P = V² / R. Enter any two of the four quantities and the calculator derives the rest."],
+      ["What units does the calculator use?", "Voltage is in volts (V), current in amperes (A), resistance in ohms (Ω) and power in watts (W). Enter values in these base units for correct results."]
+    ],
+    howTo: "Enter any two of voltage, current, resistance or power. The calculator applies Ohm's law to solve for the remaining electrical values instantly."
+  },
+};
+// ───── END PER-TOOL SEO METADATA ─────────────────────────────────────────────
+
 function ToolPage({ toolId }) {
   const tool = TOOLS.find(t => t.id === toolId);
-  const meta = null;
+  const meta = TOOL_META[toolId];
   const ToolComp = TOOL_COMPONENTS[toolId];
   useEffect(() => {
     document.title = meta?.title || `${tool?.name} – Free Finance Calculator | ToolsRift`;

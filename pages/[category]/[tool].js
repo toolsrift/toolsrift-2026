@@ -50,6 +50,7 @@ const COMPONENTS = {
   json:        dynamic(() => import('../../components/toolsrift-json'),          { ssr: false, loading: WidgetLoading }),
   mathcalc:    dynamic(() => import('../../components/toolsrift-calc-math'),     { ssr: false, loading: WidgetLoading }),
   pdf:         dynamic(() => import('../../components/toolsrift-pdf'),           { ssr: false, loading: WidgetLoading }),
+  random:      dynamic(() => import('../../components/toolsrift-random'),        { ssr: false, loading: WidgetLoading }),
   text:        dynamic(() => import('../../components/toolsrift-text'),          { ssr: false, loading: WidgetLoading }),
   units:       dynamic(() => import('../../components/toolsrift-units'),         { ssr: false, loading: WidgetLoading }),
 }

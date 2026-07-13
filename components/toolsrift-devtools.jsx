@@ -14,8 +14,10 @@ const C = {
   bg: "#06090F",
   surface: "#0D1117",
   border: "rgba(255,255,255,0.08)",
-  blue: "#3B82F6",
-  blueD: "#2563EB",
+  // Canonical Developer Tools accent = CYAN (#22D3EE / dark #06B6D4) per lib/categoryThemes.js.
+  // Key name kept as `blue` for compatibility; only the VALUE is the canonical cyan.
+  blue: "#22D3EE",
+  blueD: "#06B6D4",
   text: "#E2E8F0",
   muted: "#64748B",
 };
@@ -39,7 +41,7 @@ th,td{border:1px solid rgba(255,255,255,.08);padding:8px 10px;font-size:12px;ver
 th{background:rgba(255,255,255,.04);text-align:left}
 ::-webkit-scrollbar{width:8px;height:8px}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:8px}
-::selection{background:rgba(59,130,246,0.3)}
+::selection{background:rgba(34,211,238,0.3)}
 `;
 
 const n = (v) => {
@@ -81,7 +83,7 @@ function GhostBtn({ children, onClick }) {
   return <button onClick={onClick} style={{ border: `1px solid ${C.border}`, background: "rgba(255,255,255,.05)", color: C.text, borderRadius: 8, padding: "8px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>{children}</button>;
 }
 function Badge({ children }) {
-  return <span style={{ background: "rgba(59,130,246,.18)", color: "#93C5FD", border: `1px solid rgba(59,130,246,.35)`, borderRadius: 999, padding: "3px 10px", fontSize: 11, fontWeight: 700 }}>{children}</span>;
+  return <span style={{ background: "rgba(34,211,238,.18)", color: "#67E8F9", border: `1px solid rgba(34,211,238,.35)`, borderRadius: 999, padding: "3px 10px", fontSize: 11, fontWeight: 700 }}>{children}</span>;
 }
 function Grid2({ children }) { return <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>{children}</div>; }
 function Grid3({ children }) { return <div style={{ display: "grid", gridTemplateColumns: "repeat(3,minmax(0,1fr))", gap: 12 }}>{children}</div>; }
@@ -190,6 +192,624 @@ const TOOLS = [
   { id: "css-clamp-generator", cat: "generators2", name: "CSS Clamp Generator", icon: "📐", desc: "Generate a fluid CSS clamp() for responsive typography or spacing that scales linearly between two viewport widths." },
 ];
 
+/* ---- Per-tool SEO metadata (title / desc / keywords / howTo / faq) ---- */
+const TOOL_META = {
+  // ---- time ----
+  "unix-timestamp": {
+    title: "Unix Timestamp Converter — Epoch to Date Online",
+    desc: "Convert Unix timestamps to human-readable dates and back, with a live current epoch time. Supports seconds and ISO date input, all in your browser.",
+    keywords: "unix timestamp converter, epoch converter, timestamp to date, current unix time, epoch time",
+    howTo: "Type a Unix timestamp in seconds to see the local and UTC date, or enter an ISO date to get its epoch value. The live current timestamp updates every second.",
+    faq: [
+      ["What is a Unix timestamp?", "It is the number of seconds elapsed since January 1, 1970 UTC (the Unix epoch), a compact way to store an exact moment in time."],
+      ["Seconds or milliseconds?", "This tool uses seconds. If your value has 13 digits it is likely milliseconds — divide by 1000 before converting."],
+      ["Why is my date off by hours?", "Timestamps are timezone-agnostic. The human date is shown in your local timezone, so it shifts by your UTC offset."]
+    ]
+  },
+  "cron-parser": {
+    title: "Cron Parser — Explain Cron & Next Run Times",
+    desc: "Parse a 5-field cron expression, read it in plain English, and preview the next 10 scheduled run times. Validate crontab syntax instantly in your browser.",
+    keywords: "cron parser, cron expression, next run time, crontab explainer, cron schedule",
+    howTo: "Enter a standard 5-field cron expression (minute hour day-of-month month day-of-week). The tool validates it, describes it in words, and lists the next 10 fire times.",
+    faq: [
+      ["What do the five cron fields mean?", "In order: minute (0-59), hour (0-23), day of month (1-31), month (1-12), and day of week (0-6, Sunday=0)."],
+      ["What does */15 mean?", "A step value: */15 in the minute field means every 15 minutes. The slash applies a repeating interval across the field's range."],
+      ["Why are no run times shown?", "The expression is invalid or matches no upcoming minutes. Check that each field is within range and correctly separated by spaces."]
+    ]
+  },
+  "cron-gen": {
+    title: "Cron Generator — Build Cron Expressions Online",
+    desc: "Generate valid cron expressions from simple dropdowns for minute, hour, day, month and weekday. See the readable schedule and copy the crontab line instantly.",
+    keywords: "cron generator, crontab builder, cron expression generator, schedule builder, cron maker",
+    howTo: "Pick a minute and hour mode (every, every N, or exact) and set day, month and weekday fields. The cron expression and a plain-English summary update as you choose.",
+    faq: [
+      ["How do I run a job every N minutes?", "Set the minute mode to 'Every N minutes' and enter the interval — the tool produces the */N step syntax for you."],
+      ["What value means every day?", "Leave day-of-month, month and day-of-week as * (asterisk). An asterisk matches every valid value for that field."],
+      ["Can I schedule for a specific weekday?", "Yes — set day-of-week to a number where 0 is Sunday through 6 is Saturday, e.g. 1 for Monday."]
+    ]
+  },
+  "timezone-dev": {
+    title: "Timezone Dev Tool — Live World Clock Table",
+    desc: "See the current time across major world timezones in one live-updating table. Compare UTC, US, Europe, Asia and Australia clocks side by side for scheduling.",
+    keywords: "timezone converter, world clock, utc time, timezone table, developer timezones",
+    howTo: "The table lists major IANA timezones with their current local time and updates every second. Use it to coordinate deploys, meetings and logs across regions.",
+    faq: [
+      ["Which timezones are shown?", "A curated set of major zones including UTC, New York, Los Angeles, London, Berlin, Dubai, Kolkata, Singapore, Tokyo and Sydney."],
+      ["Does it handle daylight saving?", "Yes — times are formatted with the browser's Intl API, which applies each zone's current DST rules automatically."],
+      ["Why use IANA timezone names?", "Names like Asia/Kolkata are unambiguous and account for historical and DST changes, unlike fixed offsets such as GMT+5:30."]
+    ]
+  },
+  "date-format-calc": {
+    title: "Date Format Calculator — 20+ Date Formats",
+    desc: "Convert any date into 20+ formats at once: ISO 8601, RFC 2822, Unix, custom patterns and locale strings. Test date formatting tokens live in your browser.",
+    keywords: "date format converter, iso 8601, date formatter, custom date pattern, rfc 2822",
+    howTo: "Enter any parseable date string and optionally a custom pattern using tokens like YYYY, MM and DD. A table shows the same date rendered in every supported format.",
+    faq: [
+      ["What custom tokens are supported?", "YYYY, YY, MM, M, DD, D, HH, H, mm, m, ss and s — covering year, month, day, hour, minute and second in padded and unpadded forms."],
+      ["What input formats are accepted?", "Anything JavaScript's Date can parse: ISO 8601, RFC strings, and common locale date strings."],
+      ["What is the difference between ISO 8601 and RFC 2822?", "ISO 8601 (2026-07-13T10:00:00Z) is the compact machine standard; RFC 2822 is the verbose email-header style used in HTTP and mail."]
+    ]
+  },
+  "duration-humanizer": {
+    title: "Duration Humanizer — MS to Readable Time",
+    desc: "Convert milliseconds or seconds into a readable duration like 1d 2h 3m 4s, plus a full breakdown across days, hours, minutes and seconds. Ideal for logs and timers.",
+    keywords: "duration humanizer, milliseconds to time, seconds to readable, time formatter, duration converter",
+    howTo: "Enter a duration in milliseconds or seconds and the tool renders a compact humanized string and a unit-by-unit breakdown, perfect for describing elapsed time.",
+    faq: [
+      ["Milliseconds or seconds — which do I use?", "Pick the unit that matches your source. Timestamps and performance APIs are usually milliseconds; many APIs report seconds."],
+      ["How is the humanized string built?", "The total is divided into days, hours, minutes and seconds, and only non-zero units are shown, e.g. 2h 5m."],
+      ["Can it show weeks or months?", "It stops at days for accuracy, since months and years vary in length and would make elapsed-time output ambiguous."]
+    ]
+  },
+  "timestamp-diff": {
+    title: "Timestamp Diff — Time Between Two Dates",
+    desc: "Compute the difference between two dates or Unix timestamps in days, hours, minutes and seconds, plus a humanized summary. Measure durations right in your browser.",
+    keywords: "timestamp difference, date diff, time between dates, duration calculator, elapsed time",
+    howTo: "Enter two dates or Unix timestamps. The tool subtracts them and reports the gap in total seconds, minutes, hours and days along with a readable summary string.",
+    faq: [
+      ["Can I mix a date and a timestamp?", "Yes — enter either an ISO/parseable date or a numeric Unix timestamp in each field and the tool normalizes both before comparing."],
+      ["Does order matter?", "The absolute difference is shown, so swapping the two inputs gives the same magnitude regardless of which is earlier."],
+      ["Are timezones considered?", "Both inputs are converted to absolute moments (epoch), so the difference is exact and independent of any timezone offset."]
+    ]
+  },
+
+  // ---- network ----
+  "url-parser": {
+    title: "URL Parser — Break Down Any URL Online",
+    desc: "Parse any URL into protocol, host, port, path, query parameters and fragment. Inspect the full URL structure and decode query strings instantly in your browser.",
+    keywords: "url parser, parse url, url components, query string parser, url structure",
+    howTo: "Paste a full URL and the tool splits it into every component — protocol, host, port, pathname, search, individual query params, hash and origin — in a clear table.",
+    faq: [
+      ["What is the origin of a URL?", "The origin is the scheme, host and port combined, e.g. https://example.com:8080 — it defines the security boundary for browsers."],
+      ["Why does the port show '(default)'?", "When no port is specified the browser uses the scheme's default (80 for http, 443 for https), so the explicit port is empty."],
+      ["Are query parameters decoded?", "Yes — each key/value pair is extracted and percent-decoded so you can read the actual values behind %20 and similar escapes."]
+    ]
+  },
+  "query-string-builder": {
+    title: "Query String Builder — Encode URL Params",
+    desc: "Build and percent-encode URL query strings from key/value pairs, and decode existing query strings back into a table. Assemble safe URLs entirely in your browser.",
+    keywords: "query string builder, url parameter encoder, querystring, url params, encode query",
+    howTo: "Add key/value pairs to compose an encoded query string, and paste an existing query string to decode it into readable pairs. Copy the result with one click.",
+    faq: [
+      ["Are values automatically encoded?", "Yes — the builder uses URLSearchParams, which percent-encodes special characters so spaces, ampersands and symbols stay valid."],
+      ["Can I have duplicate keys?", "Yes — repeating a key appends multiple values, matching how servers read array-style parameters like tag=a&tag=b."],
+      ["Should I include the leading ?", "The output shows the raw query string; add the ? yourself when joining it to a URL path, or copy the previewed ?-prefixed version."]
+    ]
+  },
+  "user-agent-parser": {
+    title: "User-Agent Parser — Detect Browser & OS",
+    desc: "Parse any User-Agent string to extract the browser, version, operating system, device type and rendering engine. Analyze UA headers instantly in your browser.",
+    keywords: "user agent parser, ua parser, browser detection, detect os, user agent string",
+    howTo: "Paste a User-Agent string (your own is pre-filled) and the tool detects the browser and version, OS, device category and layout engine in a summary table.",
+    faq: [
+      ["Why do UA strings mention many browsers?", "For historical compatibility most browsers include tokens like Mozilla, AppleWebKit and Safari, so detection relies on the most specific marker."],
+      ["Can it always identify the device?", "It infers Mobile, Tablet or Desktop from known tokens, but heavily customized or spoofed UA strings may report as Unknown."],
+      ["Is UA parsing reliable for analytics?", "It is a useful hint, not a guarantee — UA strings can be spoofed or frozen, so treat the result as best-effort detection."]
+    ]
+  },
+  "ip-info": {
+    title: "IP Info — Inspect IPv4 & IPv6 Addresses",
+    desc: "Inspect any IPv4 or IPv6 address to see its class, public/private type, decimal integer, hex and binary representation. Analyze IP addresses locally in your browser.",
+    keywords: "ip info, ipv4 class, private ip, ip to binary, ip address inspector",
+    howTo: "Enter an IPv4 or IPv6 address and the tool reports its version, class, whether it is private or public, and its decimal, hexadecimal and binary representations.",
+    faq: [
+      ["What are private IP ranges?", "10.0.0.0/8, 172.16.0.0/12 and 192.168.0.0/16 are reserved for private networks and are never routed on the public internet."],
+      ["What do IP classes A, B and C mean?", "They are the legacy class-based ranges defined by the first octet, once used to size networks before CIDR replaced them."],
+      ["Does this tool geolocate my IP?", "No — everything runs locally in your browser. It analyzes the address structure only and makes no network lookups."]
+    ]
+  },
+  "cidr-calc": {
+    title: "CIDR Calculator — Subnet Range & Netmask",
+    desc: "Calculate the network address, broadcast, netmask, wildcard, host range and usable host count for any IPv4 CIDR block. Plan subnets instantly in your browser.",
+    keywords: "cidr calculator, subnet calculator, netmask, ip range, host count",
+    howTo: "Enter a CIDR like 192.168.1.10/24 and the tool computes the network and broadcast addresses, netmask, wildcard mask, first and last usable host, and host count.",
+    faq: [
+      ["What does the /24 prefix mean?", "It is the number of leading 1-bits in the netmask. /24 means the first 24 bits are the network and the last 8 bits address hosts."],
+      ["Why is the host count total minus two?", "The network and broadcast addresses are reserved, so a /24 has 256 addresses but only 254 usable hosts."],
+      ["What happens with /31 and /32?", "/32 is a single host and /31 is a two-address point-to-point link, so no separate usable-host range is reported."]
+    ]
+  },
+  "http-status-codes": {
+    title: "HTTP Status Codes — Searchable Reference",
+    desc: "Search a complete reference of HTTP status codes from 1xx to 5xx with meanings and use cases. Look up 200, 301, 404, 500 and more instantly in your browser.",
+    keywords: "http status codes, status code reference, 404 meaning, http response codes, rest status",
+    howTo: "Search by number or name to find any HTTP status code, its category (informational, success, redirect, client or server error) and a short explanation of when it applies.",
+    faq: [
+      ["What is the difference between 301 and 302?", "301 is a permanent redirect that browsers and search engines cache; 302 is temporary and the original URL should stay in use."],
+      ["When should I return 401 vs 403?", "401 means the request is unauthenticated (log in), while 403 means authenticated but not permitted to access the resource."],
+      ["What are 5xx codes?", "Server-error responses like 500 Internal Server Error and 503 Service Unavailable indicate the server failed to fulfill a valid request."]
+    ]
+  },
+  "mime-types": {
+    title: "MIME Types Lookup — Extension to Content Type",
+    desc: "Look up the MIME content type for any file extension, from images and audio to fonts and documents. Find the right Content-Type header instantly in your browser.",
+    keywords: "mime types, content type, file extension mime, media type lookup, mime lookup",
+    howTo: "Search by file extension or MIME type to find the matching media type used in Content-Type headers, uploads and downloads across the web.",
+    faq: [
+      ["What is a MIME type?", "A media type string like text/html or image/png that tells clients how to interpret a file's contents, sent in the Content-Type header."],
+      ["Why does the wrong MIME type break things?", "Browsers may refuse to run scripts or render images if the declared type is wrong, so serving the correct Content-Type matters."],
+      ["What type should I use for unknown files?", "application/octet-stream is the generic binary fallback, prompting a download rather than inline rendering."]
+    ]
+  },
+  "basic-auth-generator": {
+    title: "Basic Auth Generator — HTTP Authorization Header",
+    desc: "Generate an HTTP Basic Authorization header from a username and password. Build the Base64-encoded 'Basic' credential for API testing right in your browser.",
+    keywords: "basic auth generator, authorization header, http basic authentication, base64 credentials, api auth",
+    howTo: "Enter a username and password and the tool joins them with a colon, Base64-encodes the pair, and outputs the full Authorization: Basic header value to copy.",
+    faq: [
+      ["How is the Basic Auth header formed?", "The username and password are joined as user:pass, Base64-encoded, and prefixed with 'Basic ' to form the Authorization header value."],
+      ["Is Basic Auth secure?", "Base64 is encoding, not encryption — anyone can decode it. Always send Basic Auth over HTTPS so the credentials are protected in transit."],
+      ["Can I decode a Basic Auth header?", "Yes — Base64-decode the part after 'Basic ' to recover the original user:password string for debugging."]
+    ]
+  },
+  "url-encoder": {
+    title: "URL Encoder & Decoder — Percent Encode Online",
+    desc: "Percent-encode or decode text for URLs using encodeURIComponent or encodeURI, in full-string and component modes. Escape query values safely in your browser.",
+    keywords: "url encoder, url decoder, percent encoding, encodeuricomponent, url escape",
+    howTo: "Paste text and choose encode or decode plus component or full-URL mode. Component mode escapes reserved characters like & and = for use inside query values.",
+    faq: [
+      ["What is the difference between encodeURI and encodeURIComponent?", "encodeURI keeps URL structure characters like / and ? intact; encodeURIComponent escapes them too, which is right for individual parameter values."],
+      ["Why does a space become %20?", "Space is not a safe URL character, so it is escaped as %20 (or + in form-encoded query strings) to keep the URL valid."],
+      ["Does it handle Unicode?", "Yes — text is encoded as UTF-8 first, so characters like é become multi-byte escapes such as %C3%A9 and decode back correctly."]
+    ]
+  },
+  "json-to-query-string": {
+    title: "JSON to Query String — Convert Object to URL",
+    desc: "Convert a JSON object into a URL query string with bracket notation for nested objects and arrays, fully percent-encoded. Serialize params instantly in your browser.",
+    keywords: "json to query string, object to querystring, serialize params, nested query string, json url params",
+    howTo: "Paste a JSON object and the tool flattens it into an encoded query string, using bracket notation like items[0]=a for arrays and user[name]=x for nested objects.",
+    faq: [
+      ["How are nested objects handled?", "Keys are flattened with bracket notation, so { user: { id: 1 } } becomes user[id]=1, a convention many backends parse automatically."],
+      ["How are arrays serialized?", "Arrays use indexed brackets like tags[0]=a&tags[1]=b, preserving order when the query string is parsed back into a structure."],
+      ["Are values encoded?", "Yes — every key and value is percent-encoded so special characters remain valid within the resulting URL query string."]
+    ]
+  },
+
+  // ---- text / code ----
+  "diff-checker": {
+    title: "Diff Checker — Compare Text Line by Line",
+    desc: "Compare two blocks of text and highlight added, removed and changed lines side by side. Spot differences in code, config or prose instantly in your browser.",
+    keywords: "diff checker, text compare, compare two files, line diff, difference tool",
+    howTo: "Paste original text on one side and the modified text on the other. The tool aligns the lines and highlights insertions, deletions and changes between them.",
+    faq: [
+      ["Is my text uploaded anywhere?", "No — the comparison runs entirely in your browser, so your code and documents never leave your device."],
+      ["Can it diff code files?", "Yes — paste any plain text including source code, JSON, YAML or logs to see a line-by-line difference."],
+      ["Does it ignore whitespace?", "By default whitespace differences are shown; trim your inputs first if you want to ignore leading or trailing spaces."]
+    ]
+  },
+  "regex-tester-adv": {
+    title: "Regex Tester — Test Patterns with Flags Live",
+    desc: "Test regular expressions live against your text with flags, capture groups, match highlighting and replace preview, plus a handy cheat sheet. Debug regex in your browser.",
+    keywords: "regex tester, regular expression, regex online, regex flags, capture groups",
+    howTo: "Enter a pattern and toggle flags like g, i and m, then type test text to see matches highlighted, capture groups listed, and an optional replacement preview.",
+    faq: [
+      ["What do the g, i and m flags do?", "g finds all matches, i makes matching case-insensitive, and m lets ^ and $ match at line boundaries instead of only the whole string."],
+      ["What are capture groups?", "Parentheses in a pattern capture parts of each match so you can extract or reference them, e.g. (\\d{4}) captures a four-digit year."],
+      ["Which regex flavor is used?", "The JavaScript RegExp engine, so syntax matches what runs in browsers and Node.js, including named groups and lookaheads."]
+    ]
+  },
+  "curl-builder": {
+    title: "cURL Builder — Build cURL Commands from a Form",
+    desc: "Build a ready-to-run cURL command from a simple form: method, URL, headers, and body. Assemble API requests without memorizing cURL flags, right in your browser.",
+    keywords: "curl builder, build curl command, curl generator, api request builder, curl online",
+    howTo: "Choose an HTTP method, enter the URL, add headers and a request body, and the tool assembles the correctly quoted cURL command for you to copy and run.",
+    faq: [
+      ["What is cURL used for?", "cURL is a command-line tool for making HTTP requests, widely used to test APIs, download files and reproduce browser requests in scripts."],
+      ["How do I add a JSON body?", "Set a Content-Type: application/json header and paste your JSON as the body — the builder wraps it with the -d flag and correct quoting."],
+      ["Does it escape special characters?", "Yes — the builder quotes headers and body so characters like spaces and quotes survive the shell without breaking the command."]
+    ]
+  },
+  "curl-to-code": {
+    title: "cURL to Code — Convert cURL to JS, Python & Go",
+    desc: "Convert a cURL command into equivalent code for JavaScript fetch, Python requests, PHP and Go. Turn API examples into working snippets instantly in your browser.",
+    keywords: "curl to code, curl to python, curl to fetch, curl converter, curl to javascript",
+    howTo: "Paste a cURL command and pick a target language. The tool parses the method, URL, headers and body and generates equivalent request code to copy into your project.",
+    faq: [
+      ["Which languages are supported?", "JavaScript (fetch), Python (requests), PHP (cURL) and Go (net/http), covering the most common backend and scripting targets."],
+      ["Does it handle headers and body?", "Yes — recognized -H headers and -d/--data bodies are mapped into the target language's request structure."],
+      ["Will the generated code run as-is?", "It reproduces the request faithfully, but you may need to install the HTTP library or adjust auth and environment for your project."]
+    ]
+  },
+  "jwt-debugger": {
+    title: "JWT Debugger — Decode & Inspect JWT Tokens",
+    desc: "Decode a JSON Web Token into its header, payload and signature, and inspect claims like exp and iat. Debug JWTs safely in your browser with no server calls.",
+    keywords: "jwt debugger, jwt decoder, decode jwt, json web token, jwt inspector",
+    howTo: "Paste a JWT and the tool splits it on the dots, Base64URL-decodes the header and payload to readable JSON, and shows the raw signature segment.",
+    faq: [
+      ["Is it safe to paste my JWT here?", "Decoding happens entirely in your browser with no network requests, but avoid pasting live production tokens into any online tool as a precaution."],
+      ["Can it verify the signature?", "Verification needs the signing secret or public key. This debugger decodes the header and payload; use a signing tool to verify or issue tokens."],
+      ["What do exp and iat mean?", "iat is the issued-at time and exp is the expiry, both Unix timestamps. A token is expired once the current time passes exp."]
+    ]
+  },
+  "chmod-calc": {
+    title: "Chmod Calculator — Octal & Symbolic Permissions",
+    desc: "Convert Unix file permissions between symbolic (rwxr-xr-x) and octal (755) with an interactive checkbox grid for owner, group and others. Build chmod values in your browser.",
+    keywords: "chmod calculator, file permissions, octal permissions, unix permissions, rwx to octal",
+    howTo: "Toggle read, write and execute for owner, group and others, and the tool shows the matching octal (e.g. 755) and symbolic (rwxr-xr-x) representations to copy.",
+    faq: [
+      ["What does chmod 755 mean?", "Owner has read, write and execute (7); group and others have read and execute (5). It is common for scripts and directories."],
+      ["How is the octal value calculated?", "Each permission class sums read=4, write=2 and execute=1, so rw- is 6 and r-x is 5, giving three digits like 644 or 755."],
+      ["What is the difference between 644 and 755?", "644 grants execute to no one (typical for regular files); 755 adds execute for everyone, needed for scripts and directories."]
+    ]
+  },
+  "crontab-guru": {
+    title: "Crontab Guru — Visual Cron Builder & Explainer",
+    desc: "Build and read cron schedules visually, turning each field into plain English as you edit. Craft and validate crontab lines interactively in your browser.",
+    keywords: "crontab guru, cron builder, cron explainer, crontab syntax, cron schedule builder",
+    howTo: "Edit each cron field and the tool translates the whole expression into a readable sentence describing exactly when the job will run, so you can confirm the schedule.",
+    faq: [
+      ["How is a crontab line structured?", "Five space-separated fields — minute, hour, day of month, month and day of week — followed by the command to run."],
+      ["What does a comma mean in a field?", "A comma lists multiple values, so 0,30 in the minute field runs at both minute 0 and minute 30 of the hour."],
+      ["How do ranges work?", "A hyphen defines an inclusive range, e.g. 1-5 in day-of-week runs Monday through Friday."]
+    ]
+  },
+  "semver-tools": {
+    title: "Semver Tools — Validate & Compare Versions",
+    desc: "Validate semantic versions, compare two versions, and check whether a version satisfies a range. Work with SemVer 2.0.0 strings instantly in your browser.",
+    keywords: "semver, semantic versioning, version compare, semver range, version validator",
+    howTo: "Enter one or two version strings to validate their SemVer format, compare which is newer, and test whether a version satisfies a range like ^1.2.0.",
+    faq: [
+      ["What is semantic versioning?", "A MAJOR.MINOR.PATCH scheme where major breaks compatibility, minor adds features, and patch fixes bugs, optionally with prerelease and build tags."],
+      ["What does ^1.2.3 allow?", "The caret allows updates that do not change the leftmost non-zero digit, so ^1.2.3 permits >=1.2.3 and <2.0.0."],
+      ["How are prerelease versions ordered?", "A prerelease like 1.0.0-alpha sorts before its release 1.0.0, and prerelease identifiers are compared field by field."]
+    ]
+  },
+  "uuid-inspector": {
+    title: "UUID Inspector — Detect Version & Variant",
+    desc: "Inspect any UUID to detect its version, variant and, for v1, the embedded timestamp and node. Analyze RFC 4122 identifiers instantly in your browser.",
+    keywords: "uuid inspector, uuid version, uuid variant, uuid parser, analyze uuid",
+    howTo: "Paste a UUID and the tool validates its format and reports the version (1-5), variant, and any embedded metadata such as the timestamp for version 1 UUIDs.",
+    faq: [
+      ["How do I tell a UUID's version?", "The version is the first character of the third group, so xxxxxxxx-xxxx-4xxx-... is a version 4 (random) UUID."],
+      ["What is the UUID variant?", "The variant bits (usually the '8', '9', 'a' or 'b' starting the fourth group) indicate the RFC 4122 layout the UUID follows."],
+      ["Do all UUIDs embed a timestamp?", "No — only version 1 (and time-ordered variants) embed a timestamp; version 4 UUIDs are random and carry no time information."]
+    ]
+  },
+  "string-escaper": {
+    title: "String Escaper — Escape for JSON, JS, HTML, SQL",
+    desc: "Escape or unescape strings for JSON, JavaScript, HTML, SQL, regex and shell contexts. Safely embed text into code and queries instantly in your browser.",
+    keywords: "string escaper, escape json, escape javascript, sql escape, regex escape",
+    howTo: "Paste text, pick a target context (JSON, JS, HTML, SQL, regex or shell) and choose escape or unescape. The tool applies that context's escaping rules to your string.",
+    faq: [
+      ["Why escape strings?", "Escaping neutralizes characters that have special meaning in a context — like quotes or backslashes — preventing broken syntax and injection bugs."],
+      ["What does regex escaping do?", "It backslash-escapes metacharacters such as . * + ? ( ) so the string matches literally instead of as a pattern."],
+      ["Is SQL escaping enough to stop injection?", "No — always use parameterized queries. Escaping helps for display and testing but prepared statements are the real defense."]
+    ]
+  },
+  "slugify": {
+    title: "Slugify — Convert Text to Clean URL Slugs",
+    desc: "Turn any text into a clean, SEO-friendly URL slug: strip accents, lowercase, and join words with a custom separator. Generate readable slugs instantly in your browser.",
+    keywords: "slugify, url slug generator, slug maker, seo slug, text to slug",
+    howTo: "Type or paste text and the tool removes accents and punctuation, lowercases it, and joins words with your chosen separator to produce a URL-ready slug.",
+    faq: [
+      ["What makes a good URL slug?", "Short, lowercase, hyphen-separated words with no accents or special characters — readable to humans and friendly to search engines."],
+      ["How are accented characters handled?", "They are transliterated to their closest ASCII equivalent, so 'Café' becomes 'cafe' rather than being dropped."],
+      ["Can I use underscores instead of hyphens?", "Yes — choose your separator. Hyphens are preferred for SEO, but you can pick underscores or another character if needed."]
+    ]
+  },
+  "dev-case-converter": {
+    title: "Case Converter — camelCase, snake_case & More",
+    desc: "Convert identifiers between camelCase, PascalCase, snake_case, kebab-case, CONSTANT_CASE, dot.case, Title and Sentence case. Reformat code names instantly in your browser.",
+    keywords: "case converter, camelcase, snake case, kebab case, convert naming convention",
+    howTo: "Paste an identifier or phrase and the tool splits it into words, then shows it rendered in every supported programming case so you can copy the one you need.",
+    faq: [
+      ["What is the difference between camelCase and PascalCase?", "Both join words without spaces; camelCase lowercases the first word (myValue) while PascalCase capitalizes it (MyValue)."],
+      ["When is CONSTANT_CASE used?", "Uppercase words joined by underscores are the convention for constants and environment variables, e.g. MAX_RETRY_COUNT."],
+      ["How are word boundaries detected?", "The tool splits on spaces, hyphens, underscores and camelCase humps, so mixed input like 'my-htmlValue' is parsed correctly."]
+    ]
+  },
+  "bytes-humanizer": {
+    title: "Bytes Humanizer — Convert Bytes to KB, MB, GB",
+    desc: "Turn raw byte counts into readable sizes in binary (KiB, MiB) or decimal (KB, MB), and parse sizes back to bytes. Convert file sizes instantly in your browser.",
+    keywords: "bytes humanizer, bytes to mb, file size converter, kib mib, bytes to human readable",
+    howTo: "Enter a byte count to see a readable size, or type a size like '5 MB' to get the exact byte value. Switch between binary (1024) and decimal (1000) units.",
+    faq: [
+      ["What is the difference between KB and KiB?", "KB is decimal (1000 bytes) while KiB is binary (1024 bytes). Storage is often sold in KB; memory and many tools use KiB."],
+      ["Why does my file show a different size?", "Operating systems disagree: Windows reports binary sizes labeled as KB/MB, while drive makers use decimal, causing the familiar mismatch."],
+      ["Can I convert a size back to bytes?", "Yes — enter a value with a unit like '1.5 GiB' and the tool returns the exact number of bytes it represents."]
+    ]
+  },
+  "number-formatter": {
+    title: "Number Formatter — Locale Thousands & Decimals",
+    desc: "Format numbers with locale-aware thousands separators and fixed decimals using the Intl API — US, EU, Indian grouping and more. Format figures instantly in your browser.",
+    keywords: "number formatter, thousands separator, intl numberformat, locale number, decimal formatting",
+    howTo: "Enter a number, pick a locale and decimal precision, and the tool formats it with the correct grouping separators for that region using the browser Intl API.",
+    faq: [
+      ["Why do locales group numbers differently?", "Regions vary: the US uses 1,000,000, many EU locales use 1.000.000, and India groups as 10,00,000 (lakh/crore)."],
+      ["How do I control decimal places?", "Set the minimum and maximum fraction digits; the formatter rounds and pads to match, e.g. 2 decimals gives 3.50."],
+      ["Which decimal separator is used?", "It follows the locale — a period in en-US and a comma in many European locales — so numbers read naturally for that audience."]
+    ]
+  },
+  "base64url-encoder": {
+    title: "Base64URL Encoder & Decoder — URL-Safe Base64",
+    desc: "Encode or decode UTF-8 text to URL-safe Base64 (base64url) with no padding, using - and _ instead of + and /. Ideal for JWTs and query parameters, in your browser.",
+    keywords: "base64url encoder, url safe base64, base64url decode, jwt encoding, base64 no padding",
+    howTo: "Pick encode or decode and paste your text. Encoding produces base64url output with + and / replaced by - and _ and the = padding removed for URL safety.",
+    faq: [
+      ["How is Base64URL different from Base64?", "It swaps + for - and / for _ and drops the = padding, so the output is safe inside URLs, filenames and JWT segments without escaping."],
+      ["Where is Base64URL used?", "In JSON Web Tokens, OAuth, WebPush keys and any place Base64 must appear in a URL without percent-encoding."],
+      ["Does it handle Unicode text?", "Yes — text is encoded as UTF-8 first, so emoji and non-Latin scripts round-trip through encode and decode correctly."]
+    ]
+  },
+  "jwt-generator": {
+    title: "JWT Generator — Sign HS256 Tokens Online",
+    desc: "Sign a JSON Web Token with HMAC-SHA256 from your header, payload and secret. Generate HS256 JWTs for testing that verify against jwt.io, right in your browser.",
+    keywords: "jwt generator, sign jwt, hs256 token, create jwt, json web token generator",
+    howTo: "Edit the header and payload JSON, enter a secret, and the tool Base64URL-encodes both segments and signs them with HMAC-SHA256 to produce a complete JWT.",
+    faq: [
+      ["What is HS256?", "HMAC using SHA-256 — a symmetric signing algorithm where the same secret both signs and verifies the token."],
+      ["How do I verify the generated token?", "Paste the token and the same secret into jwt.io or a JWT debugger; a matching signature confirms it was signed correctly."],
+      ["Should I use this for production tokens?", "Use it for testing and learning. In production, generate and sign tokens server-side so the secret is never exposed to the browser."]
+    ]
+  },
+
+  // ---- reference ----
+  "ascii-table": {
+    title: "ASCII Table — Full 0-127 Character Reference",
+    desc: "Browse and search the complete ASCII table (0-127) with decimal, hex, octal, binary and HTML entity values for every character. A quick ASCII reference in your browser.",
+    keywords: "ascii table, ascii chart, ascii codes, character codes, ascii reference",
+    howTo: "Scroll or search the table to find any ASCII character by its symbol or code, and read its decimal, hexadecimal, octal, binary and HTML entity representations.",
+    faq: [
+      ["What is ASCII?", "The American Standard Code for Information Interchange, a 7-bit encoding assigning codes 0-127 to letters, digits, punctuation and control characters."],
+      ["What are control characters?", "Codes 0-31 are non-printable control codes such as NUL (0), TAB (9), LF (10) and CR (13) used to control text flow and devices."],
+      ["What comes after 127?", "Codes 128-255 are 'extended ASCII' and vary by code page; standard ASCII covers only 0-127."]
+    ]
+  },
+  "html-entities-ref": {
+    title: "HTML Entities Reference — Search Named Entities",
+    desc: "Search HTML entities and copy their named, decimal and hex codes with a live glyph preview. Find &amp;, &copy;, arrows and symbols instantly in your browser.",
+    keywords: "html entities, html entity reference, named entities, html symbols, character entities",
+    howTo: "Search by symbol, name or code to find any HTML entity, then copy its named form (like &copy;) or numeric form (&#169;) with a preview of the rendered character.",
+    faq: [
+      ["When do I need HTML entities?", "To display reserved characters like <, > and & literally, or to insert symbols that may not exist on the keyboard, such as © or →."],
+      ["Named or numeric entity — which is better?", "Named entities like &copy; are readable; numeric entities like &#169; work everywhere including XML where few names are predefined."],
+      ["Do I have to escape every character?", "No — only reserved characters (<, >, &, and quotes in attributes) must be escaped; others are optional for compatibility."]
+    ]
+  },
+  "css-units-ref": {
+    title: "CSS Units Reference — px, em, rem, vw & More",
+    desc: "Explore all CSS units — absolute, font-relative, viewport and more — with explanations and a live preview. Learn when to use px, em, rem, vw and vh in your browser.",
+    keywords: "css units, px em rem, viewport units, css measurement, css sizing",
+    howTo: "Browse each CSS unit to see its category and meaning, with a preview showing how a sample element renders so you can choose the right unit for your layout.",
+    faq: [
+      ["What is the difference between em and rem?", "em is relative to the current element's font size, while rem is relative to the root element, making rem more predictable for global sizing."],
+      ["When should I use viewport units?", "vw and vh size elements relative to the viewport, ideal for full-screen sections and fluid typography that scales with the window."],
+      ["Are px units still recommended?", "Yes for fine details like borders, but relative units like rem improve accessibility because they respect the user's font-size settings."]
+    ]
+  },
+  "git-cheatsheet": {
+    title: "Git Cheatsheet — Common Commands Reference",
+    desc: "An interactive Git cheatsheet covering everyday commands for staging, committing, branching, merging, remotes and undoing changes. Search Git syntax in your browser.",
+    keywords: "git cheatsheet, git commands, git reference, git branching, git undo",
+    howTo: "Search or browse grouped Git commands to find the exact syntax for tasks like committing, branching, rebasing or undoing changes, with a short note on each.",
+    faq: [
+      ["How do I undo the last commit but keep changes?", "Use git reset --soft HEAD~1, which moves the branch back one commit while leaving your changes staged."],
+      ["What is the difference between merge and rebase?", "Merge preserves history with a merge commit; rebase replays your commits onto another branch for a linear, cleaner history."],
+      ["How do I discard local changes to a file?", "git checkout -- file (or git restore file) reverts the file to the last committed state, discarding uncommitted edits."]
+    ]
+  },
+  "linux-commands-ref": {
+    title: "Linux Commands Reference — Search with Examples",
+    desc: "Search common Linux and shell commands with concise descriptions and usage examples for files, processes, networking and permissions. A terminal cheatsheet in your browser.",
+    keywords: "linux commands, shell commands, bash reference, linux cheatsheet, terminal commands",
+    howTo: "Search for a command or task to find the right Linux utility, its common flags and a ready example you can adapt for files, processes, text or networking.",
+    faq: [
+      ["What is the difference between grep and find?", "grep searches inside file contents for matching text, while find locates files and directories by name, type, size or other attributes."],
+      ["How do I see running processes?", "ps aux lists all processes, and top or htop show them live with CPU and memory usage that updates in real time."],
+      ["How do I change file permissions?", "chmod sets read/write/execute bits (e.g. chmod 755 file) and chown changes the owner and group of a file or directory."]
+    ]
+  },
+  "regex-cheatsheet": {
+    title: "Regex Cheatsheet — Patterns with Live Testing",
+    desc: "A searchable regex cheatsheet of anchors, character classes, quantifiers and groups, with a live tester to try each pattern. Learn regular expressions in your browser.",
+    keywords: "regex cheatsheet, regex patterns, regex syntax, regular expression reference, regex examples",
+    howTo: "Browse regex building blocks by category and try any pattern in the live tester against your own text to see exactly what it matches before using it in code.",
+    faq: [
+      ["What does \\d match?", "\\d matches any digit 0-9. Its opposite \\D matches any non-digit, and similar shorthands exist for word (\\w) and whitespace (\\s) characters."],
+      ["What is the difference between * and +?", "* matches zero or more of the preceding token, while + requires at least one, so a+ needs one or more 'a' characters."],
+      ["What are anchors ^ and $?", "^ asserts the start of the string or line and $ the end, letting you match patterns only at those boundaries."]
+    ]
+  },
+  "http-headers-ref": {
+    title: "HTTP Headers Reference — Request & Response",
+    desc: "Search common HTTP request and response headers with clear explanations and examples, from Content-Type to Cache-Control and CORS. An HTTP reference in your browser.",
+    keywords: "http headers, request headers, response headers, cache-control, cors headers",
+    howTo: "Search by header name or purpose to find whether it is a request or response header, what it controls, and an example value you can use.",
+    faq: [
+      ["What does Content-Type do?", "It tells the recipient the media type of the body, such as application/json or text/html, so the content is interpreted correctly."],
+      ["How does Cache-Control work?", "It sets caching rules like max-age, no-cache and no-store, controlling how long and whether browsers and proxies store a response."],
+      ["Which headers enable CORS?", "Access-Control-Allow-Origin and related Access-Control-* response headers grant cross-origin requests permission to read the response."]
+    ]
+  },
+  "color-names-ref": {
+    title: "CSS Color Names Reference — Named Colors Palette",
+    desc: "Browse all CSS named colors with swatches and their HEX and RGB values, and copy any color in one click. Explore the standard web color palette in your browser.",
+    keywords: "css color names, named colors, web colors, color palette, hex color names",
+    howTo: "Scroll or search the palette to find a CSS color by name, preview its swatch, and copy its HEX or RGB value to drop straight into your stylesheet.",
+    faq: [
+      ["How many CSS named colors are there?", "There are around 140 standard named colors defined by CSS, from basics like red and blue to shades like rebeccapurple and darkslategray."],
+      ["Are named colors reliable across browsers?", "Yes — the standard named colors map to fixed HEX values and render consistently in all modern browsers."],
+      ["Should I use names or hex codes?", "Names are readable for prototyping, but hex or custom properties give precise, maintainable control in production stylesheets."]
+    ]
+  },
+
+  // ---- generators2 ----
+  "lorem-ipsum-adv": {
+    title: "Lorem Ipsum Generator — Words, Sentences, Paragraphs",
+    desc: "Generate placeholder Lorem Ipsum text by words, sentences or paragraphs, with an optional classic opening line. Create dummy copy for mockups in your browser.",
+    keywords: "lorem ipsum generator, placeholder text, dummy text, filler text, lorem ipsum",
+    howTo: "Choose whether to generate words, sentences or paragraphs, set the amount, and the tool builds Lorem Ipsum placeholder text ready to copy into your design.",
+    faq: [
+      ["What is Lorem Ipsum?", "Scrambled Latin-like placeholder text used since the 1500s to fill layouts so designers can focus on visual structure, not wording."],
+      ["Why not use real text as a placeholder?", "Real copy distracts reviewers with its meaning; neutral filler keeps attention on typography, spacing and layout."],
+      ["Can I control the length precisely?", "Yes — pick words, sentences or paragraphs and specify the count to get exactly as much placeholder text as your mockup needs."]
+    ]
+  },
+  "hash-generator-adv": {
+    title: "Hash Generator — MD5, SHA-1, SHA-256, SHA-512",
+    desc: "Generate MD5, SHA-1, SHA-256 and SHA-512 hashes of any text side by side in one view. Compute checksums and digests instantly in your browser, no uploads.",
+    keywords: "hash generator, md5, sha256, sha512, checksum generator",
+    howTo: "Type or paste text and the tool computes MD5, SHA-1, SHA-256 and SHA-512 digests at once, showing each hex digest ready to copy for comparison or verification.",
+    faq: [
+      ["Which hash should I use?", "Use SHA-256 or SHA-512 for security. MD5 and SHA-1 are fast but broken for security and suit only non-critical checksums."],
+      ["Is hashing reversible?", "No — cryptographic hashes are one-way. You cannot recover the input from the digest; you can only re-hash and compare."],
+      ["Are my inputs sent anywhere?", "No — hashing runs entirely in your browser using the Web Crypto API, so your text never leaves your device."]
+    ]
+  },
+  "color-gradient-css": {
+    title: "CSS Gradient Generator — Linear, Radial, Conic",
+    desc: "Create linear, radial and conic CSS gradients with custom color stops and a live preview, then copy the ready CSS. Design smooth backgrounds in your browser.",
+    keywords: "css gradient generator, linear gradient, radial gradient, conic gradient, gradient css",
+    howTo: "Pick a gradient type, add and position color stops, adjust the angle, and copy the generated background CSS while previewing the result live.",
+    faq: [
+      ["What is the difference between linear and radial gradients?", "Linear gradients blend along a straight axis at a chosen angle; radial gradients blend outward from a center point in circles or ellipses."],
+      ["What is a conic gradient?", "A conic gradient sweeps colors around a center point like a pie chart, useful for color wheels and progress rings."],
+      ["How many color stops can I add?", "As many as you like — each stop defines a color and position, and adding more creates richer multi-color blends."]
+    ]
+  },
+  "box-shadow-gen": {
+    title: "Box Shadow Generator — Live CSS Shadow Preview",
+    desc: "Design CSS box-shadow with sliders for offset, blur, spread, color and inset, and copy the code with a live preview. Craft depth and elevation in your browser.",
+    keywords: "box shadow generator, css box shadow, shadow css, drop shadow, css shadow maker",
+    howTo: "Adjust horizontal and vertical offset, blur, spread, color and the inset toggle, then copy the generated box-shadow CSS while watching the preview update live.",
+    faq: [
+      ["What do the box-shadow values mean?", "In order: horizontal offset, vertical offset, blur radius, spread radius, and color — with an optional inset keyword for inner shadows."],
+      ["What does inset do?", "inset draws the shadow inside the element's border instead of outside, creating a pressed or recessed appearance."],
+      ["Can I stack multiple shadows?", "Yes — CSS allows comma-separated box-shadow layers, letting you combine several offsets and colors for realistic depth."]
+    ]
+  },
+  "text-shadow-gen": {
+    title: "Text Shadow Generator — Live CSS Text Shadow",
+    desc: "Create CSS text-shadow with offset, blur and color controls and a live preview, then copy the code. Add glow, depth or outline effects to text in your browser.",
+    keywords: "text shadow generator, css text shadow, text glow, text outline css, shadow text",
+    howTo: "Set the horizontal and vertical offset, blur radius and color, watch the heading preview update, and copy the generated text-shadow CSS for your styles.",
+    faq: [
+      ["What values does text-shadow take?", "Horizontal offset, vertical offset, blur radius and color — for example 2px 2px 4px rgba(0,0,0,0.5)."],
+      ["How do I create a glow effect?", "Use a zero offset with a larger blur and a bright color, then optionally stack multiple shadows for a stronger glow."],
+      ["Can I make an outline with text-shadow?", "Yes — combine four small shadows offset in each direction to approximate a text outline without SVG or extra markup."]
+    ]
+  },
+  "border-radius-gen": {
+    title: "Border Radius Generator — Custom Corner Shapes",
+    desc: "Round each corner independently and create organic blob shapes with the CSS border-radius generator, with live preview and copyable code. Shape elements in your browser.",
+    keywords: "border radius generator, css border radius, rounded corners, blob shape, corner radius",
+    howTo: "Drag the per-corner sliders to round each corner separately, preview the shape live, and copy the resulting border-radius CSS including elliptical values.",
+    faq: [
+      ["Can I round corners differently?", "Yes — border-radius accepts up to four values (or eight with a slash) to control each corner's horizontal and vertical radius separately."],
+      ["How do I make a perfect circle?", "Set border-radius to 50% on a square element; equal width and height then render a full circle."],
+      ["What creates a blob shape?", "Uneven horizontal and vertical radii per corner, using the slash syntax, produce smooth asymmetric organic blob shapes."]
+    ]
+  },
+  "flexbox-gen": {
+    title: "Flexbox Generator — Visual Flex Layout & CSS",
+    desc: "Build CSS flexbox layouts visually by adjusting direction, justify, align, wrap and gap, then copy the code with a live preview. Master flex layouts in your browser.",
+    keywords: "flexbox generator, css flexbox, flex layout, justify content, align items",
+    howTo: "Set flex-direction, justify-content, align-items, wrap and gap using dropdowns, watch the item preview rearrange live, and copy the generated flex container CSS.",
+    faq: [
+      ["What is the difference between justify-content and align-items?", "justify-content aligns items along the main axis (the flex direction), while align-items aligns them on the cross axis."],
+      ["How do I center an element with flexbox?", "Set justify-content and align-items both to center on a flex container to perfectly center a child horizontally and vertically."],
+      ["What does flex-wrap do?", "It controls whether items stay on one line or wrap onto multiple lines when they exceed the container width."]
+    ]
+  },
+  "grid-gen": {
+    title: "CSS Grid Generator — Visual Grid Layout & Code",
+    desc: "Create CSS Grid layouts visually by setting columns, rows and gaps, then copy the generated grid CSS with a live preview. Build responsive grids in your browser.",
+    keywords: "css grid generator, grid layout, grid template columns, css grid, grid maker",
+    howTo: "Choose the number of columns and rows and the gap size, preview the grid live, and copy the grid-template CSS to drop into your container.",
+    faq: [
+      ["What is the fr unit in CSS Grid?", "fr means a fraction of the available space, so 1fr 1fr splits a row into two equal flexible columns."],
+      ["How is Grid different from Flexbox?", "Grid is two-dimensional, laying out rows and columns together, while Flexbox handles one dimension at a time."],
+      ["How do I make a responsive grid?", "Use repeat(auto-fit, minmax(...)) so columns automatically wrap and resize to fit the container width."]
+    ]
+  },
+  "animation-gen": {
+    title: "CSS Animation Generator — Keyframes with Preview",
+    desc: "Generate CSS @keyframes animations with controls for duration, timing, delay and iteration, and copy the code with a live preview. Animate elements in your browser.",
+    keywords: "css animation generator, keyframes generator, css keyframes, animation css, animate css",
+    howTo: "Pick an animation preset and tune duration, timing function, delay and iteration count, then copy the generated @keyframes and animation CSS while previewing it live.",
+    faq: [
+      ["What is a CSS @keyframes rule?", "It defines the intermediate steps of an animation as percentages (or from/to), which the animation property then plays over time."],
+      ["What does the timing function control?", "It shapes the animation's speed curve — ease, linear, ease-in-out or a custom cubic-bezier — affecting how motion accelerates."],
+      ["How do I loop an animation forever?", "Set animation-iteration-count to infinite so the keyframes repeat continuously instead of running a fixed number of times."]
+    ]
+  },
+  "meta-tags-adv": {
+    title: "Meta Tags Generator — SEO, Open Graph & Twitter",
+    desc: "Generate SEO, Open Graph and Twitter Card meta tags from title, description and image fields, ready to paste into your HTML head. Optimize link previews in your browser.",
+    keywords: "meta tags generator, open graph tags, twitter card, seo meta tags, og tags",
+    howTo: "Fill in title, description, URL and image, and the tool outputs a complete set of SEO, Open Graph and Twitter Card meta tags to copy into your page's head.",
+    faq: [
+      ["What are Open Graph tags?", "og: meta tags control how a page appears when shared on Facebook, LinkedIn and other platforms, setting the title, description and preview image."],
+      ["Do I need Twitter Card tags if I have Open Graph?", "Twitter falls back to Open Graph, but adding twitter:card tags gives precise control over the card type and appearance on X/Twitter."],
+      ["What image size works best?", "A 1200x630 image is the widely recommended size for large link-preview cards across Open Graph and Twitter."]
+    ]
+  },
+  "uuid-v5-generator": {
+    title: "UUID v5 Generator — Deterministic Namespaced UUIDs",
+    desc: "Generate deterministic RFC 4122 version 5 UUIDs by SHA-1 hashing a name within a namespace (DNS, URL, OID, X.500 or custom). Create stable IDs in your browser.",
+    keywords: "uuid v5 generator, namespaced uuid, deterministic uuid, rfc 4122, sha1 uuid",
+    howTo: "Choose a namespace (DNS, URL, OID, X.500 or a custom UUID) and enter a name. The tool SHA-1 hashes them to produce a stable version 5 UUID that never changes for that input.",
+    faq: [
+      ["How is v5 different from v4?", "v4 UUIDs are random; v5 UUIDs are deterministic — the same namespace and name always yield the same UUID, ideal for reproducible IDs."],
+      ["What is a namespace?", "A base UUID identifying the context (like DNS or URL). Combining it with a name prevents collisions between different kinds of inputs."],
+      ["When should I use v5?", "When you need a stable identifier derived from existing data, such as generating a consistent ID for a URL or username."]
+    ]
+  },
+  "hmac-generator": {
+    title: "HMAC Generator — SHA-1, SHA-256, SHA-512 MAC",
+    desc: "Compute HMAC message authentication codes with SHA-1, SHA-256, SHA-384 or SHA-512 and a secret key, output in hex or Base64. Sign and verify data in your browser.",
+    keywords: "hmac generator, hmac sha256, message authentication code, hmac key, sign message",
+    howTo: "Enter your message and secret key, choose a hash algorithm and output format, and the tool computes the HMAC using the Web Crypto API for you to copy.",
+    faq: [
+      ["What is an HMAC?", "A keyed hash that proves both the integrity and authenticity of a message — only someone with the secret key can produce a matching code."],
+      ["How is HMAC different from a plain hash?", "A plain hash uses no key, so anyone can recompute it. HMAC mixes in a secret key so the code cannot be forged without it."],
+      ["Which algorithm should I choose?", "SHA-256 is a strong default; use SHA-384 or SHA-512 for extra margin. Avoid SHA-1 for new security-sensitive uses."]
+    ]
+  },
+  "color-contrast-checker": {
+    title: "Color Contrast Checker — WCAG AA & AAA Ratios",
+    desc: "Check the WCAG 2.1 contrast ratio between a foreground and background color, with AA and AAA pass/fail for normal and large text. Verify accessibility in your browser.",
+    keywords: "color contrast checker, wcag contrast, accessibility contrast, contrast ratio, aa aaa",
+    howTo: "Pick a text color and a background color and the tool computes their contrast ratio, then shows whether it passes WCAG AA and AAA for normal and large text.",
+    faq: [
+      ["What contrast ratio do I need?", "WCAG AA requires 4.5:1 for normal text and 3:1 for large text; AAA raises this to 7:1 and 4.5:1 respectively."],
+      ["What counts as large text?", "Text at least 18pt (24px), or 14pt (18.66px) bold, qualifies as large and is held to a lower contrast threshold."],
+      ["Why does contrast matter?", "Sufficient contrast keeps text readable for users with low vision or color deficiency and is required for accessible, compliant design."]
+    ]
+  },
+  "css-clamp-generator": {
+    title: "CSS Clamp Generator — Fluid Responsive Sizing",
+    desc: "Generate a fluid CSS clamp() for typography or spacing that scales linearly between two viewport widths, with no media queries. Build responsive sizes in your browser.",
+    keywords: "css clamp generator, fluid typography, responsive font size, clamp css, fluid sizing",
+    howTo: "Enter a minimum and maximum size and the viewport range they should scale across, and the tool outputs a clamp() value that grows smoothly between those breakpoints.",
+    faq: [
+      ["What does CSS clamp() do?", "clamp(min, preferred, max) locks a value between a minimum and maximum while letting the preferred (often viewport-based) value scale in between."],
+      ["Why use clamp for typography?", "It gives fluid font sizes that grow with the viewport but never get too small or too large, replacing stacks of media queries."],
+      ["How is the middle value calculated?", "The tool derives a linear formula in vw plus a rem offset so the size moves proportionally between your chosen viewport widths."]
+    ]
+  },
+};
+
 /* Placeholder map; real assignments come in later chunks */
 const TOOL_COMPONENTS = {};
 
@@ -236,7 +856,7 @@ function Breadcrumb({ tool, cat }) {
 
 function ToolPage({ toolId }) {
   const tool = TOOLS.find((t) => t.id === toolId);
-  const meta = null; // TOOL_META placeholder — add per-tool SEO meta here in future
+  const meta = TOOL_META[toolId] || null; // per-tool SEO meta (title/desc/keywords/howTo/faq)
   const ToolComp = TOOL_COMPONENTS[toolId];
   const cat = CATEGORIES.find((c) => c.id === tool?.cat);
   // PHASE 2: const [upgradeReason, setUpgradeReason] = useState(null);
@@ -259,7 +879,7 @@ function ToolPage({ toolId }) {
       {/* PHASE 1: All tools are free — always render tool directly */}
       <Card className="fade-in"><ToolComp /></Card>
       {meta?.howTo && (
-        <div style={{ background:'rgba(59,130,246,0.05)', border:'1px solid rgba(59,130,246,0.12)', borderRadius:16, padding:'28px 32px', marginBottom:24, marginTop:24 }}>
+        <div style={{ background:'rgba(34,211,238,0.05)', border:'1px solid rgba(34,211,238,0.12)', borderRadius:16, padding:'28px 32px', marginBottom:24, marginTop:24 }}>
           <h2 style={{ fontSize:17, fontWeight:700, color:'#F1F5F9', margin:'0 0 12px', fontFamily:"'Sora', sans-serif" }}>📖 How to Use This Tool</h2>
           <p style={{ fontSize:14, color:'#94A3B8', lineHeight:1.8, margin:0 }}>{meta.howTo}</p>
         </div>
@@ -369,8 +989,8 @@ const DEV_SPECIAL_CSS = `
   /* Output area tint (amber for devtools) */
   .trd-tool-area [data-output]>pre,
   .trd-tool-area .output-area {
-    background:rgba(59,130,246,0.04)!important;
-    border-color:rgba(59,130,246,0.12)!important;
+    background:rgba(34,211,238,0.04)!important;
+    border-color:rgba(34,211,238,0.12)!important;
   }
 `;
 
@@ -391,11 +1011,12 @@ function CategoryHomePage() {
 
 function ToolDetailPage({ toolId }) {
   const tool     = TOOLS.find(t => t.id === toolId);
+  const meta     = TOOL_META[toolId];
   const ToolComp = TOOL_COMPONENTS[toolId];
   const acc = PAGE_THEME.color;
 
   useEffect(() => {
-    document.title = `${tool?.name || toolId} — Free Developer Tool | ToolsRift`;
+    document.title = meta?.title || `${tool?.name || toolId} — Free Developer Tool | ToolsRift`;
   }, [toolId]);
 
   if (!tool || !ToolComp) return (
@@ -408,7 +1029,7 @@ function ToolDetailPage({ toolId }) {
     </CategoryLayout>
   );
 
-  const toolData = { id:tool.id, name:tool.name, description:tool.desc||'', howTo:null, faq:null };
+  const toolData = { id:tool.id, name:tool.name, description:meta?.desc || tool.desc || '', howTo:meta?.howTo || null, faq:meta?.faq || null };
 
   return (
     <CategoryLayout theme={PAGE_THEME} currentTool={toolId} tools={TOOLS} subcats={CATEGORIES}>
@@ -491,8 +1112,8 @@ function UnixTimestampTool() {
           </div>
         </div>
       </Grid2>
-      <Card style={{ background: "rgba(59,130,246,.08)" }}>
-        <div style={{ fontSize: 12, color: "#93C5FD", marginBottom: 4 }}>Current Unix Timestamp (live)</div>
+      <Card style={{ background: "rgba(34,211,238,.08)" }}>
+        <div style={{ fontSize: 12, color: "#67E8F9", marginBottom: 4 }}>Current Unix Timestamp (live)</div>
         <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 24, fontWeight: 700 }}>{nowTs}</div>
       </Card>
     </VStack>
@@ -1485,7 +2106,7 @@ function JwtDebuggerTool() {
       </Grid2>
 
       <Grid3>
-        <Card style={{ background: "rgba(59,130,246,.18)", borderColor: "rgba(59,130,246,.45)" }}>
+        <Card style={{ background: "rgba(34,211,238,.18)", borderColor: "rgba(34,211,238,.45)" }}>
           <Label>Header (Blue)</Label>
           <CodeBox code={headerJson} />
         </Card>
@@ -1859,7 +2480,7 @@ function AsciiTableTool() {
     <VStack>
       <SectionTitle icon="🔤" title="ASCII Table" subtitle="Complete 0–127 table. Searchable, scrollable, and clicking a row copies the character." />
       <div><Label>Search / Filter</Label><Input value={q} onChange={setQ} placeholder="e.g. 65, A, DEL, 01000001" /></div>
-      {copied && <div style={{ color: "#93C5FD", fontSize: 12 }}>{copied}</div>}
+      {copied && <div style={{ color: "#67E8F9", fontSize: 12 }}>{copied}</div>}
       <div style={{ maxHeight: 460, overflow: "auto", border: `1px solid ${C.border}`, borderRadius: 10 }}>
         <table>
           <thead>
@@ -2086,7 +2707,7 @@ function ColorNamesRefTool() {
     <VStack>
       <SectionTitle icon="🎨" title="Color Names Reference" subtitle="All CSS named colors in a swatch grid. Search and click to copy HEX." />
       <div><Label>Search / Filter</Label><Input value={q} onChange={setQ} placeholder="blue, fuchsia, #ff..." /></div>
-      {copied && <div style={{ color: "#93C5FD", fontSize: 12 }}>{copied}</div>}
+      {copied && <div style={{ color: "#67E8F9", fontSize: 12 }}>{copied}</div>}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))", gap: 10 }}>
         {list.map(([name, hex]) => {
           const [r, g, b] = hexToRgb(hex);
@@ -2107,7 +2728,7 @@ function ColorNamesRefTool() {
               <div style={{ height: 56, borderRadius: 7, background: hex, border: "1px solid rgba(0,0,0,.15)" }} />
               <div style={{ marginTop: 8, fontSize: 12, fontWeight: 700 }}>{name}</div>
               <div style={{ fontSize: 12, color: C.muted }}>{hex} · rgb({r},{g},{b})</div>
-              <div style={{ marginTop: 5, fontSize: 11, color: dark ? "#93C5FD" : C.blue }}>Click to copy HEX</div>
+              <div style={{ marginTop: 5, fontSize: 11, color: dark ? "#67E8F9" : C.blue }}>Click to copy HEX</div>
             </button>
           );
         })}
@@ -2588,7 +3209,7 @@ function MetaTagsAdvTool() {
       <Card>
         <Label>Preview</Label>
         <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, padding: 12, background: "rgba(255,255,255,.02)" }}>
-          <div style={{ color: "#93C5FD", fontSize: 12 }}>{url}</div>
+          <div style={{ color: "#67E8F9", fontSize: 12 }}>{url}</div>
           <div style={{ fontWeight: 700, marginTop: 3 }}>{title}</div>
           <div style={{ color: C.muted, marginTop: 4, fontSize: 13 }}>{desc}</div>
         </div>
@@ -2892,8 +3513,8 @@ function UuidInspectorTool() {
       ) : (
         <>
           <DataTable columns={["Property", "Value"]} rows={info.rows} />
-          <Card style={{ background: "rgba(59,130,246,.06)" }}>
-            <div style={{ fontSize: 13, color: "#93C5FD" }}>{info.note}</div>
+          <Card style={{ background: "rgba(34,211,238,.06)" }}>
+            <div style={{ fontSize: 13, color: "#67E8F9" }}>{info.note}</div>
           </Card>
         </>
       )}
@@ -3182,8 +3803,8 @@ function BytesHumanizerTool() {
         ["Decimal (1000)", humanBytes(bytes, false, 2)],
       ]} />
       <div><Label>Parse Size → Bytes</Label><Input value={parseInput} onChange={setParseInput} placeholder="e.g. 2.5 GiB, 500 MB, 1024" /></div>
-      <Card style={{ background: "rgba(59,130,246,.08)" }}>
-        <div style={{ fontSize: 12, color: "#93C5FD", marginBottom: 4 }}>Bytes</div>
+      <Card style={{ background: "rgba(34,211,238,.08)" }}>
+        <div style={{ fontSize: 12, color: "#67E8F9", marginBottom: 4 }}>Bytes</div>
         <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 20, fontWeight: 700 }}>
           {parsed == null ? "Invalid size" : parsed.toLocaleString("en-US")}
         </div>
@@ -3411,8 +4032,8 @@ function DurationHumanizerTool() {
         <div><Label>Value</Label><Input value={value} onChange={setValue} /></div>
         <div><Label>Unit</Label><SelectInput value={unit} onChange={setUnit} options={[{ value: "ms", label: "Milliseconds" }, { value: "s", label: "Seconds" }, { value: "m", label: "Minutes" }, { value: "h", label: "Hours" }]} /></div>
       </Grid2>
-      <Card style={{ background: "rgba(59,130,246,.08)" }}>
-        <div style={{ fontSize: 12, color: "#93C5FD", marginBottom: 4 }}>Humanized</div>
+      <Card style={{ background: "rgba(34,211,238,.08)" }}>
+        <div style={{ fontSize: 12, color: "#67E8F9", marginBottom: 4 }}>Humanized</div>
         <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 22, fontWeight: 700 }}>{humanDuration(ms)}</div>
       </Card>
       <DataTable columns={["Unit", "Value"]} rows={breakdown} />
@@ -3450,8 +4071,8 @@ function TimestampDiffTool() {
       </Grid2>
       {!res ? <div style={{ fontSize: 12, color: "#F87171" }}>Enter two valid dates or Unix timestamps.</div> : (
         <>
-          <Card style={{ background: "rgba(59,130,246,.08)" }}>
-            <div style={{ fontSize: 12, color: "#93C5FD", marginBottom: 4 }}>Duration</div>
+          <Card style={{ background: "rgba(34,211,238,.08)" }}>
+            <div style={{ fontSize: 12, color: "#67E8F9", marginBottom: 4 }}>Duration</div>
             <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 22, fontWeight: 700 }}>{res.human}</div>
           </Card>
           <DataTable columns={["Unit", "Value"]} rows={[
@@ -3509,8 +4130,8 @@ function UuidV5GeneratorTool() {
         <div><Label>Namespace</Label><SelectInput value={ns} onChange={setNs} options={UUID_NAMESPACES} /></div>
       </Grid2>
       <div><Label>Custom Namespace UUID (optional)</Label><Input value={ns} onChange={setNs} placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" /></div>
-      <Card style={{ background: "rgba(59,130,246,.08)" }}>
-        <div style={{ fontSize: 12, color: "#93C5FD", marginBottom: 4 }}>UUID v5</div>
+      <Card style={{ background: "rgba(34,211,238,.08)" }}>
+        <div style={{ fontSize: 12, color: "#67E8F9", marginBottom: 4 }}>UUID v5</div>
         <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 18, fontWeight: 700, wordBreak: "break-all" }}>{uuid}</div>
       </Card>
       <div style={{ display: "flex", gap: 8 }}><CopyBtn text={uuid} label="Copy UUID" /></div>
@@ -3596,8 +4217,8 @@ function ColorContrastCheckerTool() {
         <>
           <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
             <div style={{ flex: 1, borderRadius: 10, border: `1px solid ${C.border}`, background: bg, color: fg, padding: 20, textAlign: "center", fontSize: 18, fontWeight: 700 }}>Aa Sample Text</div>
-            <Card style={{ background: "rgba(59,130,246,.08)", minWidth: 130, textAlign: "center" }}>
-              <div style={{ fontSize: 12, color: "#93C5FD" }}>Ratio</div>
+            <Card style={{ background: "rgba(34,211,238,.08)", minWidth: 130, textAlign: "center" }}>
+              <div style={{ fontSize: 12, color: "#67E8F9" }}>Ratio</div>
               <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 24, fontWeight: 700 }}>{r.toFixed(2)}:1</div>
             </Card>
           </div>

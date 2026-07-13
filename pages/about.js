@@ -8,7 +8,7 @@ const C = {
 }
 
 const STATS = [
-  { num: '669+', label: 'Free Tools', icon: '🛠️', color: '#6366F1' },
+  { num: '947+', label: 'Free Tools', icon: '🛠️', color: '#6366F1' },
   { num: '23',   label: 'Categories', icon: '📂', color: '#10B981' },
   { num: '100%', label: 'In-Browser', icon: '⚡', color: '#F59E0B' },
   { num: '0',    label: 'Sign-up Required', icon: '✅', color: '#3B82F6' },
@@ -39,9 +39,9 @@ export default function About() {
     <>
       <Head>
         <title>About ToolsRift — Free Online Tools Platform | ToolsRift</title>
-        <meta name="description" content="ToolsRift is a free online tools platform with 669+ tools across 23 categories. Built for speed, privacy and accessibility. No signup, no limits." />
+        <meta name="description" content="ToolsRift is a free online tools platform with 947+ tools across 23 categories. Built for speed, privacy and accessibility. No signup, no limits." />
         <meta property="og:title" content="About ToolsRift — Free Online Tools Platform" />
-        <meta property="og:description" content="669+ free online tools built for speed, privacy and everyone. No signup required." />
+        <meta property="og:description" content="947+ free online tools built for speed, privacy and everyone. No signup required." />
         <meta property="og:url" content="https://toolsrift.com/about" />
         <meta property="og:site_name" content="ToolsRift" />
         <meta name="twitter:card" content="summary_large_image" />
@@ -55,7 +55,7 @@ export default function About() {
           "@type": "Organization",
           "name": "ToolsRift",
           "url": "https://toolsrift.com",
-          "description": "Free online tools platform with 669+ tools across 23 categories.",
+          "description": "Free online tools platform with 947+ tools across 23 categories.",
           "foundingLocation": { "@type": "Place", "name": "Hyderabad, India" },
           "sameAs": ["https://toolsrift.com"]
         })}</script>
@@ -102,7 +102,7 @@ export default function About() {
               ToolsRift was built on a simple belief — the best online tools should be free, fast, and accessible to everyone. No accounts, no paywalls, no data collection. Just open and use.
             </p>
             <a href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: '#fff', padding: '14px 32px', borderRadius: 12, textDecoration: 'none', fontWeight: 700, fontSize: 15, boxShadow: '0 8px 28px rgba(99,102,241,0.35)' }}>
-              ⚡ Explore 669+ Free Tools →
+              ⚡ Explore 947+ Free Tools →
             </a>
           </div>
         </section>
@@ -133,7 +133,7 @@ export default function About() {
               Every day, millions of people search for simple online tools — a quick PDF merger, a color converter, a word counter. They land on sites that are slow, cluttered with ads, require sign-ups, or hide basic features behind paywalls.
             </p>
             <p style={{ fontSize: 15, color: C.muted, lineHeight: 1.85, margin: '0 0 20px' }}>
-              We built ToolsRift to fix that. Starting with 669 tools across 23 categories — and growing toward 1,600+ — every tool on ToolsRift runs entirely in your browser. Your files never leave your device. Your data is never sold.
+              We built ToolsRift to fix that. Starting with 947 tools across 23 categories — and growing toward 1,600+ — every tool on ToolsRift runs entirely in your browser. Your files never leave your device. Your data is never sold.
             </p>
             <p style={{ fontSize: 15, color: C.muted, lineHeight: 1.85, margin: 0 }}>
               We are a small team based in Hyderabad, India, building tools we use ourselves every day. ToolsRift is ad-supported so we can keep everything free — a fair trade we are proud of.
@@ -168,7 +168,7 @@ export default function About() {
         <section style={{ padding: '0 24px 72px', maxWidth: 860, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: '#F59E0B', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 12 }}>What's Inside</div>
-            <h2 style={{ fontSize: 'clamp(22px,3.5vw,34px)', fontWeight: 800, color: C.text, fontFamily: "'Sora', sans-serif", margin: '0 0 12px' }}>23 Categories. 669 Tools.</h2>
+            <h2 style={{ fontSize: 'clamp(22px,3.5vw,34px)', fontWeight: 800, color: C.text, fontFamily: "'Sora', sans-serif", margin: '0 0 12px' }}>23 Categories. 947 Tools.</h2>
             <p style={{ fontSize: 15, color: C.dim, margin: 0 }}>A small preview of what's available — with more added every week.</p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: 12, marginBottom: 32 }}>
