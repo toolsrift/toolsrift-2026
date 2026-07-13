@@ -233,6 +233,20 @@ const TOOLS = [
   { id:"dice-roller", cat:"fun", name:"Dice Roller", desc:"Roll up to six virtual dice with 4 to 20 sides — perfect for board games and D&D", icon:"🎲", free:true },
   { id:"coin-flip", cat:"fun", name:"Coin Flip", desc:"Flip a virtual coin for instant heads-or-tails decisions with flip history", icon:"🪙", free:true },
   { id:"scoreboard", cat:"fun", name:"Online Scoreboard", desc:"Simple two-team scoreboard with custom names — great for games and sports", icon:"🏆", free:true },
+  { id:"leap-year-checker", cat:"datetime", name:"Leap Year Checker", desc:"Check whether any year is a leap year and see the next and previous leap years", icon:"📆", free:true },
+  { id:"iso-week-number", cat:"datetime", name:"ISO Week Number", desc:"Find the ISO 8601 week number for any date, plus the day of year and week-year", icon:"🗓️", free:true },
+  { id:"day-of-week-finder", cat:"datetime", name:"Day of the Week Finder", desc:"Find what day of the week any date falls on using Zeller's congruence — any year", icon:"📅", free:true },
+  { id:"moon-phase", cat:"datetime", name:"Moon Phase Calculator", desc:"See the moon phase, illumination and lunar age for any date with an emoji icon", icon:"🌙", free:true },
+  { id:"business-days-between", cat:"datetime", name:"Business Days Calculator", desc:"Count working days (Mon–Fri) between two dates, excluding weekends", icon:"💼", free:true },
+  { id:"days-in-month", cat:"datetime", name:"Days in Month Calculator", desc:"Find how many days are in any month and year, including leap-year February", icon:"📇", free:true },
+  { id:"easter-date", cat:"datetime", name:"Easter Sunday Date Finder", desc:"Calculate the exact date of Easter Sunday for any year using the Computus algorithm", icon:"🐣", free:true },
+  { id:"unix-timestamp-converter", cat:"datetime", name:"Unix Timestamp Converter", desc:"Convert Unix epoch timestamps to human dates and back, in UTC and local time", icon:"⏰", free:true },
+  { id:"weekday-counter", cat:"datetime", name:"Weekday Counter", desc:"Count how many Mondays, Fridays or any weekday fall between two dates", icon:"🔢", free:true },
+  { id:"half-birthday", cat:"datetime", name:"Half Birthday Calculator", desc:"Find your half birthday — exactly six months from your date of birth", icon:"🎉", free:true },
+  { id:"zodiac-sign", cat:"fun", name:"Zodiac Sign Finder", desc:"Discover your Western star sign, element and date range from your birthday", icon:"♈", free:true },
+  { id:"chinese-zodiac", cat:"fun", name:"Chinese Zodiac Finder", desc:"Find your Chinese zodiac animal and its traits from your birth year", icon:"🐲", free:true },
+  { id:"generation-finder", cat:"fun", name:"Generation Finder", desc:"Find which generation you belong to — Boomer, Gen X, Millennial, Gen Z and more", icon:"👥", free:true },
+  { id:"next-friday-13", cat:"fun", name:"Next Friday the 13th", desc:"Find the next Friday the 13th and list upcoming ones — count the days until each", icon:"😱", free:true },
 ];
 
 const CATEGORIES = [
@@ -346,6 +360,132 @@ const TOOL_META = {
     faq: [
       ["Can I rename the teams?", "Yes — click on a team name and type any name you like."],
       ["Does the score save if I refresh?", "No, the scoreboard resets on refresh — it is designed for live score keeping during a game."],
+    ],
+  },
+  "leap-year-checker": {
+    title: "Leap Year Checker – Is It a Leap Year? Free Online | ToolsRift",
+    desc: "Instantly check whether any year is a leap year, why, and see the next and previous leap years. Uses the exact Gregorian rule: divisible by 4, except centuries not divisible by 400.",
+    faq: [
+      ["What makes a year a leap year?", "A year is a leap year if it is divisible by 4, except for century years, which must also be divisible by 400. So 2000 was a leap year but 1900 was not."],
+      ["Why do we need leap years?", "Earth takes about 365.2422 days to orbit the Sun. Adding a day every four years keeps the calendar aligned with the seasons; the century rule corrects the small remaining error."],
+      ["Is 2100 a leap year?", "No. 2100 is divisible by 4 but it is a century year not divisible by 400, so it is a common year of 365 days."],
+    ],
+  },
+  "iso-week-number": {
+    title: "ISO Week Number Calculator – Week of the Year | ToolsRift",
+    desc: "Find the ISO 8601 week number for any date, plus the day of the year and the ISO week-year. Weeks start on Monday and week 1 always contains the year's first Thursday.",
+    faq: [
+      ["How is the ISO week number defined?", "Under ISO 8601, weeks start on Monday and week 1 is the week containing the first Thursday of the year (equivalently, the week with January 4th)."],
+      ["Why can early January be week 52 or 53?", "If the first days of January fall before that year's first Thursday, they belong to the last week of the previous ISO year — which is why the week-year can differ from the calendar year."],
+      ["Does the week ever go to 53?", "Yes. Years starting on a Thursday, and leap years starting on a Wednesday, have 53 ISO weeks."],
+    ],
+  },
+  "day-of-week-finder": {
+    title: "Day of the Week Finder – What Day Was Any Date? | ToolsRift",
+    desc: "Find what day of the week any date falls on, past or future, using Zeller's congruence. Discover the weekday of your birthday, a historical event or a future deadline.",
+    faq: [
+      ["How does it work?", "It uses Zeller's congruence, a classic formula that computes the weekday directly from the day, month and year of a proleptic Gregorian date — no calendar lookup needed."],
+      ["Does it work for old historical dates?", "Yes, for dates in the Gregorian calendar. Note that many countries adopted the Gregorian calendar at different times before the 1900s."],
+      ["What day was I born on?", "Enter your date of birth and the tool tells you instantly which day of the week you were born."],
+    ],
+  },
+  "moon-phase": {
+    title: "Moon Phase Calculator – Lunar Phase for Any Date | ToolsRift",
+    desc: "See the moon phase, illumination percentage and lunar age for any date, with a matching emoji. Based on the average synodic month for a fast, offline approximation.",
+    faq: [
+      ["How accurate is the moon phase?", "It uses the average synodic month (29.53 days) from a known new moon, so it is accurate to within roughly a day — great for a quick reference, planning or curiosity."],
+      ["What are the eight phases?", "New Moon, Waxing Crescent, First Quarter, Waxing Gibbous, Full Moon, Waning Gibbous, Last Quarter and Waning Crescent — the full cycle repeats about every 29.5 days."],
+      ["What does illumination mean?", "It is the fraction of the Moon's visible disc lit by the Sun — 0% at new moon, 100% at full moon."],
+    ],
+  },
+  "business-days-between": {
+    title: "Business Days Calculator – Working Days Between Dates | ToolsRift",
+    desc: "Count the number of business days (Monday to Friday) between two dates, excluding weekends. Perfect for delivery estimates, notice periods, invoices and SLAs.",
+    faq: [
+      ["Are weekends excluded?", "Yes. Only Monday through Friday are counted; Saturdays and Sundays are skipped. Both the start and end dates are included in the count if they are weekdays."],
+      ["Does it account for public holidays?", "No — it counts standard Monday–Friday working days only. Public holidays vary by country and are not deducted."],
+      ["What is a business day used for?", "Business days are used for delivery windows, payment terms, legal notice periods and service-level agreements where weekends do not count."],
+    ],
+  },
+  "days-in-month": {
+    title: "Days in Month Calculator – How Many Days in a Month | ToolsRift",
+    desc: "Find how many days are in any month of any year, including February in leap years. Quick reference for 28, 29, 30 or 31-day months and payroll or billing periods.",
+    faq: [
+      ["How many days does February have?", "February has 28 days in common years and 29 days in leap years. This tool checks the leap-year rule automatically for the year you enter."],
+      ["Which months have 31 days?", "January, March, May, July, August, October and December each have 31 days. April, June, September and November have 30."],
+      ["Why does this matter for billing?", "Daily rates, prorated rent and interest calculations depend on the exact number of days in the month, which varies through the year."],
+    ],
+  },
+  "easter-date": {
+    title: "Easter Date Calculator – Find Easter Sunday for Any Year | ToolsRift",
+    desc: "Calculate the exact date of Easter Sunday for any year using the Gregorian Computus algorithm. Also shows the weekday and days from today. Free and instant.",
+    faq: [
+      ["How is the Easter date determined?", "Easter is the first Sunday after the first ecclesiastical full moon on or after March 21. This tool uses the Anonymous Gregorian Computus algorithm to compute it exactly."],
+      ["What is the earliest and latest Easter can fall?", "In the Gregorian calendar, Easter Sunday can fall anywhere from March 22 to April 25."],
+      ["Does this match Orthodox Easter?", "Not always. This calculates Western (Gregorian) Easter. Orthodox churches use the Julian calendar, so their Easter often falls on a different date."],
+    ],
+  },
+  "unix-timestamp-converter": {
+    title: "Unix Timestamp Converter – Epoch to Date & Back | ToolsRift",
+    desc: "Convert Unix epoch timestamps to human-readable dates and convert dates back to timestamps. Shows both UTC and local time, in seconds or milliseconds. Free, no signup.",
+    faq: [
+      ["What is a Unix timestamp?", "It is the number of seconds that have elapsed since 00:00:00 UTC on January 1, 1970 (the Unix epoch), a standard way computers store time."],
+      ["Seconds or milliseconds?", "Unix timestamps are traditionally in seconds; JavaScript and many APIs use milliseconds. This tool auto-detects and lets you choose the unit."],
+      ["What time zone is used?", "The tool shows both UTC and your device's local time so you can read the timestamp either way."],
+    ],
+  },
+  "weekday-counter": {
+    title: "Weekday Counter – Count Mondays, Fridays Between Dates | ToolsRift",
+    desc: "Count how many times each weekday — Mondays, Tuesdays, Fridays and so on — occur between two dates. Useful for scheduling classes, shifts, rent and recurring events.",
+    faq: [
+      ["What does it count?", "It counts how many of each of the seven weekdays fall in your chosen date range, inclusive of both the start and end dates."],
+      ["What can I use it for?", "Great for figuring out how many working Fridays are in a quarter, how many weekend days are in a trip, or how many of a specific class day fall in a term."],
+      ["Are both endpoints included?", "Yes. The start date and end date are both counted if they land on the weekday in question."],
+    ],
+  },
+  "half-birthday": {
+    title: "Half Birthday Calculator – Find Your Half Birthday | ToolsRift",
+    desc: "Find your half birthday — the date exactly six months from your date of birth. Fun for kids' celebrations, planning surprises and summer-birthday half parties.",
+    faq: [
+      ["What is a half birthday?", "Your half birthday is the day exactly six months after your birthday. People with birthdays near holidays sometimes celebrate their half birthday instead."],
+      ["How is it calculated?", "The tool adds six calendar months to your birth date. For example, a January 15 birthday gives a July 15 half birthday."],
+      ["What if I was born on August 31?", "Adding six months lands in late February, which has fewer days, so the resulting date rolls to early March — the tool shows the exact resolved date."],
+    ],
+  },
+  "zodiac-sign": {
+    title: "Zodiac Sign Finder – What's My Star Sign? Free | ToolsRift",
+    desc: "Find your Western zodiac star sign, its element and date range from your birthday. Discover whether you're an Aries, Leo, Scorpio, Pisces and all twelve signs.",
+    faq: [
+      ["How is my zodiac sign determined?", "Your Western (tropical) zodiac sign is based on the calendar date of your birthday, using the standard sign date ranges — no birth year or time needed."],
+      ["What are the four elements?", "The twelve signs are grouped into Fire (Aries, Leo, Sagittarius), Earth (Taurus, Virgo, Capricorn), Air (Gemini, Libra, Aquarius) and Water (Cancer, Scorpio, Pisces)."],
+      ["What if I'm born on a cusp date?", "Sign boundaries can shift by a day between years due to the Sun's exact position. This tool uses the common fixed date ranges; borderline dates may vary slightly by source."],
+    ],
+  },
+  "chinese-zodiac": {
+    title: "Chinese Zodiac Finder – Your Animal Sign by Year | ToolsRift",
+    desc: "Find your Chinese zodiac animal — Rat, Ox, Tiger, Dragon and more — and its traits from your birth year. The 12-animal cycle repeats every twelve years.",
+    faq: [
+      ["What are the 12 Chinese zodiac animals?", "In order: Rat, Ox, Tiger, Rabbit, Dragon, Snake, Horse, Goat, Monkey, Rooster, Dog and Pig. The cycle repeats every 12 years."],
+      ["Is it based on the exact year?", "This tool uses the Gregorian birth year. Note the Chinese New Year falls in late January or February, so people born in those weeks may belong to the previous animal's year."],
+      ["What year is my animal?", "Enter your birth year and the tool shows your animal and the years it recurs. For example, 2024 is the Year of the Dragon."],
+    ],
+  },
+  "generation-finder": {
+    title: "Generation Finder – Boomer, Gen X, Millennial, Gen Z | ToolsRift",
+    desc: "Find which generation you belong to from your birth year — the Silent Generation, Baby Boomers, Gen X, Millennials, Gen Z, Gen Alpha and Gen Beta.",
+    faq: [
+      ["Which birth years define each generation?", "Common ranges: Baby Boomers 1946–1964, Gen X 1965–1980, Millennials 1981–1996, Gen Z 1997–2012, Gen Alpha 2013–2024, and Gen Beta from 2025."],
+      ["Are generation boundaries exact?", "No — they are widely-used conventions (based on Pew Research and popular usage), and different sources set the cut-offs a year or two apart."],
+      ["What generation am I?", "Enter your birth year and the tool names your generation and shows its full year range."],
+    ],
+  },
+  "next-friday-13": {
+    title: "Next Friday the 13th – Countdown to the Unlucky Day | ToolsRift",
+    desc: "Find the next Friday the 13th and the days until it, plus a list of upcoming Friday the 13ths. Every year has at least one and at most three.",
+    faq: [
+      ["How often is Friday the 13th?", "Every calendar year has between one and three Friday the 13ths. On average there is one about every 212 days."],
+      ["Why is it considered unlucky?", "The superstition combines the number 13 (long viewed as unlucky in Western culture) with Friday. The fear even has a name: paraskevidekatriaphobia."],
+      ["How is the next one found?", "The tool checks the 13th of each upcoming month and reports the next one that falls on a Friday, then lists several that follow."],
     ],
   },
 };
@@ -910,8 +1050,573 @@ function WorldClock() {
   );
 }
 
+// ── extra everyday helpers (verified in Node) ────────────────────────────────
+const isLeapYear = (y) => (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+const WEEKDAY_NAMES = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+function isoWeekOf(y, mo, d) { // mo 0-based
+  const dt = new Date(Date.UTC(y, mo, d));
+  const dayNum = (dt.getUTCDay() + 6) % 7;
+  dt.setUTCDate(dt.getUTCDate() - dayNum + 3);
+  const firstThu = new Date(Date.UTC(dt.getUTCFullYear(), 0, 4));
+  const firstDayNum = (firstThu.getUTCDay() + 6) % 7;
+  firstThu.setUTCDate(firstThu.getUTCDate() - firstDayNum + 3);
+  const week = 1 + Math.round((dt - firstThu) / (7 * 86400000));
+  return { week, year: dt.getUTCFullYear() };
+}
+function zellerDay(y, m, d) { // m 1-12 → weekday name
+  if (m < 3) { m += 12; y -= 1; }
+  const K = y % 100, J = Math.floor(y / 100);
+  const h = (d + Math.floor(13 * (m + 1) / 5) + K + Math.floor(K / 4) + Math.floor(J / 4) + 5 * J) % 7;
+  return ["Saturday","Sunday","Monday","Tuesday","Wednesday","Thursday","Friday"][h];
+}
+function easterOf(year) {
+  const a = year % 19, b = Math.floor(year / 100), c = year % 100;
+  const d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25);
+  const g = Math.floor((b - f + 1) / 3);
+  const h = (19 * a + b - d - g + 15) % 30;
+  const i = Math.floor(c / 4), k = c % 4;
+  const l = (32 + 2 * e + 2 * i - h - k) % 7;
+  const m = Math.floor((a + 11 * h + 22 * l) / 451);
+  const month = Math.floor((h + l - 7 * m + 114) / 31);
+  const day = ((h + l - 7 * m + 114) % 31) + 1;
+  return { month, day }; // month 3=March, 4=April
+}
+const SYNODIC = 29.530588853;
+const REF_NEW_MOON = Date.UTC(2000, 0, 6, 18, 14);
+function moonInfo(ts) {
+  let age = (ts - REF_NEW_MOON) / 86400000 % SYNODIC;
+  if (age < 0) age += SYNODIC;
+  const phaseFrac = age / SYNODIC;
+  const idx = Math.floor(phaseFrac * 8 + 0.5) % 8;
+  const names = ["New Moon","Waxing Crescent","First Quarter","Waxing Gibbous","Full Moon","Waning Gibbous","Last Quarter","Waning Crescent"];
+  const emojis = ["🌑","🌒","🌓","🌔","🌕","🌖","🌗","🌘"];
+  const illum = Math.round((1 - Math.cos(2 * Math.PI * phaseFrac)) / 2 * 100);
+  return { age, name: names[idx], emoji: emojis[idx], illum };
+}
+const ZSIGNS = [
+  [19,"Capricorn","♑","Earth"],[18,"Aquarius","♒","Air"],[20,"Pisces","♓","Water"],
+  [19,"Aries","♈","Fire"],[20,"Taurus","♉","Earth"],[20,"Gemini","♊","Air"],
+  [22,"Cancer","♋","Water"],[22,"Leo","♌","Fire"],[22,"Virgo","♍","Earth"],
+  [22,"Libra","♎","Air"],[21,"Scorpio","♏","Water"],[21,"Sagittarius","♐","Fire"]
+];
+function westernZodiac(m, d) { // m 1-12
+  const [cut, name, sym, elem] = ZSIGNS[m - 1];
+  if (d <= cut) return { name, sym, elem };
+  const nx = ZSIGNS[m % 12];
+  return { name: nx[1], sym: nx[2], elem: nx[3] };
+}
+const CHINESE_ZODIAC = [
+  ["Rat","🐀","Quick-witted, resourceful, versatile"],
+  ["Ox","🐂","Diligent, dependable, determined"],
+  ["Tiger","🐅","Brave, confident, competitive"],
+  ["Rabbit","🐇","Gentle, elegant, kind"],
+  ["Dragon","🐉","Confident, ambitious, charismatic"],
+  ["Snake","🐍","Wise, intuitive, graceful"],
+  ["Horse","🐎","Energetic, independent, warm-hearted"],
+  ["Goat","🐐","Calm, gentle, creative"],
+  ["Monkey","🐒","Clever, curious, playful"],
+  ["Rooster","🐓","Observant, hardworking, courageous"],
+  ["Dog","🐕","Loyal, honest, friendly"],
+  ["Pig","🐖","Generous, diligent, easy-going"],
+];
+const GENERATIONS = [
+  ["The Greatest Generation", 1901, 1927],
+  ["The Silent Generation", 1928, 1945],
+  ["Baby Boomers", 1946, 1964],
+  ["Generation X", 1965, 1980],
+  ["Millennials (Gen Y)", 1981, 1996],
+  ["Generation Z", 1997, 2012],
+  ["Generation Alpha", 2013, 2024],
+  ["Generation Beta", 2025, 2039],
+];
+
+function LeapYearChecker() {
+  const [year, setYear] = useState(String(new Date().getFullYear()));
+  const out = useMemo(() => {
+    const y = parseInt(year, 10);
+    if (!Number.isFinite(y) || String(year).trim() === "") return null;
+    const leap = isLeapYear(y);
+    let nextLeap = y + 1; while (!isLeapYear(nextLeap)) nextLeap++;
+    let prevLeap = y - 1; while (!isLeapYear(prevLeap)) prevLeap--;
+    return { y, leap, nextLeap, prevLeap };
+  }, [year]);
+  const copyText = out ? `${out.y} is ${out.leap ? "a leap year (366 days)" : "not a leap year (365 days)"}. Previous leap year: ${out.prevLeap}. Next leap year: ${out.nextLeap}.` : "";
+  return (
+    <VStack>
+      <div><Label>Year</Label><Input value={year} onChange={setYear} placeholder="e.g. 2024" /></div>
+      {out ? (
+        <>
+          <BigResult value={out.leap ? "✅ Leap Year" : "❌ Common Year"} label={`${out.y} has ${out.leap ? 366 : 365} days`} />
+          <Grid2>
+            <StatBox value={out.prevLeap} label="Previous Leap Year" />
+            <StatBox value={out.nextLeap} label="Next Leap Year" />
+          </Grid2>
+          <Result mono={false}>{out.leap
+            ? `${out.y} is divisible by 4${out.y % 100 === 0 ? " and by 400" : (out.y % 100 !== 0 ? " and is not a century year" : "")}, so February has 29 days.`
+            : `${out.y} is ${out.y % 4 !== 0 ? "not divisible by 4" : "a century year not divisible by 400"}, so February has 28 days.`}</Result>
+          <div style={{ display: "flex", justifyContent: "flex-end" }}><CopyBtn text={copyText} /></div>
+        </>
+      ) : <Result mono={false}>Enter a valid year to check.</Result>}
+    </VStack>
+  );
+}
+
+function IsoWeekNumber() {
+  const [date, setDate] = useState(toISO(new Date()));
+  const out = useMemo(() => {
+    const dt = new Date(date); if (isNaN(dt)) return null;
+    const y = dt.getFullYear(), mo = dt.getMonth(), d = dt.getDate();
+    const { week, year } = isoWeekOf(y, mo, d);
+    const startOfYear = new Date(Date.UTC(y, 0, 0));
+    const dayOfYear = Math.floor((Date.UTC(y, mo, d) - startOfYear) / 86400000);
+    return { week, year, dayOfYear, weekday: WEEKDAY_NAMES[dt.getDay()], remaining: (isLeapYear(y) ? 366 : 365) - dayOfYear };
+  }, [date]);
+  const copyText = out ? `ISO week ${out.week} of ${out.year}. Day ${out.dayOfYear} of the year.` : "";
+  return (
+    <VStack>
+      <div><Label>Date</Label><input type="date" value={date} onChange={e => setDate(e.target.value)} style={dateInputStyle} /></div>
+      {out ? (
+        <>
+          <BigResult value={`Week ${out.week}`} label={`ISO week-year ${out.year}`} />
+          <Grid3>
+            <StatBox value={out.dayOfYear} label="Day of Year" />
+            <StatBox value={out.remaining} label="Days Left in Year" />
+            <StatBox value={out.weekday} label="Weekday" />
+          </Grid3>
+          <div style={{ display: "flex", justifyContent: "flex-end" }}><CopyBtn text={copyText} /></div>
+        </>
+      ) : <Result mono={false}>Pick a valid date.</Result>}
+    </VStack>
+  );
+}
+
+function DayOfWeekFinder() {
+  const [date, setDate] = useState(toISO(new Date()));
+  const out = useMemo(() => {
+    const dt = new Date(date); if (isNaN(dt)) return null;
+    const y = dt.getFullYear(), m = dt.getMonth() + 1, d = dt.getDate();
+    const weekday = zellerDay(y, m, d);
+    const isWeekend = weekday === "Saturday" || weekday === "Sunday";
+    return { weekday, isWeekend, pretty: `${MONTH_NAMES[m - 1]} ${d}, ${y}` };
+  }, [date]);
+  const copyText = out ? `${out.pretty} falls on a ${out.weekday}.` : "";
+  return (
+    <VStack>
+      <div><Label>Date (any year)</Label><input type="date" value={date} onChange={e => setDate(e.target.value)} style={dateInputStyle} /></div>
+      {out ? (
+        <>
+          <BigResult value={out.weekday} label={out.pretty} />
+          <Result mono={false}>{out.isWeekend ? "🛌 It's a weekend day." : "💼 It's a weekday."} Computed with Zeller's congruence — works for any year.</Result>
+          <div style={{ display: "flex", justifyContent: "flex-end" }}><CopyBtn text={copyText} /></div>
+        </>
+      ) : <Result mono={false}>Pick a valid date.</Result>}
+    </VStack>
+  );
+}
+
+function MoonPhase() {
+  const [date, setDate] = useState(toISO(new Date()));
+  const out = useMemo(() => {
+    const dt = new Date(date); if (isNaN(dt)) return null;
+    const noon = Date.UTC(dt.getFullYear(), dt.getMonth(), dt.getDate(), 12, 0);
+    const info = moonInfo(noon);
+    return { ...info, pretty: `${MONTH_NAMES[dt.getMonth()]} ${dt.getDate()}, ${dt.getFullYear()}` };
+  }, [date]);
+  const copyText = out ? `Moon on ${out.pretty}: ${out.name} (${out.illum}% illuminated, ${out.age.toFixed(1)} days old).` : "";
+  return (
+    <VStack>
+      <div><Label>Date</Label><input type="date" value={date} onChange={e => setDate(e.target.value)} style={dateInputStyle} /></div>
+      {out ? (
+        <>
+          <div style={{ textAlign: "center", padding: "18px 16px", background: "rgba(99,102,241,0.08)", border: `1px solid rgba(99,102,241,0.2)`, borderRadius: 10 }}>
+            <div style={{ fontSize: 64, lineHeight: 1 }}>{out.emoji}</div>
+            <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 24, fontWeight: 700, color: C.indigo, marginTop: 8 }}>{out.name}</div>
+            <div style={{ ...T.label, marginTop: 4 }}>{out.pretty}</div>
+          </div>
+          <Grid2>
+            <StatBox value={`${out.illum}%`} label="Illumination" />
+            <StatBox value={`${out.age.toFixed(1)} d`} label="Lunar Age" />
+          </Grid2>
+          <Result mono={false}>Approximation from the average 29.53-day synodic month — accurate to within about a day.</Result>
+          <div style={{ display: "flex", justifyContent: "flex-end" }}><CopyBtn text={copyText} /></div>
+        </>
+      ) : <Result mono={false}>Pick a valid date.</Result>}
+    </VStack>
+  );
+}
+
+function BusinessDaysBetween() {
+  const [start, setStart] = useState(toISO(new Date()));
+  const [end, setEnd] = useState(toISO(new Date(Date.now() + 30 * 86400000)));
+  const out = useMemo(() => {
+    let a = new Date(start), b = new Date(end);
+    if (isNaN(a) || isNaN(b)) return null;
+    let sa = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
+    let sb = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
+    if (sa > sb) [sa, sb] = [sb, sa];
+    const total = Math.round((sb - sa) / 86400000) + 1;
+    const fullWeeks = Math.floor(total / 7);
+    let bd = fullWeeks * 5;
+    const rem = total % 7;
+    const sd = new Date(sa).getUTCDay();
+    for (let i = 0; i < rem; i++) { const dow = (sd + i) % 7; if (dow !== 0 && dow !== 6) bd++; }
+    return { total, bd, weekends: total - bd };
+  }, [start, end]);
+  const copyText = out ? `${out.bd} business days (and ${out.weekends} weekend days) across ${out.total} calendar days.` : "";
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Start Date</Label><input type="date" value={start} onChange={e => setStart(e.target.value)} style={dateInputStyle} /></div>
+        <div><Label>End Date</Label><input type="date" value={end} onChange={e => setEnd(e.target.value)} style={dateInputStyle} /></div>
+      </Grid2>
+      {out ? (
+        <>
+          <BigResult value={out.bd.toLocaleString("en-IN")} label="Business Days (Mon–Fri)" />
+          <Grid2>
+            <StatBox value={out.total.toLocaleString("en-IN")} label="Total Calendar Days" />
+            <StatBox value={out.weekends.toLocaleString("en-IN")} label="Weekend Days" />
+          </Grid2>
+          <Result mono={false}>Both start and end dates are included. Public holidays are not deducted.</Result>
+          <div style={{ display: "flex", justifyContent: "flex-end" }}><CopyBtn text={copyText} /></div>
+        </>
+      ) : <Result mono={false}>Pick valid start and end dates.</Result>}
+    </VStack>
+  );
+}
+
+function DaysInMonth() {
+  const now = new Date();
+  const [month, setMonth] = useState(String(now.getMonth() + 1));
+  const [year, setYear] = useState(String(now.getFullYear()));
+  const out = useMemo(() => {
+    const m = parseInt(month, 10), y = parseInt(year, 10);
+    if (!(m >= 1 && m <= 12) || !Number.isFinite(y)) return null;
+    const days = new Date(y, m, 0).getDate();
+    const firstDay = zellerDay(y, m, 1);
+    const lastDay = zellerDay(y, m, days);
+    return { days, name: MONTH_NAMES[m - 1], firstDay, lastDay, y };
+  }, [month, year]);
+  const monthOpts = MONTH_NAMES.map((n, i) => [String(i + 1), n]);
+  const copyText = out ? `${out.name} ${out.y} has ${out.days} days.` : "";
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Month</Label><SelectInput value={month} onChange={setMonth} options={monthOpts} /></div>
+        <div><Label>Year</Label><Input value={year} onChange={setYear} placeholder="e.g. 2024" /></div>
+      </Grid2>
+      {out ? (
+        <>
+          <BigResult value={out.days} label={`Days in ${out.name} ${out.y}`} />
+          <Grid2>
+            <StatBox value={out.firstDay} label="Starts On" />
+            <StatBox value={out.lastDay} label="Ends On" />
+          </Grid2>
+          <div style={{ display: "flex", justifyContent: "flex-end" }}><CopyBtn text={copyText} /></div>
+        </>
+      ) : <Result mono={false}>Choose a month and valid year.</Result>}
+    </VStack>
+  );
+}
+
+function EasterDate() {
+  const [year, setYear] = useState(String(new Date().getFullYear()));
+  const out = useMemo(() => {
+    const y = parseInt(year, 10);
+    if (!Number.isFinite(y) || y < 1583) return null;
+    const { month, day } = easterOf(y);
+    const weekday = zellerDay(y, month, day); // always Sunday, shown for confidence
+    const goodFri = new Date(Date.UTC(y, month - 1, day - 2));
+    const ash = new Date(Date.UTC(y, month - 1, day - 46));
+    return {
+      pretty: `${MONTH_NAMES[month - 1]} ${day}, ${y}`, weekday,
+      goodFriday: `${MONTH_NAMES[goodFri.getUTCMonth()]} ${goodFri.getUTCDate()}`,
+      ashWed: `${MONTH_NAMES[ash.getUTCMonth()]} ${ash.getUTCDate()}`,
+    };
+  }, [year]);
+  const copyText = out ? `Easter Sunday ${year} falls on ${out.pretty}.` : "";
+  return (
+    <VStack>
+      <div><Label>Year (1583 or later)</Label><Input value={year} onChange={setYear} placeholder="e.g. 2025" /></div>
+      {out ? (
+        <>
+          <BigResult value={out.pretty} label={`Easter Sunday (${out.weekday})`} />
+          <Grid2>
+            <StatBox value={out.goodFriday} label="Good Friday" />
+            <StatBox value={out.ashWed} label="Ash Wednesday" />
+          </Grid2>
+          <Result mono={false}>Western (Gregorian) Easter, computed with the Anonymous Gregorian Computus. It can fall between March 22 and April 25.</Result>
+          <div style={{ display: "flex", justifyContent: "flex-end" }}><CopyBtn text={copyText} /></div>
+        </>
+      ) : <Result mono={false}>Enter a valid year (Gregorian calendar, 1583 onward).</Result>}
+    </VStack>
+  );
+}
+
+function UnixTimestampConverter() {
+  const [mode, setMode] = useState("toDate");
+  const [ts, setTs] = useState(String(Math.floor(Date.now() / 1000)));
+  const [dateStr, setDateStr] = useState(toISO(new Date()));
+  const toDateOut = useMemo(() => {
+    if (mode !== "toDate") return null;
+    const raw = ts.trim(); if (!/^\d+$/.test(raw)) return null;
+    const n = Number(raw);
+    const ms = raw.length > 10 ? n : n * 1000; // heuristic: >10 digits => ms
+    const dt = new Date(ms);
+    if (isNaN(dt)) return null;
+    return {
+      utc: dt.toUTCString(),
+      local: dt.toLocaleString("en-IN", { dateStyle: "full", timeStyle: "medium" }),
+      iso: dt.toISOString(),
+      unit: raw.length > 10 ? "milliseconds" : "seconds",
+    };
+  }, [mode, ts]);
+  const toTsOut = useMemo(() => {
+    if (mode !== "toTs") return null;
+    const dt = new Date(dateStr); if (isNaN(dt)) return null;
+    const secs = Math.floor(dt.getTime() / 1000);
+    return { secs, ms: dt.getTime() };
+  }, [mode, dateStr]);
+  return (
+    <VStack>
+      <div><Label>Direction</Label><SelectInput value={mode} onChange={setMode} options={[["toDate","Timestamp → Date"],["toTs","Date → Timestamp"]]} /></div>
+      {mode === "toDate" ? (
+        <>
+          <div><Label>Unix Timestamp (seconds or ms)</Label><Input value={ts} onChange={setTs} placeholder="e.g. 1700000000" /></div>
+          {toDateOut ? (
+            <>
+              <Result mono={false}>Detected unit: <b>{toDateOut.unit}</b></Result>
+              <Grid2>
+                <div><Label>UTC</Label><Result>{toDateOut.utc}</Result></div>
+                <div><Label>Local Time</Label><Result mono={false}>{toDateOut.local}</Result></div>
+              </Grid2>
+              <div><Label>ISO 8601</Label><Result>{toDateOut.iso}</Result></div>
+              <div style={{ display: "flex", justifyContent: "flex-end" }}><CopyBtn text={toDateOut.iso} /></div>
+            </>
+          ) : <Result mono={false}>Enter a whole-number timestamp.</Result>}
+        </>
+      ) : (
+        <>
+          <div><Label>Date & Time</Label><input type="datetime-local" value={dateStr.length <= 10 ? dateStr + "T00:00" : dateStr} onChange={e => setDateStr(e.target.value)} style={dateInputStyle} /></div>
+          {toTsOut ? (
+            <>
+              <Grid2>
+                <BigResult value={toTsOut.secs.toLocaleString("en-US")} label="Seconds" />
+                <BigResult value={toTsOut.ms.toLocaleString("en-US")} label="Milliseconds" />
+              </Grid2>
+              <div style={{ display: "flex", justifyContent: "flex-end" }}><CopyBtn text={String(toTsOut.secs)} /></div>
+            </>
+          ) : <Result mono={false}>Pick a valid date and time.</Result>}
+        </>
+      )}
+    </VStack>
+  );
+}
+
+function WeekdayCounter() {
+  const [start, setStart] = useState(toISO(new Date()));
+  const [end, setEnd] = useState(toISO(new Date(Date.now() + 90 * 86400000)));
+  const out = useMemo(() => {
+    const a = new Date(start), b = new Date(end);
+    if (isNaN(a) || isNaN(b)) return null;
+    let sa = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
+    let sb = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
+    if (sa > sb) [sa, sb] = [sb, sa];
+    const total = Math.round((sb - sa) / 86400000) + 1;
+    if (total > 200000) return null; // guard absurd ranges
+    const counts = [0, 0, 0, 0, 0, 0, 0];
+    const startDow = new Date(sa).getUTCDay();
+    const fullWeeks = Math.floor(total / 7);
+    for (let i = 0; i < 7; i++) counts[i] = fullWeeks;
+    const rem = total % 7;
+    for (let i = 0; i < rem; i++) counts[(startDow + i) % 7]++;
+    return { counts, total };
+  }, [start, end]);
+  const copyText = out ? WEEKDAY_NAMES.map((n, i) => `${n}: ${out.counts[i]}`).join(", ") : "";
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Start Date</Label><input type="date" value={start} onChange={e => setStart(e.target.value)} style={dateInputStyle} /></div>
+        <div><Label>End Date</Label><input type="date" value={end} onChange={e => setEnd(e.target.value)} style={dateInputStyle} /></div>
+      </Grid2>
+      {out ? (
+        <>
+          <DataTable columns={["Weekday", "Count"]} rows={WEEKDAY_NAMES.map((n, i) => [n, out.counts[i]])} />
+          <Result mono={false}>{out.total.toLocaleString("en-IN")} total days (both endpoints included).</Result>
+          <div style={{ display: "flex", justifyContent: "flex-end" }}><CopyBtn text={copyText} /></div>
+        </>
+      ) : <Result mono={false}>Pick a valid date range.</Result>}
+    </VStack>
+  );
+}
+
+function HalfBirthday() {
+  const [dob, setDob] = useState("2000-01-15");
+  const out = useMemo(() => {
+    const dt = new Date(dob); if (isNaN(dt)) return null;
+    const y = dt.getFullYear(), mo = dt.getMonth(), d = dt.getDate();
+    const half = new Date(Date.UTC(y, mo + 6, d));
+    const pretty = `${WEEKDAY_NAMES[half.getUTCDay()]}, ${MONTH_NAMES[half.getUTCMonth()]} ${half.getUTCDate()}`;
+    // days until next half birthday from today
+    const today = new Date(); const ty = today.getFullYear();
+    let next = new Date(Date.UTC(ty, half.getUTCMonth(), half.getUTCDate()));
+    const todayUTC = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+    if (next < todayUTC) next = new Date(Date.UTC(ty + 1, half.getUTCMonth(), half.getUTCDate()));
+    const daysUntil = Math.round((next - todayUTC) / 86400000);
+    return { pretty, daysUntil };
+  }, [dob]);
+  const copyText = out ? `Half birthday: ${out.pretty}.` : "";
+  return (
+    <VStack>
+      <div><Label>Date of Birth</Label><input type="date" value={dob} onChange={e => setDob(e.target.value)} style={dateInputStyle} /></div>
+      {out ? (
+        <>
+          <BigResult value={out.pretty} label="🎉 Your Half Birthday" />
+          <StatBox value={`${out.daysUntil} days`} label="Until Your Next Half Birthday" />
+          <Result mono={false}>Exactly six calendar months from your birthday.</Result>
+          <div style={{ display: "flex", justifyContent: "flex-end" }}><CopyBtn text={copyText} /></div>
+        </>
+      ) : <Result mono={false}>Pick a valid date of birth.</Result>}
+    </VStack>
+  );
+}
+
+function ZodiacSign() {
+  const [dob, setDob] = useState("2000-07-23");
+  const out = useMemo(() => {
+    const dt = new Date(dob); if (isNaN(dt)) return null;
+    const m = dt.getMonth() + 1, d = dt.getDate();
+    const z = westernZodiac(m, d);
+    return { ...z, pretty: `${MONTH_NAMES[m - 1]} ${d}` };
+  }, [dob]);
+  const copyText = out ? `${out.pretty} → ${out.name} ${out.sym} (${out.elem} sign).` : "";
+  return (
+    <VStack>
+      <div><Label>Birthday</Label><input type="date" value={dob} onChange={e => setDob(e.target.value)} style={dateInputStyle} /></div>
+      {out ? (
+        <>
+          <div style={{ textAlign: "center", padding: "20px 16px", background: "rgba(99,102,241,0.08)", border: `1px solid rgba(99,102,241,0.2)`, borderRadius: 10 }}>
+            <div style={{ fontSize: 56, lineHeight: 1 }}>{out.sym}</div>
+            <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 26, fontWeight: 700, color: C.indigo, marginTop: 6 }}>{out.name}</div>
+            <div style={{ ...T.label, marginTop: 4 }}>{out.elem} element · {out.pretty}</div>
+          </div>
+          <Result mono={false}>Based on the standard tropical zodiac date ranges. Cusp dates near a sign boundary can vary by a day between years.</Result>
+          <div style={{ display: "flex", justifyContent: "flex-end" }}><CopyBtn text={copyText} /></div>
+        </>
+      ) : <Result mono={false}>Pick a valid birthday.</Result>}
+    </VStack>
+  );
+}
+
+function ChineseZodiac() {
+  const [year, setYear] = useState(String(new Date().getFullYear()));
+  const out = useMemo(() => {
+    const y = parseInt(year, 10);
+    if (!Number.isFinite(y)) return null;
+    const idx = ((y - 4) % 12 + 12) % 12;
+    const [animal, emoji, traits] = CHINESE_ZODIAC[idx];
+    const years = [y - 12, y, y + 12];
+    return { animal, emoji, traits, years };
+  }, [year]);
+  const copyText = out ? `Year ${year}: ${out.animal} ${out.emoji}. ${out.traits}.` : "";
+  return (
+    <VStack>
+      <div><Label>Birth Year</Label><Input value={year} onChange={setYear} placeholder="e.g. 1996" /></div>
+      {out ? (
+        <>
+          <div style={{ textAlign: "center", padding: "20px 16px", background: "rgba(99,102,241,0.08)", border: `1px solid rgba(99,102,241,0.2)`, borderRadius: 10 }}>
+            <div style={{ fontSize: 56, lineHeight: 1 }}>{out.emoji}</div>
+            <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 26, fontWeight: 700, color: C.indigo, marginTop: 6 }}>Year of the {out.animal}</div>
+            <div style={{ ...T.label, marginTop: 4 }}>{out.traits}</div>
+          </div>
+          <StatBox value={out.years.join(" · ")} label="Recurring Years" />
+          <Result mono={false}>Uses the Gregorian birth year. As Chinese New Year falls in late Jan–Feb, people born then may belong to the previous animal's year.</Result>
+          <div style={{ display: "flex", justifyContent: "flex-end" }}><CopyBtn text={copyText} /></div>
+        </>
+      ) : <Result mono={false}>Enter a valid year.</Result>}
+    </VStack>
+  );
+}
+
+function GenerationFinder() {
+  const [year, setYear] = useState("1995");
+  const out = useMemo(() => {
+    const y = parseInt(year, 10);
+    if (!Number.isFinite(y)) return null;
+    const g = GENERATIONS.find(([, a, b]) => y >= a && y <= b);
+    if (!g) return { none: true, y };
+    return { name: g[0], range: `${g[1]}–${g[2]}`, y };
+  }, [year]);
+  const copyText = out && !out.none ? `Born ${out.y}: ${out.name} (${out.range}).` : "";
+  return (
+    <VStack>
+      <div><Label>Birth Year</Label><Input value={year} onChange={setYear} placeholder="e.g. 1990" /></div>
+      {out ? (
+        out.none ? (
+          <Result mono={false}>No named generation covers {out.y}. Common labels span 1901 (Greatest Generation) to 2039 (Generation Beta).</Result>
+        ) : (
+          <>
+            <BigResult value={out.name} label={`Born ${out.range}`} />
+            <Result mono={false}>Generation ranges are widely-used conventions (Pew Research / popular usage) and vary by a year or two between sources.</Result>
+            <div style={{ display: "flex", justifyContent: "flex-end" }}><CopyBtn text={copyText} /></div>
+          </>
+        )
+      ) : <Result mono={false}>Enter a valid birth year.</Result>}
+    </VStack>
+  );
+}
+
+function NextFriday13() {
+  const [from, setFrom] = useState(toISO(new Date()));
+  const out = useMemo(() => {
+    const dt = new Date(from); if (isNaN(dt)) return null;
+    const fromUTC = Date.UTC(dt.getFullYear(), dt.getMonth(), dt.getDate());
+    const results = [];
+    let y = dt.getFullYear(), m = dt.getMonth();
+    for (let i = 0; i < 240 && results.length < 6; i++) {
+      const cand = new Date(Date.UTC(y, m, 13));
+      if (cand.getTime() >= fromUTC && cand.getUTCDay() === 5) {
+        const days = Math.round((cand - fromUTC) / 86400000);
+        results.push({ pretty: `${WEEKDAY_NAMES[5]}, ${MONTH_NAMES[m]} 13, ${y}`, days });
+      }
+      m++; if (m > 11) { m = 0; y++; }
+    }
+    return results;
+  }, [from]);
+  const copyText = out && out.length ? out.map(r => `${r.pretty} (${r.days} days)`).join("\n") : "";
+  return (
+    <VStack>
+      <div><Label>Search From Date</Label><input type="date" value={from} onChange={e => setFrom(e.target.value)} style={dateInputStyle} /></div>
+      {out && out.length > 0 ? (
+        <>
+          <BigResult value={`${out[0].days} days`} label={`Next: ${out[0].pretty} 😱`} />
+          <div><Label>Upcoming Friday the 13ths</Label>
+            <DataTable columns={["Date", "Days Away"]} rows={out.map(r => [r.pretty, r.days])} />
+          </div>
+          <div style={{ display: "flex", justifyContent: "flex-end" }}><CopyBtn text={copyText} /></div>
+        </>
+      ) : <Result mono={false}>Pick a valid date to search from.</Result>}
+    </VStack>
+  );
+}
+
 const TOOL_COMPONENTS = {
   "age-calculator": AgeCalculator,
+  "leap-year-checker": LeapYearChecker,
+  "iso-week-number": IsoWeekNumber,
+  "day-of-week-finder": DayOfWeekFinder,
+  "moon-phase": MoonPhase,
+  "business-days-between": BusinessDaysBetween,
+  "days-in-month": DaysInMonth,
+  "easter-date": EasterDate,
+  "unix-timestamp-converter": UnixTimestampConverter,
+  "weekday-counter": WeekdayCounter,
+  "half-birthday": HalfBirthday,
+  "zodiac-sign": ZodiacSign,
+  "chinese-zodiac": ChineseZodiac,
+  "generation-finder": GenerationFinder,
+  "next-friday-13": NextFriday13,
   "date-difference": DateDifference,
   "add-subtract-days": AddSubtractDays,
   "days-until": DaysUntil,

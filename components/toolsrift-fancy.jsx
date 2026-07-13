@@ -201,6 +201,24 @@ const TOOLS = [
   { id:"cool-symbols", cat:"decorators", name:"Cool Symbols & Kaomoji", desc:"Click-to-copy board of arrows, stars, hearts, math symbols, currency and kaomoji faces", icon:"🔣", free:true },
   { id:"discord-formatter", cat:"decorators", name:"Discord Text Formatter", desc:"Build Discord-formatted messages with bold, italic, spoiler markdown and colored ANSI text", icon:"💬", free:true },
   { id:"emoji-letters", cat:"styles", name:"Emoji Letters Generator", desc:"Turn text into regional indicator or squared Latin emoji letters like 🇦🇧🅰🅱", icon:"🅰️", free:true },
+
+  // New Tools (added July 2026 — batch 2)
+  { id:"serif-bold-text", cat:"styles", name:"Serif Bold Text Generator", desc:"Convert text to Unicode serif bold letters 𝐀𝐚 for a classic, heavy typographic look", icon:"𝐁", free:true },
+  { id:"negative-circled-text", cat:"styles", name:"Negative Circled Text", desc:"Convert text to solid black circled letters 🅐🅑🅒 for bold, high-contrast styling", icon:"🅝", free:true },
+  { id:"parenthesized-text", cat:"styles", name:"Parenthesized Text Generator", desc:"Wrap each letter in Unicode parentheses like ⒜⒝⒞ for list and label styling", icon:"⒫", free:true },
+  { id:"double-underline-text", cat:"styles", name:"Double Underline Text", desc:"Add a Unicode double underline beneath each letter for strong emphasis", icon:"D̳", free:true },
+  { id:"overline-text", cat:"styles", name:"Overline Text Generator", desc:"Add a Unicode overline above each letter for a bar-over, math-like appearance", icon:"O̅", free:true },
+  { id:"slashthrough-text", cat:"styles", name:"Slashthrough Text Generator", desc:"Cross out text with a diagonal Unicode long-solidus overlay for a slashed effect", icon:"S̸", free:true },
+  { id:"wide-spaced-text", cat:"styles", name:"Wide Spaced Text", desc:"Insert spaces between every character to create l e t t e r spaced-out titles", icon:"W␣", free:true },
+
+  { id:"spongebob-mocking-case", cat:"decorative", name:"Mocking SpongeBob Case", desc:"Convert text to aLtErNaTiNg case for the mocking SpongeBob meme and sarcasm", icon:"Sᴘ", free:true },
+  { id:"flip-case", cat:"decorative", name:"Flip Case Converter", desc:"Swap uppercase to lowercase and lowercase to uppercase in one click", icon:"aA", free:true },
+  { id:"reverse-words", cat:"decorative", name:"Reverse Word Order", desc:"Reverse the order of words in a sentence while keeping each word readable", icon:"↩", free:true },
+  { id:"leetspeak-generator", cat:"decorative", name:"Leetspeak Generator", desc:"Convert text to 1337 h4x0r leetspeak by swapping letters for numbers and symbols", icon:"1337", free:true },
+  { id:"faux-cyrillic-text", cat:"decorative", name:"Faux Cyrillic Text", desc:"Style text with Cyrillic lookalike letters like Я and И for a fake Russian aesthetic", icon:"Я", free:true },
+
+  { id:"clap-text", cat:"decorators", name:"Clap Text Generator", desc:"Insert 👏 clap emoji between every word for emphatic, meme-style messages", icon:"👏", free:true },
+  { id:"sparkle-text", cat:"decorators", name:"Sparkle Text Generator", desc:"Wrap words with ✨ sparkle emoji for a cute, aesthetic Twitter and Instagram look", icon:"✨", free:true },
 ];
 
 const CATEGORIES = [
@@ -505,6 +523,132 @@ const TOOL_META = {
       ["What are regional indicator letters?", "Regional indicator symbols are Unicode letters A-Z that render as blue-boxed emoji. When two combine they can form a country flag — for example US becomes the US flag."],
       ["What is squared Latin text?", "Squared Latin uses the negative-squared alphabet block (🅰🅱🅲) where each letter appears as a solid rounded square, great for bold emoji-style headers."],
       ["Do emoji letters work in usernames?", "Many platforms allow these Unicode emoji in bios and posts. Some restrict them in usernames, so check the specific platform's rules first."]
+    ]
+  },
+  "serif-bold-text": {
+    title: "Free Serif Bold Text Generator – Unicode Bold Font | ToolsRift",
+    desc: "Convert text to Unicode serif bold letters (𝐀𝐚𝟏) for a classic, heavy look. Copy bold serif text for social media, bios and headlines instantly.",
+    faq: [
+      ["How is serif bold different from sans bold?", "Serif bold uses the Mathematical Bold alphabet (𝐀) which has small strokes on each letter, giving a classic look, while sans bold (𝗔) has clean, modern edges."],
+      ["Where does serif bold text work?", "These Unicode characters display on Instagram, Twitter, Facebook, Discord and most modern apps that support Unicode, no formatting tags needed."],
+      ["Does it convert numbers too?", "Yes, digits 0-9 are converted to bold serif numerals. Punctuation and other symbols pass through unchanged."]
+    ]
+  },
+  "negative-circled-text": {
+    title: "Free Negative Circled Text – Solid Black Circle Letters | ToolsRift",
+    desc: "Convert text to solid black circled letters (🅐🅑🅒) for bold, high-contrast styling. Copy negative circled text for headers, usernames and posts.",
+    faq: [
+      ["What is negative circled text?", "Negative circled text uses filled black circle characters with white letters inside (🅐), the inverse of standard bubble letters, for strong visual contrast."],
+      ["Does it support lowercase?", "The negative circled Unicode block only defines uppercase letters, so lowercase input is automatically converted to the uppercase circled form."],
+      ["Can I use it for numbers?", "Yes, digits map to negative circled numbers such as ❶❷❸ and ⓿ for zero."]
+    ]
+  },
+  "parenthesized-text": {
+    title: "Free Parenthesized Text Generator – Bracketed Letters | ToolsRift",
+    desc: "Wrap each letter in Unicode parentheses like ⒜⒝⒞ for decorative labels and lists. Copy parenthesized text for social media and creative formatting.",
+    faq: [
+      ["What is parenthesized text?", "Parenthesized text uses single Unicode characters that show a letter or number inside round brackets, such as ⒜ and ⑴, without typing separate parentheses."],
+      ["Do uppercase and lowercase both work?", "Yes. Lowercase uses the ⒜–⒵ block and uppercase uses the parenthesized Latin capital block 🄐–🄩."],
+      ["Which numbers are supported?", "Digits 1 through 9 convert to parenthesized numbers ⑴–⑼. Zero has no parenthesized form, so it stays as a normal 0."]
+    ]
+  },
+  "double-underline-text": {
+    title: "Free Double Underline Text Generator – Unicode Underline | ToolsRift",
+    desc: "Add a Unicode double underline beneath each letter for strong emphasis. Copy double underlined text for social media, titles and highlights.",
+    faq: [
+      ["How does double underline work?", "The tool appends the Unicode combining double low line (U+0333) beneath each letter and number, creating a double underline that travels with the text."],
+      ["Is this the same as HTML underline?", "No. This uses Unicode combining marks that work in plain text like social media and messages, where HTML underline tags do not apply."],
+      ["Does it work everywhere?", "Most modern platforms render combining marks correctly, though a few older systems may show the underline slightly offset."]
+    ]
+  },
+  "overline-text": {
+    title: "Free Overline Text Generator – Unicode Bar Over Text | ToolsRift",
+    desc: "Add a Unicode overline above each letter for a bar-over, math-style look. Copy overlined text for equations, headers and creative formatting.",
+    faq: [
+      ["What is overline text used for?", "An overline (a bar above the letters) is used in mathematics for repeating decimals and means, and as a decorative style for headings and usernames."],
+      ["How is the overline added?", "The tool appends the Unicode combining overline mark (U+0305) above each letter and digit so the bar stays attached to your text."],
+      ["Does overline work in social media?", "Yes, Unicode combining overlines display on most modern social platforms and messaging apps that support combining characters."]
+    ]
+  },
+  "slashthrough-text": {
+    title: "Free Slashthrough Text Generator – Diagonal Strike Text | ToolsRift",
+    desc: "Cross out text with a diagonal Unicode long-solidus overlay for a slashed look. Copy slashthrough text for corrections and stylistic emphasis.",
+    faq: [
+      ["How is slashthrough different from strikethrough?", "Strikethrough draws a horizontal line through letters, while slashthrough uses a diagonal long solidus overlay (U+0338) for an angled crossed-out effect."],
+      ["Where can I use slashthrough text?", "It works on most modern platforms including Twitter, Discord and WhatsApp that render Unicode combining marks."],
+      ["Does it slash spaces too?", "No. The overlay is applied only to letters and numbers, so spaces and line breaks stay clean."]
+    ]
+  },
+  "wide-spaced-text": {
+    title: "Free Wide Spaced Text Generator – Letter Spacing Online | ToolsRift",
+    desc: "Insert spaces between every character to create l e t t e r spaced-out titles. Copy wide spaced text for aesthetic bios, headers and social posts.",
+    faq: [
+      ["What is wide spaced text?", "Wide spaced text adds a space between each character so words appear stretched out, a popular aesthetic style for titles and social media bios."],
+      ["Is this different from fullwidth text?", "Yes. Fullwidth uses special wide Unicode characters, while this simply inserts normal spaces between your regular letters."],
+      ["Will it break on copy?", "No. The output is plain letters and spaces, so it copies and pastes reliably into any app or platform."]
+    ]
+  },
+  "spongebob-mocking-case": {
+    title: "Free Mocking SpongeBob Text – aLtErNaTiNg Case | ToolsRift",
+    desc: "Convert text to aLtErNaTiNg case for the mocking SpongeBob meme and sarcasm. Copy mocking text instantly for memes, replies and jokes.",
+    faq: [
+      ["What is mocking SpongeBob text?", "It is text with randomly-looking alternating uppercase and lowercase letters, made famous by the Mocking SpongeBob meme to convey sarcasm."],
+      ["How does the alternation work?", "The tool alternates case on each letter, ignoring spaces and punctuation so the pattern stays consistent across words."],
+      ["Where do people use it?", "It is used in social media replies, memes and comments to mock or sarcastically repeat someone's statement."]
+    ]
+  },
+  "flip-case": {
+    title: "Free Flip Case Converter – Swap Upper & Lower Case | ToolsRift",
+    desc: "Swap uppercase to lowercase and lowercase to uppercase in one click. Copy flipped case text instantly for quick reformatting and fun effects.",
+    faq: [
+      ["What does flip case do?", "Flip case inverts the case of every letter: uppercase becomes lowercase and lowercase becomes uppercase, so Hello becomes hELLO."],
+      ["Does it change numbers or symbols?", "No. Only letters have a case, so numbers, spaces and punctuation are left exactly as you typed them."],
+      ["Is this the same as inverse case?", "Yes, flip case and inverse case both mean swapping each letter to the opposite case."]
+    ]
+  },
+  "reverse-words": {
+    title: "Free Reverse Word Order Tool – Flip Sentence Words | ToolsRift",
+    desc: "Reverse the order of words in a sentence while keeping each word readable. Copy the reversed sentence for puzzles, poems and creative writing.",
+    faq: [
+      ["How is this different from reversing letters?", "This reverses the order of whole words, so each word stays spelled correctly, unlike mirror text which reverses individual characters."],
+      ["Does it keep my spacing?", "Word order is reversed while the spacing between words is preserved so the result reads naturally."],
+      ["What can I use reversed word order for?", "It is handy for word puzzles, poetry experiments, Yoda-style phrasing and creative text games."]
+    ]
+  },
+  "leetspeak-generator": {
+    title: "Free Leetspeak Generator – 1337 H4x0r Text Online | ToolsRift",
+    desc: "Convert text to 1337 leetspeak by swapping letters for numbers and symbols. Copy h4x0r text for gamertags, usernames and retro hacker style.",
+    faq: [
+      ["What is leetspeak?", "Leetspeak (1337) is an internet writing style that replaces letters with similar-looking numbers and symbols, such as E to 3 and A to 4."],
+      ["Which letters get replaced?", "Common substitutions include a→4, e→3, i→1, l→1, o→0, s→5, t→7, b→8, g→9, z→2 and c→(. Other letters stay the same."],
+      ["Where is leetspeak used?", "It is popular in gaming usernames, gamertags, retro hacker culture and playful internet handles."]
+    ]
+  },
+  "faux-cyrillic-text": {
+    title: "Free Faux Cyrillic Text – Fake Russian Style Letters | ToolsRift",
+    desc: "Style text with Cyrillic lookalike letters like Я and И for a faux Russian aesthetic. Copy fake Cyrillic text for band names, posters and memes.",
+    faq: [
+      ["What is faux Cyrillic text?", "Faux Cyrillic swaps Latin letters for visually similar Cyrillic characters, like R to Я and N to И, to create a stylized fake Russian look."],
+      ["Is this real Russian?", "No. It only borrows the shapes of Cyrillic letters for style and is not readable or meaningful Russian text."],
+      ["Where is it commonly used?", "It appears in band logos, movie posters, game titles and memes that want a Soviet or Eastern European aesthetic."]
+    ]
+  },
+  "clap-text": {
+    title: "Free Clap Text Generator – 👏 Emoji Between Words | ToolsRift",
+    desc: "Insert 👏 clap emoji between every word for emphatic, meme-style messages. Copy clap text instantly for tweets, comments and social posts.",
+    faq: [
+      ["What is clap text?", "Clap text places a 👏 clap emoji between each word, a popular social media style used to add emphasis to a statement one word at a time."],
+      ["Does it add claps at the ends?", "No, the clap emoji is placed only between words, matching the common clap-back format like make 👏 it 👏 stop."],
+      ["Can I use it anywhere?", "Yes, the 👏 emoji and spaces are standard Unicode, so clap text copies and pastes into any app or platform."]
+    ]
+  },
+  "sparkle-text": {
+    title: "Free Sparkle Text Generator – ✨ Aesthetic Text | ToolsRift",
+    desc: "Wrap words with ✨ sparkle emoji for a cute, aesthetic look. Copy sparkle text for Twitter, Instagram bios, captions and playful messages.",
+    faq: [
+      ["What is sparkle text?", "Sparkle text surrounds your words with ✨ sparkle emoji, a cute and ironic social media style used to emphasize or dress up a phrase."],
+      ["Where are the sparkles placed?", "A ✨ is added at the start, between each word, and at the end, so cute vibes becomes ✨ cute ✨ vibes ✨."],
+      ["Does sparkle text work everywhere?", "Yes, the ✨ emoji is standard Unicode and displays on virtually all modern devices, apps and social platforms."]
     ]
   }
 };
@@ -1581,6 +1725,310 @@ function EmojiLetters() {
   );
 }
 
+// --- Shared output-block helper for the batch-2 tools ---
+function FancyOutput({ label, output }) {
+  if (!output) return null;
+  return (
+    <div>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8 }}>
+        <Label>{label}</Label>
+        <CopyBtn text={output} />
+      </div>
+      <div style={{ background:"rgba(0,0,0,0.3)", border:`1px solid ${C.border}`, borderRadius:8, padding:"20px 16px", fontSize:26, fontWeight:400, color:C.text, lineHeight:1.4, wordBreak:"break-word" }}>
+        {output}
+      </div>
+    </div>
+  );
+}
+
+// Serif Bold Text (Mathematical Bold)
+function SerifBoldText() {
+  const [input, setInput] = useState('');
+  const output = useMemo(() => {
+    let r = '';
+    for (const ch of input) {
+      const c = ch.codePointAt(0);
+      if (c >= 65 && c <= 90) r += String.fromCodePoint(0x1D400 + (c - 65));
+      else if (c >= 97 && c <= 122) r += String.fromCodePoint(0x1D41A + (c - 97));
+      else if (c >= 48 && c <= 57) r += String.fromCodePoint(0x1D7CE + (c - 48));
+      else r += ch;
+    }
+    return r;
+  }, [input]);
+  return (
+    <VStack>
+      <div>
+        <Label>Your Text</Label>
+        <Textarea value={input} onChange={setInput} rows={4} placeholder="Type your text here..." />
+      </div>
+      <FancyOutput label="Serif Bold Text" output={output} />
+    </VStack>
+  );
+}
+
+// Negative Circled Text
+function NegativeCircledText() {
+  const [input, setInput] = useState('');
+  const output = useMemo(() => {
+    let r = '';
+    for (const ch of input) {
+      const c = ch.codePointAt(0);
+      const u = ch.toUpperCase().codePointAt(0);
+      if (u >= 65 && u <= 90) r += String.fromCodePoint(0x1F150 + (u - 65));
+      else if (c >= 49 && c <= 57) r += String.fromCodePoint(0x2776 + (c - 49));
+      else if (c === 48) r += '⓿';
+      else r += ch;
+    }
+    return r;
+  }, [input]);
+  return (
+    <VStack>
+      <div>
+        <Label>Your Text</Label>
+        <Textarea value={input} onChange={setInput} rows={4} placeholder="Type your text here..." />
+      </div>
+      <FancyOutput label="Negative Circled Text" output={output} />
+    </VStack>
+  );
+}
+
+// Parenthesized Text
+function ParenthesizedText() {
+  const [input, setInput] = useState('');
+  const output = useMemo(() => {
+    let r = '';
+    for (const ch of input) {
+      const c = ch.codePointAt(0);
+      if (c >= 65 && c <= 90) r += String.fromCodePoint(0x1F110 + (c - 65));
+      else if (c >= 97 && c <= 122) r += String.fromCodePoint(0x249C + (c - 97));
+      else if (c >= 49 && c <= 57) r += String.fromCodePoint(0x2474 + (c - 49));
+      else r += ch;
+    }
+    return r;
+  }, [input]);
+  return (
+    <VStack>
+      <div>
+        <Label>Your Text</Label>
+        <Textarea value={input} onChange={setInput} rows={4} placeholder="Type your text here..." />
+      </div>
+      <FancyOutput label="Parenthesized Text" output={output} />
+    </VStack>
+  );
+}
+
+// Double Underline Text
+function DoubleUnderlineText() {
+  const [input, setInput] = useState('');
+  const output = useMemo(() =>
+    Array.from(input).map(ch => /[A-Za-z0-9]/.test(ch) ? ch + '̳' : ch).join(''),
+  [input]);
+  return (
+    <VStack>
+      <div>
+        <Label>Your Text</Label>
+        <Textarea value={input} onChange={setInput} rows={4} placeholder="Type your text here..." />
+      </div>
+      <FancyOutput label="Double Underlined Text" output={output} />
+    </VStack>
+  );
+}
+
+// Overline Text
+function OverlineText() {
+  const [input, setInput] = useState('');
+  const output = useMemo(() =>
+    Array.from(input).map(ch => /[A-Za-z0-9]/.test(ch) ? ch + '̅' : ch).join(''),
+  [input]);
+  return (
+    <VStack>
+      <div>
+        <Label>Your Text</Label>
+        <Textarea value={input} onChange={setInput} rows={4} placeholder="Type your text here..." />
+      </div>
+      <FancyOutput label="Overlined Text" output={output} />
+    </VStack>
+  );
+}
+
+// Slashthrough Text
+function SlashthroughText() {
+  const [input, setInput] = useState('');
+  const output = useMemo(() =>
+    Array.from(input).map(ch => /[A-Za-z0-9]/.test(ch) ? ch + '̸' : ch).join(''),
+  [input]);
+  return (
+    <VStack>
+      <div>
+        <Label>Your Text</Label>
+        <Textarea value={input} onChange={setInput} rows={4} placeholder="Type your text here..." />
+      </div>
+      <FancyOutput label="Slashthrough Text" output={output} />
+    </VStack>
+  );
+}
+
+// Wide Spaced Text
+function WideSpacedText() {
+  const [input, setInput] = useState('');
+  const output = useMemo(() => {
+    // space out each line's characters, preserve line breaks
+    return input.split('\n').map(line => Array.from(line).join(' ')).join('\n');
+  }, [input]);
+  return (
+    <VStack>
+      <div>
+        <Label>Your Text</Label>
+        <Textarea value={input} onChange={setInput} rows={4} placeholder="Type your text here..." />
+      </div>
+      <FancyOutput label="Wide Spaced Text" output={output} />
+    </VStack>
+  );
+}
+
+// Mocking SpongeBob Case
+function MockingSpongebobCase() {
+  const [input, setInput] = useState('');
+  const output = useMemo(() => {
+    let r = '', i = 0;
+    for (const ch of input) {
+      if (/[a-z]/i.test(ch)) {
+        r += (i % 2 === 0) ? ch.toLowerCase() : ch.toUpperCase();
+        i++;
+      } else r += ch;
+    }
+    return r;
+  }, [input]);
+  return (
+    <VStack>
+      <div>
+        <Label>Your Text</Label>
+        <Textarea value={input} onChange={setInput} rows={4} placeholder="this is fine..." />
+      </div>
+      <FancyOutput label="Mocking Text" output={output} />
+    </VStack>
+  );
+}
+
+// Flip Case
+function FlipCase() {
+  const [input, setInput] = useState('');
+  const output = useMemo(() =>
+    Array.from(input).map(ch => {
+      const lower = ch.toLowerCase();
+      const upper = ch.toUpperCase();
+      if (lower === upper) return ch;
+      return ch === lower ? upper : lower;
+    }).join(''),
+  [input]);
+  return (
+    <VStack>
+      <div>
+        <Label>Your Text</Label>
+        <Textarea value={input} onChange={setInput} rows={4} placeholder="Hello World..." />
+      </div>
+      <FancyOutput label="Flipped Case Text" output={output} />
+    </VStack>
+  );
+}
+
+// Reverse Word Order
+function ReverseWords() {
+  const [input, setInput] = useState('');
+  const output = useMemo(() => input.split(/(\s+)/).reverse().join(''), [input]);
+  return (
+    <VStack>
+      <div>
+        <Label>Your Text</Label>
+        <Textarea value={input} onChange={setInput} rows={4} placeholder="one two three..." />
+      </div>
+      <FancyOutput label="Reversed Word Order" output={output} />
+    </VStack>
+  );
+}
+
+// Leetspeak Generator
+const LEET_MAP = { a:'4', b:'8', c:'(', e:'3', g:'9', i:'1', l:'1', o:'0', s:'5', t:'7', z:'2' };
+function LeetspeakGenerator() {
+  const [input, setInput] = useState('');
+  const output = useMemo(() =>
+    Array.from(input).map(ch => {
+      const low = ch.toLowerCase();
+      return LEET_MAP[low] !== undefined ? LEET_MAP[low] : ch;
+    }).join(''),
+  [input]);
+  return (
+    <VStack>
+      <div>
+        <Label>Your Text</Label>
+        <Textarea value={input} onChange={setInput} rows={4} placeholder="leet hacker text..." />
+      </div>
+      <FancyOutput label="Leetspeak Text" output={output} />
+    </VStack>
+  );
+}
+
+// Faux Cyrillic Text
+const CYRILLIC_MAP = {
+  A:'Д', B:'Б', C:'С', D:'Д', E:'Э', G:'Б', H:'Н', I:'И', K:'К', M:'М',
+  N:'И', O:'Ф', P:'Р', R:'Я', S:'Ѕ', T:'Т', U:'Ц', W:'Ш', X:'Х', Y:'Ч',
+  a:'а', b:'ъ', c:'с', e:'э', g:'ɡ', h:'н', i:'и', k:'к', m:'м', n:'п',
+  o:'о', p:'р', r:'я', s:'ѕ', t:'т', u:'ц', w:'ш', x:'х', y:'у',
+};
+function FauxCyrillicText() {
+  const [input, setInput] = useState('');
+  const output = useMemo(() =>
+    Array.from(input).map(ch => CYRILLIC_MAP[ch] !== undefined ? CYRILLIC_MAP[ch] : ch).join(''),
+  [input]);
+  return (
+    <VStack>
+      <div>
+        <Label>Your Text</Label>
+        <Textarea value={input} onChange={setInput} rows={4} placeholder="fake russian style..." />
+      </div>
+      <FancyOutput label="Faux Cyrillic Text" output={output} />
+    </VStack>
+  );
+}
+
+// Clap Text
+function ClapText() {
+  const [input, setInput] = useState('');
+  const output = useMemo(() => {
+    const words = input.trim().split(/\s+/).filter(Boolean);
+    if (!words.length) return '';
+    return words.join(' 👏 ');
+  }, [input]);
+  return (
+    <VStack>
+      <div>
+        <Label>Your Text</Label>
+        <Textarea value={input} onChange={setInput} rows={4} placeholder="make it stop..." />
+      </div>
+      <FancyOutput label="Clap Text" output={output} />
+    </VStack>
+  );
+}
+
+// Sparkle Text
+function SparkleText() {
+  const [input, setInput] = useState('');
+  const output = useMemo(() => {
+    const words = input.trim().split(/\s+/).filter(Boolean);
+    if (!words.length) return '';
+    return '✨ ' + words.join(' ✨ ') + ' ✨';
+  }, [input]);
+  return (
+    <VStack>
+      <div>
+        <Label>Your Text</Label>
+        <Textarea value={input} onChange={setInput} rows={4} placeholder="cute aesthetic vibes..." />
+      </div>
+      <FancyOutput label="Sparkle Text" output={output} />
+    </VStack>
+  );
+}
+
 const TOOL_COMPONENTS = {
   "bold-text-generator": BoldTextGenerator,
   "italic-text-generator": ItalicTextGenerator,
@@ -1606,6 +2054,20 @@ const TOOL_COMPONENTS = {
   "cool-symbols": CoolSymbols,
   "discord-formatter": DiscordFormatter,
   "emoji-letters": EmojiLetters,
+  "serif-bold-text": SerifBoldText,
+  "negative-circled-text": NegativeCircledText,
+  "parenthesized-text": ParenthesizedText,
+  "double-underline-text": DoubleUnderlineText,
+  "overline-text": OverlineText,
+  "slashthrough-text": SlashthroughText,
+  "wide-spaced-text": WideSpacedText,
+  "spongebob-mocking-case": MockingSpongebobCase,
+  "flip-case": FlipCase,
+  "reverse-words": ReverseWords,
+  "leetspeak-generator": LeetspeakGenerator,
+  "faux-cyrillic-text": FauxCyrillicText,
+  "clap-text": ClapText,
+  "sparkle-text": SparkleText,
 };
 
 function Breadcrumb({ tool, cat }) {
@@ -1691,6 +2153,20 @@ const FANCY_PREVIEW = {
   "cool-symbols": "★ ♥ →",
   "discord-formatter": "**Aa**",
   "emoji-letters": "🇦🅱",
+  "serif-bold-text": "𝐀𝐚",
+  "negative-circled-text": "🅐🅑",
+  "parenthesized-text": "🄐⒜",
+  "double-underline-text": "A̳a̳",
+  "overline-text": "A̅a̅",
+  "slashthrough-text": "A̸a̸",
+  "wide-spaced-text": "A a",
+  "spongebob-mocking-case": "aAaA",
+  "flip-case": "aA",
+  "reverse-words": "cba",
+  "leetspeak-generator": "1337",
+  "faux-cyrillic-text": "ЯИ",
+  "clap-text": "A👏B",
+  "sparkle-text": "✨A✨",
 };
 
 function FancyPreview({ toolId }) {

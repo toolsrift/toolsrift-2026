@@ -180,6 +180,10 @@ const TOOLS = [
   { id:"java-formatter", cat:"formatters", name:"Java Formatter", desc:"Format Java code with proper indentation, brackets, and Java conventions", icon:"☕", free:true },
   { id:"cpp-formatter", cat:"formatters", name:"C/C++ Formatter", desc:"Format C and C++ code with proper indentation and bracket placement", icon:"⚡", free:true },
   { id:"csharp-formatter", cat:"formatters", name:"C# Formatter", desc:"Format C# code with proper indentation and Microsoft coding conventions", icon:"🔷", free:true },
+  { id:"scss-formatter", cat:"formatters", name:"SCSS/LESS Formatter", desc:"Beautify SCSS, LESS and CSS with brace-based indentation and one declaration per line", icon:"💅", free:true },
+  { id:"ini-formatter", cat:"formatters", name:"INI Formatter", desc:"Clean up INI config files with normalized sections, spacing around equals and tidy blank lines", icon:"🧾", free:true },
+  { id:"properties-formatter", cat:"formatters", name:"Java Properties Formatter", desc:"Normalize Java .properties files to key=value form, group comments and optionally sort keys", icon:"🔑", free:true },
+  { id:"sql-minifier", cat:"formatters", name:"SQL Minifier", desc:"Minify SQL by stripping comments and collapsing whitespace while preserving string literals", icon:"🗜️", free:true },
 
   // Code Converters
   { id:"json-to-xml", cat:"converters", name:"JSON to XML", desc:"Convert JSON data to XML format with proper tags and structure", icon:"📝", free:true },
@@ -190,12 +194,20 @@ const TOOLS = [
   { id:"csv-to-json", cat:"converters", name:"CSV to JSON", desc:"Convert CSV table to JSON array format with proper parsing", icon:"📈", free:true },
   { id:"json-to-toml", cat:"converters", name:"JSON to TOML", desc:"Convert JSON to TOML configuration format with proper syntax", icon:"⚙️", free:true },
   { id:"toml-to-json", cat:"converters", name:"TOML to JSON", desc:"Convert TOML configuration to JSON format with validation", icon:"🔧", free:true },
+  { id:"tsv-to-csv", cat:"converters", name:"TSV to CSV", desc:"Convert tab-separated values to CSV with proper quoting for fields containing commas or quotes", icon:"📑", free:true },
+  { id:"csv-to-markdown", cat:"converters", name:"CSV to Markdown Table", desc:"Convert CSV data into a clean, aligned GitHub-flavored Markdown table with a header row", icon:"📋", free:true },
+  { id:"jsonc-to-json", cat:"converters", name:"JSONC to JSON", desc:"Strip comments and trailing commas from JSONC, then validate and reformat as clean JSON", icon:"🧹", free:true },
+  { id:"json-to-query-string", cat:"converters", name:"JSON to Query String", desc:"Convert a flat JSON object into a URL-encoded query string with repeated keys for arrays", icon:"🔗", free:true },
 
   // Code Utilities
   { id:"line-counter", cat:"tools", name:"Line Counter", desc:"Count lines of code, blank lines, comment lines, and character statistics", icon:"🔢", free:true },
   { id:"code-diff", cat:"tools", name:"Code Diff Viewer", desc:"Compare two code snippets and highlight differences with additions and deletions", icon:"🔍", free:true },
   { id:"indentation-converter", cat:"tools", name:"Indentation Converter", desc:"Convert between tabs and spaces with customizable tab size for code formatting", icon:"↹", free:true },
   { id:"code-beautifier", cat:"tools", name:"Universal Code Beautifier", desc:"Generic code beautifier that works with any programming language syntax", icon:"✨", free:true },
+  { id:"csv-column-aligner", cat:"tools", name:"CSV Column Aligner", desc:"Align CSV columns into an even monospace table so data is easy to read and scan", icon:"📐", free:true },
+  { id:"env-file-sorter", cat:"tools", name:"Env File Sorter", desc:"Sort .env files alphabetically by key, keep comments grouped and drop empty lines", icon:"🔀", free:true },
+  { id:"whitespace-normalizer", cat:"tools", name:"Whitespace Normalizer", desc:"Normalize line endings to LF, strip trailing whitespace and collapse trailing blank lines", icon:"🧽", free:true },
+  { id:"blank-line-collapser", cat:"tools", name:"Blank Line Collapser", desc:"Collapse runs of consecutive blank lines into a single blank line for tidy documents", icon:"➖", free:true },
 ];
 
 const CATEGORIES = [
@@ -428,6 +440,114 @@ const TOOL_META = {
       ["What languages are supported?", "The beautifier works with most common languages by applying universal formatting rules: proper indentation, consistent spacing, and line breaks."],
       ["How does it differ from language-specific formatters?", "Language-specific formatters understand syntax deeply. This universal tool applies general formatting principles that improve readability across languages."],
       ["Is the output production-ready?", "The output is more readable but may not match all style guides. For production, use language-specific formatters and linters."]
+    ]
+  },
+  "scss-formatter": {
+    title: "Free SCSS & LESS Formatter – Beautify Online | ToolsRift",
+    desc: "Beautify SCSS, LESS and CSS code with brace-based indentation and one declaration per line. Free online formatter that keeps comments and nested rules intact.",
+    faq: [
+      ["Does it work for SCSS, LESS and CSS?", "Yes. All three share the same brace-and-semicolon block syntax, so the formatter re-indents nested rules and declarations consistently for any of them."],
+      ["Will it break my URLs or comments?", "No. Values inside url() and strings are preserved, and both /* block */ and // line comments are kept on their own lines."],
+      ["Does formatting change how my styles render?", "No. Only whitespace, indentation and line breaks change. The selectors, properties and values stay exactly the same."]
+    ]
+  },
+  "ini-formatter": {
+    title: "Free INI Formatter – Clean INI Config Files | ToolsRift",
+    desc: "Format and clean up INI configuration files online. Normalize sections, add consistent spacing around equals signs, trim keys and values and tidy blank lines.",
+    faq: [
+      ["What does the INI formatter change?", "It trims each line, puts one blank line before every [section] header, and rewrites entries as 'key = value' with a single space on each side of the equals sign."],
+      ["Are comments preserved?", "Yes. Lines starting with ; or # are kept as-is so your documentation and disabled settings stay in place."],
+      ["Does it validate the INI file?", "It normalizes structure rather than strictly validating. Entries without an equals sign are passed through unchanged so nothing is lost."]
+    ]
+  },
+  "properties-formatter": {
+    title: "Free Java Properties Formatter Online | ToolsRift",
+    desc: "Clean up Java .properties files online. Normalize entries to key=value form, group comment lines together and optionally sort keys alphabetically for tidy configs.",
+    faq: [
+      ["What separators are supported?", "Both '=' and ':' are recognized as key-value separators. The output normalizes every entry to the conventional key=value form."],
+      ["Can it sort the keys?", "Yes. Enable the sort option to reorder entries alphabetically by key, which makes large property files far easier to scan and diff."],
+      ["Are comments kept?", "Comment lines starting with # or ! are collected and placed at the top so they aren't lost during formatting."]
+    ]
+  },
+  "sql-minifier": {
+    title: "Free SQL Minifier – Compress SQL Queries Online | ToolsRift",
+    desc: "Minify SQL queries by removing comments and collapsing whitespace into a single line. String literals are preserved exactly, so the compact query still runs the same.",
+    faq: [
+      ["What does the SQL minifier remove?", "It strips -- line comments and /* block */ comments, then collapses all runs of whitespace and removes extra spaces around commas and semicolons."],
+      ["Will it damage my string values?", "No. Text inside single-quoted string literals, including commas, spaces and escaped quotes, is preserved character-for-character."],
+      ["Why minify SQL?", "Single-line SQL is easier to embed in code, logs or config, and smaller queries transmit slightly faster. The logic is unchanged."]
+    ]
+  },
+  "tsv-to-csv": {
+    title: "Free TSV to CSV Converter Online | ToolsRift",
+    desc: "Convert tab-separated values (TSV) to CSV online. Fields containing commas, quotes or newlines are automatically quoted and escaped so the CSV stays valid.",
+    faq: [
+      ["How are special characters handled?", "Any field containing a comma, double quote or line break is wrapped in double quotes, and inner quotes are doubled, following the standard CSV escaping rules."],
+      ["Does it change my data?", "No. Only the delimiter and escaping change. Every value from the TSV appears unchanged in the corresponding CSV cell."],
+      ["Where does TSV data come from?", "Spreadsheets and databases often export or copy as tab-separated text. This tool turns that into comma-separated CSV for wider compatibility."]
+    ]
+  },
+  "csv-to-markdown": {
+    title: "Free CSV to Markdown Table Converter | ToolsRift",
+    desc: "Convert CSV data into a clean, aligned GitHub-flavored Markdown table. The first row becomes the header, pipe characters are escaped and columns are padded evenly.",
+    faq: [
+      ["How is the table structured?", "The first CSV row becomes the table header, followed by a separator row of dashes, then one Markdown row per remaining line, with columns padded for readability."],
+      ["Does it handle quoted CSV fields?", "Yes. Quoted fields containing commas or newlines are parsed correctly, and any pipe characters inside cells are escaped so the table doesn't break."],
+      ["Where can I use the output?", "The Markdown works in GitHub, GitLab, README files, wikis, and most Markdown editors that support pipe tables."]
+    ]
+  },
+  "jsonc-to-json": {
+    title: "Free JSONC to JSON Converter – Strip Comments | ToolsRift",
+    desc: "Convert JSONC to standard JSON online. Remove // and /* */ comments and trailing commas, then validate and pretty-print the result as clean, parseable JSON.",
+    faq: [
+      ["What is JSONC?", "JSONC is JSON with comments, used by config files like tsconfig.json and VS Code settings. Standard JSON parsers reject its comments and trailing commas."],
+      ["Does it protect strings?", "Yes. Comment markers and commas inside string values are ignored, so URLs like http://example.com and comment-like text inside strings are preserved."],
+      ["Is the output validated?", "Yes. After stripping comments and trailing commas the tool parses the JSON, so invalid input produces a clear error instead of broken output."]
+    ]
+  },
+  "json-to-query-string": {
+    title: "Free JSON to Query String Converter | ToolsRift",
+    desc: "Convert a flat JSON object into a URL-encoded query string. Array values become repeated keys and every key and value is percent-encoded for safe use in URLs.",
+    faq: [
+      ["How are arrays handled?", "An array value is expanded into repeated key=value pairs, for example {\"t\":[\"a\",\"b\"]} becomes t=a&t=b, which most servers parse back into a list."],
+      ["Is everything URL-encoded?", "Yes. Keys and values are passed through encodeURIComponent, so spaces, ampersands and other reserved characters are safely percent-encoded."],
+      ["What about nested objects?", "Nested object values are serialized to JSON and encoded as a single value. For best results provide a flat object of simple key-value pairs."]
+    ]
+  },
+  "csv-column-aligner": {
+    title: "Free CSV Column Aligner – Format CSV Table | ToolsRift",
+    desc: "Align CSV columns into an even monospace table. Each column is padded to its widest value so comma-separated data becomes a clean, readable, scannable grid.",
+    faq: [
+      ["What does the aligner do?", "It parses your CSV, measures the widest value in each column, and pads every cell so the columns line up perfectly when viewed in a monospace font."],
+      ["Is it still valid CSV?", "The aligned output is a readable text table for viewing, not strict CSV. Use it to inspect data; keep the original CSV for machine processing."],
+      ["Does it handle quoted fields?", "Yes. Fields wrapped in quotes with embedded commas are parsed correctly so the alignment reflects the real column values."]
+    ]
+  },
+  "env-file-sorter": {
+    title: "Free .env File Sorter – Sort Env Variables | ToolsRift",
+    desc: "Sort .env files alphabetically by variable name. Comment lines are grouped at the top and blank lines removed, giving you a tidy, easy-to-diff environment file.",
+    faq: [
+      ["How are the variables sorted?", "Every KEY=VALUE line is sorted alphabetically by the key name using a case-aware comparison, making variables easy to find and diffs smaller."],
+      ["What happens to comments?", "Comment lines starting with # are collected and placed at the top of the output so notes and section headers aren't lost."],
+      ["Does it change my values?", "No. Only the order of lines changes. Each key and its exact value are preserved; empty lines are simply removed."]
+    ]
+  },
+  "whitespace-normalizer": {
+    title: "Free Whitespace Normalizer – Clean Text Online | ToolsRift",
+    desc: "Normalize whitespace in any text. Convert CRLF and CR line endings to LF, strip trailing spaces and tabs from every line and collapse trailing blank lines to one.",
+    faq: [
+      ["What exactly gets normalized?", "Windows (CRLF) and old Mac (CR) line endings are converted to Unix LF, trailing spaces and tabs are removed from each line, and blank lines at the end collapse to a single newline."],
+      ["Does it touch leading indentation?", "No. Only trailing whitespace is stripped, so your code indentation and intentional leading spaces stay intact."],
+      ["Why normalize whitespace?", "Consistent line endings and no trailing spaces prevent noisy diffs, satisfy linters and avoid cross-platform text glitches."]
+    ]
+  },
+  "blank-line-collapser": {
+    title: "Free Blank Line Collapser – Remove Extra Lines | ToolsRift",
+    desc: "Collapse runs of consecutive blank lines into a single blank line. Tidy up documents, code and notes by removing excessive vertical gaps while keeping paragraph breaks.",
+    faq: [
+      ["What does it do to blank lines?", "Any run of two or more consecutive blank lines is reduced to exactly one blank line, so single spacing between blocks is preserved."],
+      ["Does it remove all blank lines?", "No. It keeps a single blank line between blocks so structure and readability are maintained; it only removes the excess."],
+      ["Does it change line endings?", "It normalizes line endings to LF while collapsing blanks, so the output is consistent across editors and platforms."]
     ]
   }
 };
@@ -1675,6 +1795,532 @@ function CodeBeautifier() {
   );
 }
 
+// ---- Shared CSV parser for new tools ----
+function parseCsvRows(text) {
+  const rows = []; let row = []; let field = ""; let i = 0; const n = text.length; let inQ = false;
+  while (i < n) {
+    const c = text[i];
+    if (inQ) {
+      if (c === '"') { if (text[i + 1] === '"') { field += '"'; i += 2; continue; } inQ = false; i++; continue; }
+      field += c; i++; continue;
+    }
+    if (c === '"') { inQ = true; i++; continue; }
+    if (c === ",") { row.push(field); field = ""; i++; continue; }
+    if (c === "\n" || c === "\r") { if (c === "\r" && text[i + 1] === "\n") i++; row.push(field); rows.push(row); row = []; field = ""; i++; continue; }
+    field += c; i++;
+  }
+  row.push(field); rows.push(row);
+  if (rows.length && rows[rows.length - 1].length === 1 && rows[rows.length - 1][0] === "") rows.pop();
+  return rows;
+}
+
+// SCSS/LESS Formatter Component
+function ScssFormatter() {
+  const [input, setInput] = useState('');
+  const [indent, setIndent] = useState('2');
+  const [output, setOutput] = useState('');
+
+  const format = () => {
+    if (!input.trim()) return;
+    const IND = ' '.repeat(parseInt(indent, 10) || 2);
+    const src = input; let depth = 0; const out = []; let line = '';
+    const emit = (s) => out.push(IND.repeat(Math.max(0, depth)) + s);
+    const clean = (s) => s.trim().replace(/\s+/g, ' ');
+    const flushLine = () => { const t = clean(line); if (t) emit(t); line = ''; };
+    let i = 0; const n = src.length;
+    while (i < n) {
+      const c = src[i];
+      if (c === '"' || c === "'") {
+        let j = i + 1, str = c;
+        while (j < n) { str += src[j]; if (src[j] === c && src[j - 1] !== '\\') break; j++; }
+        line += str; i = j + 1; continue;
+      }
+      if (c === '/' && src[i + 1] === '*') {
+        let j = i + 2, cm = '/*';
+        while (j < n && !(src[j] === '*' && src[j + 1] === '/')) { cm += src[j]; j++; }
+        cm += '*/'; flushLine(); emit(cm); i = j + 2; continue;
+      }
+      if (c === '/' && src[i + 1] === '/' && !line.replace(/\s+$/, '').endsWith(':')) {
+        let j = i + 2, cm = '//';
+        while (j < n && src[j] !== '\n') { cm += src[j]; j++; }
+        flushLine(); emit(cm.replace(/\s+$/, '')); i = j; continue;
+      }
+      if (c === '{') { const t = clean(line); line = ''; emit((t ? t + ' ' : '') + '{'); depth++; i++; continue; }
+      if (c === '}') { const t = clean(line); line = ''; if (t) emit(t.replace(/\s*:\s*/, ': ') + ';'); depth = Math.max(0, depth - 1); emit('}'); i++; continue; }
+      if (c === ';') { let t = clean(line); line = ''; t = t.replace(/\s*:\s*/, ': '); emit(t + ';'); i++; continue; }
+      if (c === '\n') { line += ' '; i++; continue; }
+      line += c; i++;
+    }
+    flushLine();
+    setOutput(out.join('\n'));
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>SCSS / LESS / CSS Code</Label>
+        <Textarea value={input} onChange={setInput} rows={10} mono placeholder=".card{color:red;.title{font-size:14px}}" />
+      </div>
+      <div>
+        <Label>Indentation</Label>
+        <SelectInput value={indent} onChange={setIndent} options={[
+          { value:'2', label:'2 spaces' },
+          { value:'4', label:'4 spaces' }
+        ]} />
+      </div>
+      <Btn onClick={format} disabled={!input.trim()}>Format Code</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>Formatted Code</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={12} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// INI Formatter Component
+function IniFormatter() {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+
+  const format = () => {
+    if (!input.trim()) return;
+    const lines = input.split(/\r?\n/); const out = [];
+    for (let raw of lines) {
+      const line = raw.trim();
+      if (!line) continue;
+      if (line.startsWith(';') || line.startsWith('#')) { out.push(line); continue; }
+      if (line.startsWith('[') && line.endsWith(']')) { if (out.length) out.push(''); out.push(line); continue; }
+      const eqi = line.indexOf('=');
+      if (eqi > -1) out.push(line.slice(0, eqi).trim() + ' = ' + line.slice(eqi + 1).trim());
+      else out.push(line);
+    }
+    setOutput(out.join('\n'));
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>INI Config</Label>
+        <Textarea value={input} onChange={setInput} rows={10} mono placeholder="[database]\nhost=localhost\nport = 5432" />
+      </div>
+      <Btn onClick={format} disabled={!input.trim()}>Format INI</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>Formatted INI</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={10} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// Java Properties Formatter Component
+function PropertiesFormatter() {
+  const [input, setInput] = useState('');
+  const [mode, setMode] = useState('keep');
+  const [output, setOutput] = useState('');
+
+  const format = () => {
+    if (!input.trim()) return;
+    const lines = input.split(/\r?\n/);
+    const comments = []; const kv = [];
+    for (let raw of lines) {
+      const line = raw.trim();
+      if (!line) continue;
+      if (line.startsWith('#') || line.startsWith('!')) { comments.push(line); continue; }
+      let sep = -1;
+      for (let i = 0; i < line.length; i++) { const c = line[i]; if ((c === '=' || c === ':') && line[i - 1] !== '\\') { sep = i; break; } }
+      if (sep > -1) kv.push(line.slice(0, sep).trim() + '=' + line.slice(sep + 1).trim());
+      else kv.push(line);
+    }
+    const body = mode === 'sort' ? kv.slice().sort((a, b) => a.split('=')[0].localeCompare(b.split('=')[0])) : kv;
+    setOutput([...comments, ...(comments.length && body.length ? [''] : []), ...body].join('\n'));
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>Java .properties</Label>
+        <Textarea value={input} onChange={setInput} rows={10} mono placeholder="app.name = Demo\napp.port : 8080" />
+      </div>
+      <div>
+        <Label>Key Order</Label>
+        <SelectInput value={mode} onChange={setMode} options={[
+          { value:'keep', label:'Keep original order' },
+          { value:'sort', label:'Sort keys A→Z' }
+        ]} />
+      </div>
+      <Btn onClick={format} disabled={!input.trim()}>Format Properties</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>Formatted Properties</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={10} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// SQL Minifier Component
+function SqlMinifier() {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+  const [stats, setStats] = useState(null);
+
+  const minify = () => {
+    if (!input.trim()) return;
+    const SEN = String.fromCharCode(1);
+    const strings = []; let out = ''; let i = 0; const n = input.length;
+    while (i < n) {
+      const c = input[i];
+      if (c === "'") {
+        let j = i + 1, s = "'";
+        while (j < n) { s += input[j]; if (input[j] === "'" && input[j + 1] === "'") { s += input[j + 1]; j += 2; continue; } if (input[j] === "'") { j++; break; } j++; }
+        strings.push(s); out += SEN + (strings.length - 1) + SEN; i = j; continue;
+      }
+      if (c === '-' && input[i + 1] === '-') { let j = i + 2; while (j < n && input[j] !== '\n') j++; i = j; out += ' '; continue; }
+      if (c === '/' && input[i + 1] === '*') { let j = i + 2; while (j < n && !(input[j] === '*' && input[j + 1] === '/')) j++; i = j + 2; out += ' '; continue; }
+      out += c; i++;
+    }
+    out = out.replace(/\s+/g, ' ').replace(/\s*,\s*/g, ',').replace(/\s*;\s*/g, ';').trim();
+    out = out.replace(new RegExp(SEN + '(\\d+)' + SEN, 'g'), (_, k) => strings[+k]);
+    const orig = new Blob([input]).size, min = new Blob([out]).size;
+    setStats({ orig, min, pct: orig ? Math.round((1 - min / orig) * 100) : 0 });
+    setOutput(out);
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>SQL Query</Label>
+        <Textarea value={input} onChange={setInput} rows={10} mono placeholder="SELECT id, name -- users\nFROM users\nWHERE active = 1;" />
+      </div>
+      <Btn onClick={minify} disabled={!input.trim()}>Minify SQL</Btn>
+      {stats && (
+        <Grid3>
+          <StatBox value={`${stats.orig}B`} label="Original" />
+          <StatBox value={`${stats.min}B`} label="Minified" />
+          <StatBox value={`${stats.pct}%`} label="Saved" />
+        </Grid3>
+      )}
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>Minified SQL</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={6} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// TSV to CSV Component
+function TsvToCsv() {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+
+  const convert = () => {
+    if (!input.trim()) return;
+    const esc = (f) => /[",\n\r]/.test(f) ? '"' + f.replace(/"/g, '""') + '"' : f;
+    const csv = input.replace(/\n$/, '').split(/\r?\n/).map(line => line.split('\t').map(esc).join(',')).join('\n');
+    setOutput(csv);
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>TSV Data (tab-separated)</Label>
+        <Textarea value={input} onChange={setInput} rows={10} mono placeholder={"name\tcity\nJohn\tNew York"} />
+      </div>
+      <Btn onClick={convert} disabled={!input.trim()}>Convert to CSV</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>CSV Output</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={10} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// CSV to Markdown Table Component
+function CsvToMarkdown() {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+
+  const convert = () => {
+    if (!input.trim()) return;
+    const rows = parseCsvRows(input);
+    if (!rows.length) { setOutput(''); return; }
+    const cols = Math.max(...rows.map(r => r.length));
+    const norm = rows.map(r => { const a = r.slice(); while (a.length < cols) a.push(''); return a.map(c => c.replace(/\|/g, '\\|')); });
+    const w = []; for (let c = 0; c < cols; c++) w[c] = Math.max(3, ...norm.map(r => r[c].length));
+    const line = (cells) => '| ' + cells.map((c, i) => c.padEnd(w[i])).join(' | ') + ' |';
+    const sep = '| ' + w.map(x => '-'.repeat(x)).join(' | ') + ' |';
+    setOutput([line(norm[0]), sep, ...norm.slice(1).map(line)].join('\n'));
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>CSV Data (first row = header)</Label>
+        <Textarea value={input} onChange={setInput} rows={10} mono placeholder="name,age,city\nJohn,30,NYC\nJane,25,LA" />
+      </div>
+      <Btn onClick={convert} disabled={!input.trim()}>Convert to Markdown</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>Markdown Table</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={10} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// JSONC to JSON Component
+function JsoncToJson() {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+
+  const convert = () => {
+    if (!input.trim()) return;
+    const src = input; let stripped = ''; let i = 0; const n = src.length;
+    while (i < n) {
+      const c = src[i];
+      if (c === '"') { stripped += c; i++; while (i < n) { stripped += src[i]; if (src[i] === '\\') { stripped += src[i + 1]; i += 2; continue; } if (src[i] === '"') { i++; break; } i++; } continue; }
+      if (c === '/' && src[i + 1] === '/') { i += 2; while (i < n && src[i] !== '\n') i++; continue; }
+      if (c === '/' && src[i + 1] === '*') { i += 2; while (i < n && !(src[i] === '*' && src[i + 1] === '/')) i++; i += 2; continue; }
+      stripped += c; i++;
+    }
+    stripped = stripped.replace(/,(\s*[}\]])/g, '$1');
+    try {
+      setOutput(JSON.stringify(JSON.parse(stripped), null, 2));
+    } catch (err) {
+      setOutput('Error: Invalid JSON after stripping comments - ' + err.message);
+    }
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>JSONC (JSON with comments)</Label>
+        <Textarea value={input} onChange={setInput} rows={10} mono placeholder={'{\n  // config\n  "port": 8080,\n  "hosts": ["a", "b",],\n}'} />
+      </div>
+      <Btn onClick={convert} disabled={!input.trim()}>Convert to JSON</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>Clean JSON</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={10} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// JSON to Query String Component
+function JsonToQueryString() {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+
+  const convert = () => {
+    if (!input.trim()) return;
+    try {
+      const obj = JSON.parse(input);
+      if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
+        setOutput('Error: Please provide a JSON object of key-value pairs');
+        return;
+      }
+      const parts = [];
+      for (const k of Object.keys(obj)) {
+        const v = obj[k];
+        if (Array.isArray(v)) v.forEach(item => parts.push(encodeURIComponent(k) + '=' + encodeURIComponent(String(item))));
+        else if (v === null) parts.push(encodeURIComponent(k) + '=');
+        else if (typeof v === 'object') parts.push(encodeURIComponent(k) + '=' + encodeURIComponent(JSON.stringify(v)));
+        else parts.push(encodeURIComponent(k) + '=' + encodeURIComponent(String(v)));
+      }
+      setOutput(parts.join('&'));
+    } catch (err) {
+      setOutput('Error: ' + err.message);
+    }
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>JSON Object</Label>
+        <Textarea value={input} onChange={setInput} rows={8} mono placeholder='{"q":"hello world","tags":["a","b"],"page":2}' />
+      </div>
+      <Btn onClick={convert} disabled={!input.trim()}>Convert to Query String</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>Query String</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={4} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// CSV Column Aligner Component
+function CsvColumnAligner() {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+
+  const align = () => {
+    if (!input.trim()) return;
+    const rows = parseCsvRows(input);
+    if (!rows.length) { setOutput(''); return; }
+    const cols = Math.max(...rows.map(r => r.length));
+    const w = []; for (let c = 0; c < cols; c++) w[c] = Math.max(...rows.map(r => (r[c] || '').length));
+    const out = rows.map(r => {
+      const a = []; for (let c = 0; c < cols; c++) a.push(r[c] || '');
+      return a.map((cell, c) => c === cols - 1 ? cell : cell.padEnd(w[c])).join('  ').replace(/\s+$/, '');
+    }).join('\n');
+    setOutput(out);
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>CSV Data</Label>
+        <Textarea value={input} onChange={setInput} rows={10} mono placeholder="name,age,city\nJohn,30,NYC\nAlexander,5,LA" />
+      </div>
+      <Btn onClick={align} disabled={!input.trim()}>Align Columns</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>Aligned Table</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={10} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// Env File Sorter Component
+function EnvFileSorter() {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+
+  const sort = () => {
+    if (!input.trim()) return;
+    const lines = input.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    const comments = lines.filter(l => l.startsWith('#'));
+    const kv = lines.filter(l => !l.startsWith('#') && l.includes('='));
+    kv.sort((a, b) => a.split('=')[0].localeCompare(b.split('=')[0]));
+    setOutput([...comments, ...(comments.length && kv.length ? [''] : []), ...kv].join('\n'));
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>.env File</Label>
+        <Textarea value={input} onChange={setInput} rows={10} mono placeholder="# database\nDB_PORT=5432\nAPI_KEY=abc123\nDB_HOST=localhost" />
+      </div>
+      <Btn onClick={sort} disabled={!input.trim()}>Sort Variables</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>Sorted .env</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={10} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// Whitespace Normalizer Component
+function WhitespaceNormalizer() {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+
+  const normalize = () => {
+    if (!input) return;
+    let s = input.replace(/\r\n?/g, '\n');
+    s = s.split('\n').map(l => l.replace(/[ \t]+$/, '')).join('\n');
+    s = s.replace(/\n+$/, '\n');
+    setOutput(s);
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>Text / Code</Label>
+        <Textarea value={input} onChange={setInput} rows={10} mono placeholder="Paste text with trailing spaces or mixed line endings..." />
+      </div>
+      <Btn onClick={normalize} disabled={!input.trim()}>Normalize Whitespace</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>Normalized Output</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={10} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// Blank Line Collapser Component
+function BlankLineCollapser() {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+
+  const collapse = () => {
+    if (!input) return;
+    setOutput(input.replace(/\r\n?/g, '\n').replace(/\n{3,}/g, '\n\n'));
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>Text with Extra Blank Lines</Label>
+        <Textarea value={input} onChange={setInput} rows={10} mono placeholder={"Paragraph one.\n\n\n\nParagraph two."} />
+      </div>
+      <Btn onClick={collapse} disabled={!input.trim()}>Collapse Blank Lines</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>Collapsed Output</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={10} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
 const TOOL_COMPONENTS = {
   "css-formatter": CssFormatter,
   "css-minifier": CssMinifier,
@@ -1701,6 +2347,18 @@ const TOOL_COMPONENTS = {
   "code-diff": CodeDiff,
   "indentation-converter": IndentationConverter,
   "code-beautifier": CodeBeautifier,
+  "scss-formatter": ScssFormatter,
+  "ini-formatter": IniFormatter,
+  "properties-formatter": PropertiesFormatter,
+  "sql-minifier": SqlMinifier,
+  "tsv-to-csv": TsvToCsv,
+  "csv-to-markdown": CsvToMarkdown,
+  "jsonc-to-json": JsoncToJson,
+  "json-to-query-string": JsonToQueryString,
+  "csv-column-aligner": CsvColumnAligner,
+  "env-file-sorter": EnvFileSorter,
+  "whitespace-normalizer": WhitespaceNormalizer,
+  "blank-line-collapser": BlankLineCollapser,
 };
 
 function Breadcrumb({ tool, cat }) {

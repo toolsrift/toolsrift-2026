@@ -50,6 +50,20 @@
   <url><loc>https://toolsrift.com/colors/contrast-grid</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/colors/oklch-converter</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/colors/material-palette</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/colors/complementary-color</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/colors/color-inverter</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/colors/lighten-darken</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/colors/hsl-adjuster</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/colors/alpha-blend</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/colors/cmyk-rgb-converter</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/colors/grayscale-converter</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/colors/sepia-converter</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/colors/hex-shorthand</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/colors/pastel-generator</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/colors/css-color-mix</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/colors/nearest-tailwind</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/colors/blend-modes</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/colors/rgb-percentage</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/converters2</loc><lastmod>2026-07-13</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://toolsrift.com/converters2/force-converter</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/converters2/torque-converter</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
@@ -96,6 +110,20 @@
   <url><loc>https://toolsrift.com/css/css-specificity-calculator</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/css/css-pattern-generator</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/css/cubic-bezier-editor</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/css/css-text-stroke</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/css/css-outline</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/css/css-backdrop-filter</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/css/css-blend-mode</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/css/css-mask-fade</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/css/css-perspective</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/css/css-aspect-ratio</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/css/css-columns</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/css/css-object-fit</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/css/css-line-clamp</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/css/css-writing-mode</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/css/css-image-rendering</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/css/css-type-scale</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/css/css-hex-to-rgba</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/devgen</loc><lastmod>2026-07-13</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://toolsrift.com/devgen/gitignore-gen</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/devgen/readme-gen</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
@@ -126,6 +154,20 @@
   <url><loc>https://toolsrift.com/devgen/json-schema-gen</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/devgen/openapi-gen</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/devgen/csp-header-gen</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/devgen/codeowners-gen</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/devgen/funding-yml-gen</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/devgen/dependabot-yml-gen</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/devgen/commitlint-config-gen</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/devgen/security-md-gen</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/devgen/contributing-md-gen</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/devgen/pr-template-gen</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/devgen/issue-template-gen</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/devgen/makefile-gen</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/devgen/jest-config-gen</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/devgen/babel-config-gen</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/devgen/vite-config-gen</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/devgen/stylelint-config-gen</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/devgen/procfile-gen</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/devtools</loc><lastmod>2026-07-13</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://toolsrift.com/devtools/unix-timestamp</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/devtools/cron-parser</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
@@ -233,6 +275,20 @@
   <url><loc>https://toolsrift.com/everyday/dice-roller</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/everyday/coin-flip</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/everyday/scoreboard</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/everyday/leap-year-checker</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/everyday/iso-week-number</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/everyday/day-of-week-finder</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/everyday/moon-phase</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/everyday/business-days-between</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/everyday/days-in-month</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/everyday/easter-date</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/everyday/unix-timestamp-converter</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/everyday/weekday-counter</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/everyday/half-birthday</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/everyday/zodiac-sign</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/everyday/chinese-zodiac</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/everyday/generation-finder</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/everyday/next-friday-13</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/fancy</loc><lastmod>2026-07-13</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://toolsrift.com/fancy/bold-text-generator</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/fancy/italic-text-generator</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
@@ -258,6 +314,20 @@
   <url><loc>https://toolsrift.com/fancy/cool-symbols</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/fancy/discord-formatter</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/fancy/emoji-letters</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/fancy/serif-bold-text</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/fancy/negative-circled-text</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/fancy/parenthesized-text</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/fancy/double-underline-text</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/fancy/overline-text</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/fancy/slashthrough-text</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/fancy/wide-spaced-text</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/fancy/spongebob-mocking-case</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/fancy/flip-case</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/fancy/reverse-words</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/fancy/leetspeak-generator</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/fancy/faux-cyrillic-text</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/fancy/clap-text</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/fancy/sparkle-text</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/financecalc</loc><lastmod>2026-07-13</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://toolsrift.com/financecalc/investment-return-calc</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/financecalc/rd-calc</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
@@ -325,6 +395,10 @@
   <url><loc>https://toolsrift.com/formatters/java-formatter</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/formatters/cpp-formatter</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/formatters/csharp-formatter</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/formatters/scss-formatter</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/formatters/ini-formatter</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/formatters/properties-formatter</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/formatters/sql-minifier</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/formatters/json-to-xml</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/formatters/xml-to-json</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/formatters/json-to-yaml</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
@@ -333,10 +407,18 @@
   <url><loc>https://toolsrift.com/formatters/csv-to-json</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/formatters/json-to-toml</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/formatters/toml-to-json</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/formatters/tsv-to-csv</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/formatters/csv-to-markdown</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/formatters/jsonc-to-json</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/formatters/json-to-query-string</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/formatters/line-counter</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/formatters/code-diff</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/formatters/indentation-converter</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/formatters/code-beautifier</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/formatters/csv-column-aligner</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/formatters/env-file-sorter</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/formatters/whitespace-normalizer</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolsrift.com/formatters/blank-line-collapser</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/generators</loc><lastmod>2026-07-13</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://toolsrift.com/generators/strong-password-gen</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://toolsrift.com/generators/passphrase-gen</loc><lastmod>2026-07-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>

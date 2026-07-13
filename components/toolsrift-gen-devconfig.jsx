@@ -669,6 +669,23 @@ const TOOLS = [
 { id:"json-schema-gen", cat:"web", name:"JSON Schema Generator", desc:"Generate JSON Schema from sample JSON payloads with type inference and required fields.", icon:"📐", free:true },
 { id:"openapi-gen", cat:"web", name:"OpenAPI Generator", desc:"Generate OpenAPI 3.0 YAML skeleton from endpoint definitions for quick API docs.", icon:"📄", free:true },
 { id:"csp-header-gen", cat:"web", name:"CSP Header Generator", desc:"Generate Content-Security-Policy header values with practical default web directives.", icon:"🧱", free:true },
+
+{ id:"codeowners-gen", cat:"git", name:"CODEOWNERS Generator", desc:"Generate a GitHub CODEOWNERS file from path patterns and owners with automatic @ prefixing.", icon:"👥", free:true },
+{ id:"funding-yml-gen", cat:"git", name:"FUNDING.yml Generator", desc:"Generate a GitHub Sponsors FUNDING.yml with GitHub, Patreon, Ko-fi, Open Collective, and custom links.", icon:"💛", free:true },
+{ id:"dependabot-yml-gen", cat:"git", name:"Dependabot Config Generator", desc:"Generate dependabot.yml v2 for npm, pip, Docker, and GitHub Actions with update schedules.", icon:"🤖", free:true },
+{ id:"commitlint-config-gen", cat:"git", name:"Commitlint Config Generator", desc:"Generate commitlint.config.js with conventional commit rules and a custom allowed type list.", icon:"📏", free:true },
+{ id:"security-md-gen", cat:"git", name:"SECURITY.md Generator", desc:"Generate a SECURITY.md policy with supported versions, contact email, and disclosure guidelines.", icon:"🛡️", free:true },
+{ id:"contributing-md-gen", cat:"git", name:"CONTRIBUTING.md Generator", desc:"Generate a CONTRIBUTING.md guide with setup, branch, commit, and pull request instructions.", icon:"🤝", free:true },
+{ id:"pr-template-gen", cat:"git", name:"Pull Request Template Generator", desc:"Generate a GitHub pull request template with summary, change type checklist, and review checklist.", icon:"🔀", free:true },
+{ id:"issue-template-gen", cat:"git", name:"Issue Template Generator", desc:"Generate GitHub bug report or feature request issue templates in Markdown format.", icon:"🐞", free:true },
+
+{ id:"makefile-gen", cat:"config", name:"Makefile Generator", desc:"Generate a tab-indented Makefile from target and command pairs with an automatic .PHONY line.", icon:"🔧", free:true },
+{ id:"jest-config-gen", cat:"config", name:"Jest Config Generator", desc:"Generate jest.config.js with test environment, ts-jest preset, and coverage collection options.", icon:"🧪", free:true },
+{ id:"babel-config-gen", cat:"config", name:"Babel Config Generator", desc:"Generate babel.config.json with preset-env, preset-react, and preset-typescript selections.", icon:"🅱️", free:true },
+{ id:"vite-config-gen", cat:"config", name:"Vite Config Generator", desc:"Generate vite.config.js for React, Vue, or vanilla projects with a custom dev server port.", icon:"⚡", free:true },
+{ id:"stylelint-config-gen", cat:"config", name:"Stylelint Config Generator", desc:"Generate .stylelintrc.json extending standard, SCSS, and Prettier compatibility configs.", icon:"💅", free:true },
+
+{ id:"procfile-gen", cat:"docker", name:"Procfile Generator", desc:"Generate a Heroku/Foreman Procfile from process type and command pairs for web and worker dynos.", icon:"📃", free:true },
 ];
 
 const CATEGORIES = [
@@ -1597,6 +1614,502 @@ return (
 );
 }
 
+function ToggleBtn({ label, val, on }) {
+return <button onClick={()=>on(!val)} style={{padding:"8px 12px",borderRadius:999,border:`1px solid ${val?C.blue:C.border}`,background:val?"rgba(139,92,246,0.18)":"rgba(255,255,255,0.03)",color:C.text,cursor:"pointer",fontSize:12,fontWeight:600}}>{label}</button>;
+}
+
+function CodeownersGen() {
+const [rules, setRules] = useState("* alice bob@example.com\n/docs @org/writers\n*.js @frontend-team");
+const output = useMemo(() => {
+const lines = rules.split("\n").map(l => l.trim()).filter(Boolean).map(l => {
+if (l.startsWith("#")) return l;
+const parts = l.split(/\s+/);
+const pattern = parts[0];
+const owners = parts.slice(1).map(o => (o.startsWith("@") || o.includes("@")) ? o : "@" + o).join(" ");
+return owners ? `${pattern} ${owners}` : pattern;
+});
+return `# CODEOWNERS — auto-assign reviewers\n# Place at .github/CODEOWNERS, docs/CODEOWNERS, or repo root\n${lines.join("\n")}\n`;
+}, [rules]);
+return (
+<VStack>
+<div><Label>Rules (pattern owner1 owner2 — one per line)</Label><Textarea value={rules} onChange={setRules} rows={8} mono placeholder="* @maintainer" /></div>
+<OutputPanel output={output} filename="CODEOWNERS" />
+</VStack>
+);
+}
+
+function FundingYmlGen() {
+const [github, setGithub] = useState("octocat");
+const [patreon, setPatreon] = useState("");
+const [kofi, setKofi] = useState("");
+const [opencollective, setOpencollective] = useState("");
+const [custom, setCustom] = useState("");
+const output = useMemo(() => {
+const lines = [];
+if (github.trim()) lines.push(`github: [${github.split(",").map(s=>s.trim()).filter(Boolean).join(", ")}]`);
+if (patreon.trim()) lines.push(`patreon: ${patreon.trim()}`);
+if (kofi.trim()) lines.push(`ko_fi: ${kofi.trim()}`);
+if (opencollective.trim()) lines.push(`open_collective: ${opencollective.trim()}`);
+if (custom.trim()) lines.push(`custom: [${custom.split(",").map(s=>s.trim()).filter(Boolean).map(u=>`"${u}"`).join(", ")}]`);
+return `# .github/FUNDING.yml\n${lines.join("\n") || "# Add at least one funding platform above"}\n`;
+}, [github, patreon, kofi, opencollective, custom]);
+return (
+<VStack>
+<Grid2>
+<div><Label>GitHub Usernames (comma separated)</Label><Input value={github} onChange={setGithub} placeholder="user1, user2" /></div>
+<div><Label>Patreon Username</Label><Input value={patreon} onChange={setPatreon} placeholder="username" /></div>
+</Grid2>
+<Grid2>
+<div><Label>Ko-fi Username</Label><Input value={kofi} onChange={setKofi} placeholder="username" /></div>
+<div><Label>Open Collective</Label><Input value={opencollective} onChange={setOpencollective} placeholder="project" /></div>
+</Grid2>
+<div><Label>Custom URLs (comma separated)</Label><Input value={custom} onChange={setCustom} placeholder="https://example.com/donate" /></div>
+<OutputPanel output={output} filename="FUNDING.yml" mime="text/yaml;charset=utf-8" />
+</VStack>
+);
+}
+
+function DependabotYmlGen() {
+const opts = [
+{ value:"npm", label:"npm" }, { value:"pip", label:"pip" }, { value:"docker", label:"docker" },
+{ value:"github-actions", label:"github-actions" }, { value:"bundler", label:"bundler" },
+{ value:"gomod", label:"gomod" }, { value:"cargo", label:"cargo" }, { value:"composer", label:"composer" },
+];
+const [ecosystems, setEcosystems] = useState(["npm", "github-actions"]);
+const [interval, setInterval] = useState("weekly");
+const [dir, setDir] = useState("/");
+const output = useMemo(() => {
+if (!ecosystems.length) return `version: 2\nupdates: []\n`;
+const updates = ecosystems.map(e =>
+`  - package-ecosystem: "${e}"\n    directory: "${dir.trim() || "/"}"\n    schedule:\n      interval: "${interval}"`
+).join("\n");
+return `# .github/dependabot.yml\nversion: 2\nupdates:\n${updates}\n`;
+}, [ecosystems, interval, dir]);
+return (
+<VStack>
+<div><Label>Package Ecosystems</Label><PillMultiSelect options={opts} selected={ecosystems} onChange={setEcosystems} /></div>
+<Grid2>
+<div><Label>Update Interval</Label><SelectInput value={interval} onChange={setInterval} options={[{value:"daily",label:"daily"},{value:"weekly",label:"weekly"},{value:"monthly",label:"monthly"}]} /></div>
+<div><Label>Directory</Label><Input value={dir} onChange={setDir} placeholder="/" /></div>
+</Grid2>
+<OutputPanel output={output} filename="dependabot.yml" mime="text/yaml;charset=utf-8" />
+</VStack>
+);
+}
+
+function CommitlintConfigGen() {
+const [types, setTypes] = useState("feat,fix,docs,style,refactor,perf,test,build,ci,chore,revert");
+const [maxLen, setMaxLen] = useState("100");
+const output = useMemo(() => {
+const arr = types.split(",").map(s=>s.trim()).filter(Boolean);
+const len = Number(maxLen) || 100;
+return `module.exports = {
+  extends: ['@commitlint/config-conventional'],
+  rules: {
+    'type-enum': [2, 'always', ${JSON.stringify(arr)}],
+    'header-max-length': [2, 'always', ${len}],
+    'subject-empty': [2, 'never'],
+    'type-empty': [2, 'never']
+  }
+};
+`;
+}, [types, maxLen]);
+return (
+<VStack>
+<div><Label>Allowed Types (comma separated)</Label><Textarea value={types} onChange={setTypes} rows={3} mono /></div>
+<div style={{maxWidth:220}}><Label>Header Max Length</Label><Input value={maxLen} onChange={setMaxLen} /></div>
+<OutputPanel output={output} filename="commitlint.config.js" mime="text/javascript;charset=utf-8" />
+</VStack>
+);
+}
+
+function SecurityMdGen() {
+const [project, setProject] = useState("My Project");
+const [versions, setVersions] = useState("1.x\n0.9.x");
+const [unsupported, setUnsupported] = useState("< 0.9");
+const [email, setEmail] = useState("security@example.com");
+const [days, setDays] = useState("90");
+const output = useMemo(() => {
+const supported = versions.split("\n").map(v=>v.trim()).filter(Boolean).map(v=>`| ${v} | :white_check_mark: |`).join("\n");
+const unsup = unsupported.trim() ? `| ${unsupported.trim()} | :x: |` : "";
+return `# Security Policy
+
+## Supported Versions
+
+Security updates are provided for the following versions of ${project}:
+
+| Version | Supported |
+| ------- | --------- |
+${supported || "| 1.x | :white_check_mark: |"}
+${unsup}
+
+## Reporting a Vulnerability
+
+If you discover a security vulnerability, please report it privately by emailing
+**${email}**. Do not open a public issue for security problems.
+
+Please include:
+
+- A description of the vulnerability and its impact
+- Steps to reproduce the issue
+- Any relevant logs or proof-of-concept code
+
+You can expect an initial response within **${Number(days) || 90} days**. We will keep
+you informed of the progress toward a fix and full announcement.
+`;
+}, [project, versions, unsupported, email, days]);
+return (
+<VStack>
+<Grid2>
+<div><Label>Project Name</Label><Input value={project} onChange={setProject} /></div>
+<div><Label>Security Contact Email</Label><Input value={email} onChange={setEmail} /></div>
+</Grid2>
+<Grid2>
+<div><Label>Supported Versions (one per line)</Label><Textarea value={versions} onChange={setVersions} rows={4} mono /></div>
+<div><Label>Unsupported Version Range</Label><Input value={unsupported} onChange={setUnsupported} placeholder="< 0.9" /></div>
+</Grid2>
+<div style={{maxWidth:220}}><Label>Response SLA (days)</Label><Input value={days} onChange={setDays} /></div>
+<OutputPanel output={output} filename="SECURITY.md" mime="text/markdown;charset=utf-8" />
+</VStack>
+);
+}
+
+function ContributingMdGen() {
+const [project, setProject] = useState("My Project");
+const [install, setInstall] = useState("npm install");
+const [test, setTest] = useState("npm test");
+const [branch, setBranch] = useState("main");
+const output = useMemo(() => `# Contributing to ${project}
+
+Thanks for taking the time to contribute! This guide explains how to get set up
+and submit changes.
+
+## Getting Started
+
+1. Fork the repository and clone your fork.
+2. Install dependencies:
+   \`\`\`bash
+   ${install}
+   \`\`\`
+3. Create a branch off \`${branch}\`:
+   \`\`\`bash
+   git checkout -b feat/my-change
+   \`\`\`
+
+## Making Changes
+
+- Keep pull requests focused and small.
+- Follow the existing code style.
+- Add or update tests for your changes.
+- Run the test suite before pushing:
+  \`\`\`bash
+  ${test}
+  \`\`\`
+
+## Commit Messages
+
+Use [Conventional Commits](https://www.conventionalcommits.org/), e.g.
+\`feat: add login form\` or \`fix: handle empty input\`.
+
+## Submitting a Pull Request
+
+1. Push your branch and open a pull request against \`${branch}\`.
+2. Describe what changed and why.
+3. Link any related issues.
+4. Ensure CI passes and address review feedback.
+
+By contributing, you agree that your contributions will be licensed under the
+same license as this project.
+`, [project, install, test, branch]);
+return (
+<VStack>
+<Grid2>
+<div><Label>Project Name</Label><Input value={project} onChange={setProject} /></div>
+<div><Label>Base Branch</Label><Input value={branch} onChange={setBranch} /></div>
+</Grid2>
+<Grid2>
+<div><Label>Install Command</Label><Input value={install} onChange={setInstall} /></div>
+<div><Label>Test Command</Label><Input value={test} onChange={setTest} /></div>
+</Grid2>
+<OutputPanel output={output} filename="CONTRIBUTING.md" mime="text/markdown;charset=utf-8" />
+</VStack>
+);
+}
+
+function PrTemplateGen() {
+const TYPES = [
+{ value:"bug", label:"Bug fix" }, { value:"feature", label:"New feature" },
+{ value:"breaking", label:"Breaking change" }, { value:"docs", label:"Documentation" },
+{ value:"refactor", label:"Refactor" }, { value:"chore", label:"Chore / tooling" },
+];
+const [types, setTypes] = useState(["bug", "feature"]);
+const [tests, setTests] = useState(true);
+const [docs, setDocs] = useState(true);
+const [selfReview, setSelfReview] = useState(true);
+const output = useMemo(() => {
+const labelFor = (v) => (TYPES.find(t=>t.value===v)||{}).label || v;
+const typeList = TYPES.map(t => `- [${types.includes(t.value) ? "x" : " "}] ${t.label}`).join("\n");
+const checks = [];
+if (selfReview) checks.push("- [ ] I have performed a self-review of my code");
+if (tests) checks.push("- [ ] I have added tests that prove my fix or feature works");
+if (docs) checks.push("- [ ] I have updated the documentation where needed");
+checks.push("- [ ] My changes generate no new warnings");
+return `## Summary
+
+<!-- Describe what this PR does and why. -->
+
+## Related Issues
+
+<!-- e.g. Closes #123 -->
+
+## Type of Change
+
+${typeList}
+
+## Checklist
+
+${checks.join("\n")}
+`;
+}, [types, tests, docs, selfReview]);
+return (
+<VStack>
+<div><Label>Change Types (pre-checked in template)</Label><PillMultiSelect options={TYPES} selected={types} onChange={setTypes} /></div>
+<div><Label>Checklist Items</Label></div>
+<div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+<ToggleBtn label="Self-review" val={selfReview} on={setSelfReview}/>
+<ToggleBtn label="Tests added" val={tests} on={setTests}/>
+<ToggleBtn label="Docs updated" val={docs} on={setDocs}/>
+</div>
+<OutputPanel output={output} filename="pull_request_template.md" mime="text/markdown;charset=utf-8" />
+</VStack>
+);
+}
+
+function IssueTemplateGen() {
+const [kind, setKind] = useState("bug");
+const [project, setProject] = useState("My Project");
+const output = useMemo(() => {
+if (kind === "feature") {
+return `---
+name: Feature request
+about: Suggest an idea for ${project}
+title: "[Feature]: "
+labels: enhancement
+assignees: ''
+---
+
+## Is your feature request related to a problem?
+
+<!-- A clear description of the problem. Ex: I'm frustrated when [...] -->
+
+## Describe the solution you'd like
+
+<!-- What you want to happen. -->
+
+## Describe alternatives you've considered
+
+<!-- Other solutions or features you've considered. -->
+
+## Additional context
+
+<!-- Add any other context or screenshots. -->
+`;
+}
+return `---
+name: Bug report
+about: Create a report to help us improve ${project}
+title: "[Bug]: "
+labels: bug
+assignees: ''
+---
+
+## Describe the bug
+
+<!-- A clear and concise description of what the bug is. -->
+
+## Steps to Reproduce
+
+1. Go to '...'
+2. Click on '...'
+3. See error
+
+## Expected behavior
+
+<!-- What you expected to happen. -->
+
+## Environment
+
+- OS: [e.g. Windows 11]
+- Browser / Runtime: [e.g. Chrome 120, Node 20]
+- Version: [e.g. 1.2.0]
+
+## Additional context
+
+<!-- Add any other context about the problem here. -->
+`;
+}, [kind, project]);
+return (
+<VStack>
+<Grid2>
+<div><Label>Template Type</Label><SelectInput value={kind} onChange={setKind} options={[{value:"bug",label:"Bug Report"},{value:"feature",label:"Feature Request"}]} /></div>
+<div><Label>Project Name</Label><Input value={project} onChange={setProject} /></div>
+</Grid2>
+<OutputPanel output={output} filename={kind === "feature" ? "feature_request.md" : "bug_report.md"} mime="text/markdown;charset=utf-8" />
+</VStack>
+);
+}
+
+function MakefileGen() {
+const [rules, setRules] = useState("install: npm install\nbuild: npm run build\ntest: npm test\nclean: rm -rf dist node_modules");
+const [phony, setPhony] = useState(true);
+const output = useMemo(() => {
+const targets = [];
+rules.split("\n").map(l => l.trim()).filter(Boolean).forEach(line => {
+const idx = line.indexOf(":");
+if (idx === -1) return;
+const target = line.slice(0, idx).trim();
+const cmd = line.slice(idx + 1).trim();
+if (target) targets.push({ target, cmd });
+});
+if (!targets.length) return "# Add target: command lines above\n";
+const phonyLine = phony ? `.PHONY: ${targets.map(t => t.target).join(" ")}\n\n` : "";
+const body = targets.map(t => `${t.target}:\n\t${t.cmd}`).join("\n\n");
+return phonyLine + body + "\n";
+}, [rules, phony]);
+return (
+<VStack>
+<div><Label>Rules (target: command — one per line)</Label><Textarea value={rules} onChange={setRules} rows={7} mono /></div>
+<div><Label>Options</Label></div>
+<div style={{display:"flex",gap:8,flexWrap:"wrap"}}><ToggleBtn label="Add .PHONY line" val={phony} on={setPhony}/></div>
+<OutputPanel output={output} filename="Makefile" />
+</VStack>
+);
+}
+
+function JestConfigGen() {
+const [ts, setTs] = useState(true);
+const [env, setEnv] = useState("jsdom");
+const [coverage, setCoverage] = useState(true);
+const output = useMemo(() => {
+const cfg = { testEnvironment: env };
+if (ts) cfg.preset = "ts-jest";
+if (coverage) { cfg.collectCoverage = true; cfg.coverageDirectory = "coverage"; }
+cfg.testMatch = ["**/__tests__/**/*.[jt]s?(x)", "**/?(*.)+(spec|test).[jt]s?(x)"];
+cfg.moduleFileExtensions = ["js", "jsx", "ts", "tsx", "json"];
+return `/** @type {import('jest').Config} */\nmodule.exports = ${JSON.stringify(cfg, null, 2)};\n`;
+}, [ts, env, coverage]);
+return (
+<VStack>
+<Grid2>
+<div><Label>Test Environment</Label><SelectInput value={env} onChange={setEnv} options={[{value:"jsdom",label:"jsdom (browser)"},{value:"node",label:"node"}]} /></div>
+<div><Label>Options</Label>
+<div style={{display:"flex",gap:8,flexWrap:"wrap",marginTop:6}}>
+<ToggleBtn label="ts-jest" val={ts} on={setTs}/>
+<ToggleBtn label="Coverage" val={coverage} on={setCoverage}/>
+</div>
+</div>
+</Grid2>
+<OutputPanel output={output} filename="jest.config.js" mime="text/javascript;charset=utf-8" />
+</VStack>
+);
+}
+
+function BabelConfigGen() {
+const [env, setEnv] = useState(true);
+const [react, setReact] = useState(true);
+const [ts, setTs] = useState(false);
+const output = useMemo(() => {
+const presets = [];
+if (env) presets.push("@babel/preset-env");
+if (react) presets.push(["@babel/preset-react", { runtime: "automatic" }]);
+if (ts) presets.push("@babel/preset-typescript");
+return JSON.stringify({ presets, plugins: [] }, null, 2) + "\n";
+}, [env, react, ts]);
+return (
+<VStack>
+<div><Label>Presets</Label></div>
+<div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+<ToggleBtn label="preset-env" val={env} on={setEnv}/>
+<ToggleBtn label="preset-react" val={react} on={setReact}/>
+<ToggleBtn label="preset-typescript" val={ts} on={setTs}/>
+</div>
+<OutputPanel output={output} filename="babel.config.json" mime="application/json;charset=utf-8" />
+</VStack>
+);
+}
+
+function ViteConfigGen() {
+const [framework, setFramework] = useState("react");
+const [port, setPort] = useState("5173");
+const output = useMemo(() => {
+const map = { react: { imp:"react", pkg:"@vitejs/plugin-react" }, vue: { imp:"vue", pkg:"@vitejs/plugin-vue" }, vanilla:null };
+const cfg = map[framework];
+const imp = cfg ? `import ${cfg.imp} from '${cfg.pkg}';\n` : "";
+const pl = cfg ? `${cfg.imp}()` : "";
+const p = Number(port) || 5173;
+return `import { defineConfig } from 'vite';\n${imp}\nexport default defineConfig({\n  plugins: [${pl}],\n  server: {\n    port: ${p},\n    open: true\n  },\n  build: {\n    outDir: 'dist',\n    sourcemap: true\n  }\n});\n`;
+}, [framework, port]);
+return (
+<VStack>
+<Grid2>
+<div><Label>Framework</Label><SelectInput value={framework} onChange={setFramework} options={[{value:"react",label:"React"},{value:"vue",label:"Vue"},{value:"vanilla",label:"Vanilla"}]} /></div>
+<div><Label>Dev Server Port</Label><Input value={port} onChange={setPort} /></div>
+</Grid2>
+<OutputPanel output={output} filename="vite.config.js" mime="text/javascript;charset=utf-8" />
+</VStack>
+);
+}
+
+function StylelintConfigGen() {
+const [standard, setStandard] = useState(true);
+const [scss, setScss] = useState(false);
+const [prettier, setPrettier] = useState(true);
+const output = useMemo(() => {
+const ext = [];
+if (standard) ext.push("stylelint-config-standard");
+if (scss) ext.push("stylelint-config-standard-scss");
+if (prettier) ext.push("stylelint-config-prettier");
+return JSON.stringify({
+extends: ext,
+rules: {
+"color-hex-length": "short",
+"declaration-block-no-duplicate-properties": true
+}
+}, null, 2) + "\n";
+}, [standard, scss, prettier]);
+return (
+<VStack>
+<div><Label>Extend Configs</Label></div>
+<div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+<ToggleBtn label="standard" val={standard} on={setStandard}/>
+<ToggleBtn label="standard-scss" val={scss} on={setScss}/>
+<ToggleBtn label="prettier" val={prettier} on={setPrettier}/>
+</div>
+<OutputPanel output={output} filename=".stylelintrc.json" mime="application/json;charset=utf-8" />
+</VStack>
+);
+}
+
+function ProcfileGen() {
+const [procs, setProcs] = useState("web: node server.js\nworker: node worker.js\nrelease: npm run migrate");
+const output = useMemo(() => {
+const lines = procs.split("\n").map(l => l.trim()).filter(Boolean).map(l => {
+const idx = l.indexOf(":");
+if (idx === -1) return `web: ${l}`;
+const name = l.slice(0, idx).trim();
+const cmd = l.slice(idx + 1).trim();
+return `${name}: ${cmd}`;
+});
+return (lines.join("\n") || "web: npm start") + "\n";
+}, [procs]);
+return (
+<VStack>
+<div><Label>Processes (name: command — one per line)</Label><Textarea value={procs} onChange={setProcs} rows={6} mono /></div>
+<OutputPanel output={output} filename="Procfile" />
+</VStack>
+);
+}
+
 const TOOL_COMPONENTS = {
 "gitignore-gen": GitignoreGen,
 "readme-gen": ReadmeGen,
@@ -1631,6 +2144,23 @@ const TOOL_COMPONENTS = {
 "json-schema-gen": JsonSchemaGen,
 "openapi-gen": OpenapiGen,
 "csp-header-gen": CspHeaderGen,
+
+"codeowners-gen": CodeownersGen,
+"funding-yml-gen": FundingYmlGen,
+"dependabot-yml-gen": DependabotYmlGen,
+"commitlint-config-gen": CommitlintConfigGen,
+"security-md-gen": SecurityMdGen,
+"contributing-md-gen": ContributingMdGen,
+"pr-template-gen": PrTemplateGen,
+"issue-template-gen": IssueTemplateGen,
+
+"makefile-gen": MakefileGen,
+"jest-config-gen": JestConfigGen,
+"babel-config-gen": BabelConfigGen,
+"vite-config-gen": ViteConfigGen,
+"stylelint-config-gen": StylelintConfigGen,
+
+"procfile-gen": ProcfileGen,
 };
 
 function Breadcrumb({ tool, cat }) {
