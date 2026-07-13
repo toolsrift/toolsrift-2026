@@ -1092,9 +1092,26 @@ function BrailleTranslator() {
   const brailleToText = (braille) => {
     const reverseBraille = {};
     Object.keys(BRAILLE).forEach(key => {
-      reverseBraille[BRAILLE[key]] = key;
+      // Only map single-cell entries here; digits are 2 cells (number-sign + letter) handled below
+      if (BRAILLE[key].length === 1) reverseBraille[BRAILLE[key]] = key;
     });
-    return braille.split('').map(char => reverseBraille[char] || char).join('');
+    const NUM_SIGN = '⠼';
+    const letterToDigit = { a:'1', b:'2', c:'3', d:'4', e:'5', f:'6', g:'7', h:'8', i:'9', j:'0' };
+    const cells = braille.split('');
+    let result = '';
+    for (let i = 0; i < cells.length; i++) {
+      const cell = cells[i];
+      if (cell === NUM_SIGN) {
+        const letter = reverseBraille[cells[i + 1]];
+        if (letter && letterToDigit[letter]) {
+          result += letterToDigit[letter];
+          i++;
+          continue;
+        }
+      }
+      result += reverseBraille[cell] || cell;
+    }
+    return result;
   };
 
   useEffect(() => {

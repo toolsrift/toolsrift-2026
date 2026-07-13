@@ -1572,6 +1572,10 @@ function ChmodCalcTool() {
 }
 
 /* ---------- crontab-guru ---------- */
+const DOW_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MON_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const formatLocalDateTime = (d) => fmtDate(d);
+
 function CrontabGuruTool() {
   const [minute, setMinute] = useState("0");
   const [hour, setHour] = useState("9");
@@ -1580,7 +1584,7 @@ function CrontabGuruTool() {
   const [dow, setDow] = useState("1-5");
 
   const expr = `${minute} ${hour} ${dom} ${month} ${dow}`;
-  const nextRuns = useMemo(() => getNextCronRuns(expr, 10), [expr]);
+  const nextRuns = useMemo(() => nextCronRuns(expr, 10), [expr]);
 
   const readable = useMemo(() => {
     const dowTxt = dow === "*" ? "every day" :

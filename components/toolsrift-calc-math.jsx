@@ -1100,13 +1100,14 @@ function tokenizeBool(expr) {
     .split("");
 }
 function varsInExpr(expr) {
-  const vars = new Set((expr.match(/[A-Z]/gi) || []).map(v => v.toUpperCase()));
+  const masked = expr.replace(/AND|OR|NOT|XOR/gi, " ");
+  const vars = new Set((masked.match(/[A-Z]/gi) || []).map(v => v.toUpperCase()));
   return Array.from(vars).sort();
 }
 function evalBoolExpr(expr, env) {
-  let s = expr.toUpperCase();
-  for (const k of Object.keys(env)) s = s.replaceAll(k, env[k] ? "1" : "0");
-  s = s.replace(/\s+/g, "").replace(/AND/g, "&").replace(/OR/g, "|").replace(/NOT/g, "!").replace(/XOR/g, "^");
+  let s = expr.toUpperCase().replace(/\s+/g, "");
+  s = s.replace(/XOR/g, "^").replace(/AND/g, "&").replace(/OR/g, "|").replace(/NOT/g, "!");
+  s = s.replace(/[A-Z]/g, (ch) => (env[ch] ? "1" : "0"));
   function parse(tokens) {
     let i = 0;
     function parsePrimary() {

@@ -1895,7 +1895,7 @@ function TextToMorse() {
     };
     for (const c of encoded) {
       if (c==="•") { beep(U); t += (U)/1000; }
-      else if (c==="—") { beep(U*3); t += (U)/1000; }
+      else if (c==="-") { beep(U*3); t += (U)/1000; }
       else if (c===" ") t += (U*2)/1000;
       else if (c==="/") t += (U*5)/1000;
     }
@@ -2015,7 +2015,16 @@ function NumberToWords() {
     return r.trim();
   };
   const n = parseFloat(num);
-  const result = !isNaN(n) && num!=="" ? (system==="intl"?numToWords(Math.floor(n)):toIndian(Math.floor(Math.abs(n)))) : "";
+  const digitWords = ["zero","one","two","three","four","five","six","seven","eight","nine"];
+  const spell = (str, intFn) => {
+    const t = String(str).trim();
+    const neg = t.startsWith("-");
+    const parts = t.replace(/^[+-]/,"").split(".");
+    let words = intFn(parseInt(parts[0]||"0",10));
+    if (parts[1]) words += " point " + parts[1].split("").map(d=>digitWords[+d]).join(" ");
+    return (neg?"negative ":"")+words.trim();
+  };
+  const result = !isNaN(n) && num!=="" ? (system==="intl"?spell(num,numToWords):spell(num,toIndian)) : "";
   return (
     <VStack>
       <div style={{ display:"flex", gap:10, alignItems:"flex-end" }}>

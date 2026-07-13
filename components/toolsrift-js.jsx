@@ -555,11 +555,9 @@ function JsMinifier() {
     if (!input.trim()) return;
     try {
       let minified = input;
-      
-      // Remove single-line comments
-      minified = minified.replace(/\/\/.*$/gm, '');
-      // Remove multi-line comments
-      minified = minified.replace(/\/\*[\s\S]*?\*\//g, '');
+
+      // Remove comments (string/regex-aware so // inside strings/URLs survives)
+      minified = trStripComments(minified, {});
       // Remove extra whitespace
       minified = minified.replace(/\s+/g, ' ');
       // Remove spaces around operators
@@ -674,12 +672,35 @@ function JsonToJs() {
     try {
       // Parse JSON to validate it
       const obj = JSON.parse(input);
-      
-      // Convert to JS object literal syntax
-      const jsString = JSON.stringify(obj, null, 2)
-        .replace(/"([^"]+)":/g, '$1:') // Remove quotes from keys
-        .replace(/"/g, "'"); // Change double quotes to single
-      
+
+      // Convert to JS object literal syntax with proper single-quote escaping.
+      const escStr = (s) => "'" + s
+        .replace(/\\/g, '\\\\')
+        .replace(/'/g, "\\'")
+        .replace(/\n/g, '\\n')
+        .replace(/\r/g, '\\r')
+        .replace(/\t/g, '\\t') + "'";
+      const isValidId = (k) => /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(k);
+      const toJs = (val, ind) => {
+        if (val === null) return 'null';
+        const t = typeof val;
+        if (t === 'number' || t === 'boolean') return String(val);
+        if (t === 'string') return escStr(val);
+        const pad = '  '.repeat(ind + 1);
+        const padEnd = '  '.repeat(ind);
+        if (Array.isArray(val)) {
+          if (val.length === 0) return '[]';
+          return '[\n' + val.map((v) => pad + toJs(v, ind + 1)).join(',\n') + '\n' + padEnd + ']';
+        }
+        const keys = Object.keys(val);
+        if (keys.length === 0) return '{}';
+        return '{\n' + keys.map((k) => {
+          const key = isValidId(k) ? k : escStr(k);
+          return pad + key + ': ' + toJs(val[k], ind + 1);
+        }).join(',\n') + '\n' + padEnd + '}';
+      };
+      const jsString = toJs(obj, 0);
+
       setOutput(jsString);
     } catch (err) {
       setOutput('Error: Invalid JSON - ' + err.message);

@@ -625,7 +625,7 @@ function NoiseTexture() {
 
 function Checkerboard() {
   const [out, setOut] = useState(null); const [size, setSize] = useState(50);
-  const run = () => { const cvs=document.createElement('canvas'); const ctx=cvs.getContext('2d'); cvs.width=500; cvs.height=500; for(let y=0;y<500/size;y++){ for(let x=0;x<500/size;x++){ ctx.fillStyle=(x+y)%2===0?"#fff":"#ccc"; ctx.fillRect(x*size,y*size,size,size); } } setOut({dataUrl:cvs.toDataURL(),w:500,h:500}); };
+  const run = () => { const sq=Math.max(1,Math.min(500,parseInt(size,10)||50)); const cvs=document.createElement('canvas'); const ctx=cvs.getContext('2d'); cvs.width=500; cvs.height=500; for(let y=0;y<500/sq;y++){ for(let x=0;x<500/sq;x++){ ctx.fillStyle=(x+y)%2===0?"#fff":"#ccc"; ctx.fillRect(x*sq,y*sq,sq,sq); } } setOut({dataUrl:cvs.toDataURL(),w:500,h:500}); };
   return <Lab isGenerator onProcess={run} output={out}><Label>Square Size</Label><Input type="number" value={size} onChange={setSize}/></Lab>;
 }
 

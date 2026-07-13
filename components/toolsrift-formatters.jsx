@@ -577,13 +577,16 @@ const formatCode = (code, indentSize = 2) => {
     if (!inString) {
       if (char === '(') { paren++; result += char; continue; }
       if (char === ')') { paren = Math.max(0, paren - 1); result += char; continue; }
-      if (char === '{' || char === '[') {
+      // Only `{`/`}` open and close indented blocks. `[`/`]` (array types,
+      // subscripts, literals) are appended literally so `String[]args`,
+      // `int a[3]`, and `a[0]` are never split across lines.
+      if (char === '{') {
         result += char + '\n';
         level++;
         result += indent.repeat(level);
         continue;
       }
-      if (char === '}' || char === ']') {
+      if (char === '}') {
         level = Math.max(0, level - 1);
         result = result.trimEnd() + '\n' + indent.repeat(level) + char;
         continue;

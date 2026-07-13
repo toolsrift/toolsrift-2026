@@ -463,12 +463,16 @@ function ColorConverter() {
   const [h,setH]=useState(330); const [s,setS]=useState(81); const [l,setL]=useState(604);
   const [c,setC]=useState(0); const [m,setM]=useState(69); const [y,setY]=useState(35); const [k,setK]=useState(7);
 
-  const sync = useCallback((source, val) => {
+  const sync = useCallback((source, val, next) => {
     let rgb2;
+    const nx = next || {};
+    const rr=nx.r!==undefined?nx.r:r, gg=nx.g!==undefined?nx.g:g, bb=nx.b!==undefined?nx.b:b;
+    const hh=nx.h!==undefined?nx.h:h, ss=nx.s!==undefined?nx.s:s, ll=nx.l!==undefined?nx.l:l;
+    const cc=nx.c!==undefined?nx.c:c, mm=nx.m!==undefined?nx.m:m, yy=nx.y!==undefined?nx.y:y, kk=nx.k!==undefined?nx.k:k;
     if(source==="hex"&&hexValid(val)) { rgb2=hexToRgb(val); }
-    else if(source==="rgb") { rgb2={r,g,b}; }
-    else if(source==="hsl") { rgb2=hslToRgb(h,s,l/10); }
-    else if(source==="cmyk") { rgb2=cmykToRgb(c,m,y,k); }
+    else if(source==="rgb") { rgb2={r:rr,g:gg,b:bb}; }
+    else if(source==="hsl") { rgb2=hslToRgb(hh,ss,ll/10); }
+    else if(source==="cmyk") { rgb2=cmykToRgb(cc,mm,yy,kk); }
     if(!rgb2) return;
     const hx=rgbToHex(rgb2.r,rgb2.g,rgb2.b);
     const hl=rgbToHsl(rgb2.r,rgb2.g,rgb2.b);
@@ -502,9 +506,9 @@ function ColorConverter() {
           <Input value={hex} onChange={v=>{setHex(v);sync("hex",v);}} mono placeholder="#EC4899"/>
         </div>
       )}
-      {mode==="rgb"&&<Grid3><div><Label>R (0–255)</Label><Input value={r} onChange={v=>{setR(Number(v));sync("rgb");}} type="number" mono/></div><div><Label>G (0–255)</Label><Input value={g} onChange={v=>{setG(Number(v));sync("rgb");}} type="number" mono/></div><div><Label>B (0–255)</Label><Input value={b} onChange={v=>{setB(Number(v));sync("rgb");}} type="number" mono/></div></Grid3>}
-      {mode==="hsl"&&<Grid3><div><Label>H (0–360)</Label><Input value={h} onChange={v=>{setH(Number(v));sync("hsl");}} type="number" mono/></div><div><Label>S (0–100)</Label><Input value={s} onChange={v=>{setS(Number(v));sync("hsl");}} type="number" mono/></div><div><Label>L (0–100)</Label><Input value={Math.round(l/10)} onChange={v=>{setL(Number(v)*10);sync("hsl");}} type="number" mono/></div></Grid3>}
-      {mode==="cmyk"&&<div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:10}}>{[["C",c,setC],["M",m,setM],["Y",y,setY],["K",k,setK]].map(([lbl,val,set])=><div key={lbl}><Label>{lbl} %</Label><Input value={val} onChange={v=>{set(Number(v));sync("cmyk");}} type="number" mono/></div>)}</div>}
+      {mode==="rgb"&&<Grid3><div><Label>R (0–255)</Label><Input value={r} onChange={v=>{setR(Number(v));sync("rgb",null,{r:Number(v)});}} type="number" mono/></div><div><Label>G (0–255)</Label><Input value={g} onChange={v=>{setG(Number(v));sync("rgb",null,{g:Number(v)});}} type="number" mono/></div><div><Label>B (0–255)</Label><Input value={b} onChange={v=>{setB(Number(v));sync("rgb",null,{b:Number(v)});}} type="number" mono/></div></Grid3>}
+      {mode==="hsl"&&<Grid3><div><Label>H (0–360)</Label><Input value={h} onChange={v=>{setH(Number(v));sync("hsl",null,{h:Number(v)});}} type="number" mono/></div><div><Label>S (0–100)</Label><Input value={s} onChange={v=>{setS(Number(v));sync("hsl",null,{s:Number(v)});}} type="number" mono/></div><div><Label>L (0–100)</Label><Input value={Math.round(l/10)} onChange={v=>{setL(Number(v)*10);sync("hsl",null,{l:Number(v)*10});}} type="number" mono/></div></Grid3>}
+      {mode==="cmyk"&&<div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:10}}>{[["C",c,setC,"c"],["M",m,setM,"m"],["Y",y,setY,"y"],["K",k,setK,"k"]].map(([lbl,val,set,key])=><div key={lbl}><Label>{lbl} %</Label><Input value={val} onChange={v=>{set(Number(v));sync("cmyk",null,{[key]:Number(v)});}} type="number" mono/></div>)}</div>}
       <div style={{height:80,borderRadius:10,background:hexValid(hex)?hex:"#000",border:`1px solid ${C.border}`,transition:"background .1s"}}/>
       <Card>
         {allFormats.map(([l2,v2])=><StatRow key={l2} label={l2} value={v2}/>)}

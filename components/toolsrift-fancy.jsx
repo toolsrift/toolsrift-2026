@@ -287,24 +287,28 @@ const UNICODE_MAPS = {
 };
 
 const convertToUnicode = (text, map) => {
-  const normal = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  // Astral chars (U+1D400+, U+1F130+) are 2 UTF-16 units, so string[idx] would
+  // return a lone surrogate. Precompute code-point arrays so indexing is correct.
+  const up = map.upper ? [...map.upper] : null;
+  const low = map.lower ? [...map.lower] : null;
+  const dig = map.digits ? [...map.digits] : null;
   let result = '';
-  
+
   for (let char of text) {
-    if (map.upper && char >= 'A' && char <= 'Z') {
+    if (up && char >= 'A' && char <= 'Z') {
       const idx = char.charCodeAt(0) - 65;
-      result += map.upper[idx] || char;
-    } else if (map.lower && char >= 'a' && char <= 'z') {
+      result += up[idx] || char;
+    } else if (low && char >= 'a' && char <= 'z') {
       const idx = char.charCodeAt(0) - 97;
-      result += map.lower[idx] || char;
-    } else if (map.digits && char >= '0' && char <= '9') {
+      result += low[idx] || char;
+    } else if (dig && char >= '0' && char <= '9') {
       const idx = char.charCodeAt(0) - 48;
-      result += map.digits[idx] || char;
+      result += dig[idx] || char;
     } else {
       result += char;
     }
   }
-  
+
   return result;
 };
 

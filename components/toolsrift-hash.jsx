@@ -178,7 +178,7 @@ function useAppRouter() {
 // SHA-1
 function sha1(msg) {
   function rotl(n,s){return(n<<s)|(n>>>(32-s));}
-  const bytes=[...msg].flatMap(c=>{const cp=c.codePointAt(0);return cp<0x80?[cp]:cp<0x800?[0xC0|(cp>>6),0x80|(cp&0x3F)]:cp<0x10000?[0xE0|(cp>>12),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)]:[0xF0|(cp>>18),0x80|((cp>>12)&0x3F),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)];});
+  const bytes=Array.isArray(msg)?msg.slice():[...msg].flatMap(c=>{const cp=c.codePointAt(0);return cp<0x80?[cp]:cp<0x800?[0xC0|(cp>>6),0x80|(cp&0x3F)]:cp<0x10000?[0xE0|(cp>>12),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)]:[0xF0|(cp>>18),0x80|((cp>>12)&0x3F),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)];});
   const ml=bytes.length*8;
   bytes.push(0x80);
   while(bytes.length%64!==56) bytes.push(0);
@@ -207,7 +207,7 @@ function sha1(msg) {
 function sha256(msg) {
   const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
   function rotr(n,s){return(n>>>s)|(n<<(32-s));}
-  const bytes=[...msg].flatMap(c=>{const cp=c.codePointAt(0);return cp<0x80?[cp]:cp<0x800?[0xC0|(cp>>6),0x80|(cp&0x3F)]:cp<0x10000?[0xE0|(cp>>12),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)]:[0xF0|(cp>>18),0x80|((cp>>12)&0x3F),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)];});
+  const bytes=Array.isArray(msg)?msg.slice():[...msg].flatMap(c=>{const cp=c.codePointAt(0);return cp<0x80?[cp]:cp<0x800?[0xC0|(cp>>6),0x80|(cp&0x3F)]:cp<0x10000?[0xE0|(cp>>12),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)]:[0xF0|(cp>>18),0x80|((cp>>12)&0x3F),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)];});
   const ml=bytes.length*8; bytes.push(0x80);
   while(bytes.length%64!==56) bytes.push(0);
   for(let i=7;i>=0;i--) bytes.push((ml/(2**(i*8)))&0xFF);
@@ -232,7 +232,7 @@ function md5(str) {
   function md5gg(a,b,c,d,x,s,t){return md5cmn(b&d|c&~d,a,b,x,s,t);}
   function md5hh(a,b,c,d,x,s,t){return md5cmn(b^c^d,a,b,x,s,t);}
   function md5ii(a,b,c,d,x,s,t){return md5cmn(c^(b|~d),a,b,x,s,t);}
-  const bytes=[...str].flatMap(c=>{const cp=c.codePointAt(0);return cp<0x80?[cp]:cp<0x800?[0xC0|(cp>>6),0x80|(cp&0x3F)]:cp<0x10000?[0xE0|(cp>>12),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)]:[0xF0|(cp>>18),0x80|((cp>>12)&0x3F),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)];});
+  const bytes=Array.isArray(str)?str.slice():[...str].flatMap(c=>{const cp=c.codePointAt(0);return cp<0x80?[cp]:cp<0x800?[0xC0|(cp>>6),0x80|(cp&0x3F)]:cp<0x10000?[0xE0|(cp>>12),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)]:[0xF0|(cp>>18),0x80|((cp>>12)&0x3F),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)];});
   const ml=bytes.length*8; bytes.push(0x80);
   while(bytes.length%64!==56) bytes.push(0);
   bytes.push(ml&0xFF,(ml>>8)&0xFF,(ml>>16)&0xFF,(ml>>24)&0xFF,0,0,0,0);
@@ -285,7 +285,7 @@ function adler32(str) {
 function fnv1a32(str) {
   let hash=0x811c9dc5;
   const bytes=[...str].flatMap(c=>{const cp=c.codePointAt(0);return cp<0x80?[cp]:[0xC0|(cp>>6),0x80|(cp&0x3F)];});
-  for(const b of bytes){hash^=b;hash=(hash*0x01000193)>>>0;}
+  for(const b of bytes){hash^=b;hash=Math.imul(hash,0x01000193)>>>0;}
   return hash.toString(16).toUpperCase().padStart(8,"0");
 }
 
@@ -299,7 +299,8 @@ function djb2(str) {
 // HMAC-SHA256 (pure JS)
 function hmacSha256(key, msg) {
   const blockSize=64;
-  let keyBytes=[...key].flatMap(c=>{const cp=c.codePointAt(0);return cp<0x80?[cp]:[0xC0|(cp>>6),0x80|(cp&0x3F)];});
+  const utf8=s=>[...s].flatMap(c=>{const cp=c.codePointAt(0);return cp<0x80?[cp]:cp<0x800?[0xC0|(cp>>6),0x80|(cp&0x3F)]:cp<0x10000?[0xE0|(cp>>12),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)]:[0xF0|(cp>>18),0x80|((cp>>12)&0x3F),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)];});
+  let keyBytes=utf8(key);
   if(keyBytes.length>blockSize){
     const h=sha256(key);
     keyBytes=[];for(let i=0;i<h.length;i+=2) keyBytes.push(parseInt(h.slice(i,i+2),16));
@@ -307,10 +308,10 @@ function hmacSha256(key, msg) {
   while(keyBytes.length<blockSize) keyBytes.push(0);
   const opad=keyBytes.map(b=>b^0x5C);
   const ipad=keyBytes.map(b=>b^0x36);
-  const toStr=bytes=>bytes.map(b=>String.fromCharCode(b)).join("");
-  const inner=sha256(toStr(ipad)+msg);
+  // Hash raw bytes (not UTF-8 re-encoded) so inner-digest bytes >=0x80 are preserved
+  const inner=sha256(ipad.concat(utf8(msg)));
   const innerBytes=[];for(let i=0;i<inner.length;i+=2) innerBytes.push(parseInt(inner.slice(i,i+2),16));
-  return sha256(toStr(opad)+toStr(innerBytes));
+  return sha256(opad.concat(innerBytes));
 }
 
 // Web Crypto wrapper for SHA-384, SHA-512
@@ -1113,10 +1114,11 @@ function FileHash() {
     if(!file) return;
     setFileName(file.name); setFileSize(file.size); setLoading(true); setHashes(null); setProgress(10);
     const buffer = await file.arrayBuffer();
+    const byteArr = Array.from(new Uint8Array(buffer));
     setProgress(40);
     const [md5v, sha1v, sha256v, sha512v] = await Promise.all([
-      Promise.resolve(md5(new TextDecoder("latin1").decode(buffer))),
-      Promise.resolve(sha1(new TextDecoder("latin1").decode(buffer))),
+      Promise.resolve(md5(byteArr)),
+      Promise.resolve(sha1(byteArr)),
       crypto.subtle.digest("SHA-256",buffer).then(b=>Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("")),
       crypto.subtle.digest("SHA-512",buffer).then(b=>Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("")),
     ]);
@@ -1323,16 +1325,23 @@ function XorCipher() {
   const [text, setText] = useState("");
   const [key, setKey] = useState("");
   const [mode, setMode] = useState("encrypt");
-  const xor = (t, k) => {
-    if(!k) return t;
-    return [...t].map((c,i)=>String.fromCharCode(c.charCodeAt(0)^k.charCodeAt(i%k.length))).join("");
+  const xorBytes = (bytes, keyBytes) => {
+    if(!keyBytes.length) return bytes;
+    return bytes.map((b,i)=>b^keyBytes[i%keyBytes.length]);
   };
+  const bytesToB64 = bytes => { let s=""; for(const b of bytes) s+=String.fromCharCode(b); return btoa(s); };
+  const b64ToBytes = b64 => { const s=atob(b64); const out=[]; for(let i=0;i<s.length;i++) out.push(s.charCodeAt(i)); return out; };
   const encrypt = () => {
-    const r = xor(text,key);
-    return btoa(r.split("").map(c=>c.charCodeAt(0)<256?String.fromCharCode(c.charCodeAt(0)):c).join(""));
+    const data=[...new TextEncoder().encode(text)];
+    const kb=[...new TextEncoder().encode(key)];
+    return bytesToB64(xorBytes(data,kb));
   };
   const decrypt = () => {
-    try{ const decoded=atob(text); return xor(decoded,key); } catch{ return "Invalid Base64 input for decryption"; }
+    try{
+      const kb=[...new TextEncoder().encode(key)];
+      const decoded=xorBytes(b64ToBytes(text),kb);
+      return new TextDecoder().decode(new Uint8Array(decoded));
+    } catch{ return "Invalid Base64 input for decryption"; }
   };
   const output = text&&key ? (mode==="encrypt"?encrypt():decrypt()) : "";
   return (

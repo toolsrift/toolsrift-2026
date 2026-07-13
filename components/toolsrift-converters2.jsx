@@ -453,7 +453,7 @@ function ShoeSizeConverter() {
     const U = n(us);
     const uk = U - 1;
     const eu = round(U + 33, 1);
-    const jp = round((U + 16) * 0.5 + 20, 1);
+    const jp = round(U + (gender === "men" ? 18 : 16.5), 1);
     const cn = round(jp, 1);
     const au = gender === "men" ? uk : round(uk + 2, 1);
     const br = round(eu - 2, 1);

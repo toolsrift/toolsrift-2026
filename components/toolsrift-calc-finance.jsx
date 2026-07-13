@@ -179,8 +179,13 @@ function InvestmentReturnCalc() {
     }
     const totalInvested = P + add * y;
     const gain = bal - totalInvested;
-    const cagr = y > 0 && P > 0 ? (Math.pow(bal / P, 1 / y) - 1) * 100 : 0;
-    return { fv: bal, gain, cagr, rows };
+    const hasContrib = add > 0;
+    // With annual contributions, bal reflects deposits too, so (bal/P) is NOT a
+    // true annualized return. Only report CAGR when there are no contributions;
+    // otherwise report total growth over the invested amount.
+    const cagr = !hasContrib && y > 0 && P > 0 ? (Math.pow(bal / P, 1 / y) - 1) * 100 : 0;
+    const totalGrowth = totalInvested > 0 ? (bal / totalInvested - 1) * 100 : 0;
+    return { fv: bal, gain, cagr, totalGrowth, hasContrib, rows };
   }, [principal, rate, years, annualAdd]);
 
   return (
@@ -196,7 +201,9 @@ function InvestmentReturnCalc() {
       <Grid3>
         <BigResult value={curr(out.fv)} label="Final Value" />
         <BigResult value={curr(out.gain)} label="Total Gain" />
-        <BigResult value={pct(out.cagr)} label="CAGR" />
+        {out.hasContrib
+          ? <BigResult value={pct(out.totalGrowth)} label="Total Growth" />
+          : <BigResult value={pct(out.cagr)} label="CAGR" />}
       </Grid3>
       <DataTable columns={["Year", "Start", "Interest", "Contribution", "End Balance"]} rows={out.rows} />
     </VStack>
@@ -210,7 +217,7 @@ function RdCalc() {
 
   const out = useMemo(() => {
     const P = n(monthly), r = n(rate) / 100 / 12, m = Math.max(1, Math.floor(n(years) * 12));
-    const fv = P * (((Math.pow(1 + r, m) - 1) / r) * (1 + r));
+    const fv = r === 0 ? P * m : P * (((Math.pow(1 + r, m) - 1) / r) * (1 + r));
     const total = P * m;
     const interest = fv - total;
     let bal = 0;
@@ -1984,10 +1991,11 @@ function HomeLoanEmiCalc() {
     const P = n(amount), r = n(rate) / 100 / 12, m = Math.max(1, Math.round(n(years) * 12));
     const emi = r > 0 ? (P * r * Math.pow(1 + r, m)) / (Math.pow(1 + r, m) - 1) : P / m;
     const total = emi * m, interest = total - P;
-    let bal = P; const rows = [];
+    let bal = P; const rows = []; let princYr = 0, intrYr = 0;
     for (let i = 1; i <= m; i++) {
       const intr = bal * r, princ = emi - intr; bal = Math.max(0, bal - princ);
-      if (i % 12 === 0 || i === m) rows.push([Math.ceil(i / 12), inr(princ * 12), inr(intr * 12), inr(bal)]);
+      princYr += princ; intrYr += intr;
+      if (i % 12 === 0 || i === m) { rows.push([Math.ceil(i / 12), inr(princYr), inr(intrYr), inr(bal)]); princYr = 0; intrYr = 0; }
     }
     return { emi, total, interest, rows };
   }, [amount, rate, years]);

@@ -392,7 +392,7 @@ const UNITS = {
     {id:"mpgUK", label:"Miles per Gallon (mpg UK)",  toBase:v=>v*1.20095,    fromBase:b=>b/1.20095},
     {id:"kml",   label:"Kilometers per Liter (km/L)",toBase:v=>v*2.35215,    fromBase:b=>b/2.35215},
     {id:"l100",  label:"L/100km (EU standard)",      toBase:v=>235.215/v,    fromBase:b=>235.215/b},
-    {id:"mpl",   label:"Miles per Liter (mpl)",      toBase:v=>v*2.35215*0.621371, fromBase:b=>b/(2.35215*0.621371)},
+    {id:"mpl",   label:"Miles per Liter (mpl)",      toBase:v=>v*3.78541,    fromBase:b=>b/3.78541},
   ],
 
   torque:[
