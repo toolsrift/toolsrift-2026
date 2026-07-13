@@ -7,6 +7,8 @@ import Head from 'next/head';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COLORS, RADIUS, FS, MQ, SPRING } from '../../lib/designTokens';
 import { FadeUp, Stagger, StaggerItem } from './motion';
+import ToolNavSidebar from './ToolNavSidebar';
+import { resolveIcon } from '../../lib/toolIcons';
 
 // ── JSON-LD schema injection ────────────────────────────────────────────────
 export function ToolSchemas({ theme, tool }) {
@@ -72,7 +74,7 @@ export function ToolSchemas({ theme, tool }) {
 // — so the previous view lingers (a visible flash). Setting the hash and firing
 // hashchange ourselves swaps to the tool in the same tick. When on a different
 // path we do nothing and let the browser navigate normally.
-function fastHashNav(e, pageRoute, id) {
+export function fastHashNav(e, pageRoute, id) {
   if (typeof window === 'undefined') return;
   if (window.location.pathname !== pageRoute) return;
   const target = `#/tool/${id}`;
@@ -283,7 +285,7 @@ function RelatedTools({ theme, related = [] }) {
   return (
     <FadeUp>
       <div style={{ marginBottom: 48 }}>
-        <SectionH2 theme={theme}>More {theme.name.toLowerCase()}</SectionH2>
+        <SectionH2 theme={theme}>More {theme.name}</SectionH2>
         <Stagger
           gap={0.04}
           style={{
@@ -318,9 +320,9 @@ function RelatedTools({ theme, related = [] }) {
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   width: 28, height: 28, borderRadius: 8,
                   background: theme.tint12, color: theme.color,
-                  fontSize: 12, fontWeight: 700, flexShrink: 0,
+                  fontSize: 13, fontWeight: 700, flexShrink: 0,
                 }}>
-                  {(t.icon || theme.motif || '·').slice(0, 2)}
+                  {resolveIcon(t, theme)}
                 </span>
                 <span style={{
                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
@@ -336,7 +338,7 @@ function RelatedTools({ theme, related = [] }) {
             color: theme.color, fontSize: 13, fontWeight: 600,
             textDecoration: 'none', fontFamily: theme.fonts.body,
           }}>
-            See all {theme.toolCount} {theme.name.toLowerCase()} →
+            See all {theme.toolCount} {theme.name} →
           </a>
         </div>
       </div>
@@ -375,7 +377,7 @@ function ToolSidebar({ theme, tool, related = [] }) {
             fontFamily: theme.fonts.body,
           }}
         >
-          Related {theme.name.toLowerCase()}
+          Related {theme.name}
         </div>
       </div>
       <div style={{ padding: '6px 0', maxHeight: 'calc(100vh - 160px)', overflowY: 'auto' }}>
@@ -440,8 +442,12 @@ function ToolSidebar({ theme, tool, related = [] }) {
 }
 
 // ── Root ────────────────────────────────────────────────────────────────────
-export default function ToolPageLayout({ theme, tool, related, children }) {
-  const hasSidebar = related && related.length > 1;
+// `tools` + `subcats` render the full grouped category index (preferred).
+// `related` alone falls back to the legacy 8-item sidebar, and always drives the
+// "More <category>" section beneath the FAQ.
+export default function ToolPageLayout({ theme, tool, tools, subcats, related, children }) {
+  const hasFullNav = Array.isArray(tools) && tools.length > 1;
+  const hasSidebar = hasFullNav || (related && related.length > 1);
 
   return (
     <div style={{ padding: '32px 0 96px' }}>
@@ -451,7 +457,7 @@ export default function ToolPageLayout({ theme, tool, related, children }) {
       <style>{`
         .tpl-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
         @media (min-width: 1024px) {
-          .tpl-grid.with-sidebar { grid-template-columns: 240px 1fr; }
+          .tpl-grid.with-sidebar { grid-template-columns: 244px 1fr; }
         }
         @media (max-width: 1023px) {
           .tpl-sidebar { display: none; }
@@ -459,7 +465,17 @@ export default function ToolPageLayout({ theme, tool, related, children }) {
       `}</style>
 
       <div className={`tpl-grid ${hasSidebar ? 'with-sidebar' : ''}`}>
-        {hasSidebar && <ToolSidebar theme={theme} tool={tool} related={related} />}
+        {hasFullNav ? (
+          <ToolNavSidebar
+            theme={theme}
+            tools={tools}
+            subcats={subcats}
+            currentToolId={tool.id}
+            onNavigate={(e, id) => fastHashNav(e, theme.pageRoute, id)}
+          />
+        ) : hasSidebar ? (
+          <ToolSidebar theme={theme} tool={tool} related={related} />
+        ) : null}
         <div style={{ minWidth: 0 }}>
           <ToolHeader theme={theme} tool={tool} />
           <ToolCard theme={theme}>{children}</ToolCard>

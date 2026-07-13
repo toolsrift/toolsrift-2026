@@ -564,6 +564,9 @@ const TOOLS = [
   { id:"boolean-algebra", cat:"advanced", name:"Boolean Algebra", icon:"⚙️", desc:"Simplify boolean expression and truth table.", free:true },
   { id:"truth-table-gen", cat:"advanced", name:"Truth Table Generator", icon:"📋", desc:"Generate truth table for boolean expression.", free:true },
   { id:"set-theory-calc", cat:"advanced", name:"Set Theory Calculator", icon:"🫧", desc:"Union, intersection, difference + Venn text.", free:true },
+  { id:"mean-median-mode", cat:"advanced", name:"Mean, Median & Mode Calculator", icon:"📊", desc:"Mean, median, mode, range, variance and standard deviation from a list of numbers.", free:true },
+  { id:"permutation-combination", cat:"advanced", name:"Permutation & Combination Calculator", icon:"🔀", desc:"Compute nPr and nCr with n! and r!, using iterative products for large-number safety.", free:true },
+  { id:"z-score-calculator", cat:"advanced", name:"Z-Score Calculator", icon:"🔔", desc:"Standard score z=(x−μ)/σ with an approximate normal-distribution percentile.", free:true },
 
   { id:"number-base-calc", cat:"number", name:"Number Base Converter", icon:"🔁", desc:"Convert bases 2,8,10,16 and custom.", free:true },
   { id:"complex-number-calc", cat:"number", name:"Complex Number Calculator", icon:"ℹ️", desc:"Add/subtract/multiply/divide complex numbers.", free:true },
@@ -572,6 +575,9 @@ const TOOLS = [
   { id:"percentage-advanced", cat:"number", name:"Advanced Percentage Calculator", icon:"💯", desc:"Comprehensive percentage operations.", free:true },
   { id:"ratio-simplifier", cat:"number", name:"Ratio Simplifier", icon:"⚖️", desc:"Simplify and generate equivalent ratios.", free:true },
   { id:"fraction-advanced", cat:"number", name:"Advanced Fraction Calculator", icon:"🍰", desc:"Fraction operations with steps.", free:true },
+  { id:"roman-numeral-converter", cat:"number", name:"Roman Numeral Converter", icon:"🏛️", desc:"Convert numbers to Roman numerals and Roman numerals back to numbers (1–3999).", free:true },
+  { id:"percentage-change-calculator", cat:"number", name:"Percentage Change Calculator", icon:"📶", desc:"Percent increase or decrease between an old and new value, with absolute difference.", free:true },
+  { id:"decimal-to-fraction", cat:"number", name:"Decimal to Fraction Converter", icon:"½", desc:"Convert terminating or repeating decimals to a simplified fraction, mixed number, and GCD.", free:true },
 ];
 
 const CATEGORIES = [
@@ -1590,8 +1596,359 @@ function FractionAdvanced() {
   );
 }
 
+function MeanMedianModeCalc() {
+  const [inp, setInp] = useState("4, 8, 15, 16, 23, 42");
+
+  const out = useMemo(() => {
+    const nums = parseNumsCSV(inp); // robust: comma/space/newline, keeps negatives & decimals
+    const count = nums.length;
+    if (count === 0) return { empty: true };
+
+    const sum = nums.reduce((s, x) => s + x, 0);
+    const mean = sum / count;
+
+    const sorted = [...nums].sort((a, b) => a - b);
+    const mid = Math.floor(count / 2);
+    const median = count % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+
+    // Mode — handles multiple modes and "no mode" (all values unique)
+    const freq = {};
+    let maxFreq = 0;
+    for (const x of nums) { freq[x] = (freq[x] || 0) + 1; if (freq[x] > maxFreq) maxFreq = freq[x]; }
+    let modeStr;
+    if (maxFreq <= 1) modeStr = "No mode";
+    else modeStr = Object.keys(freq).filter(k => freq[k] === maxFreq).map(Number).sort((a, b) => a - b).join(", ");
+
+    const min = sorted[0], max = sorted[count - 1], range = max - min;
+
+    const sqDiff = nums.reduce((s, x) => s + (x - mean) ** 2, 0);
+    const popVar = sqDiff / count;                       // Σ(x−mean)²/n
+    const sampVar = count > 1 ? sqDiff / (count - 1) : null; // Σ(x−mean)²/(n−1)
+    const popStd = Math.sqrt(popVar);
+    const sampStd = sampVar === null ? null : Math.sqrt(sampVar);
+
+    return { empty: false, count, sum, mean, median, modeStr, min, max, range, popVar, sampVar, popStd, sampStd };
+  }, [inp]);
+
+  if (out.empty) {
+    return (
+      <VStack>
+        <div><Label>Numbers (comma, space, or newline separated)</Label><Textarea value={inp} onChange={setInp} rows={4} /></div>
+        <Result>Enter at least one number to compute statistics.</Result>
+      </VStack>
+    );
+  }
+
+  const rows = [
+    ["Count (n)", String(out.count)],
+    ["Sum", round(out.sum, 4)],
+    ["Mean", round(out.mean, 4)],
+    ["Median", round(out.median, 4)],
+    ["Mode", out.modeStr],
+    ["Minimum", round(out.min, 4)],
+    ["Maximum", round(out.max, 4)],
+    ["Range", round(out.range, 4)],
+    ["Population Variance (σ²)", round(out.popVar, 4)],
+    ["Sample Variance (s²)", out.sampVar === null ? "—" : round(out.sampVar, 4)],
+    ["Population Std Dev (σ)", round(out.popStd, 4)],
+    ["Sample Std Dev (s)", out.sampStd === null ? "—" : round(out.sampStd, 4)],
+  ];
+
+  return (
+    <VStack>
+      <div><Label>Numbers (comma, space, or newline separated)</Label><Textarea value={inp} onChange={setInp} rows={4} /></div>
+      <Grid3>
+        <BigResult value={round(out.mean, 4)} label="Mean" />
+        <BigResult value={round(out.median, 4)} label="Median" />
+        <BigResult value={out.modeStr} label="Mode" />
+      </Grid3>
+      <Result>{rows.map(([k, v]) => `${k}: ${v}`).join("\n")}</Result>
+    </VStack>
+  );
+}
+
+function toRoman(num) {
+  const map = [
+    [1000, "M"], [900, "CM"], [500, "D"], [400, "CD"],
+    [100, "C"], [90, "XC"], [50, "L"], [40, "XL"],
+    [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"],
+  ];
+  let x = num, out = "";
+  for (const [v, sym] of map) { while (x >= v) { out += sym; x -= v; } }
+  return out;
+}
+
+function fromRoman(str) {
+  const vals = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };
+  const s = String(str).toUpperCase().trim();
+  if (!/^[IVXLCDM]+$/.test(s)) return null;
+  let total = 0, prev = 0;
+  for (let i = s.length - 1; i >= 0; i--) {
+    const v = vals[s[i]];
+    if (v < prev) total -= v; else { total += v; prev = v; }
+  }
+  // Round-trip check rejects malformed sequences like IIII, VV, IC, XM.
+  if (total < 1 || total > 3999 || toRoman(total) !== s) return null;
+  return total;
+}
+
+function RomanNumeralConverter() {
+  const [mode, setMode] = useState("toRoman");
+  const [num, setNum] = useState("2026");
+  const [roman, setRoman] = useState("MMXXVI");
+
+  const out = useMemo(() => {
+    if (mode === "toRoman") {
+      const raw = String(num).trim();
+      const v = Number(raw);
+      if (raw === "" || !Number.isInteger(v) || v < 1 || v > 3999) {
+        return { main: "—", err: "Enter a whole number from 1 to 3999.", steps: "" };
+      }
+      const r = toRoman(v);
+      return { main: r, err: "", steps: `${v} = ${r}` };
+    }
+    const parsed = fromRoman(roman);
+    if (parsed === null) {
+      return { main: "—", err: "Invalid Roman numeral. Use standard form for 1–3999, e.g. MCMXCIV.", steps: "" };
+    }
+    return { main: String(parsed), err: "", steps: `${String(roman).toUpperCase().trim()} = ${parsed}` };
+  }, [mode, num, roman]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Direction</Label><SelectInput value={mode} onChange={setMode} options={[{ value: "toRoman", label: "Number → Roman" }, { value: "toNumber", label: "Roman → Number" }]} /></div>
+        {mode === "toRoman"
+          ? <div><Label>Number (1–3999)</Label><Input value={num} onChange={setNum} /></div>
+          : <div><Label>Roman Numeral</Label><Input value={roman} onChange={setRoman} /></div>}
+      </Grid2>
+      <BigResult value={out.main} label={mode === "toRoman" ? "Roman Numeral" : "Number"} />
+      <Result>{out.err ? `⚠️ ${out.err}` : out.steps}</Result>
+    </VStack>
+  );
+}
+
+const MAX_SAFE = Number.MAX_SAFE_INTEGER;
+const fmtBig = (v) => (!Number.isFinite(v) ? "—" : v <= MAX_SAFE ? Math.round(v).toLocaleString("en-US") : v.toExponential(6));
+
+function PermutationCombinationCalc() {
+  const [nv, setNv] = useState("10");
+  const [rv, setRv] = useState("3");
+  const out = useMemo(() => {
+    const N = Math.floor(Number(nv));
+    const R = Math.floor(Number(rv));
+    if (nv.trim() === "" || rv.trim() === "" || !Number.isFinite(N) || !Number.isFinite(R)) return { err: "Enter non-negative integers n and r." };
+    if (N < 0 || R < 0) return { err: "n and r must be non-negative." };
+    if (R > N) return { err: "r must be ≤ n." };
+    const fact = (k) => { let f = 1; for (let i = 2; i <= k; i++) f *= i; return f; };
+    // nPr = n·(n-1)·…·(n-r+1)  (iterative product avoids full n! overflow)
+    let nPr = 1;
+    for (let i = 0; i < R; i++) nPr *= (N - i);
+    // nCr = nPr / r!
+    const rFact = fact(R);
+    const nCr = nPr <= MAX_SAFE ? Math.round(nPr / rFact) : nPr / rFact;
+    const nFact = fact(N);
+    const overflow = nPr > MAX_SAFE || nCr > MAX_SAFE || nFact > MAX_SAFE;
+    return {
+      err: "", N, R, nPr, nCr, nFact, rFact, overflow,
+      steps:
+        `nPr = n! / (n−r)! = ${N}·${N - 1 >= N - R + 1 ? "…" : ""}(${N - R + 1})  [product of ${R} terms]\n` +
+        `nPr = ${fmtBig(nPr)}\n` +
+        `nCr = nPr / r! = ${fmtBig(nPr)} / ${fmtBig(rFact)}\n` +
+        `nCr = ${fmtBig(nCr)}\n` +
+        `n! = ${fmtBig(nFact)}    r! = ${fmtBig(rFact)}` +
+        (overflow ? `\n\n⚠️ Result exceeds Number.MAX_SAFE_INTEGER (2^53−1); values shown in scientific notation are approximate.` : ""),
+    };
+  }, [nv, rv]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>n (total items)</Label><Input value={nv} onChange={setNv} /></div>
+        <div><Label>r (chosen)</Label><Input value={rv} onChange={setRv} /></div>
+      </Grid2>
+      {out.err
+        ? <Result>{`⚠️ ${out.err}`}</Result>
+        : <>
+            <Grid2>
+              <BigResult value={fmtBig(out.nPr)} label={`Permutations · ${out.N}P${out.R}`} />
+              <BigResult value={fmtBig(out.nCr)} label={`Combinations · ${out.N}C${out.R}`} />
+            </Grid2>
+            <Result>{out.steps}</Result>
+          </>}
+    </VStack>
+  );
+}
+
+function ZScoreCalc() {
+  const [x, setX] = useState("85");
+  const [mu, setMu] = useState("70");
+  const [sigma, setSigma] = useState("10");
+  const out = useMemo(() => {
+    const X = Number(x), M = Number(mu), S = Number(sigma);
+    if (x.trim() === "" || mu.trim() === "" || sigma.trim() === "" || !Number.isFinite(X) || !Number.isFinite(M) || !Number.isFinite(S)) return { err: "Enter numeric x, μ and σ." };
+    if (S <= 0) return { err: "Standard deviation σ must be greater than 0." };
+    // erf via Abramowitz & Stegun 7.1.26
+    const erf = (t) => {
+      const sign = t < 0 ? -1 : 1;
+      const a = Math.abs(t);
+      const u = 1 / (1 + 0.3275911 * a);
+      const y = 1 - (((((1.061405429 * u - 1.453152027) * u) + 1.421413741) * u - 0.284496736) * u + 0.254829592) * u * Math.exp(-a * a);
+      return sign * y;
+    };
+    const z = (X - M) / S;
+    const phi = 0.5 * (1 + erf(z / Math.SQRT2));
+    const pct = phi * 100;
+    return {
+      err: "", z, pct,
+      steps:
+        `z = (x − μ) / σ = (${X} − ${M}) / ${S} = ${round(z, 6)}\n` +
+        `Φ(z) = 0.5·(1 + erf(z/√2)) ≈ ${round(phi, 6)}\n` +
+        `Percentile (area to the left) ≈ ${round(pct, 2)}%  (approximate, A&S erf)`,
+    };
+  }, [x, mu, sigma]);
+
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Value x</Label><Input value={x} onChange={setX} /></div>
+        <div><Label>Mean μ</Label><Input value={mu} onChange={setMu} /></div>
+        <div><Label>Std Dev σ</Label><Input value={sigma} onChange={setSigma} /></div>
+      </Grid3>
+      {out.err
+        ? <Result>{`⚠️ ${out.err}`}</Result>
+        : <>
+            <Grid2>
+              <BigResult value={round(out.z, 4)} label="Z-Score" />
+              <BigResult value={`${round(out.pct, 2)}%`} label="Percentile (approx.)" />
+            </Grid2>
+            <Result>{out.steps}</Result>
+          </>}
+    </VStack>
+  );
+}
+
+function PercentageChangeCalc() {
+  const [oldV, setOldV] = useState("120");
+  const [newV, setNewV] = useState("150");
+  const out = useMemo(() => {
+    const O = Number(oldV), Nn = Number(newV);
+    if (oldV.trim() === "" || newV.trim() === "" || !Number.isFinite(O) || !Number.isFinite(Nn)) return { err: "Enter both old and new values." };
+    const diff = Nn - O;
+    const dir = diff > 0 ? "increase ▲" : diff < 0 ? "decrease ▼" : "no change";
+    if (O === 0) {
+      return {
+        err: "", diff, dir, pct: null,
+        main: "undefined (from zero)",
+        steps: `Absolute difference = ${round(Nn, 6)} − 0 = ${round(diff, 6)}\n% change is undefined when the old value is 0 (division by zero).`,
+      };
+    }
+    const pct = (diff / Math.abs(O)) * 100;
+    const ofOld = (Nn / O) * 100; // new is what % of old
+    return {
+      err: "", diff, dir, pct,
+      main: `${pct > 0 ? "+" : ""}${round(pct, 4)}%`,
+      steps:
+        `% change = (new − old) / |old| × 100\n` +
+        `= (${round(Nn, 6)} − ${round(O, 6)}) / |${round(O, 6)}| × 100\n` +
+        `= ${round(pct, 4)}%  (${dir})\n` +
+        `Absolute difference = ${round(diff, 6)}\n` +
+        `New is ${round(ofOld, 4)}% of old`,
+    };
+  }, [oldV, newV]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Old / original value</Label><Input value={oldV} onChange={setOldV} /></div>
+        <div><Label>New value</Label><Input value={newV} onChange={setNewV} /></div>
+      </Grid2>
+      {out.err
+        ? <Result>{`⚠️ ${out.err}`}</Result>
+        : <>
+            <BigResult value={out.main} label={`Percentage Change · ${out.dir}`} />
+            <Result>{out.steps}</Result>
+          </>}
+    </VStack>
+  );
+}
+
+function DecimalToFractionCalc() {
+  const [val, setVal] = useState("0.375");
+  const [repeat, setRepeat] = useState("0");
+  const out = useMemo(() => {
+    const s = val.trim();
+    if (s === "" || !/^[-+]?\d*\.?\d+$/.test(s)) return { err: "Enter a decimal number, e.g. 0.375." };
+    const num = Number(s);
+    if (!Number.isFinite(num)) return { err: "Invalid decimal." };
+    const sign = s.startsWith("-") ? -1 : 1;
+    const clean = s.replace(/^[-+]/, "");
+    const parts = clean.split(".");
+    const wholeStr = parts[0] || "0";
+    const fracStr = parts[1] || "";
+    const decimals = fracStr.length;
+    const repN = Math.max(0, Math.floor(Number(repeat) || 0));
+
+    let numerator, denominator, method;
+    if (repN > 0 && repN <= decimals) {
+      // Repeating decimal: split fractional digits into non-repeating (a) + repeating (b)
+      const a = decimals - repN;        // non-repeating count
+      const b = repN;                   // repeating count
+      const fullInt = parseInt(fracStr || "0", 10);            // all a+b digits
+      const nonRepInt = a > 0 ? parseInt(fracStr.slice(0, a), 10) : 0;
+      const fracNum = fullInt - nonRepInt;                      // numerator of pure fractional part
+      const fracDen = Math.pow(10, a + b) - Math.pow(10, a);    // 10^(a+b) − 10^a
+      const wholeInt = parseInt(wholeStr, 10);
+      numerator = wholeInt * fracDen + fracNum;                 // combine whole + fraction
+      denominator = fracDen;
+      method = "repeating";
+    } else {
+      // Terminating decimal: multiply to clear the point, then reduce by GCD
+      denominator = Math.pow(10, decimals) || 1;
+      numerator = Math.round(Math.abs(num) * denominator);
+      method = "terminating";
+    }
+
+    const g = gcd2(numerator, denominator) || 1;               // reduce logic
+    const rn = numerator / g;
+    const rd = denominator / g;
+    const whole = Math.floor(rn / rd);
+    const remN = rn - whole * rd;
+    const mixed = rd !== 1 && rn > rd ? `${whole} ${remN}/${rd}` : null;
+    const fraction = rd === 1 ? `${sign < 0 ? "-" : ""}${rn}` : `${sign < 0 ? "-" : ""}${rn}/${rd}`;
+
+    return {
+      err: "", fraction, mixed, g, rn, rd, sign, method,
+      steps:
+        (method === "terminating"
+          ? `Terminating: ${clean} = ${numerator}/${denominator}\n`
+          : `Repeating (${repN} repeating digit${repN > 1 ? "s" : ""}): value = ${numerator}/${denominator}\n`) +
+        `GCD(${numerator}, ${denominator}) = ${g}\n` +
+        `Reduced: ${numerator}/${g} : ${denominator}/${g} = ${sign < 0 ? "-" : ""}${rn}/${rd}` +
+        (mixed ? `\nMixed number: ${sign < 0 ? "-" : ""}${mixed}` : ""),
+    };
+  }, [val, repeat]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Decimal value</Label><Input value={val} onChange={setVal} /></div>
+        <div><Label>Repeating trailing digits (0 = none)</Label><Input value={repeat} onChange={setRepeat} /></div>
+      </Grid2>
+      {out.err
+        ? <Result>{`⚠️ ${out.err}`}</Result>
+        : <>
+            <BigResult value={out.fraction} label={out.mixed ? `Fraction (mixed: ${out.sign < 0 ? "-" : ""}${out.mixed})` : "Simplified Fraction"} />
+            <Result>{out.steps}</Result>
+          </>}
+    </VStack>
+  );
+}
+
 const TOOL_COMPONENTS = {
   "area-calc": AreaCalc,
+  "mean-median-mode": MeanMedianModeCalc,
+  "roman-numeral-converter": RomanNumeralConverter,
   "perimeter-calc": PerimeterCalc,
   "volume-calc": VolumeCalc,
   "surface-area-calc": SurfaceAreaCalc,
@@ -1621,6 +1978,8 @@ const TOOL_COMPONENTS = {
   "boolean-algebra": BooleanAlgebraCalc,
   "truth-table-gen": TruthTableGen,
   "set-theory-calc": SetTheoryCalc,
+  "permutation-combination": PermutationCombinationCalc,
+  "z-score-calculator": ZScoreCalc,
 
   "number-base-calc": NumberBaseCalc,
   "complex-number-calc": ComplexNumberCalc,
@@ -1629,6 +1988,8 @@ const TOOL_COMPONENTS = {
   "percentage-advanced": PercentageAdvanced,
   "ratio-simplifier": RatioSimplifier,
   "fraction-advanced": FractionAdvanced,
+  "percentage-change-calculator": PercentageChangeCalc,
+  "decimal-to-fraction": DecimalToFractionCalc,
 };
 
 function useAppRouter() {
@@ -1681,7 +2042,7 @@ function ToolPage({ toolId }) {
 
   if (!tool || !ToolComp) {
     return (
-      <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'}>
+      <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'} tools={TOOLS} subcats={CATEGORIES}>
         <div style={{ padding:'48px 20px', textAlign:'center', color:'#94A3B8' }}>
           Tool not found. <a href="#/" style={{ color: PAGE_THEME.color }}>← Back to {PAGE_THEME.name}</a>
         </div>
@@ -1700,8 +2061,8 @@ function ToolPage({ toolId }) {
   const related = TOOLS.filter(t => t.id !== tool.id && t.cat === tool.cat).slice(0, 8);
 
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={toolId}>
-      <ToolPageLayout theme={PAGE_THEME} tool={toolData} related={related}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId} tools={TOOLS} subcats={CATEGORIES}>
+      <ToolPageLayout theme={PAGE_THEME} tool={toolData} tools={TOOLS} subcats={CATEGORIES} related={related}>
         <ToolComp />
       </ToolPageLayout>
     </CategoryLayout>
@@ -1762,7 +2123,7 @@ function SubcatTabs({ cats, active, onSelect }) {
 
 function HomePage() {
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={null}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={null} tools={TOOLS} subcats={CATEGORIES}>
       <CategoryDashboard
         theme={PAGE_THEME}
         tools={TOOLS}

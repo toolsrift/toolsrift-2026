@@ -226,6 +226,10 @@ const TOOLS = [
   { id:"morse-encoder",        cat:"cipher",  name:"Morse Code Encoder",       desc:"Convert text to Morse code with audio playback support",   icon:"📡", free:true },
   { id:"quoted-printable",     cat:"special", name:"Quoted-Printable Encoder", desc:"Encode text using MIME quoted-printable encoding for email", icon:"📧", free:true },
   { id:"xml-encode",           cat:"html",    name:"XML Encoder / Decoder",    desc:"Encode and decode XML special characters safely",          icon:"📄", free:true },
+  { id:"base64url",            cat:"base",    name:"Base64URL Encoder / Decoder", desc:"URL-safe Base64 (-_ instead of +/, no padding) encode & decode", icon:"🧩", free:true },
+  { id:"base58",               cat:"base",    name:"Base58 Encoder / Decoder", desc:"Bitcoin-alphabet Base58 encode & decode with leading-zero support", icon:"🪙", free:true },
+  { id:"hex-dump",             cat:"binary",  name:"Hex Dump Viewer",          desc:"View text as a hexdump -C style offset, hex and ASCII dump", icon:"🧮", free:true },
+  { id:"data-uri-generator",   cat:"base",    name:"Data URI Generator",       desc:"Convert text, SVG, CSS or HTML into a data: URI (base64 or URL-encoded)", icon:"📦", free:true },
 ];
 
 const CATEGORIES = [
@@ -264,6 +268,10 @@ const TOOL_META = {
   "morse-encoder": { title:"Morse Code Encoder & Decoder — Convert Text to Morse", desc:"Convert text to Morse code and back. Audio playback with adjustable speed and dot/dash customization.", faq:[["What is Morse code?","An encoding where letters are represented as sequences of dots (•) and dashes (—)."],["Can I hear the Morse code?","Yes — click Play to hear the Morse code using your browser's Web Audio API."],["What characters are supported?","A—Z, 0–9, and common punctuation: . , ? ' ! / ( ) & : ; = + - _ \" $ @"]] },
   "quoted-printable": { title:"Quoted-Printable Encoder — MIME Email Encoding", desc:"Encode text using MIME Quoted-Printable encoding for email headers and bodies. RFC 2045 compliant.", faq:[["What is Quoted-Printable?","A MIME encoding where most ASCII characters pass through unchanged, but non-ASCII bytes become =XX hex sequences."],["When is Quoted-Printable used?","In email bodies containing mostly ASCII with some special characters. More readable than Base64 for text content."],["What is the line length limit?","RFC 2045 requires lines to be no longer than 76 characters, with = as a soft line break."]] },
   "xml-encode": { title:"XML Encoder & Decoder — Escape XML Special Characters", desc:"Encode and decode XML special characters. Escapes <, >, &, ', \" for safe XML content.", faq:[["Which characters must be escaped in XML?","& → &amp;, < → &lt;, > → &gt;, \" → &quot;, ' → &apos;"],["Is XML encoding the same as HTML encoding?","Almost — XML uses &apos; while HTML prefers &#39;. XML requires stricter well-formedness."],["When is XML encoding needed?","When embedding user-provided text inside XML tags or attributes to prevent XML injection attacks."]] },
+  "base64url": { title:"Base64URL Encoder & Decoder — URL-Safe Base64 Online", desc:"Encode and decode URL-safe Base64. Uses - and _ instead of + and /, with padding (=) stripped for use in URLs, JWTs and filenames.", howTo:"Pick Encode or Decode, paste your text, and the URL-safe Base64 result appears instantly. Encoding replaces + with -, / with _ and removes = padding.", faq:[["How is Base64URL different from standard Base64?","It swaps the two non-alphanumeric characters: + becomes - and / becomes _, and the = padding is removed. This makes the output safe to drop into URLs, query strings and filenames."],["Where is Base64URL used?","JSON Web Tokens (JWT), OAuth tokens, WebPush keys, and anywhere Base64 must appear in a URL without percent-encoding."],["Does it handle Unicode text?","Yes — text is encoded as UTF-8 bytes first, so emoji and non-Latin scripts round-trip correctly."]] },
+  "base58": { title:"Base58 Encoder & Decoder — Bitcoin Alphabet Online", desc:"Encode and decode Base58 using the Bitcoin alphabet (no 0, O, I, l). Preserves leading zero bytes, ideal for addresses, keys and short IDs.", howTo:"Choose Encode or Decode and enter your text. Encoding converts the UTF-8 bytes to a Base58 string; decoding reverses it back to text (or hex if the bytes aren't valid UTF-8).", faq:[["Why does Base58 skip 0, O, I and l?","Those characters are easy to confuse when read or typed by hand. Removing them makes Base58 strings less error-prone — which is why Bitcoin addresses use it."],["How are leading zeros handled?","Each leading zero byte (0x00) is encoded as a leading '1' character, and restored on decode, so byte-exact round-trips are preserved."],["Is Base58 the same as Base58Check?","No — Base58Check adds a version byte and a 4-byte checksum. This tool implements plain Base58 encoding only."]] },
+  "hex-dump": { title:"Hex Dump Viewer — hexdump -C Style Online", desc:"Generate a classic hexdump -C style view of any text: 16-byte rows with hex offset, two hex columns and a printable-ASCII panel.", howTo:"Type or paste text and the hex dump updates live. Each row shows the byte offset in hex, the 16 bytes as hex pairs, and an ASCII column where non-printable bytes show as a dot.", faq:[["What does each row contain?","An 8-digit hex offset, up to 16 bytes shown as hex pairs (split into two groups of 8), and the same bytes rendered as ASCII inside |bars|."],["Why are some characters shown as dots?","Bytes below 0x20 or above 0x7e are non-printable, so they are displayed as '.' in the ASCII column — exactly like the Unix hexdump -C tool."],["How is the text turned into bytes?","The text is encoded as UTF-8, so multi-byte characters expand into several hex bytes."]] },
+  "data-uri-generator": { title:"Data URI Generator — Convert Text, SVG & CSS to data: URIs", desc:"Turn text, SVG, CSS, HTML or JSON into an inline data: URI. Choose base64 or URL-encoding — URL-encoded SVG is smaller and CSS-friendly.", howTo:"Paste your content, pick its MIME type, and choose base64 or URL-encoded output. Copy the resulting data: URI straight into your HTML src, CSS url() or JavaScript.", faq:[["When should I use URL-encoding vs base64?","URL-encoding is usually smaller for text-based content like SVG and keeps it human-readable; base64 is more robust for arbitrary/binary content and older parsers."],["Why embed content as a data URI?","It inlines assets directly into HTML or CSS, removing a network request — great for small icons, SVGs and CSS backgrounds."],["Which MIME type should I pick?","Match the content: image/svg+xml for SVG, text/css for stylesheets, text/html for markup, application/json for JSON, or text/plain for raw text."]] },
 };
 
 // �"����� MORSE TABLE �������������������������������������������������������������������������������������������������������������������������"�
@@ -1102,6 +1110,204 @@ function QuotedPrintable() {
   );
 }
 
+// �"��� Base64URL �����������������������������������������������������������������������������������������������������������������������������"�
+function base64UrlEncode(str) {
+  return btoa(unescape(encodeURIComponent(str))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=/g,"");
+}
+function base64UrlDecode(str) {
+  let s = str.trim().replace(/\s/g,"").replace(/-/g,"+").replace(/_/g,"/");
+  while(s.length%4) s+="=";
+  return decodeURIComponent(escape(atob(s)));
+}
+function Base64Url() {
+  const [input, setInput] = useState("");
+  const [mode, setMode] = useState("encode");
+  const [error, setError] = useState("");
+  const output = useMemo(()=>{
+    if(!input.trim()) { setError(""); return ""; }
+    try{
+      setError("");
+      return mode==="encode" ? base64UrlEncode(input) : base64UrlDecode(input);
+    } catch(e){ setError(mode==="encode"?"Encoding failed: "+e.message:"Invalid Base64URL input: "+e.message); return ""; }
+  },[input,mode]);
+  return (
+    <VStack>
+      <ModeToggle mode={mode} setMode={setMode} options={[["encode","Text → Base64URL"],["decode","Base64URL → Text"]]} />
+      <IOPanel input={input} onInput={setInput} output={output} error={error}
+        inputLabel={mode==="encode"?"Plain Text":"Base64URL String"} outputLabel={mode==="encode"?"Base64URL Encoded":"Decoded Text"}
+        inputMono={mode!=="encode"} outputMono={mode==="encode"} />
+      <Card style={{ background:"rgba(139,92,246,0.05)", border:"1px solid rgba(139,92,246,0.15)" }}>
+        <div style={{ fontSize:12, color:C.muted, lineHeight:1.7 }}>
+          <strong style={{ color:C.text }}>URL-safe Base64:</strong> uses <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#A78BFA" }}>-</span> and <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#A78BFA" }}>_</span> in place of <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#A78BFA" }}>+</span> and <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#A78BFA" }}>/</span>, with <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#A78BFA" }}>=</span> padding removed. Common in JWTs and OAuth tokens.
+        </div>
+      </Card>
+    </VStack>
+  );
+}
+
+// �"��� Base58 (Bitcoin alphabet) �������������������������������������������������������������������������������������������������"�
+const B58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+function base58EncodeBytes(bytes) {
+  if(!bytes.length) return "";
+  let zeros = 0;
+  while(zeros<bytes.length && bytes[zeros]===0) zeros++;
+  let num = 0n;
+  for(const b of bytes) num = num*256n + BigInt(b);
+  let out = "";
+  while(num>0n){ const rem = num%58n; num = num/58n; out = B58_ALPHABET[Number(rem)] + out; }
+  return "1".repeat(zeros) + out;
+}
+function base58DecodeToBytes(str) {
+  if(!str.length) return new Uint8Array();
+  let num = 0n;
+  for(const ch of str){
+    const val = B58_ALPHABET.indexOf(ch);
+    if(val<0) throw new Error(`Invalid Base58 character: '${ch}'`);
+    num = num*58n + BigInt(val);
+  }
+  const bytes = [];
+  while(num>0n){ bytes.unshift(Number(num%256n)); num = num/256n; }
+  let zeros = 0;
+  while(zeros<str.length && str[zeros]==="1") zeros++;
+  for(let i=0;i<zeros;i++) bytes.unshift(0);
+  return new Uint8Array(bytes);
+}
+function Base58() {
+  const [input, setInput] = useState("");
+  const [mode, setMode] = useState("encode");
+  const [error, setError] = useState("");
+  const output = useMemo(()=>{
+    if(!input.trim() && mode==="decode") { setError(""); return ""; }
+    if(!input && mode==="encode") { setError(""); return ""; }
+    try{
+      setError("");
+      if(mode==="encode"){
+        const bytes = new TextEncoder().encode(input);
+        return base58EncodeBytes(bytes);
+      }
+      const bytes = base58DecodeToBytes(input.trim());
+      try{
+        return new TextDecoder("utf-8",{ fatal:true }).decode(bytes);
+      } catch(_){
+        return "0x" + Array.from(bytes).map(b=>b.toString(16).padStart(2,"0")).join("");
+      }
+    } catch(e){ setError(e.message); return ""; }
+  },[input,mode]);
+  return (
+    <VStack>
+      <ModeToggle mode={mode} setMode={setMode} options={[["encode","Text → Base58"],["decode","Base58 → Text"]]} />
+      <IOPanel input={input} onInput={setInput} output={output} error={error}
+        inputLabel={mode==="encode"?"Plain Text":"Base58 String"} outputLabel={mode==="encode"?"Base58 Encoded":"Decoded Text"}
+        inputMono={mode!=="encode"} outputMono={mode==="encode"} />
+      <Card style={{ background:"rgba(245,158,11,0.05)", border:"1px solid rgba(245,158,11,0.15)" }}>
+        <div style={{ fontSize:12, color:C.muted, lineHeight:1.7 }}>
+          <strong style={{ color:C.text }}>Bitcoin alphabet:</strong> omits <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#FCD34D" }}>0 O I l</span> to avoid look-alike confusion. Leading zero bytes are preserved as leading <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#FCD34D" }}>1</span> characters. Non-UTF-8 decoded bytes are shown as hex.
+        </div>
+      </Card>
+    </VStack>
+  );
+}
+
+// �"��� Hex Dump Viewer (hexdump -C style) �����������������������������������������������������������������������������������"�
+function hexDump(text) {
+  const bytes = new TextEncoder().encode(text);
+  const rows = [];
+  for(let off=0; off<bytes.length; off+=16){
+    const slice = Array.from(bytes.slice(off, off+16));
+    const offStr = off.toString(16).padStart(8,"0");
+    const cell = i => i<slice.length ? slice[i].toString(16).padStart(2,"0") : "  ";
+    const g1 = [0,1,2,3,4,5,6,7].map(cell).join(" ");
+    const g2 = [8,9,10,11,12,13,14,15].map(cell).join(" ");
+    const ascii = slice.map(b => (b<0x20||b>0x7e) ? "." : String.fromCharCode(b)).join("");
+    rows.push(`${offStr}  ${g1}  ${g2}  |${ascii}|`);
+  }
+  return rows.join("\n");
+}
+function HexDump() {
+  const [input, setInput] = useState("");
+  const output = useMemo(()=> input ? hexDump(input) : "", [input]);
+  const byteCount = useMemo(()=> input ? new TextEncoder().encode(input).length : 0, [input]);
+  return (
+    <VStack>
+      <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+        <Label>Input Text</Label>
+        <Textarea value={input} onChange={setInput} rows={5} mono={false} placeholder="Type or paste text to dump..." />
+      </div>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+        <Label>Hex Dump ({byteCount} bytes)</Label>
+        {output && <CopyBtn text={output} />}
+      </div>
+      <div style={{ background:"rgba(0,0,0,0.35)", border:`1px solid ${C.border}`, borderRadius:8, padding:"12px 14px", fontFamily:"'JetBrains Mono',monospace", fontSize:12.5, color:C.text, lineHeight:1.7, whiteSpace:"pre", overflowX:"auto", minHeight:80 }}>
+        {output || <span style={{ color:C.muted }}>Offset   Hex bytes                                          ASCII</span>}
+      </div>
+      <Card style={{ background:"rgba(59,130,246,0.05)", border:"1px solid rgba(59,130,246,0.12)" }}>
+        <div style={{ fontSize:12, color:C.muted, lineHeight:1.7 }}>
+          <strong style={{ color:C.text }}>Format:</strong> each row is <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>offset</span> · 16 hex bytes (split 8 + 8) · <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>|ASCII|</span>. Bytes below 0x20 or above 0x7e render as <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>.</span> — just like <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>hexdump -C</span>.
+        </div>
+      </Card>
+    </VStack>
+  );
+}
+
+// �"��� Data URI Generator �����������������������������������������������������������������������������������������������������������������"�
+function DataUriGenerator() {
+  const [content, setContent] = useState("");
+  const [mime, setMime] = useState("image/svg+xml");
+  const [enc, setEnc] = useState("url");
+  const [error, setError] = useState("");
+  const uri = useMemo(()=>{
+    if(!content) { setError(""); return ""; }
+    try{
+      setError("");
+      if(enc==="base64") return `data:${mime};base64,${btoa(unescape(encodeURIComponent(content)))}`;
+      return `data:${mime},${encodeURIComponent(content)}`;
+    } catch(e){ setError("Failed to generate: "+e.message); return ""; }
+  },[content,mime,enc]);
+  const isImage = mime==="image/svg+xml";
+  return (
+    <VStack>
+      <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+        <Label>Content</Label>
+        <Textarea value={content} onChange={setContent} rows={6} mono placeholder={isImage?'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">...</svg>':"Enter your content here..."} />
+      </div>
+      <div style={{ display:"flex", gap:12, alignItems:"center", flexWrap:"wrap" }}>
+        <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+          <Label>MIME</Label>
+          <SelectInput value={mime} onChange={setMime} options={[
+            { value:"text/plain", label:"text/plain" },
+            { value:"image/svg+xml", label:"image/svg+xml" },
+            { value:"text/css", label:"text/css" },
+            { value:"text/html", label:"text/html" },
+            { value:"application/json", label:"application/json" },
+          ]} />
+        </div>
+        <ModeToggle mode={enc} setMode={setEnc} options={[["url","URL-encoded"],["base64","Base64"]]} />
+        {isImage && enc==="base64" && <span style={{ fontSize:11, color:C.warn }}>Tip: URL-encoded SVG is usually smaller</span>}
+      </div>
+      {error && <div style={{ padding:"12px 14px", background:"rgba(239,68,68,0.1)", border:"1px solid rgba(239,68,68,0.2)", borderRadius:8, fontSize:13, color:C.danger }}>{error}</div>}
+      {uri && !error && (
+        <>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+            <Label>Data URI ({uri.length} chars)</Label>
+            <CopyBtn text={uri} />
+          </div>
+          <div style={{ background:"rgba(0,0,0,0.3)", border:`1px solid ${C.border}`, borderRadius:8, padding:"10px 14px", fontFamily:"'JetBrains Mono',monospace", fontSize:11.5, color:C.text, wordBreak:"break-all", maxHeight:160, overflowY:"auto", lineHeight:1.6 }}>
+            {uri}
+          </div>
+          {isImage && (
+            <div>
+              <Label>Live Preview</Label>
+              <div style={{ marginTop:8, padding:20, background:"rgba(255,255,255,0.05)", border:`1px solid ${C.border}`, borderRadius:8, display:"flex", justifyContent:"center", alignItems:"center", minHeight:100 }}>
+                <img src={uri} alt="SVG preview" style={{ maxWidth:"100%", maxHeight:180 }} onError={e=>{ e.currentTarget.style.display="none"; }} />
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </VStack>
+  );
+}
+
 // �"����� COMPONENT MAP �����������������������������������������������������������������������������������������������������������������������"�
 const TOOL_COMPONENTS = {
   "base64-encode": Base64Encode,
@@ -1129,6 +1335,10 @@ const TOOL_COMPONENTS = {
   "morse-encoder": MorseEncoder,
   "quoted-printable": QuotedPrintable,
   "xml-encode": XmlEncode,
+  "base64url": Base64Url,
+  "base58": Base58,
+  "hex-dump": HexDump,
+  "data-uri-generator": DataUriGenerator,
 };
 
 // �"����� BREADCRUMB �����������������������������������������������������������������������������������������������������������������������������"�
@@ -1303,19 +1513,13 @@ const ENC_SPECIAL_CSS = `
   @media(max-width:1024px){.tre-grid{grid-template-columns:repeat(3,1fr)}}
   @media(max-width:640px){.tre-grid{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:400px){.tre-grid{grid-template-columns:1fr}}
-  .tre-detail{display:grid;grid-template-columns:220px 1fr;gap:24px;padding:16px 0 60px}
-  @media(max-width:768px){.tre-detail{grid-template-columns:1fr;padding:16px 0 96px}}
-  .tre-sidebar{display:block}
-  @media(max-width:768px){.tre-sidebar{display:none}}
-  .tre-mobile-bar{display:none}
-  @media(max-width:768px){.tre-mobile-bar{display:flex}}
 `;
 
 function CategoryHomePage() {
   useEffect(() => { document.title = 'Free Encoder & Decoder Tools — ToolsRift'; }, []);
 
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={null}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={null} tools={TOOLS} subcats={CATEGORIES}>
       <CategoryDashboard
         theme={PAGE_THEME}
         tools={TOOLS}
@@ -1330,16 +1534,14 @@ function ToolDetailPage({ toolId }) {
   const tool     = TOOLS.find(t => t.id === toolId);
   const meta     = TOOL_META[toolId];
   const ToolComp = TOOL_COMPONENTS[toolId];
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const acc = PAGE_THEME.color;
 
   useEffect(() => {
     document.title = meta?.title || `${tool?.name} — Free Encoder Tool | ToolsRift`;
-    setDrawerOpen(false);
   }, [toolId]);
 
   if (!tool || !ToolComp) return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'} tools={TOOLS} subcats={CATEGORIES}>
       <div style={{ padding:40, textAlign:'center', color:'#64748B', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
         <div style={{ fontSize:48, marginBottom:16 }}>🔍</div>
         <p style={{ color:'#E2E8F0', marginBottom:8, fontSize:16 }}>Tool not found</p>
@@ -1348,71 +1550,24 @@ function ToolDetailPage({ toolId }) {
     </CategoryLayout>
   );
 
-  const sidebarTools = TOOLS.filter(t => t.cat === tool.cat);
-  const toolData = { name:tool.name, description:meta?.desc||tool.desc, howTo:meta?.howTo, faq:meta?.faq };
+  const toolData = { id:tool.id, name:tool.name, description:meta?.desc||tool.desc, howTo:meta?.howTo, faq:meta?.faq };
 
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={toolId}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId} tools={TOOLS} subcats={CATEGORIES}>
       <style>{ENC_SPECIAL_CSS}</style>
-      <div className="tre-detail">
-        <aside className="tre-sidebar">
-          <div style={{ position:'sticky', top:72, background:'#0D1117', border:'1px solid rgba(255,255,255,0.06)', borderRadius:12, overflow:'hidden' }}>
-            <div style={{ padding:'12px 16px', borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
-              <div style={{ fontSize:11, fontWeight:700, color:'#475569', textTransform:'uppercase', letterSpacing:'0.06em' }}>
-                {CATEGORIES.find(c => c.id === tool.cat)?.name || 'Tools'}
-              </div>
-            </div>
-            <div style={{ padding:'8px 0', maxHeight:'calc(100vh - 160px)', overflowY:'auto' }}>
-              {sidebarTools.map(t => {
-                const isActive = t.id === toolId;
-                return (
-                  <a key={t.id} href={`#/tool/${t.id}`}
-                    style={{ display:'flex', alignItems:'center', gap:10, minHeight:44, padding:'10px 16px', textDecoration:'none', background:isActive?`${acc}18`:'transparent', borderLeft:isActive?`2px solid ${acc}`:'2px solid transparent', transition:'background 0.15s' }}
-                    onMouseEnter={e => { if (!isActive) e.currentTarget.style.background='rgba(255,255,255,0.03)'; }}
-                    onMouseLeave={e => { if (!isActive) e.currentTarget.style.background='transparent'; }}
-                  >
-                    <span style={{ fontSize:15, flexShrink:0 }}>{t.icon}</span>
-                    <span style={{ fontSize:13, fontWeight:isActive?600:400, color:isActive?'#F1F5F9':'#94A3B8', lineHeight:1.3, fontFamily:"'Plus Jakarta Sans',sans-serif" }}>{t.name}</span>
-                  </a>
-                );
-              })}
-            </div>
-          </div>
-        </aside>
-
-        <div style={{ minWidth:0 }}>
-          <a href="#/" style={{ display:'inline-flex', alignItems:'center', gap:6, color:'#64748B', fontSize:13, textDecoration:'none', marginBottom:16, fontFamily:"'Plus Jakarta Sans',sans-serif" }}
-            onMouseEnter={e => e.currentTarget.style.color='#E2E8F0'}
-            onMouseLeave={e => e.currentTarget.style.color='#64748B'}
-          >← Back to Encoders & Decoders</a>
-          <ToolPageLayout theme={PAGE_THEME} tool={toolData}>
-            <ToolComp />
-          </ToolPageLayout>
-        </div>
-      </div>
-
-      <div className="tre-mobile-bar" style={{ position:'fixed', bottom:0, left:0, right:0, zIndex:200, background:'rgba(6,9,15,0.96)', backdropFilter:'blur(12px)', borderTop:'1px solid rgba(255,255,255,0.06)', padding:'12px 16px', justifyContent:'space-between', alignItems:'center' }}>
-        <span style={{ fontSize:13, color:'#94A3B8', fontFamily:"'Plus Jakarta Sans',sans-serif", overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', maxWidth:'60%' }}>{tool.icon} {tool.name}</span>
-        <button onClick={() => setDrawerOpen(d => !d)} style={{ background:acc, color:'#fff', border:'none', borderRadius:8, padding:'8px 16px', fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:"'Plus Jakarta Sans',sans-serif", minHeight:44, flexShrink:0 }}>
-          {drawerOpen ? '✕ Close' : '☰ All Tools'}
-        </button>
-      </div>
-
-      {drawerOpen && (
-        <div style={{ position:'fixed', bottom:0, left:0, right:0, zIndex:199, background:'#0D1117', borderTop:`2px solid ${acc}`, maxHeight:'60vh', overflowY:'auto', padding:'8px 0 80px' }}>
-          {sidebarTools.map(t => {
-            const isActive = t.id === toolId;
-            return (
-              <a key={t.id} href={`#/tool/${t.id}`} onClick={() => setDrawerOpen(false)}
-                style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 20px', minHeight:52, textDecoration:'none', background:isActive?`${acc}18`:'transparent', borderLeft:isActive?`3px solid ${acc}`:'3px solid transparent' }}
-              >
-                <span style={{ fontSize:20 }}>{t.icon}</span>
-                <span style={{ fontSize:14, fontWeight:isActive?600:400, color:isActive?'#F1F5F9':'#94A3B8', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>{t.name}</span>
-              </a>
-            );
-          })}
-        </div>
-      )}
+      <a href="#/" style={{ display:'inline-flex', alignItems:'center', gap:6, color:'#64748B', fontSize:13, textDecoration:'none', marginTop:20, fontFamily:"'Plus Jakarta Sans',sans-serif" }}
+        onMouseEnter={e => e.currentTarget.style.color='#E2E8F0'}
+        onMouseLeave={e => e.currentTarget.style.color='#64748B'}
+      >← Back to Encoders &amp; Decoders</a>
+      <ToolPageLayout
+        theme={PAGE_THEME}
+        tool={toolData}
+        tools={TOOLS}
+        subcats={CATEGORIES}
+        related={TOOLS.filter(t => t.id !== tool.id && t.cat === tool.cat).slice(0, 8)}
+      >
+        <ToolComp />
+      </ToolPageLayout>
     </CategoryLayout>
   );
 }

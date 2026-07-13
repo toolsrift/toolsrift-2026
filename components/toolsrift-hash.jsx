@@ -341,13 +341,16 @@ const TOOLS = [
   {id:"random-string",   cat:"crypto",   name:"Random String Generator",  desc:"Generate cryptographically random strings and tokens",  icon:"🎲",  free:true},
   {id:"uuid-generator",  cat:"crypto",   name:"UUID / GUID Generator",    desc:"Generate RFC 4122 UUID v4 random identifiers",          icon:"🆔",  free:true},
   {id:"hash-file",       cat:"hash",     name:"File Hash Calculator",     desc:"Calculate MD5, SHA-1 and SHA-256 hashes for uploaded files", icon:"#️⃣", free:true},
-  {id:"bcrypt-hash",     cat:"crypto",   name:"Bcrypt Hash Generator",    desc:"Generate bcrypt password hashes with adjustable cost",  icon:"🔐",  free:true},
+  {id:"bcrypt-hash",     cat:"crypto",   name:"Bcrypt Hash Generator",    desc:"Generate real bcrypt password hashes with a random salt and adjustable cost factor",  icon:"🔐",  free:true},
   {id:"token-generator", cat:"crypto",   name:"API Token Generator",      desc:"Generate secure API keys and bearer tokens",            icon:"🪙",  free:true},
-  {id:"otp-generator",   cat:"crypto",   name:"OTP Code Generator",       desc:"Generate time-based one-time passwords (TOTP/HOTP)",    icon:"⏱️",  free:true},
+  {id:"otp-generator",   cat:"crypto",   name:"OTP Code Generator",       desc:"Generate real RFC 6238 TOTP codes that match Google Authenticator from a Base32 secret",    icon:"⏱️",  free:true},
   {id:"caesar-hash",     cat:"checksum", name:"Simple String Hash",       desc:"Compare multiple non-cryptographic hash algorithms",    icon:"#️⃣",  free:true},
   {id:"xor-cipher",      cat:"crypto",   name:"XOR Cipher",               desc:"Encrypt and decrypt text with XOR bitwise operation",   icon:"⊕",   free:true},
   {id:"binary-converter",cat:"checksum", name:"Number Base Converter",    desc:"Convert numbers between binary, octal, decimal, hex",   icon:"🔢",  free:true},
   {id:"color-hash",      cat:"checksum", name:"Text to Color Hash",       desc:"Visualize text as a deterministic color hash",          icon:"🎨",  free:true},
+  {id:"pbkdf2-generator",cat:"crypto",   name:"PBKDF2 Key Derivation",    desc:"Derive a key from a password with PBKDF2-HMAC (SHA-256/384/512), salt and iterations", icon:"🗝️",  free:true},
+  {id:"sha3-keccak",     cat:"hash",     name:"SHA-3 / Keccak Hash",      desc:"Generate SHA3-256/384/512 and Keccak-256 digests (used by Ethereum)", icon:"🎲",  free:true},
+  {id:"hash-identifier", cat:"crypto",   name:"Hash Identifier",          desc:"Identify the likely hash type of a digest from its length and format", icon:"🔎",  free:true},
 ];
 
 const CATEGORIES = [
@@ -380,12 +383,57 @@ function cryptoRandomString(len, chars) {
   return result.slice(0,len);
 }
 
-// Simple bcrypt-like (pbkdf2 simulation for UI demo)
-function simpleBcrypt(password, rounds) {
-  // Deterministic demo using SHA-256 rounds — NOT real bcrypt
-  let h = password;
-  for(let i=0;i<Math.pow(2,rounds-4);i++) h=sha256(h+password);
-  return `$2b$${String(rounds).padStart(2,"0")}$${btoa(sha256(h)).slice(0,53)}`;
+// ─── CDN loader (cached per src) ───
+const _scripts = {};
+function loadScript(src) {
+  if (_scripts[src]) return _scripts[src];
+  _scripts[src] = new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = src; s.async = true;
+    s.onload = () => resolve();
+    s.onerror = () => { delete _scripts[src]; reject(new Error('Could not load a required library. Check your connection and retry.')); };
+    document.body.appendChild(s);
+  });
+  return _scripts[src];
+}
+async function loadBcrypt() {
+  await loadScript('https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js');
+  return window.bcrypt || (window.dcodeIO && window.dcodeIO.bcrypt);
+}
+
+// ─── RFC 4648 Base32 decode (for TOTP secrets) ───
+const B32_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+function base32Decode(input) {
+  const clean = input.toUpperCase().replace(/[\s=-]/g, "");
+  if (!clean) throw new Error("Enter a Base32 secret.");
+  let bits = 0, value = 0;
+  const out = [];
+  for (const ch of clean) {
+    const idx = B32_ALPHABET.indexOf(ch);
+    if (idx === -1) throw new Error(`"${ch}" is not a valid Base32 character (A–Z, 2–7).`);
+    value = (value << 5) | idx;
+    bits += 5;
+    if (bits >= 8) { out.push((value >>> (bits - 8)) & 0xff); bits -= 8; }
+  }
+  return new Uint8Array(out);
+}
+
+// ─── RFC 6238 TOTP (HMAC-SHA1 via WebCrypto) ───
+async function computeTotp(secretB32, { period = 30, digits = 6, now = Date.now() } = {}) {
+  const keyBytes = base32Decode(secretB32);
+  const counter = Math.floor(now / 1000 / period);
+  // 8-byte big-endian counter
+  const msg = new Uint8Array(8);
+  let c = counter;
+  for (let i = 7; i >= 0; i--) { msg[i] = c & 0xff; c = Math.floor(c / 256); }
+  const key = await crypto.subtle.importKey("raw", keyBytes, { name: "HMAC", hash: "SHA-1" }, false, ["sign"]);
+  const sig = new Uint8Array(await crypto.subtle.sign("HMAC", key, msg));
+  // Dynamic truncation (RFC 4226 §5.3)
+  const offset = sig[sig.length - 1] & 0x0f;
+  const bin = ((sig[offset] & 0x7f) << 24) | (sig[offset + 1] << 16) | (sig[offset + 2] << 8) | sig[offset + 3];
+  const code = (bin % Math.pow(10, digits)).toString().padStart(digits, "0");
+  const secondsLeft = period - Math.floor((now / 1000) % period);
+  return { code, secondsLeft, period };
 }
 
 // �"����� TOOL COMPONENTS �����������������������������������������������������������������������������������������������������������������"�
@@ -982,11 +1030,19 @@ function BcryptHash() {
   const [cost, setCost] = useState(10);
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState("");
   const generate = async()=>{
     if(!pwd) return;
-    setLoading(true); setResult("");
-    await new Promise(r=>setTimeout(r,50));
-    setResult(simpleBcrypt(pwd,cost));
+    setLoading(true); setResult(""); setErr("");
+    try {
+      const bcrypt = await loadBcrypt();
+      if (!bcrypt) throw new Error("bcrypt library failed to load.");
+      // Real bcrypt: genSalt(cost) embeds a crypto-random salt into the hash.
+      const salt = bcrypt.genSaltSync(cost);
+      setResult(bcrypt.hashSync(pwd, salt));
+    } catch (e) {
+      setErr(e.message);
+    }
     setLoading(false);
   };
   return (
@@ -1000,12 +1056,13 @@ function BcryptHash() {
         </div>
       </div>
       <Btn onClick={generate} disabled={!pwd||loading}>{loading?"⚙ Hashing…":"Generate Bcrypt Hash"}</Btn>
+      {err && <div style={{padding:12,background:"rgba(239,68,68,0.1)",border:"1px solid rgba(239,68,68,0.3)",borderRadius:8,fontSize:13,color:C.text}}>{err}</div>}
       {result && (
         <HashOutput label={`Bcrypt Hash (cost=${cost})`} value={result} accent={C.green} />
       )}
       <Card style={{background:"rgba(16,185,129,0.04)"}}>
         <div style={{fontSize:12,color:C.muted,lineHeight:1.8}}>
-          <strong style={{color:C.text}}>Bcrypt</strong> is the industry standard for password hashing. Unlike MD5/SHA, it's intentionally slow and includes a built-in salt. Use cost 10-12 for production. <span style={{color:C.warn}}>Note: This is a demo implementation — use a server-side bcrypt library for real password hashing.</span>
+          <strong style={{color:C.text}}>Bcrypt</strong> is the industry standard for password hashing — intentionally slow, with a crypto-random salt built into every hash. Use cost 10–12 for production. This generates real <code style={{fontFamily:"'JetBrains Mono',monospace"}}>$2a$</code> bcrypt hashes locally that verify with any bcrypt library; higher cost factors take noticeably longer.
         </div>
       </Card>
     </VStack>
@@ -1053,28 +1110,30 @@ function TokenGenerator() {
 
 function OtpGenerator() {
   const [secret, setSecret] = useState("JBSWY3DPEHPK3PXP");
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState("------");
   const [remaining, setRemaining] = useState(30);
+  const [err, setErr] = useState("");
 
-  // TOTP demo — derive 6-digit code from SHA1 HMAC of time
-  const compute = useCallback(()=>{
-    const T=Math.floor(Date.now()/1000/30);
-    const h=hmacSha256(secret,T.toString());
-    const offset=parseInt(h.slice(-1),16);
-    const otp=(parseInt(h.slice(offset*2,offset*2+8),16)&0x7fffffff)%1000000;
-    setCode(otp.toString().padStart(6,"0"));
-    setRemaining(30-Math.floor(Date.now()/1000)%30);
-  },[secret]);
+  // Real RFC 6238 TOTP: Base32 secret → HMAC-SHA1 over the 8-byte time counter.
+  const compute = useCallback(async () => {
+    try {
+      const { code, secondsLeft } = await computeTotp(secret, { period: 30, digits: 6 });
+      setCode(code); setRemaining(secondsLeft); setErr("");
+    } catch (e) {
+      setErr(e.message); setCode("------");
+    }
+  }, [secret]);
 
-  useEffect(()=>{
+  useEffect(() => {
     compute();
-    const iv=setInterval(compute,1000);
-    return ()=>clearInterval(iv);
-  },[compute]);
+    const iv = setInterval(compute, 1000);
+    return () => clearInterval(iv);
+  }, [compute]);
 
   return (
     <VStack>
-      <div><Label>TOTP Secret Key</Label><Input value={secret} onChange={setSecret} placeholder="Base32 secret (e.g. JBSWY3DPEHPK3PXP)" mono /></div>
+      <div><Label>TOTP Secret Key (Base32)</Label><Input value={secret} onChange={setSecret} placeholder="Base32 secret (e.g. JBSWY3DPEHPK3PXP)" mono /></div>
+      {err && <div style={{padding:12,background:"rgba(239,68,68,0.1)",border:"1px solid rgba(239,68,68,0.3)",borderRadius:8,fontSize:13,color:C.text}}>{err}</div>}
       <div style={{textAlign:"center",padding:"32px 20px",background:"rgba(16,185,129,0.06)",border:"1px solid rgba(16,185,129,0.2)",borderRadius:12}} className="fade-in">
         <div style={{fontSize:11,color:C.muted,marginBottom:8,letterSpacing:"0.1em"}}>CURRENT OTP CODE</div>
         <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:52,fontWeight:700,color:C.green,letterSpacing:"0.2em"}}>{code}</div>
@@ -1086,7 +1145,7 @@ function OtpGenerator() {
       <CopyBtn text={code} style={{alignSelf:"center"}} />
       <Card style={{background:"rgba(59,130,246,0.04)"}}>
         <div style={{fontSize:12,color:C.muted,lineHeight:1.8}}>
-          <strong style={{color:C.text}}>TOTP</strong> (Time-based One-Time Password — RFC 6238) generates a 6-digit code that changes every 30 seconds based on the current time and a shared secret. Used in 2FA apps like Google Authenticator. <span style={{color:C.warn}}>This is a demo — production TOTP requires a proper Base32 HMAC-SHA1 implementation.</span>
+          <strong style={{color:C.text}}>TOTP</strong> (Time-based One-Time Password — RFC 6238) generates a 6-digit code that changes every 30 seconds from the current time and a shared Base32 secret. These codes match Google Authenticator and Authy for the same secret. Computed locally with HMAC-SHA1 — the secret never leaves your browser.
         </div>
       </Card>
     </VStack>
@@ -1251,9 +1310,173 @@ function ColorHash() {
   );
 }
 
+// ─── PBKDF2 Key Derivation (WebCrypto — spec-correct, unlike the old bcrypt demo) ───
+function Pbkdf2Generator() {
+  const [pwd, setPwd] = useState("");
+  const [salt, setSalt] = useState("");
+  const [iters, setIters] = useState(100000);
+  const [hash, setHash] = useState("SHA-256");
+  const [keyLen, setKeyLen] = useState(256);
+  const [result, setResult] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+
+  const randomSalt = () => {
+    const b = new Uint8Array(16); crypto.getRandomValues(b);
+    setSalt(Array.from(b).map(x => x.toString(16).padStart(2, "0")).join(""));
+  };
+
+  const derive = async () => {
+    if (!pwd) { setErr("Enter a password."); return; }
+    setBusy(true); setErr(""); setResult("");
+    try {
+      const enc = new TextEncoder();
+      const saltBytes = salt ? enc.encode(salt) : (() => { const b = new Uint8Array(16); crypto.getRandomValues(b); return b; })();
+      const keyMaterial = await crypto.subtle.importKey("raw", enc.encode(pwd), "PBKDF2", false, ["deriveBits"]);
+      const bits = await crypto.subtle.deriveBits(
+        { name: "PBKDF2", salt: saltBytes, iterations: Math.max(1, iters | 0), hash },
+        keyMaterial, keyLen
+      );
+      const hex = Array.from(new Uint8Array(bits)).map(x => x.toString(16).padStart(2, "0")).join("");
+      setResult(hex);
+    } catch (e) {
+      setErr(e.message);
+    }
+    setBusy(false);
+  };
+
+  return (
+    <VStack>
+      <div><Label>Password</Label><Input value={pwd} onChange={setPwd} placeholder="Password to derive from" type="password" /></div>
+      <div>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <Label>Salt (UTF-8)</Label>
+          <Btn size="sm" variant="secondary" onClick={randomSalt}>Random 16-byte salt</Btn>
+        </div>
+        <Input value={salt} onChange={setSalt} placeholder="Salt (recommended — leave blank for a random one)" mono />
+      </div>
+      <Grid3>
+        <div><Label>Hash</Label><SelectInput value={hash} onChange={setHash} options={[{value:"SHA-256",label:"SHA-256"},{value:"SHA-384",label:"SHA-384"},{value:"SHA-512",label:"SHA-512"},{value:"SHA-1",label:"SHA-1 (legacy)"}]} /></div>
+        <div><Label>Iterations</Label><Input value={iters} onChange={v=>setIters(Number(v)||0)} type="number" /></div>
+        <div><Label>Key length (bits)</Label><SelectInput value={String(keyLen)} onChange={v=>setKeyLen(Number(v))} options={[{value:"128",label:"128"},{value:"256",label:"256"},{value:"512",label:"512"}]} /></div>
+      </Grid3>
+      <Btn onClick={derive} disabled={!pwd||busy}>{busy?"⚙ Deriving…":"Derive Key"}</Btn>
+      {err && <div style={{padding:12,background:"rgba(239,68,68,0.1)",border:"1px solid rgba(239,68,68,0.3)",borderRadius:8,fontSize:13,color:C.text}}>{err}</div>}
+      {result && <HashOutput label={`Derived key (${keyLen}-bit, hex)`} value={result} accent={C.green} />}
+      <Card style={{background:"rgba(59,130,246,0.04)"}}>
+        <div style={{fontSize:12,color:C.muted,lineHeight:1.8}}>
+          <strong style={{color:C.text}}>PBKDF2</strong> stretches a password into a key using many HMAC iterations plus a salt, making brute force expensive. Computed locally with the browser's native WebCrypto — spec-correct and interoperable. Use ≥100,000 iterations (SHA-256) for password storage; higher is stronger but slower.
+        </div>
+      </Card>
+    </VStack>
+  );
+}
+
+// ─── SHA-3 / Keccak (js-sha3 CDN — WebCrypto has no SHA-3) ───
+function Sha3Keccak() {
+  const [input, setInput] = useState("");
+  const [out, setOut] = useState({ "sha3-256":"", "sha3-384":"", "sha3-512":"", "keccak-256":"" });
+  const [err, setErr] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        await loadScript("https://cdn.jsdelivr.net/npm/js-sha3@0.9.3/build/sha3.min.js");
+        if (cancelled) return;
+        const lib = window.sha3 || window;
+        const s3 = lib.sha3_256 || window.sha3_256;
+        const s3_384 = lib.sha3_384 || window.sha3_384;
+        const s3_512 = lib.sha3_512 || window.sha3_512;
+        const kec = lib.keccak256 || window.keccak256;
+        setOut({
+          "sha3-256": s3(input),
+          "sha3-384": s3_384(input),
+          "sha3-512": s3_512(input),
+          "keccak-256": kec(input),
+        });
+        setErr("");
+      } catch (e) { if (!cancelled) setErr(e.message); }
+    })();
+    return () => { cancelled = true; };
+  }, [input]);
+
+  return (
+    <VStack>
+      <div><Label>Input Text</Label><Textarea value={input} onChange={setInput} placeholder="Type or paste text to hash…" /></div>
+      {err && <div style={{padding:12,background:"rgba(239,68,68,0.1)",border:"1px solid rgba(239,68,68,0.3)",borderRadius:8,fontSize:13,color:C.text}}>{err}</div>}
+      <HashOutput label="SHA3-256" value={out["sha3-256"]} />
+      <HashOutput label="SHA3-384" value={out["sha3-384"]} />
+      <HashOutput label="SHA3-512" value={out["sha3-512"]} />
+      <HashOutput label="Keccak-256 (Ethereum)" value={out["keccak-256"]} accent={C.teal} />
+      <Card style={{background:"rgba(139,92,246,0.04)"}}>
+        <div style={{fontSize:12,color:C.muted,lineHeight:1.8}}>
+          <strong style={{color:C.text}}>SHA-3</strong> is the Keccak-based NIST standard (FIPS 202). <strong style={{color:C.text}}>Keccak-256</strong> is the original (pre-standard) padding used by Ethereum — its digest differs from SHA3-256 for the same input, so they are listed separately.
+        </div>
+      </Card>
+    </VStack>
+  );
+}
+
+// ─── Hash Identifier (heuristic by length + charset) ───
+function HashIdentifier() {
+  const [input, setInput] = useState("");
+  const guesses = useMemo(() => {
+    const h = input.trim();
+    if (!h) return [];
+    const isHex = /^[0-9a-fA-F]+$/.test(h);
+    const len = h.length;
+    const out = [];
+    if (/^\$2[aby]\$\d\d\$[./A-Za-z0-9]{53}$/.test(h)) out.push(["bcrypt", "high"]);
+    if (/^\$argon2(id|i|d)\$/.test(h)) out.push(["Argon2", "high"]);
+    if (/^\$6\$/.test(h)) out.push(["sha512crypt ($6$)", "high"]);
+    if (/^\$5\$/.test(h)) out.push(["sha256crypt ($5$)", "high"]);
+    if (/^\$1\$/.test(h)) out.push(["md5crypt ($1$)", "high"]);
+    if (/^\{SHA\}/.test(h)) out.push(["Apache SHA-1 (LDAP {SHA})", "high"]);
+    if (isHex) {
+      if (len === 32) out.push(["MD5", "likely"], ["MD4", "possible"], ["NTLM", "possible"]);
+      else if (len === 40) out.push(["SHA-1", "likely"], ["RIPEMD-160", "possible"]);
+      else if (len === 56) out.push(["SHA-224", "likely"], ["SHA3-224", "possible"]);
+      else if (len === 64) out.push(["SHA-256", "likely"], ["SHA3-256 / Keccak-256", "possible"], ["BLAKE2s", "possible"]);
+      else if (len === 96) out.push(["SHA-384", "likely"], ["SHA3-384", "possible"]);
+      else if (len === 128) out.push(["SHA-512", "likely"], ["SHA3-512", "possible"], ["BLAKE2b", "possible"]);
+      else if (len === 8) out.push(["CRC-32 / Adler-32", "possible"]);
+    }
+    if (!out.length) out.push(["Unrecognised — not a standard hex digest or known crypt format", "—"]);
+    return out;
+  }, [input]);
+
+  return (
+    <VStack>
+      <div><Label>Hash / Digest</Label><Input value={input} onChange={setInput} placeholder="Paste a hash to identify…" mono /></div>
+      {guesses.length > 0 && (
+        <div>
+          <Label>Likely types</Label>
+          <div style={{display:"flex",flexDirection:"column",gap:6,marginTop:6}}>
+            {guesses.map(([name, conf], i) => (
+              <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 14px",background:"rgba(255,255,255,0.03)",border:`1px solid ${C.border}`,borderRadius:8}}>
+                <span style={{color:C.text,fontSize:13,fontFamily:"'JetBrains Mono',monospace"}}>{name}</span>
+                <Badge color={conf==="high"?"green":conf==="likely"?"blue":conf==="possible"?"amber":"red"}>{conf}</Badge>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      <Card style={{background:"rgba(59,130,246,0.04)"}}>
+        <div style={{fontSize:12,color:C.muted,lineHeight:1.8}}>
+          Identification is by length and format only — many algorithms share a digest length (e.g. MD5, MD4 and NTLM are all 32 hex chars), so results are ranked guesses, not certainties.
+        </div>
+      </Card>
+    </VStack>
+  );
+}
+
 // �"����� COMPONENT MAP �����������������������������������������������������������������������������������������������������������������������"�
 const TOOL_COMPONENTS = {
   "hash-all":          HashAll,
+  "pbkdf2-generator":  Pbkdf2Generator,
+  "sha3-keccak":       Sha3Keccak,
+  "hash-identifier":   HashIdentifier,
   "md5-hash":          ()=><SingleHash algo="md5" />,
   "sha1-hash":         ()=><SingleHash algo="sha1" />,
   "sha256-hash":       ()=><SingleHash algo="sha256" />,
@@ -1429,19 +1652,13 @@ const HASH_SPECIAL_CSS = `
   @media(max-width:1024px){.trh-grid{grid-template-columns:repeat(3,1fr)}}
   @media(max-width:640px){.trh-grid{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:400px){.trh-grid{grid-template-columns:1fr}}
-  .trh-detail{display:grid;grid-template-columns:220px 1fr;gap:24px;padding:16px 0 60px}
-  @media(max-width:768px){.trh-detail{grid-template-columns:1fr;padding:16px 0 96px}}
-  .trh-sidebar{display:block}
-  @media(max-width:768px){.trh-sidebar{display:none}}
-  .trh-mobile-bar{display:none}
-  @media(max-width:768px){.trh-mobile-bar{display:flex}}
 `;
 
 function CategoryHomePage() {
   useEffect(() => { document.title = 'Free Hash & Crypto Tools — ToolsRift'; }, []);
 
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={null}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={null} tools={TOOLS} subcats={CATEGORIES}>
       <CategoryDashboard
         theme={PAGE_THEME}
         tools={TOOLS}
@@ -1456,16 +1673,14 @@ function ToolDetailPage({ toolId }) {
   const tool     = TOOLS.find(t => t.id === toolId);
   const meta     = TOOL_META[toolId];
   const ToolComp = TOOL_COMPONENTS[toolId];
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const acc = PAGE_THEME.color;
 
   useEffect(() => {
     document.title = meta?.title || `${tool?.name} — Free Hash Tool | ToolsRift`;
-    setDrawerOpen(false);
   }, [toolId]);
 
   if (!tool || !ToolComp) return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'} tools={TOOLS} subcats={CATEGORIES}>
       <div style={{ padding:40, textAlign:'center', color:'#64748B', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
         <div style={{ fontSize:48, marginBottom:16 }}>🔍</div>
         <p style={{ color:'#E2E8F0', marginBottom:8, fontSize:16 }}>Tool not found</p>
@@ -1474,71 +1689,24 @@ function ToolDetailPage({ toolId }) {
     </CategoryLayout>
   );
 
-  const sidebarTools = TOOLS.filter(t => t.cat === tool.cat);
-  const toolData = { name:tool.name, description:meta?.desc||tool.desc, howTo:meta?.howTo, faq:meta?.faq };
+  const toolData = { id:tool.id, name:tool.name, description:meta?.desc||tool.desc, howTo:meta?.howTo, faq:meta?.faq };
 
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={toolId}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId} tools={TOOLS} subcats={CATEGORIES}>
       <style>{HASH_SPECIAL_CSS}</style>
-      <div className="trh-detail">
-        <aside className="trh-sidebar">
-          <div style={{ position:'sticky', top:72, background:'#0D1117', border:'1px solid rgba(255,255,255,0.06)', borderRadius:12, overflow:'hidden' }}>
-            <div style={{ padding:'12px 16px', borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
-              <div style={{ fontSize:11, fontWeight:700, color:'#475569', textTransform:'uppercase', letterSpacing:'0.06em' }}>
-                {CATEGORIES.find(c => c.id === tool.cat)?.name || 'Tools'}
-              </div>
-            </div>
-            <div style={{ padding:'8px 0', maxHeight:'calc(100vh - 160px)', overflowY:'auto' }}>
-              {sidebarTools.map(t => {
-                const isActive = t.id === toolId;
-                return (
-                  <a key={t.id} href={`#/tool/${t.id}`}
-                    style={{ display:'flex', alignItems:'center', gap:10, minHeight:44, padding:'10px 16px', textDecoration:'none', background:isActive?`${acc}18`:'transparent', borderLeft:isActive?`2px solid ${acc}`:'2px solid transparent', transition:'background 0.15s' }}
-                    onMouseEnter={e => { if (!isActive) e.currentTarget.style.background='rgba(255,255,255,0.03)'; }}
-                    onMouseLeave={e => { if (!isActive) e.currentTarget.style.background='transparent'; }}
-                  >
-                    <span style={{ fontSize:15, flexShrink:0 }}>{t.icon}</span>
-                    <span style={{ fontSize:13, fontWeight:isActive?600:400, color:isActive?'#F1F5F9':'#94A3B8', lineHeight:1.3, fontFamily:"'Plus Jakarta Sans',sans-serif" }}>{t.name}</span>
-                  </a>
-                );
-              })}
-            </div>
-          </div>
-        </aside>
-
-        <div style={{ minWidth:0 }}>
-          <a href="#/" style={{ display:'inline-flex', alignItems:'center', gap:6, color:'#64748B', fontSize:13, textDecoration:'none', marginBottom:16, fontFamily:"'Plus Jakarta Sans',sans-serif" }}
-            onMouseEnter={e => e.currentTarget.style.color='#E2E8F0'}
-            onMouseLeave={e => e.currentTarget.style.color='#64748B'}
-          >← Back to Hash & Crypto</a>
-          <ToolPageLayout theme={PAGE_THEME} tool={toolData}>
-            <ToolComp />
-          </ToolPageLayout>
-        </div>
-      </div>
-
-      <div className="trh-mobile-bar" style={{ position:'fixed', bottom:0, left:0, right:0, zIndex:200, background:'rgba(6,9,15,0.96)', backdropFilter:'blur(12px)', borderTop:'1px solid rgba(255,255,255,0.06)', padding:'12px 16px', justifyContent:'space-between', alignItems:'center' }}>
-        <span style={{ fontSize:13, color:'#94A3B8', fontFamily:"'Plus Jakarta Sans',sans-serif", overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', maxWidth:'60%' }}>{tool.icon} {tool.name}</span>
-        <button onClick={() => setDrawerOpen(d => !d)} style={{ background:acc, color:'#fff', border:'none', borderRadius:8, padding:'8px 16px', fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:"'Plus Jakarta Sans',sans-serif", minHeight:44, flexShrink:0 }}>
-          {drawerOpen ? '✕ Close' : '☰ All Tools'}
-        </button>
-      </div>
-
-      {drawerOpen && (
-        <div style={{ position:'fixed', bottom:0, left:0, right:0, zIndex:199, background:'#0D1117', borderTop:`2px solid ${acc}`, maxHeight:'60vh', overflowY:'auto', padding:'8px 0 80px' }}>
-          {sidebarTools.map(t => {
-            const isActive = t.id === toolId;
-            return (
-              <a key={t.id} href={`#/tool/${t.id}`} onClick={() => setDrawerOpen(false)}
-                style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 20px', minHeight:52, textDecoration:'none', background:isActive?`${acc}18`:'transparent', borderLeft:isActive?`3px solid ${acc}`:'3px solid transparent' }}
-              >
-                <span style={{ fontSize:20 }}>{t.icon}</span>
-                <span style={{ fontSize:14, fontWeight:isActive?600:400, color:isActive?'#F1F5F9':'#94A3B8', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>{t.name}</span>
-              </a>
-            );
-          })}
-        </div>
-      )}
+      <a href="#/" style={{ display:'inline-flex', alignItems:'center', gap:6, color:'#64748B', fontSize:13, textDecoration:'none', marginTop:20, fontFamily:"'Plus Jakarta Sans',sans-serif" }}
+        onMouseEnter={e => e.currentTarget.style.color='#E2E8F0'}
+        onMouseLeave={e => e.currentTarget.style.color='#64748B'}
+      >← Back to Hash &amp; Crypto</a>
+      <ToolPageLayout
+        theme={PAGE_THEME}
+        tool={toolData}
+        tools={TOOLS}
+        subcats={CATEGORIES}
+        related={TOOLS.filter(t => t.id !== tool.id && t.cat === tool.cat).slice(0, 8)}
+      >
+        <ToolComp />
+      </ToolPageLayout>
     </CategoryLayout>
   );
 }

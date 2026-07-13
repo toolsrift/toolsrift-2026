@@ -5,12 +5,14 @@
 // The visual "feel" of the grid varies by `theme.animStyleId`
 // (smooth | glitch | liquid | precise | bouncy | cinematic).
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import CATEGORY_THEMES from '../../lib/categoryThemes';
 import { COLORS, RADIUS, FS, MQ, SPRING, EASE } from '../../lib/designTokens';
 import { FadeUp, Stagger, StaggerItem, ScanlineOverlay } from './motion';
 import { Pill, ThemedButton } from './ui';
+import { groupTools } from './ToolNavSidebar';
+import { resolveIcon } from '../../lib/toolIcons';
 
 // ── Themed tool tile (style varies per anim feel) ───────────────────────────
 function ThemedToolTile({ theme, tool, onClick, index = 0 }) {
@@ -73,7 +75,7 @@ function ThemedToolTile({ theme, tool, onClick, index = 0 }) {
           fontSize: 16, transition: 'background 0.25s',
           boxShadow: hov ? `0 4px 14px ${theme.tint25}` : 'none',
         }}>
-          {tool.icon || theme.motif || '•'}
+          {resolveIcon(tool, theme)}
         </span>
         <motion.span
           animate={{ x: hov ? 3 : 0, opacity: hov ? 1 : 0.4 }}
@@ -112,21 +114,20 @@ function ThemedToolTile({ theme, tool, onClick, index = 0 }) {
   );
 }
 
-// ── Sub-category filter pills ───────────────────────────────────────────────
-function SubcatPills({ theme, subcats, active, onChange }) {
+// ── Sub-category jump links ─────────────────────────────────────────────────
+// Every tool is on the page (grouped into sections below), so these scroll to a
+// section rather than filtering the grid down to it.
+function SubcatPills({ theme, subcats, counts, onJump }) {
   if (!subcats || subcats.length === 0) return null;
-  const items = [{ id: 'all', name: 'All', icon: '✨' }, ...subcats];
   return (
-    <div style={{
-      display: 'flex', gap: 8, flexWrap: 'wrap',
-      marginBottom: 24,
-    }}>
-      {items.map((s) => {
-        const isActive = active === s.id;
+    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 28 }}>
+      {subcats.map((s) => {
+        const n = counts[s.id] || 0;
+        if (!n) return null;
         return (
           <button
             key={s.id}
-            onClick={() => onChange(s.id)}
+            onClick={() => onJump(s.id)}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
               minHeight: 38,
@@ -134,18 +135,69 @@ function SubcatPills({ theme, subcats, active, onChange }) {
               fontSize: 13, fontWeight: 600,
               fontFamily: theme.fonts.body,
               cursor: 'pointer', whiteSpace: 'nowrap',
-              background: isActive ? theme.color : 'rgba(255,255,255,0.04)',
-              color: isActive ? (theme.textOnColor || '#fff') : COLORS.muted,
-              border: `1px solid ${isActive ? theme.color : 'rgba(255,255,255,0.08)'}`,
+              background: 'rgba(255,255,255,0.04)',
+              color: COLORS.muted,
+              border: `1px solid rgba(255,255,255,0.08)`,
               transition: 'all .2s',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = theme.tint12;
+              e.currentTarget.style.borderColor = theme.color;
+              e.currentTarget.style.color = COLORS.textBright;
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
+              e.currentTarget.style.color = COLORS.muted;
             }}
           >
             {s.icon && <span>{s.icon}</span>}
             <span>{s.name}</span>
+            <span style={{ color: theme.color, fontWeight: 700 }}>{n}</span>
           </button>
         );
       })}
     </div>
+  );
+}
+
+// ── One subcategory section: heading + its tool grid ───────────────────────
+// The section is position:relative because framer-motion measures scroll offset
+// against the nearest positioned ancestor and warns on a static one.
+function SubcatSection({ theme, group, onToolClick, sectionRef }) {
+  return (
+    <section ref={sectionRef} style={{ position: 'relative', scrollMarginTop: 76, marginBottom: 40 }}>
+      {group.name && (
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 14 }}>
+          <h2 style={{
+            fontFamily: theme.fonts.head, fontSize: FS.lg, fontWeight: 700,
+            color: COLORS.textBright, margin: 0, letterSpacing: '-0.01em',
+          }}>
+            {group.name}
+          </h2>
+          <span style={{
+            fontFamily: theme.fonts.body, fontSize: 12, fontWeight: 600,
+            color: COLORS.dim,
+          }}>
+            {group.tools.length} {group.tools.length === 1 ? 'tool' : 'tools'}
+          </span>
+        </div>
+      )}
+      <Stagger
+        gap={0.03}
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 240px), 1fr))',
+          gap: 14,
+        }}
+      >
+        {group.tools.map((t, i) => (
+          <StaggerItem key={t.id}>
+            <ThemedToolTile theme={theme} tool={t} index={i} onClick={() => onToolClick(t.id)} />
+          </StaggerItem>
+        ))}
+      </Stagger>
+    </section>
   );
 }
 
@@ -198,7 +250,7 @@ function TrendingStrip({ theme, tools, onToolClick }) {
                 e.currentTarget.style.color = COLORS.text;
               }}
             >
-              <span style={{ fontSize: 13, opacity: 0.85 }}>{t.icon || theme.motif}</span>
+              <span style={{ fontSize: 13, opacity: 0.85 }}>{resolveIcon(t, theme)}</span>
               <span>{t.name}</span>
             </button>
           ))}
@@ -222,7 +274,7 @@ function ExploreOthers({ theme }) {
           <div style={{
             fontFamily: theme.fonts.head, fontSize: FS.xl, fontWeight: 700,
             color: COLORS.textBright, letterSpacing: '-0.015em',
-          }}>612+ free tools across 23 categories</div>
+          }}>669+ free tools across 23 categories</div>
         </div>
         <div style={{
           display: 'grid', gap: 10,
@@ -279,8 +331,8 @@ export default function CategoryDashboard({
   showTrending = true,
   showExploreOthers = true,
 }) {
-  const [search, setSearch]   = useState('');
-  const [activeSub, setActiveSub] = useState('all');
+  const [search, setSearch] = useState('');
+  const sectionRefs = useRef({});
 
   const handleClick = (id) => {
     if (onToolClick) { onToolClick(id); return; }
@@ -299,16 +351,27 @@ export default function CategoryDashboard({
     return tools.slice(0, 8);
   }, [tools, trendingIds]);
 
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
+  const q = search.trim().toLowerCase();
+
+  const matches = useMemo(() => {
+    if (!q) return tools;
     return tools.filter(t => {
-      if (activeSub !== 'all' && t.cat !== activeSub && t.subCat !== activeSub) return false;
-      if (!q) return true;
       const name = (t.name || '').toLowerCase();
       const desc = (t.desc || t.description || '').toLowerCase();
       return name.includes(q) || desc.includes(q);
     });
-  }, [tools, search, activeSub]);
+  }, [tools, q]);
+
+  // Grouped sections when browsing; one flat result grid when searching.
+  const groups  = useMemo(() => groupTools(tools, subcats), [tools, subcats]);
+  const grouped = !q && groups.length > 1;
+
+  const counts = useMemo(
+    () => Object.fromEntries(groups.map(g => [g.id, g.tools.length])),
+    [groups],
+  );
+
+  const jumpTo = (id) => sectionRefs.current[id]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   return (
     <div style={{ padding: '24px 0 60px' }}>
@@ -350,32 +413,17 @@ export default function CategoryDashboard({
       </FadeUp>
 
       {/* Trending strip — hidden when searching */}
-      {showTrending && !search && activeSub === 'all' && (
+      {showTrending && !q && (
         <TrendingStrip theme={theme} tools={trending} onToolClick={handleClick} />
       )}
 
-      {/* Subcategory pills */}
-      {subcats?.length > 0 && (
-        <SubcatPills theme={theme} subcats={subcats} active={activeSub} onChange={setActiveSub} />
+      {/* Subcategory jump links */}
+      {grouped && (
+        <SubcatPills theme={theme} subcats={subcats} counts={counts} onJump={jumpTo} />
       )}
 
-      {/* Tool grid */}
-      {filtered.length > 0 ? (
-        <Stagger
-          gap={0.03}
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 240px), 1fr))',
-            gap: 14,
-          }}
-        >
-          {filtered.map((t, i) => (
-            <StaggerItem key={t.id}>
-              <ThemedToolTile theme={theme} tool={t} index={i} onClick={() => handleClick(t.id)} />
-            </StaggerItem>
-          ))}
-        </Stagger>
-      ) : (
+      {/* Tools: grouped sections when browsing, flat results when searching */}
+      {matches.length === 0 ? (
         <div style={{
           textAlign: 'center', padding: '64px 16px',
           color: COLORS.muted, fontFamily: theme.fonts.body, fontSize: 14,
@@ -384,6 +432,31 @@ export default function CategoryDashboard({
             ? <>No tools match "<strong style={{ color: COLORS.text }}>{search}</strong>" in this category.</>
             : 'No tools to show.'}
         </div>
+      ) : grouped ? (
+        groups.map(g => (
+          <SubcatSection
+            key={g.id}
+            theme={theme}
+            group={g}
+            onToolClick={handleClick}
+            sectionRef={el => { sectionRefs.current[g.id] = el; }}
+          />
+        ))
+      ) : (
+        <Stagger
+          gap={0.03}
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 240px), 1fr))',
+            gap: 14,
+          }}
+        >
+          {matches.map((t, i) => (
+            <StaggerItem key={t.id}>
+              <ThemedToolTile theme={theme} tool={t} index={i} onClick={() => handleClick(t.id)} />
+            </StaggerItem>
+          ))}
+        </Stagger>
       )}
 
       {/* Cross-category exploration */}

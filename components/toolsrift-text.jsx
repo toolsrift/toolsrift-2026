@@ -209,6 +209,9 @@ const TOOLS = [
   { id:"pig-latin",           cat:"transform", name:"Pig Latin Converter",      desc:"Convert English text to Pig Latin and back",         icon:"🔄", free:true },
   { id:"text-randomizer",     cat:"transform", name:"Text Randomizer",          desc:"Shuffle words, sentences or lines randomly",         icon:"🎲", free:true },
   { id:"punctuation-remover", cat:"transform", name:"Punctuation Remover",      desc:"Strip all punctuation marks from your text",         icon:"🧽", free:true },
+  { id:"case-converter",      cat:"transform", name:"Case Converter",            desc:"Convert text to UPPERCASE, lowercase, Title, camelCase, snake_case & more", icon:"🔠", free:true },
+  { id:"remove-accents",      cat:"transform", name:"Remove Accents & Diacritics", desc:"Strip accents and diacritics (café→cafe) and transliterate ligatures", icon:"🅰️", free:true },
+  { id:"invisible-char-remover", cat:"transform", name:"Invisible Character Remover", desc:"Remove zero-width spaces, BOM & hidden characters from pasted text", icon:"👻", free:true },
   // Format
   { id:"url-slug",            cat:"format",    name:"URL Slug Generator",       desc:"Generate SEO-friendly URL slugs from any title",     icon:"🔗", free:true },
   { id:"add-line-numbers",    cat:"format",    name:"Add Line Numbers",         desc:"Prefix every line with sequential line numbers",     icon:"⚡", free:true },
@@ -349,6 +352,21 @@ const TOOL_META = {
     title:"Punctuation Remover — Strip Punctuation from Text",
     desc:"Remove all punctuation marks from text. Option to keep specific punctuation or remove only certain types.",
     faq:[["What counts as punctuation?","All standard punctuation: . , ! ? ; : ' \" ( ) [ ] { } - — / \\ and more."],["Can I keep some punctuation?","Yes — specify which characters to preserve, like hyphens or apostrophes."],["Does this affect line breaks?","No — line breaks and spaces are preserved unless you explicitly remove them too."]]
+  },
+  "case-converter": {
+    title:"Case Converter — UPPERCASE, lowercase, Title & camelCase",
+    desc:"Convert text between UPPERCASE, lowercase, Title Case, Sentence case, aLtErNaTiNg, camelCase, PascalCase, snake_case, kebab-case, CONSTANT_CASE and dot.case instantly.",
+    faq:[["What case styles are supported?","UPPERCASE, lowercase, Title Case, Sentence case, aLtErNaTiNg cAsE, camelCase, PascalCase, snake_case, kebab-case, CONSTANT_CASE and dot.case."],["What is the difference between Title Case and Sentence case?","Title Case capitalizes the first letter of every word. Sentence case capitalizes only the first letter of each sentence."],["How are camelCase and snake_case generated?","Your text is split into words on spaces, underscores, hyphens and camelCase boundaries, then re-joined in the chosen style."]]
+  },
+  "remove-accents": {
+    title:"Remove Accents & Diacritics — Convert Accented Text to Plain ASCII",
+    desc:"Strip accents and diacritical marks from text instantly. Convert café→cafe, Zürich→Zurich, naïve→naive. Optionally transliterate ligatures like æ→ae and ß→ss.",
+    faq:[["How does accent removal work?","Text is Unicode-normalized (NFD) to separate base letters from their diacritical marks, then all combining marks are stripped, leaving plain ASCII letters."],["What are ligatures and how are they handled?","Ligatures like æ, œ, ß, ø, ł and đ don't decompose into a base letter plus accent, so they're transliterated separately (æ→ae, ß→ss, ø→o) when the option is enabled."],["Is this good for creating URL slugs or filenames?","Yes — removing accents produces clean ASCII text that's safe for URLs, filenames, and systems that don't handle Unicode well."]]
+  },
+  "invisible-char-remover": {
+    title:"Invisible Character Remover — Strip Zero-Width Spaces & Hidden Chars",
+    desc:"Remove zero-width spaces, byte-order marks, non-breaking spaces, soft hyphens and other invisible characters often pasted from PDFs, Word, or AI output. Shows how many were removed.",
+    faq:[["Why does my text contain invisible characters?","Text copied from PDFs, Word documents, web pages, or AI chatbots often includes hidden characters like zero-width spaces (U+200B), byte-order marks (U+FEFF), or non-breaking spaces (U+00A0) that break search, code, and formatting."],["What characters does this remove?","Zero-width space/joiner (U+200B–U+200D), BOM/zero-width no-break space (U+FEFF), word joiner (U+2060), soft hyphen (U+00AD), Mongolian vowel separator (U+180E), and other Unicode format (Cf) characters. Non-breaking spaces (U+00A0) are converted to normal spaces."],["Will it change my visible text?","No — only invisible and problematic characters are removed. Visible letters, numbers, punctuation, and normal spacing are preserved."]]
   },
   "url-slug": {
     title:"URL Slug Generator — Create SEO-Friendly Slugs",
@@ -1946,6 +1964,186 @@ function WordsToNumber() {
 }
 
 // �"����� TOOL COMPONENT MAP �������������������������������������������������������������������������������������������������������������"�
+// �"����� CASE CONVERTER HELPERS �����������������������������������������������������������������������������������������������"�
+function caseTokenize(t) {
+  return t
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")      // camelCase boundary: fooBar -> foo Bar
+    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2")   // acronym boundary: HTMLParser -> HTML Parser
+    .split(/[\s_\-.]+/)                            // split on spaces, underscores, hyphens, dots
+    .filter(Boolean);
+}
+function capWord(w) { return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); }
+function buildCases(t) {
+  const tokens = caseTokenize(t);
+  let ai = 0;
+  return [
+    ["UPPERCASE", t.toUpperCase()],
+    ["lowercase", t.toLowerCase()],
+    ["Title Case", t.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())],
+    ["Sentence case", t.toLowerCase().replace(/(^\s*[a-z])|([.!?]\s+[a-z])/g, m => m.toUpperCase())],
+    ["aLtErNaTiNg cAsE", t.replace(/[a-z]/gi, ch => (ai++ % 2 === 0 ? ch.toLowerCase() : ch.toUpperCase()))],
+    ["camelCase", tokens.map((w, i) => (i === 0 ? w.toLowerCase() : capWord(w))).join("")],
+    ["PascalCase", tokens.map(capWord).join("")],
+    ["snake_case", tokens.map(w => w.toLowerCase()).join("_")],
+    ["kebab-case", tokens.map(w => w.toLowerCase()).join("-")],
+    ["CONSTANT_CASE", tokens.map(w => w.toUpperCase()).join("_")],
+    ["dot.case", tokens.map(w => w.toLowerCase()).join(".")],
+  ];
+}
+
+function CaseConverter() {
+  const [text, setText] = useState("");
+  const cases = useMemo(() => buildCases(text), [text]);
+  const words = text.trim() ? text.trim().split(/\s+/).filter(Boolean).length : 0;
+  return (
+    <VStack>
+      <Textarea value={text} onChange={setText} placeholder="Type or paste text to convert between cases..." rows={5} />
+      <div style={{ display:"flex", gap:16, fontSize:12, color:C.muted }}>
+        <span>{words} word{words !== 1 ? "s" : ""}</span>
+        <span>{text.length} character{text.length !== 1 ? "s" : ""}</span>
+      </div>
+      <VStack gap={10}>
+        {cases.map(([label, val]) => (
+          <div key={label} style={{ background:"rgba(0,0,0,0.3)", border:`1px solid ${C.border}`, borderRadius:8, padding:"10px 12px" }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", gap:10, marginBottom:6 }}>
+              <span style={{ ...T.label }}>{label}</span>
+              <CopyBtn text={val} />
+            </div>
+            <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:13, color:C.text, whiteSpace:"pre-wrap", wordBreak:"break-word", minHeight:18 }}>
+              {val || <span style={{ color:C.muted }}>—</span>}
+            </div>
+          </div>
+        ))}
+      </VStack>
+    </VStack>
+  );
+}
+
+// �"����� REMOVE ACCENTS / INVISIBLE CHARS �����������������������������������������������������������������������������������"�
+const LIGATURE_MAP = [
+  ["æ","ae"],["Æ","AE"],["œ","oe"],["Œ","OE"],["ß","ss"],
+  ["ø","o"],["Ø","O"],["ł","l"],["Ł","L"],["đ","d"],["Đ","D"],
+  ["ð","d"],["Ð","D"],["þ","th"],["Þ","Th"],["ĳ","ij"],["Ĳ","IJ"]
+];
+function transliterateLigatures(str) {
+  let s = str;
+  for (const [from, to] of LIGATURE_MAP) s = s.split(from).join(to);
+  return s;
+}
+function RemoveAccents() {
+  const [text, setText] = useState("");
+  const [ligatures, setLigatures] = useState(true);
+  const output = useMemo(() => {
+    let s = text;
+    if (ligatures) s = transliterateLigatures(s);
+    // NFD splits accented letters into base + combining diacritic, then strip the marks
+    s = s.normalize("NFD").replace(/\p{Diacritic}/gu, "").normalize("NFC");
+    return s;
+  }, [text, ligatures]);
+  const changed = useMemo(() => {
+    if (!text) return 0;
+    const a = Array.from(text), b = Array.from(output);
+    // count characters that were altered/removed (rough diff by length + mismatch)
+    let n = Math.abs(a.length - b.length);
+    const min = Math.min(a.length, b.length);
+    for (let i = 0; i < min; i++) if (a[i] !== b[i]) n++;
+    return n;
+  }, [text, output]);
+  return (
+    <VStack>
+      <div>
+        <Label>Your Text</Label>
+        <Textarea value={text} onChange={setText} rows={6} placeholder="café · Zürich · naïve · Łódź · Straße" />
+      </div>
+      <label style={{ display:"flex", alignItems:"center", gap:8, fontSize:13, color:C.text, cursor:"pointer" }}>
+        <input type="checkbox" checked={ligatures} onChange={e => setLigatures(e.target.checked)} style={{ accentColor:C.blue, width:16, height:16 }} />
+        Transliterate ligatures (æ→ae, œ→oe, ß→ss, ø→o, ł→l, đ→d)
+      </label>
+      {text && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>ASCII Output {changed > 0 && <span style={{ color:C.blue, textTransform:"none", fontWeight:600 }}>· {changed} char{changed!==1?"s":""} changed</span>}</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Result mono={false}>{output}</Result>
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// Invisible / zero-width / format characters to strip (identified by code point — pure ASCII source)
+const INVISIBLE_CODES = new Set([0x200B,0x200C,0x200D,0x2060,0x2061,0x2062,0x2063,0x2064,0xFEFF,0x180E,0x00AD,0x034F,0x061C,0x115F,0x1160,0x17B4,0x17B5,0x3164,0xFFA0,0x200E,0x200F,0x202A,0x202B,0x202C,0x202D,0x202E,0x2066,0x2067,0x2068,0x2069,0xFFF9,0xFFFA,0xFFFB]);
+const CF_RE = /\p{Cf}/u; // Unicode "Format" category catch-all
+function invisibleType(cp) {
+  if (cp === 0x200B || cp === 0x200C || cp === 0x200D || cp === 0x2060) return "Zero-width space/joiner";
+  if (cp === 0xFEFF) return "Byte-order mark (BOM)";
+  if (cp === 0x00AD) return "Soft hyphen";
+  if (cp === 0x200E || cp === 0x200F || (cp >= 0x202A && cp <= 0x202E) || (cp >= 0x2066 && cp <= 0x2069) || cp === 0x061C) return "Bidi / direction control";
+  return "Other invisible/format";
+}
+function isInvisibleCp(cp) {
+  return INVISIBLE_CODES.has(cp) || CF_RE.test(String.fromCodePoint(cp));
+}
+function InvisibleCharRemover() {
+  const [text, setText] = useState("");
+  const res = useMemo(() => {
+    if (!text) return { output:"", removed:0, nbsp:0, types:[] };
+    let out = "", removed = 0, nbsp = 0;
+    const counts = {};
+    for (const ch of Array.from(text)) {
+      const cp = ch.codePointAt(0);
+      if (cp === 0x00A0) { out += " "; nbsp++; continue; } // non-breaking space -> normal space
+      if (isInvisibleCp(cp)) {
+        removed++;
+        const t = invisibleType(cp);
+        counts[t] = (counts[t] || 0) + 1;
+        continue;
+      }
+      out += ch;
+    }
+    const types = Object.entries(counts);
+    if (nbsp) types.push(["Non-breaking space → space", nbsp]);
+    return { output:out, removed, nbsp, types };
+  }, [text]);
+  const total = res.removed + res.nbsp;
+  return (
+    <VStack>
+      <div>
+        <Label>Paste Text (from PDF, Word, AI output…)</Label>
+        <Textarea value={text} onChange={setText} rows={6} placeholder="Paste text that may contain hidden characters…" />
+      </div>
+      {text && (
+        <>
+          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
+            <StatBox value={total} label="Invisible Chars Found" />
+            <StatBox value={res.output.length} label="Clean Length" />
+          </div>
+          {res.types.length > 0 ? (
+            <div style={{ background:"rgba(0,0,0,0.3)", border:`1px solid ${C.border}`, borderRadius:8, padding:"10px 14px" }}>
+              <div style={{ ...T.label, marginBottom:6 }}>Detected</div>
+              {res.types.map(([name, c]) => (
+                <div key={name} style={{ display:"flex", justifyContent:"space-between", fontSize:12, color:C.text, padding:"3px 0" }}>
+                  <span>{name}</span><span style={{ color:C.blue, fontWeight:600 }}>{c}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ fontSize:12, color:C.success }}>✓ No invisible characters detected — your text is clean.</div>
+          )}
+          <div>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+              <Label>Cleaned Text</Label>
+              <CopyBtn text={res.output} />
+            </div>
+            <Result mono={false}>{res.output}</Result>
+          </div>
+        </>
+      )}
+    </VStack>
+  );
+}
+
 const TOOL_COMPONENTS = {
   "word-counter-pro": WordCounterPro,
   "character-counter": CharacterCounter,
@@ -1967,6 +2165,9 @@ const TOOL_COMPONENTS = {
   "pig-latin": PigLatin,
   "text-randomizer": TextRandomizer,
   "punctuation-remover": PunctuationRemover,
+  "case-converter": CaseConverter,
+  "remove-accents": RemoveAccents,
+  "invisible-char-remover": InvisibleCharRemover,
   "url-slug": UrlSlug,
   "add-line-numbers": AddLineNumbers,
   "remove-line-numbers": RemoveLineNumbers,
@@ -2161,7 +2362,7 @@ function CategoryHomePage() {
   }, []);
 
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={null}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={null} tools={TOOLS} subcats={CATEGORIES}>
       <CategoryDashboard
         theme={PAGE_THEME}
         tools={TOOLS}
@@ -2177,16 +2378,14 @@ function ToolDetailPage({ toolId }) {
   const tool     = TOOLS.find(t => t.id === toolId);
   const meta     = TOOL_META[toolId];
   const ToolComp = TOOL_COMPONENTS[toolId];
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const acc = PAGE_THEME.color;
 
   useEffect(() => {
     document.title = meta?.title || `${tool?.name} — Free Text Tool | ToolsRift`;
-    setDrawerOpen(false);
   }, [toolId]);
 
   if (!tool || !ToolComp) return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'} tools={TOOLS} subcats={CATEGORIES}>
       <div style={{ padding:40, textAlign:'center', color:'#64748B', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
         <div style={{ fontSize:48, marginBottom:16 }}>🔍</div>
         <p style={{ color:'#E2E8F0', marginBottom:8, fontSize:16 }}>Tool not found</p>
@@ -2195,8 +2394,8 @@ function ToolDetailPage({ toolId }) {
     </CategoryLayout>
   );
 
-  const sidebarTools = TOOLS.filter(t => t.cat === tool.cat);
   const toolData = {
+    id: tool.id,
     name:        tool.name,
     description: meta?.desc || tool.desc,
     howTo:       meta?.howTo,
@@ -2204,97 +2403,20 @@ function ToolDetailPage({ toolId }) {
   };
 
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={toolId}>
-      <style>{`
-        .trt-detail{display:grid;grid-template-columns:220px 1fr;gap:24px;padding:16px 0 60px}
-        @media(max-width:768px){.trt-detail{grid-template-columns:1fr;padding:16px 0 96px}}
-        .trt-sidebar{display:block}
-        @media(max-width:768px){.trt-sidebar{display:none}}
-        .trt-mobile-bar{display:none}
-        @media(max-width:768px){.trt-mobile-bar{display:flex}}
-      `}</style>
-
-      <div className="trt-detail">
-        {/* Desktop sidebar */}
-        <aside className="trt-sidebar">
-          <div style={{ position:'sticky', top:72, background:'#0D1117', border:'1px solid rgba(255,255,255,0.06)', borderRadius:12, overflow:'hidden' }}>
-            <div style={{ padding:'12px 16px', borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
-              <div style={{ fontSize:11, fontWeight:700, color:'#475569', textTransform:'uppercase', letterSpacing:'0.06em' }}>
-                {CATEGORIES.find(c => c.id === tool.cat)?.name || 'Tools'}
-              </div>
-            </div>
-            <div style={{ padding:'8px 0', maxHeight:'calc(100vh - 160px)', overflowY:'auto' }}>
-              {sidebarTools.map(t => {
-                const isActive = t.id === toolId;
-                return (
-                  <a
-                    key={t.id}
-                    href={`#/tool/${t.id}`}
-                    style={{
-                      display:'flex', alignItems:'center', gap:10, minHeight:44,
-                      padding:'10px 16px', textDecoration:'none',
-                      background: isActive ? `${acc}18` : 'transparent',
-                      borderLeft: isActive ? `2px solid ${acc}` : '2px solid transparent',
-                      transition:'background 0.15s',
-                    }}
-                    onMouseEnter={e => { if (!isActive) e.currentTarget.style.background='rgba(255,255,255,0.03)'; }}
-                    onMouseLeave={e => { if (!isActive) e.currentTarget.style.background='transparent'; }}
-                  >
-                    <span style={{ fontSize:15, flexShrink:0 }}>{t.icon}</span>
-                    <span style={{ fontSize:13, fontWeight:isActive?600:400, color:isActive?'#F1F5F9':'#94A3B8', lineHeight:1.3, fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
-                      {t.name}
-                    </span>
-                  </a>
-                );
-              })}
-            </div>
-          </div>
-        </aside>
-
-        {/* Main content */}
-        <div style={{ minWidth:0 }}>
-          <a href="#/"
-            style={{ display:'inline-flex', alignItems:'center', gap:6, color:'#64748B', fontSize:13, textDecoration:'none', marginBottom:16, fontFamily:"'Plus Jakarta Sans',sans-serif" }}
-            onMouseEnter={e => e.currentTarget.style.color='#E2E8F0'}
-            onMouseLeave={e => e.currentTarget.style.color='#64748B'}
-          >
-            ← Back to Text Tools
-          </a>
-          <ToolPageLayout theme={PAGE_THEME} tool={toolData}>
-            <ToolComp />
-          </ToolPageLayout>
-        </div>
-      </div>
-
-      {/* Mobile: floating bottom bar */}
-      <div className="trt-mobile-bar" style={{ position:'fixed', bottom:0, left:0, right:0, zIndex:200, background:'rgba(6,9,15,0.96)', backdropFilter:'blur(12px)', borderTop:'1px solid rgba(255,255,255,0.06)', padding:'12px 16px', justifyContent:'space-between', alignItems:'center' }}>
-        <span style={{ fontSize:13, color:'#94A3B8', fontFamily:"'Plus Jakarta Sans',sans-serif", overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', maxWidth:'60%' }}>
-          {tool.icon} {tool.name}
-        </span>
-        <button
-          onClick={() => setDrawerOpen(d => !d)}
-          style={{ background:acc, color:'#fff', border:'none', borderRadius:8, padding:'8px 16px', fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:"'Plus Jakarta Sans',sans-serif", minHeight:44, flexShrink:0 }}
-        >
-          {drawerOpen ? '✕ Close' : '☰ All Tools'}
-        </button>
-      </div>
-
-      {/* Mobile drawer */}
-      {drawerOpen && (
-        <div style={{ position:'fixed', bottom:0, left:0, right:0, zIndex:199, background:'#0D1117', borderTop:`2px solid ${acc}`, maxHeight:'60vh', overflowY:'auto', padding:'8px 0 80px' }}>
-          {sidebarTools.map(t => {
-            const isActive = t.id === toolId;
-            return (
-              <a key={t.id} href={`#/tool/${t.id}`} onClick={() => setDrawerOpen(false)}
-                style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 20px', minHeight:52, textDecoration:'none', background:isActive?`${acc}18`:'transparent', borderLeft:isActive?`3px solid ${acc}`:'3px solid transparent' }}
-              >
-                <span style={{ fontSize:20 }}>{t.icon}</span>
-                <span style={{ fontSize:14, fontWeight:isActive?600:400, color:isActive?'#F1F5F9':'#94A3B8', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>{t.name}</span>
-              </a>
-            );
-          })}
-        </div>
-      )}
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId} tools={TOOLS} subcats={CATEGORIES}>
+      <a href="#/" style={{ display:'inline-flex', alignItems:'center', gap:6, color:'#64748B', fontSize:13, textDecoration:'none', marginTop:20, fontFamily:"'Plus Jakarta Sans',sans-serif" }}
+        onMouseEnter={e => e.currentTarget.style.color='#E2E8F0'}
+        onMouseLeave={e => e.currentTarget.style.color='#64748B'}
+      >← Back to Text Tools</a>
+      <ToolPageLayout
+        theme={PAGE_THEME}
+        tool={toolData}
+        tools={TOOLS}
+        subcats={CATEGORIES}
+        related={TOOLS.filter(t => t.id !== tool.id && t.cat === tool.cat).slice(0, 8)}
+      >
+        <ToolComp />
+      </ToolPageLayout>
     </CategoryLayout>
   );
 }

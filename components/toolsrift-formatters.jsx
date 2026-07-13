@@ -176,7 +176,7 @@ const TOOLS = [
   { id:"toml-formatter", cat:"formatters", name:"TOML Formatter", desc:"Format TOML configuration files with proper structure and indentation", icon:"📋", free:true },
   { id:"graphql-formatter", cat:"formatters", name:"GraphQL Formatter", desc:"Format GraphQL queries and schemas with proper indentation and structure", icon:"📊", free:true },
   { id:"php-formatter", cat:"formatters", name:"PHP Formatter", desc:"Format PHP code with proper indentation, brackets, and PSR standards", icon:"🐘", free:true },
-  { id:"python-formatter", cat:"formatters", name:"Python Formatter", desc:"Format Python code following PEP8 style guide with proper indentation", icon:"🐍", free:true },
+  { id:"python-formatter", cat:"formatters", name:"Python Code Cleaner", desc:"Convert tabs to spaces, trim trailing whitespace and tidy blank lines in Python", icon:"🐍", free:true },
   { id:"java-formatter", cat:"formatters", name:"Java Formatter", desc:"Format Java code with proper indentation, brackets, and Java conventions", icon:"☕", free:true },
   { id:"cpp-formatter", cat:"formatters", name:"C/C++ Formatter", desc:"Format C and C++ code with proper indentation and bracket placement", icon:"⚡", free:true },
   { id:"csharp-formatter", cat:"formatters", name:"C# Formatter", desc:"Format C# code with proper indentation and Microsoft coding conventions", icon:"🔷", free:true },
@@ -287,12 +287,12 @@ const TOOL_META = {
     ]
   },
   "python-formatter": {
-    title: "Free Python Formatter – Format Python Code with PEP8 | ToolsRift",
-    desc: "Format Python code following PEP8 style guide. Beautify Python with proper indentation and spacing.",
+    title: "Free Python Code Cleaner – Tabs to Spaces, Trim Whitespace | ToolsRift",
+    desc: "Clean up Python code online: convert tabs to 4 spaces, strip trailing whitespace and cap blank lines. Safe, in-browser, never re-indents your code.",
     faq: [
-      ["What is PEP8?", "PEP8 is Python's official style guide defining conventions for indentation (4 spaces), line length (79 chars), spacing, and naming."],
-      ["Does it fix all PEP8 violations?", "The formatter handles indentation and basic spacing. For complete PEP8 compliance, use tools like Black or autopep8."],
-      ["Can it convert tabs to spaces?", "Yes, the formatter converts tabs to 4 spaces as recommended by PEP8, ensuring consistent indentation."]
+      ["What does this tool do?", "It normalises Python whitespace — converts tabs to 4 spaces, removes trailing whitespace on each line, and collapses runs of blank lines to at most two (PEP8's maximum)."],
+      ["Does it re-indent or reformat my code?", "No. Python's indentation is meaningful, so re-deriving it could change what your code does. This tool only normalises whitespace it can safely touch. For full auto-formatting, run Black or autopep8 locally."],
+      ["Why convert tabs to spaces?", "Mixing tabs and spaces is a common cause of Python IndentationErrors. PEP8 recommends 4 spaces per indent level, so this tool standardises on that."]
     ]
   },
   "java-formatter": {
@@ -432,28 +432,31 @@ const TOOL_META = {
   }
 };
 
-// Helper function for basic code formatting
+// Basic brace-and-statement indenter for C-family languages (C/C++/C#/Java/PHP).
+// Breaks lines on block braces and on statement-terminating `;`, but keeps `;`
+// inside parentheses (so `for (i=0; i<n; i++)` stays on one line) and never
+// breaks commas (so argument and parameter lists stay intact). It is a formatter,
+// not a full parser — it re-indents readably without mangling code.
 const formatCode = (code, indentSize = 2) => {
   const indent = ' '.repeat(indentSize);
   let level = 0;
+  let paren = 0;          // depth of () — suppresses statement breaks inside for-headers, calls
   let result = '';
   let inString = false;
   let stringChar = '';
-  
+
   for (let i = 0; i < code.length; i++) {
     const char = code[i];
     const prev = code[i - 1];
-    
-    if ((char === '"' || char === "'") && prev !== '\\') {
-      if (!inString) {
-        inString = true;
-        stringChar = char;
-      } else if (char === stringChar) {
-        inString = false;
-      }
+
+    if ((char === '"' || char === "'" || char === '`') && prev !== '\\') {
+      if (!inString) { inString = true; stringChar = char; }
+      else if (char === stringChar) { inString = false; }
     }
-    
+
     if (!inString) {
+      if (char === '(') { paren++; result += char; continue; }
+      if (char === ')') { paren = Math.max(0, paren - 1); result += char; continue; }
       if (char === '{' || char === '[') {
         result += char + '\n';
         level++;
@@ -465,7 +468,9 @@ const formatCode = (code, indentSize = 2) => {
         result = result.trimEnd() + '\n' + indent.repeat(level) + char;
         continue;
       }
-      if (char === ';' || char === ',') {
+      // Only break on `;` that actually ends a statement — not the ones inside a
+      // for-loop header or any parenthesised expression.
+      if (char === ';' && paren === 0) {
         result += char + '\n' + indent.repeat(level);
         continue;
       }
@@ -474,11 +479,11 @@ const formatCode = (code, indentSize = 2) => {
         continue;
       }
     }
-    
+
     result += char;
   }
-  
-  return result.replace(/\n+/g, '\n').trim();
+
+  return result.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').replace(/\n\s*\n/g, '\n').trim();
 };
 
 // CSS Formatter Component
@@ -880,20 +885,27 @@ function PythonFormatter() {
 
   const format = () => {
     if (!input.trim()) return;
-    const lines = input.split('\n');
-    const formatted = lines.map(line => {
-      return line.replace(/\t/g, '    ');
-    }).join('\n');
-    setOutput(formatted);
+    // Python indentation is significant, so we normalise rather than re-derive it:
+    // tabs → 4 spaces, strip trailing whitespace, and cap consecutive blank lines
+    // at two (PEP8's maximum). We never re-indent — that would risk changing meaning.
+    const cleaned = input
+      .replace(/\t/g, '    ')
+      .split('\n')
+      .map(line => line.replace(/[ \t]+$/, ''))
+      .join('\n')
+      .replace(/\n{3,}/g, '\n\n\n')   // allow at most two blank lines
+      .replace(/[ \t]+\n/g, '\n')
+      .replace(/\s+$/, '') + '\n';
+    setOutput(cleaned);
   };
 
   return (
     <VStack>
       <div>
         <Label>Python Code</Label>
-        <Textarea value={input} onChange={setInput} rows={10} mono placeholder="def greet(name):\n\tprint(f'Hello {name}')" />
+        <Textarea value={input} onChange={setInput} rows={10} mono placeholder={"def greet(name):\n\tprint(f'Hello {name}')"} />
       </div>
-      <Btn onClick={format} disabled={!input.trim()}>Format Python (PEP8)</Btn>
+      <Btn onClick={format} disabled={!input.trim()}>Clean Up Python</Btn>
       {output && (
         <div>
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
@@ -1722,7 +1734,7 @@ function ToolPage({ toolId }) {
 
   if (!tool || !ToolComp) {
     return (
-      <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'}>
+      <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'} tools={TOOLS} subcats={CATEGORIES}>
         <div style={{ padding:'48px 20px', textAlign:'center', color:'#94A3B8' }}>
           Tool not found. <a href="#/" style={{ color: PAGE_THEME.color }}>← Back to {PAGE_THEME.name}</a>
         </div>
@@ -1741,8 +1753,8 @@ function ToolPage({ toolId }) {
   const related = TOOLS.filter(t => t.id !== tool.id && t.cat === tool.cat).slice(0, 8);
 
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={toolId}>
-      <ToolPageLayout theme={PAGE_THEME} tool={toolData} related={related}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId} tools={TOOLS} subcats={CATEGORIES}>
+      <ToolPageLayout theme={PAGE_THEME} tool={toolData} tools={TOOLS} subcats={CATEGORIES} related={related}>
         <ToolComp />
       </ToolPageLayout>
     </CategoryLayout>
@@ -1797,7 +1809,7 @@ function HomePage() {
     document.title = "Free Code Formatters – Format, Convert & Beautify Code Online | ToolsRift";
   }, []);
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={null}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={null} tools={TOOLS} subcats={CATEGORIES}>
       <CategoryDashboard
         theme={PAGE_THEME}
         tools={TOOLS}

@@ -61,7 +61,7 @@ export default function MyDocument({ manifest }) {
         <meta property="og:image:width" content="1500" />
         <meta property="og:image:height" content="782" />
         <meta property="og:image:type" content="image/png" />
-        <meta property="og:image:alt" content="ToolsRift — 612+ Free Online Tools" />
+        <meta property="og:image:alt" content="ToolsRift — 669+ Free Online Tools" />
 
         {/* ============================================
             Twitter Card Defaults
@@ -69,7 +69,7 @@ export default function MyDocument({ manifest }) {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@toolsrift" />
         <meta name="twitter:image" content="https://toolsrift.com/og-image.png" />
-        <meta name="twitter:image:alt" content="ToolsRift — 612+ Free Online Tools" />
+        <meta name="twitter:image:alt" content="ToolsRift — 669+ Free Online Tools" />
 
         {/* ============================================
             Global Schema — WebSite with SearchAction
@@ -82,7 +82,7 @@ export default function MyDocument({ manifest }) {
               '@type': 'WebSite',
               name: 'ToolsRift',
               url: 'https://toolsrift.com',
-              description: '612+ free online tools for everyone',
+              description: '669+ free online tools for everyone',
               inLanguage: 'en-US',
               potentialAction: {
                 '@type': 'SearchAction',

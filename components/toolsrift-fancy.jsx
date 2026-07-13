@@ -195,6 +195,12 @@ const TOOLS = [
   { id:"text-to-emoji", cat:"decorators", name:"Text to Emoji Converter", desc:"Automatically add relevant emoji alongside words for expressive messages", icon:"😊", free:true },
   { id:"fancy-text-all", cat:"decorators", name:"Fancy Text - All Styles", desc:"Generate all fancy text styles at once with one-click copy for each style", icon:"✨", free:true },
   { id:"unicode-text-art", cat:"decorators", name:"Unicode Text Art", desc:"Generate simple text art borders and decorative boxes around your text", icon:"╔═╗", free:true },
+
+  // New Tools (added July 2026)
+  { id:"fullwidth-text", cat:"styles", name:"Fullwidth Text Generator", desc:"Convert text to fullwidth Unicode letters for vaporwave and aesthetic ａｅｓｔｈｅｔｉｃ style", icon:"🔠", free:true },
+  { id:"cool-symbols", cat:"decorators", name:"Cool Symbols & Kaomoji", desc:"Click-to-copy board of arrows, stars, hearts, math symbols, currency and kaomoji faces", icon:"🔣", free:true },
+  { id:"discord-formatter", cat:"decorators", name:"Discord Text Formatter", desc:"Build Discord-formatted messages with bold, italic, spoiler markdown and colored ANSI text", icon:"💬", free:true },
+  { id:"emoji-letters", cat:"styles", name:"Emoji Letters Generator", desc:"Turn text into regional indicator or squared Latin emoji letters like 🇦🇧🅰🅱", icon:"🅰️", free:true },
 ];
 
 const CATEGORIES = [
@@ -463,6 +469,42 @@ const TOOL_META = {
       ["What border styles are available?", "The tool offers single-line, double-line, rounded, and decorative Unicode box-drawing characters for various border styles."],
       ["Can I adjust the box size?", "The box automatically sizes to fit your text. You can manually adjust by editing the output."],
       ["Does text art work everywhere?", "Text art works in most plain text environments, but formatting may vary slightly across different fonts and platforms."]
+    ]
+  },
+  "fullwidth-text": {
+    title: "Free Fullwidth Text Generator – Aesthetic Vaporwave Text | ToolsRift",
+    desc: "Convert text to fullwidth Unicode letters for vaporwave and aesthetic styling. Create ａｅｓｔｈｅｔｉｃ ｔｅｘｔ for social media instantly.",
+    faq: [
+      ["What is fullwidth text?", "Fullwidth text uses Unicode Fullwidth Forms characters that each take up the space of a full CJK character, creating the spaced-out ａｅｓｔｈｅｔｉｃ look popular in vaporwave aesthetics."],
+      ["Where can I use fullwidth text?", "Fullwidth text works on Twitter, Instagram, Discord, TikTok and most apps that support Unicode. It's popular for bios, usernames and aesthetic posts."],
+      ["Why are there big spaces between letters?", "Each fullwidth character is as wide as a Chinese or Japanese character, so Latin letters appear evenly spaced. The regular space is converted to an ideographic space to match."]
+    ]
+  },
+  "cool-symbols": {
+    title: "Free Cool Symbols & Kaomoji – Click to Copy Symbols | ToolsRift",
+    desc: "Click-to-copy board of cool symbols and kaomoji: arrows, stars, hearts, math, currency and text faces like ¯\\_(ツ)_/¯. Copy any symbol instantly.",
+    faq: [
+      ["How do I copy a symbol?", "Just click any symbol or kaomoji on the board and it is instantly copied to your clipboard, ready to paste anywhere."],
+      ["What are kaomoji?", "Kaomoji are Japanese-style text emoticons made from Unicode characters, like ¯\\_(ツ)_/¯ and (╯°□°)╯, that you can read without rotating your head."],
+      ["Do these symbols work everywhere?", "Most symbols are standard Unicode and display on all modern devices and platforms, though a few decorative characters may look slightly different by font."]
+    ]
+  },
+  "discord-formatter": {
+    title: "Free Discord Text Formatter – Bold, Spoiler & ANSI Colors | ToolsRift",
+    desc: "Build Discord-formatted text with bold, italic, underline, strikethrough, spoiler and code markdown, plus colored ANSI text blocks. Copy and paste.",
+    faq: [
+      ["How do I make colored text in Discord?", "Switch to ANSI mode, pick a color, then copy the generated ```ansi code block. Paste it into Discord — colors render in the desktop and web apps."],
+      ["Does Discord colored text work on mobile?", "No. ANSI color code blocks only render in the Discord desktop and web clients. On mobile the text shows without colors but stays fully readable."],
+      ["What markdown does Discord support?", "Discord supports bold (**), italic (*), underline (__), strikethrough (~~), spoiler (||), inline code (`) and multi-line code blocks (```)."]
+    ]
+  },
+  "emoji-letters": {
+    title: "Free Emoji Letters Generator – Regional & Squared Letters | ToolsRift",
+    desc: "Turn text into emoji letters: regional indicator symbols 🇦🇧🇨 or negative-squared Latin 🅰🅱🅲. Copy emoji text for social media bios and posts.",
+    faq: [
+      ["What are regional indicator letters?", "Regional indicator symbols are Unicode letters A-Z that render as blue-boxed emoji. When two combine they can form a country flag — for example US becomes the US flag."],
+      ["What is squared Latin text?", "Squared Latin uses the negative-squared alphabet block (🅰🅱🅲) where each letter appears as a solid rounded square, great for bold emoji-style headers."],
+      ["Do emoji letters work in usernames?", "Many platforms allow these Unicode emoji in bios and posts. Some restrict them in usernames, so check the specific platform's rules first."]
     ]
   }
 };
@@ -1269,6 +1311,276 @@ function UnicodeTextArt() {
   );
 }
 
+// Fullwidth Text
+function FullwidthText() {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+
+  useEffect(() => {
+    if (input) {
+      let result = '';
+      for (const ch of input) {
+        const code = ch.codePointAt(0);
+        if (code === 0x20) {
+          result += '　'; // ideographic space
+        } else if (code >= 0x21 && code <= 0x7E) {
+          result += String.fromCodePoint(code + 0xFEE0); // map into Fullwidth Forms (U+FF01–U+FF5E)
+        } else {
+          result += ch;
+        }
+      }
+      setOutput(result);
+    } else {
+      setOutput('');
+    }
+  }, [input]);
+
+  return (
+    <VStack>
+      <div>
+        <Label>Your Text</Label>
+        <Textarea value={input} onChange={setInput} rows={4} placeholder="vaporwave aesthetic..." />
+      </div>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8 }}>
+            <Label>Fullwidth Text</Label>
+            <CopyBtn text={output} />
+          </div>
+          <div style={{ background:"rgba(0,0,0,0.3)", border:`1px solid ${C.border}`, borderRadius:8, padding:"20px 16px", fontSize:26, fontWeight:400, color:C.text, lineHeight:1.4, wordBreak:"break-word" }}>
+            {output}
+          </div>
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// Cool Symbols & Kaomoji
+const SYMBOL_GROUPS = [
+  { name:"Arrows", items:['←','→','↑','↓','↔','↕','⇐','⇒','⇑','⇓','⇔','↖','↗','↘','↙','➜','➤','⟵','⟶','↺','↻','⇦','⇨'] },
+  { name:"Stars", items:['★','☆','✦','✧','✩','✪','✫','✬','✭','✮','✯','✰','⭐','🌟','✨','❇','❈','❉','⁂','꙰'] },
+  { name:"Hearts", items:['♥','♡','❤','🧡','💛','💚','💙','💜','🖤','🤍','💕','💖','💗','💘','❥','❦','❧'] },
+  { name:"Math", items:['±','×','÷','∞','≈','≠','≤','≥','π','∑','√','∫','∂','∆','∏','µ','°','∝','∈','∉','⊂','⊃','∅','∴','∵','∇'] },
+  { name:"Currency", items:['€','£','¥','₹','¢','$','₩','₽','₿','₺','₴','₦','฿','₫','₱','₡','₪','₲'] },
+  { name:"Bullets & Dividers", items:['•','◦','‣','▪','▫','●','○','■','□','◆','◇','—','–','·','∼','═','━','┅','⋯','⸻','❖','✤','⟡','⁙'] },
+  { name:"Kaomoji", items:['¯\\_(ツ)_/¯','(╯°□°)╯︵ ┻━┻','ツ','٩(◕‿◕)۶','(ﾉ◕ヮ◕)ﾉ','(⌐■_■)','(づ｡◕‿‿◕｡)づ','＼(^o^)／','(╥﹏╥)','(¬‿¬)','ᕕ( ᐛ )ᕗ'] },
+];
+
+function SymbolChip({ sym }) {
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    navigator.clipboard.writeText(sym).then(() => {
+      setCopied(true); setTimeout(() => setCopied(false), 1200);
+    }).catch(() => {});
+  };
+  return (
+    <button onClick={copy} title="Click to copy" style={{
+      minWidth:40, minHeight:40, padding:"6px 10px",
+      background: copied ? "rgba(16,185,129,0.15)" : "rgba(255,255,255,0.04)",
+      border:`1px solid ${copied ? C.success : C.border}`, borderRadius:8,
+      color: copied ? C.success : C.text, fontSize:18, cursor:"pointer",
+      fontFamily:"'JetBrains Mono',monospace", transition:"all .15s", whiteSpace:"nowrap",
+      display:"inline-flex", alignItems:"center", justifyContent:"center",
+    }}>{copied ? "✓ Copied" : sym}</button>
+  );
+}
+
+function CoolSymbols() {
+  return (
+    <VStack>
+      <div style={{ fontSize:13, color:C.muted, lineHeight:1.5 }}>
+        Click any symbol or kaomoji to copy it to your clipboard.
+      </div>
+      {SYMBOL_GROUPS.map(group => (
+        <div key={group.name}>
+          <Label>{group.name}</Label>
+          <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginTop:6 }}>
+            {group.items.map((sym, i) => <SymbolChip key={i} sym={sym} />)}
+          </div>
+        </div>
+      ))}
+    </VStack>
+  );
+}
+
+// Discord Text Formatter
+const DISCORD_ANSI_COLORS = [
+  { value:'30', label:'Gray (30)' },
+  { value:'31', label:'Red (31)' },
+  { value:'32', label:'Green (32)' },
+  { value:'33', label:'Yellow (33)' },
+  { value:'34', label:'Blue (34)' },
+  { value:'35', label:'Magenta (35)' },
+  { value:'36', label:'Cyan (36)' },
+  { value:'37', label:'White (37)' },
+  { value:'90', label:'Bright Gray (90)' },
+  { value:'91', label:'Bright Red (91)' },
+  { value:'92', label:'Bright Green (92)' },
+  { value:'93', label:'Bright Yellow (93)' },
+  { value:'94', label:'Bright Blue (94)' },
+  { value:'95', label:'Bright Magenta (95)' },
+  { value:'96', label:'Bright Cyan (96)' },
+  { value:'97', label:'Bright White (97)' },
+];
+
+function DiscordToggle({ on, onClick, children }) {
+  return <Btn size="sm" variant={on ? "primary" : "secondary"} onClick={onClick}>{children}</Btn>;
+}
+
+function DiscordFormatter() {
+  const [input, setInput] = useState('Hello world');
+  const [mode, setMode] = useState('markdown');
+  // markdown toggles
+  const [bold, setBold] = useState(true);
+  const [italic, setItalic] = useState(false);
+  const [underline, setUnderline] = useState(false);
+  const [strike, setStrike] = useState(false);
+  const [spoiler, setSpoiler] = useState(false);
+  const [inlineCode, setInlineCode] = useState(false);
+  const [codeBlock, setCodeBlock] = useState(false);
+  // ansi options
+  const [fg, setFg] = useState('31');
+  const [ansiBold, setAnsiBold] = useState(true);
+  const [ansiUnderline, setAnsiUnderline] = useState(false);
+
+  const output = useMemo(() => {
+    const text = input || '';
+    if (mode === 'ansi') {
+      const codes = [];
+      if (ansiBold) codes.push('1');
+      if (ansiUnderline) codes.push('4');
+      codes.push(fg);
+      const esc = '\u001b'; // ANSI escape (U+001B)
+      return '```ansi\n' + esc + '[' + codes.join(';') + 'm' + text + esc + '[0m\n```';
+    }
+    let out = text;
+    if (inlineCode) out = '`' + out + '`';
+    if (bold) out = '**' + out + '**';
+    if (italic) out = '*' + out + '*';
+    if (underline) out = '__' + out + '__';
+    if (strike) out = '~~' + out + '~~';
+    if (spoiler) out = '||' + out + '||';
+    if (codeBlock) out = '```\n' + out + '\n```';
+    return out;
+  }, [input, mode, bold, italic, underline, strike, spoiler, inlineCode, codeBlock, fg, ansiBold, ansiUnderline]);
+
+  const escaped = output.replace(/\u001b/g, '\\u001b');
+
+  return (
+    <VStack>
+      <div>
+        <Label>Your Text</Label>
+        <Textarea value={input} onChange={setInput} rows={3} placeholder="Type your Discord message..." />
+      </div>
+      <div>
+        <Label>Format Mode</Label>
+        <SelectInput value={mode} onChange={setMode} options={[
+          { value:'markdown', label:'Markdown (bold, italic, spoiler…)' },
+          { value:'ansi', label:'ANSI Color (colored text)' },
+        ]} />
+      </div>
+      {mode === 'markdown' ? (
+        <div>
+          <Label>Styles</Label>
+          <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginTop:6 }}>
+            <DiscordToggle on={bold} onClick={() => setBold(v => !v)}>Bold</DiscordToggle>
+            <DiscordToggle on={italic} onClick={() => setItalic(v => !v)}>Italic</DiscordToggle>
+            <DiscordToggle on={underline} onClick={() => setUnderline(v => !v)}>Underline</DiscordToggle>
+            <DiscordToggle on={strike} onClick={() => setStrike(v => !v)}>Strikethrough</DiscordToggle>
+            <DiscordToggle on={spoiler} onClick={() => setSpoiler(v => !v)}>Spoiler</DiscordToggle>
+            <DiscordToggle on={inlineCode} onClick={() => setInlineCode(v => !v)}>Inline Code</DiscordToggle>
+            <DiscordToggle on={codeBlock} onClick={() => setCodeBlock(v => !v)}>Code Block</DiscordToggle>
+          </div>
+        </div>
+      ) : (
+        <>
+          <div>
+            <Label>Text Color</Label>
+            <SelectInput value={fg} onChange={setFg} options={DISCORD_ANSI_COLORS} />
+          </div>
+          <div>
+            <Label>Style</Label>
+            <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginTop:6 }}>
+              <DiscordToggle on={ansiBold} onClick={() => setAnsiBold(v => !v)}>Bold</DiscordToggle>
+              <DiscordToggle on={ansiUnderline} onClick={() => setAnsiUnderline(v => !v)}>Underline</DiscordToggle>
+            </div>
+          </div>
+          <div style={{ fontSize:12, color:C.warn, lineHeight:1.5 }}>
+            Note: ANSI colors only render in the Discord desktop and web apps, not on mobile.
+          </div>
+        </>
+      )}
+      <div>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8 }}>
+          <Label>Formatted Output (raw — paste into Discord)</Label>
+          <CopyBtn text={output} />
+        </div>
+        <Result>{output || '—'}</Result>
+        {mode === 'ansi' && (
+          <div style={{ marginTop:10 }}>
+            <Label>Escape Codes Visible</Label>
+            <Result>{escaped || '—'}</Result>
+          </div>
+        )}
+      </div>
+    </VStack>
+  );
+}
+
+// Emoji Letters
+function EmojiLetters() {
+  const [input, setInput] = useState('');
+  const [mode, setMode] = useState('regional');
+  const [output, setOutput] = useState('');
+
+  useEffect(() => {
+    if (input) {
+      let result = '';
+      for (const ch of input) {
+        const code = ch.toUpperCase().codePointAt(0);
+        if (code >= 65 && code <= 90) {
+          result += mode === 'regional'
+            ? String.fromCodePoint(0x1F1E6 + (code - 65)) // regional indicator A = U+1F1E6
+            : String.fromCodePoint(0x1F170 + (code - 65)); // negative-squared A = U+1F170
+        } else {
+          result += ch;
+        }
+      }
+      setOutput(result);
+    } else {
+      setOutput('');
+    }
+  }, [input, mode]);
+
+  return (
+    <VStack>
+      <div>
+        <Label>Your Text</Label>
+        <Textarea value={input} onChange={setInput} rows={3} placeholder="Type A-Z text..." />
+      </div>
+      <div>
+        <Label>Style</Label>
+        <SelectInput value={mode} onChange={setMode} options={[
+          { value:'regional', label:'Regional Indicator 🇦🇧🇨 (pairs form flags)' },
+          { value:'squared', label:'Squared Latin 🅰🅱🅲' },
+        ]} />
+      </div>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8 }}>
+            <Label>Emoji Letters</Label>
+            <CopyBtn text={output} />
+          </div>
+          <div style={{ background:"rgba(0,0,0,0.3)", border:`1px solid ${C.border}`, borderRadius:8, padding:"20px 16px", fontSize:26, fontWeight:400, color:C.text, lineHeight:1.5, wordBreak:"break-word" }}>
+            {output}
+          </div>
+        </div>
+      )}
+    </VStack>
+  );
+}
+
 const TOOL_COMPONENTS = {
   "bold-text-generator": BoldTextGenerator,
   "italic-text-generator": ItalicTextGenerator,
@@ -1290,6 +1602,10 @@ const TOOL_COMPONENTS = {
   "text-to-emoji": TextToEmoji,
   "fancy-text-all": FancyTextAll,
   "unicode-text-art": UnicodeTextArt,
+  "fullwidth-text": FullwidthText,
+  "cool-symbols": CoolSymbols,
+  "discord-formatter": DiscordFormatter,
+  "emoji-letters": EmojiLetters,
 };
 
 function Breadcrumb({ tool, cat }) {
@@ -1323,7 +1639,7 @@ function ToolPage({ toolId }) {
 
   if (!tool || !ToolComp) {
     return (
-      <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'}>
+      <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'} tools={TOOLS} subcats={CATEGORIES}>
         <div style={{ padding:'48px 20px', textAlign:'center', color:'#94A3B8' }}>
           Tool not found. <a href="#/" style={{ color: PAGE_THEME.color }}>← Back to {PAGE_THEME.name}</a>
         </div>
@@ -1342,8 +1658,8 @@ function ToolPage({ toolId }) {
   const related = TOOLS.filter(t => t.id !== tool.id && t.cat === tool.cat).slice(0, 8);
 
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={toolId}>
-      <ToolPageLayout theme={PAGE_THEME} tool={toolData} related={related}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId} tools={TOOLS} subcats={CATEGORIES}>
+      <ToolPageLayout theme={PAGE_THEME} tool={toolData} tools={TOOLS} subcats={CATEGORIES} related={related}>
         <ToolComp />
       </ToolPageLayout>
     </CategoryLayout>
@@ -1371,6 +1687,10 @@ const FANCY_PREVIEW = {
   "text-to-emoji": "A😊",
   "fancy-text-all": "✨Aa",
   "unicode-text-art": "╔Aa╗",
+  "fullwidth-text": "Ａａ",
+  "cool-symbols": "★ ♥ →",
+  "discord-formatter": "**Aa**",
+  "emoji-letters": "🇦🅱",
 };
 
 function FancyPreview({ toolId }) {
@@ -1434,7 +1754,7 @@ function HomePage() {
     document.title = "Free Fancy Text Generator – Unicode Styles & Fonts Online | ToolsRift";
   }, []);
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={null}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={null} tools={TOOLS} subcats={CATEGORIES}>
       <CategoryDashboard
         theme={PAGE_THEME}
         tools={TOOLS}

@@ -181,6 +181,9 @@ const TOOLS = [
   { id:"text-to-ascii", cat:"encoding", name:"Text to ASCII Codes", desc:"Convert text to ASCII code numbers and decode ASCII codes back to readable text", icon:"📊", free:true },
   { id:"text-to-unicode", cat:"encoding", name:"Text to Unicode Points", desc:"Convert text to Unicode code points (U+0048 format) and decode back to characters", icon:"Ⓤ", free:true },
   { id:"braille-translator", cat:"encoding", name:"Braille Translator", desc:"Convert text to Braille Unicode characters and translate Braille back to text", icon:"⠓", free:true },
+  { id:"leetspeak-translator", cat:"encoding", name:"Leetspeak Translator", desc:"Convert text to and from leetspeak (l33t) with light and heavy substitution modes", icon:"1337", free:true },
+  { id:"a1z26-cipher", cat:"encoding", name:"A1Z26 Cipher", desc:"Encode letters to numbers (A=1, Z=26) and decode number sequences back to text", icon:"🔢", free:true },
+  { id:"rail-fence-cipher", cat:"encoding", name:"Rail Fence Cipher", desc:"Encrypt and decrypt text with the zigzag rail fence transposition cipher (2-10 rails)", icon:"🚧", free:true },
 ];
 
 const CATEGORIES = [
@@ -285,6 +288,33 @@ const TOOL_META = {
       ["What is Braille?", "Braille is a tactile writing system used by people who are blind. It uses raised dots in patterns to represent letters and numbers."],
       ["Does this show visual Braille?", "Yes, this tool uses Unicode Braille characters (⠁⠃⠉) which display the dot patterns visually. Real Braille is felt with fingers."],
       ["Can I print this Braille?", "The Unicode Braille characters will print, but they're not embossed. For actual tactile Braille, use a Braille embosser or printer."]
+    ]
+  },
+  "leetspeak-translator": {
+    title: "Free Leetspeak Translator – Text to l33t Converter Online | ToolsRift",
+    desc: "Convert text to and from leetspeak (l33t sp34k). Light and heavy substitution modes for gaming tags, usernames, and fun text obfuscation.",
+    faq: [
+      ["What is leetspeak?", "Leetspeak (or 'l33t sp34k') is an internet slang that replaces letters with numbers and symbols that resemble them, like A→4, E→3, and O→0. It started in online gaming and hacker communities."],
+      ["What's the difference between light and heavy mode?", "Light mode swaps common vowels and a few letters (a→4, e→3, i→1, o→0, s→5, t→7). Heavy mode adds more aggressive substitutions like b→8, g→9, l→|, and z→2 for a more extreme look."],
+      ["Can leetspeak be decoded reliably?", "Light mode decodes cleanly. Heavy mode can be ambiguous or lossy — for example '|' could map back to L or I — so decoding is best-effort and may not perfectly restore the original text."]
+    ]
+  },
+  "a1z26-cipher": {
+    title: "Free A1Z26 Cipher – Letter to Number Encoder/Decoder | ToolsRift",
+    desc: "Encode letters to numbers (A=1, B=2 … Z=26) and decode number sequences back to text. Popular in escape rooms, puzzles, and geocaching.",
+    faq: [
+      ["What is the A1Z26 cipher?", "A1Z26 is a simple substitution cipher that replaces each letter with its position in the alphabet: A=1, B=2, up to Z=26. Numbers are joined by a separator such as a dash or space."],
+      ["How are words separated when decoding?", "Spaces between number groups act as word breaks. The tool preserves word boundaries so decoded output keeps the original spacing between words."],
+      ["Is A1Z26 case-sensitive?", "No — encoding is case-insensitive since both 'A' and 'a' map to 1. Decoded output is returned in lowercase letters."]
+    ]
+  },
+  "rail-fence-cipher": {
+    title: "Free Rail Fence Cipher – Zigzag Transposition Encoder | ToolsRift",
+    desc: "Encrypt and decrypt text with the rail fence cipher. Adjustable rail count (2-10) for the classic zigzag transposition cipher. Guaranteed round-trip.",
+    faq: [
+      ["How does the rail fence cipher work?", "Characters are written diagonally down and up across a number of 'rails' (rows) in a zigzag pattern, then read off row by row to produce the ciphertext. It's a transposition cipher — it rearranges letters rather than substituting them."],
+      ["How many rails should I use?", "Any number from 2 to 10. More rails create a more scrambled result. Note that using 1 rail leaves the text unchanged (identity)."],
+      ["Does decryption restore the exact original?", "Yes — the tool reconstructs the zigzag pattern from the ciphertext length, so decoding an encoded message with the same rail count returns your exact original text, including spaces and punctuation."]
     ]
   }
 };
@@ -978,6 +1008,250 @@ function BrailleTranslator() {
   );
 }
 
+// Leetspeak Component
+const LEET_LIGHT = { a:'4', e:'3', i:'1', o:'0', s:'5', t:'7' };
+const LEET_HEAVY = { a:'4', b:'8', e:'3', g:'9', i:'1', l:'|', o:'0', s:'5', t:'7', z:'2', c:'(', d:'|)', h:'#', k:'|<', m:'|\\/|', n:'|\\|', u:'|_', v:'\\/', w:'\\/\\/', x:'><' };
+function buildLeetDecodeMap(map) {
+  // Longest leet tokens first so multi-char sequences (|\/| etc.) decode before single chars
+  const entries = Object.entries(map).map(([letter, leet]) => [leet, letter]);
+  entries.sort((a, b) => b[0].length - a[0].length);
+  return entries;
+}
+function leetEncode(text, map) {
+  return text.split('').map(ch => {
+    const lower = ch.toLowerCase();
+    return map[lower] !== undefined ? map[lower] : ch;
+  }).join('');
+}
+function leetDecode(text, map) {
+  const decodeEntries = buildLeetDecodeMap(map);
+  let result = '';
+  let i = 0;
+  while (i < text.length) {
+    let matched = false;
+    for (const [leet, letter] of decodeEntries) {
+      if (leet && text.startsWith(leet, i)) {
+        result += letter;
+        i += leet.length;
+        matched = true;
+        break;
+      }
+    }
+    if (!matched) { result += text[i]; i++; }
+  }
+  return result;
+}
+function LeetspeakTranslator() {
+  const [mode, setMode] = useState('encode');
+  const [level, setLevel] = useState('light');
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+
+  useEffect(() => {
+    if (!input) { setOutput(''); return; }
+    const map = level === 'heavy' ? LEET_HEAVY : LEET_LIGHT;
+    setOutput(mode === 'encode' ? leetEncode(input, map) : leetDecode(input, map));
+  }, [input, mode, level]);
+
+  return (
+    <VStack>
+      <div>
+        <Label>Mode</Label>
+        <div style={{ display:"flex", gap:8 }}>
+          <Btn variant={mode === 'encode' ? 'primary' : 'secondary'} onClick={() => setMode('encode')}>Text → Leet</Btn>
+          <Btn variant={mode === 'decode' ? 'primary' : 'secondary'} onClick={() => setMode('decode')}>Leet → Text</Btn>
+        </div>
+      </div>
+      <div>
+        <Label>Substitution Level</Label>
+        <SelectInput value={level} onChange={setLevel} options={[
+          { value:'light', label:'Light (a→4, e→3, i→1, o→0, s→5, t→7)' },
+          { value:'heavy', label:'Heavy (adds b→8, g→9, l→|, z→2 and more)' }
+        ]} />
+      </div>
+      <div>
+        <Label>{mode === 'encode' ? 'Text' : 'Leetspeak'}</Label>
+        <Textarea value={input} onChange={setInput} rows={5} mono={mode === 'decode'} placeholder={mode === 'encode' ? 'Elite Hacker' : '3l1t3 h4ck3r'} />
+      </div>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>{mode === 'encode' ? 'Leetspeak' : 'Text'}</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Result mono>{output}</Result>
+          {mode === 'decode' && level === 'heavy' && (
+            <div style={{ fontSize:11, color:C.warn, marginTop:6 }}>
+              ⚠ Heavy-mode decoding is best-effort — some substitutions are ambiguous and may not perfectly restore the original text.
+            </div>
+          )}
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// A1Z26 Cipher Component
+function A1Z26Cipher() {
+  const [mode, setMode] = useState('encode');
+  const [sep, setSep] = useState('-');
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+
+  const encode = (text, separator) => {
+    return text.split(/(\s+)/).map(token => {
+      if (/^\s+$/.test(token)) return ' '; // collapse whitespace to a single word break
+      return token.split('').map(ch => {
+        const code = ch.toLowerCase().charCodeAt(0);
+        if (code >= 97 && code <= 122) return String(code - 96);
+        return ch; // pass through non-letters
+      }).join(separator);
+    }).join('');
+  };
+
+  const decode = (text) => {
+    // Words are separated by spaces; within a word, numbers are split on any non-digit separator
+    return text.trim().split(/\s+/).map(word => {
+      return word.split(/[^0-9]+/).filter(Boolean).map(numStr => {
+        const n = parseInt(numStr, 10);
+        if (n >= 1 && n <= 26) return String.fromCharCode(n + 96);
+        return '';
+      }).join('');
+    }).join(' ');
+  };
+
+  useEffect(() => {
+    if (!input) { setOutput(''); return; }
+    setOutput(mode === 'encode' ? encode(input, sep) : decode(input));
+  }, [input, mode, sep]);
+
+  return (
+    <VStack>
+      <div>
+        <Label>Mode</Label>
+        <div style={{ display:"flex", gap:8 }}>
+          <Btn variant={mode === 'encode' ? 'primary' : 'secondary'} onClick={() => setMode('encode')}>Text → Numbers</Btn>
+          <Btn variant={mode === 'decode' ? 'primary' : 'secondary'} onClick={() => setMode('decode')}>Numbers → Text</Btn>
+        </div>
+      </div>
+      {mode === 'encode' && (
+        <div>
+          <Label>Separator</Label>
+          <SelectInput value={sep} onChange={setSep} options={[
+            { value:'-', label:'Dash ( - )' },
+            { value:' ', label:'Space (   )' },
+            { value:',', label:'Comma ( , )' }
+          ]} />
+        </div>
+      )}
+      <div>
+        <Label>{mode === 'encode' ? 'Text' : 'Numbers'}</Label>
+        <Textarea value={input} onChange={setInput} rows={5} mono={mode === 'decode'} placeholder={mode === 'encode' ? 'Hello World' : '8-5-12-12-15 23-15-18-12-4'} />
+      </div>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>{mode === 'encode' ? 'Numbers' : 'Text'}</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Result mono={mode === 'encode'}>{output}</Result>
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// Rail Fence Cipher Component
+function railFenceEncode(text, rails) {
+  if (rails < 2) return text;
+  const chars = Array.from(text);
+  const rows = Array.from({ length: rails }, () => []);
+  let r = 0, dir = 1;
+  for (const ch of chars) {
+    rows[r].push(ch);
+    if (r === 0) dir = 1;
+    else if (r === rails - 1) dir = -1;
+    r += dir;
+  }
+  return rows.map(row => row.join('')).join('');
+}
+function railFenceDecode(cipher, rails) {
+  if (rails < 2) return cipher;
+  const chars = Array.from(cipher);
+  const len = chars.length;
+  // 1. Reconstruct the zigzag rail index for each position
+  const pattern = [];
+  let r = 0, dir = 1;
+  for (let i = 0; i < len; i++) {
+    pattern.push(r);
+    if (r === 0) dir = 1;
+    else if (r === rails - 1) dir = -1;
+    r += dir;
+  }
+  // 2. Count how many chars land on each rail
+  const counts = Array(rails).fill(0);
+  for (const p of pattern) counts[p]++;
+  // 3. Slice the ciphertext into rails (top to bottom)
+  const railChars = [];
+  let idx = 0;
+  for (let rr = 0; rr < rails; rr++) {
+    railChars.push(chars.slice(idx, idx + counts[rr]));
+    idx += counts[rr];
+  }
+  // 4. Read back following the zigzag order
+  const pointers = Array(rails).fill(0);
+  let out = '';
+  for (const p of pattern) out += railChars[p][pointers[p]++];
+  return out;
+}
+function RailFenceCipher() {
+  const [mode, setMode] = useState('encode');
+  const [rails, setRails] = useState(3);
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+
+  useEffect(() => {
+    if (!input) { setOutput(''); return; }
+    setOutput(mode === 'encode' ? railFenceEncode(input, rails) : railFenceDecode(input, rails));
+  }, [input, mode, rails]);
+
+  return (
+    <VStack>
+      <div>
+        <Label>Mode</Label>
+        <div style={{ display:"flex", gap:8 }}>
+          <Btn variant={mode === 'encode' ? 'primary' : 'secondary'} onClick={() => setMode('encode')}>Encrypt</Btn>
+          <Btn variant={mode === 'decode' ? 'primary' : 'secondary'} onClick={() => setMode('decode')}>Decrypt</Btn>
+        </div>
+      </div>
+      <div>
+        <Label>Rails: {rails}</Label>
+        <input type="range" min="2" max="10" value={rails} onChange={e => setRails(parseInt(e.target.value))}
+          style={{ width:"100%", accentColor:C.indigo }} />
+        <div style={{ display:"flex", justifyContent:"space-between", fontSize:11, color:C.muted, marginTop:4 }}>
+          <span>2</span><span>6</span><span>10</span>
+        </div>
+      </div>
+      <div>
+        <Label>{mode === 'encode' ? 'Plaintext' : 'Ciphertext'}</Label>
+        <Textarea value={input} onChange={setInput} rows={5} mono={mode === 'decode'} placeholder={mode === 'encode' ? 'WEAREDISCOVEREDFLEEATONCE' : 'WECRLTEERDSOEEFEAOCAIVDEN'} />
+      </div>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>{mode === 'encode' ? 'Ciphertext' : 'Plaintext'}</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Result mono>{output}</Result>
+          <div style={{ fontSize:11, color:C.muted, marginTop:6 }}>
+            💡 Decrypting the ciphertext with the same rail count restores your exact original text.
+          </div>
+        </div>
+      )}
+    </VStack>
+  );
+}
+
 const TOOL_COMPONENTS = {
   "morse-code": MorseCode,
   "nato-alphabet": NatoAlphabet,
@@ -990,6 +1264,9 @@ const TOOL_COMPONENTS = {
   "text-to-ascii": TextToAscii,
   "text-to-unicode": TextToUnicode,
   "braille-translator": BrailleTranslator,
+  "leetspeak-translator": LeetspeakTranslator,
+  "a1z26-cipher": A1Z26Cipher,
+  "rail-fence-cipher": RailFenceCipher,
 };
 
 function Breadcrumb({ tool, cat }) {
@@ -1023,7 +1300,7 @@ function ToolPage({ toolId }) {
 
   if (!tool || !ToolComp) {
     return (
-      <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'}>
+      <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'} tools={TOOLS} subcats={CATEGORIES}>
         <div style={{ padding:'48px 20px', textAlign:'center', color:'#94A3B8' }}>
           Tool not found. <a href="#/" style={{ color: PAGE_THEME.color }}>← Back to {PAGE_THEME.name}</a>
         </div>
@@ -1042,8 +1319,8 @@ function ToolPage({ toolId }) {
   const related = TOOLS.filter(t => t.id !== tool.id && t.cat === tool.cat).slice(0, 8);
 
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={toolId}>
-      <ToolPageLayout theme={PAGE_THEME} tool={toolData} related={related}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId} tools={TOOLS} subcats={CATEGORIES}>
+      <ToolPageLayout theme={PAGE_THEME} tool={toolData} tools={TOOLS} subcats={CATEGORIES} related={related}>
         <ToolComp />
       </ToolPageLayout>
     </CategoryLayout>
@@ -1098,7 +1375,7 @@ function HomePage() {
     document.title = "Free Text Encoding Tools – Morse, Binary, Hex, Cipher Online | ToolsRift";
   }, []);
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={null}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={null} tools={TOOLS} subcats={CATEGORIES}>
       <CategoryDashboard
         theme={PAGE_THEME}
         tools={TOOLS}

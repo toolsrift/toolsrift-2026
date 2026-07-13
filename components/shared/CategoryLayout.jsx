@@ -5,13 +5,131 @@
 //
 // Editing this single file updates every tool category page in the project.
 
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { COLORS, FS, MQ } from '../../lib/designTokens';
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { COLORS, FS, MQ, RADIUS } from '../../lib/designTokens';
 import SiteFooter from '../SiteFooter';
+import { groupTools } from './ToolNavSidebar';
+import { resolveIcon } from '../../lib/toolIcons';
+
+// ── "All <category> tools" mega-menu ────────────────────────────────────────
+// Every tool in the category, grouped by subcategory — reachable from the header
+// of any page in the category. Opens on hover (desktop) and on click/keyboard.
+function ToolsMegaMenu({ theme, tools, subcats }) {
+  const [open, setOpen] = useState(false);
+  const closeTimer = useRef(null);
+
+  if (!tools?.length) return null;
+  const groups = groupTools(tools, subcats);
+
+  const openNow  = () => { clearTimeout(closeTimer.current); setOpen(true); };
+  const closeSoon = () => { closeTimer.current = setTimeout(() => setOpen(false), 120); };
+
+  const go = (e, id) => {
+    if (typeof window === 'undefined') return;
+    setOpen(false);
+    if (window.location.pathname !== theme.pageRoute) return; // let the browser navigate
+    e.preventDefault();
+    window.scrollTo(0, 0);
+    window.location.hash = `#/tool/${id}`;
+    window.dispatchEvent(new Event('hashchange'));
+  };
+
+  return (
+    <div
+      className="tr-megamenu"
+      style={{ position: 'relative', display: 'none' }}
+      onMouseEnter={openNow}
+      onMouseLeave={closeSoon}
+    >
+      <button
+        onClick={() => setOpen(o => !o)}
+        aria-expanded={open}
+        aria-haspopup="true"
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          background: 'none', border: 'none', cursor: 'pointer',
+          fontSize: 13, fontWeight: 600, fontFamily: theme.fonts.body,
+          color: open ? theme.color : COLORS.muted,
+          padding: '8px 0', minHeight: 40, transition: 'color .15s',
+        }}
+      >
+        All {theme.name}
+        <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.18 }} style={{ fontSize: 9 }}>▼</motion.span>
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.16 }}
+            style={{
+              position: 'absolute', top: '100%', right: 0, marginTop: 8,
+              width: 'min(860px, 92vw)',
+              background: COLORS.surface,
+              border: `1px solid ${COLORS.border}`,
+              borderRadius: RADIUS.lg,
+              boxShadow: '0 24px 60px rgba(0,0,0,0.5)',
+              padding: 20, zIndex: 200,
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+              gap: '20px 24px',
+              maxHeight: '72vh', overflowY: 'auto',
+            }}
+          >
+            {groups.map(g => (
+              <div key={g.id || 'flat'}>
+                {g.name && (
+                  <div style={{
+                    fontSize: 11, fontWeight: 700, letterSpacing: '0.1em',
+                    textTransform: 'uppercase', color: COLORS.faint,
+                    fontFamily: theme.fonts.body, marginBottom: 8,
+                  }}>
+                    {g.name}
+                  </div>
+                )}
+                {g.tools.map(t => (
+                  <a
+                    key={t.id}
+                    href={`${theme.pageRoute}#/tool/${t.id}`}
+                    onClick={e => go(e, t.id)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 8,
+                      padding: '6px 8px', borderRadius: RADIUS.sm,
+                      textDecoration: 'none', color: COLORS.muted,
+                      fontSize: 13, fontFamily: theme.fonts.body,
+                      transition: 'background .12s, color .12s',
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.background = theme.tint12;
+                      e.currentTarget.style.color = COLORS.textBright;
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.background = 'transparent';
+                      e.currentTarget.style.color = COLORS.muted;
+                    }}
+                  >
+                    <span aria-hidden style={{ fontSize: 13, width: 18, textAlign: 'center', flexShrink: 0 }}>
+                      {resolveIcon(t, theme)}
+                    </span>
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.name}</span>
+                  </a>
+                ))}
+              </div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <style>{`@media ${MQ.lg}{.tr-megamenu{display:block!important}}`}</style>
+    </div>
+  );
+}
 
 // ── Sticky top nav (single line, no decorative animations) ──────────────────
-function CategoryHeader({ theme }) {
+function CategoryHeader({ theme, tools, subcats }) {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -48,7 +166,8 @@ function CategoryHeader({ theme }) {
         </span>
       </a>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+        <ToolsMegaMenu theme={theme} tools={tools} subcats={subcats} />
         <a
           href="/"
           className="tr-hide-on-mobile"
@@ -192,10 +311,10 @@ function Stat({ label, value, accent }) {
 }
 
 // ── Root ────────────────────────────────────────────────────────────────────
-export default function CategoryLayout({ theme, currentTool, children }) {
+export default function CategoryLayout({ theme, currentTool, tools, subcats, children }) {
   return (
     <div style={{ minHeight: '100vh', background: COLORS.bg, display: 'flex', flexDirection: 'column' }}>
-      <CategoryHeader theme={theme} />
+      <CategoryHeader theme={theme} tools={tools} subcats={subcats} />
 
       {!currentTool && <CategoryBanner theme={theme} />}
 

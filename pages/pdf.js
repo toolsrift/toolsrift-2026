@@ -9,9 +9,9 @@ export default function PDFPage() {
     <>
       <Head>
         <title>Free PDF Tools — Merge, Split, Compress &amp; Convert PDFs | ToolsRift</title>
-        <meta name="description" content="28+ free online PDF tools. Merge PDFs, split pages, compress PDF files, convert PDF to text and more. 100% browser-based, no file uploads." />
+        <meta name="description" content="32+ free online PDF tools. Merge, split, compress, redact and fill PDF forms, plus PDF to Markdown, JSON and CSV. 100% browser-based, no file uploads." />
         <meta property="og:title" content="Free PDF Tools — Merge, Split, Compress &amp; Convert PDFs | ToolsRift" />
-        <meta property="og:description" content="28+ free online PDF tools. Merge PDFs, split pages, compress PDF files, convert PDF to text and more. 100% browser-based, no file uploads." />
+        <meta property="og:description" content="32+ free online PDF tools. Merge, split, compress, redact and fill PDF forms, plus PDF to Markdown, JSON and CSV. 100% browser-based, no file uploads." />
         <meta property="og:url" content="https://toolsrift.com/pdf" />
         <meta property="og:site_name" content="ToolsRift" />
         <meta name="twitter:card" content="summary_large_image" />

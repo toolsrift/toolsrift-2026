@@ -383,41 +383,30 @@ function HourlyToAnnualCalc() {
   );
 }
 
-function calcTaxOld(income) {
-  let tax = 0;
-  const slabs = [
-    [250000, 0],
-    [250000, 0.05],
-    [500000, 0.2],
-    [Infinity, 0.3],
-  ];
-  let rem = income;
-  for (const [amt, rate] of slabs) {
-    const take = Math.min(rem, amt);
-    if (take > 0) tax += take * rate;
-    rem -= take;
-    if (rem <= 0) break;
-  }
-  return tax;
+// ── India income tax — FY 2025-26 (AY 2026-27) ──────────────────────────────
+// Salaried individual estimate. Both regimes include the §87A rebate and the 4%
+// health & education cess; the new regime also applies marginal relief just above
+// the ₹12L rebate threshold. Surcharge on very high incomes is not modelled.
+const TAX_FY_LABEL = "FY 2025-26 (AY 2026-27)";
+
+function taxOldRegime(taxable) {
+  // Slabs unchanged for years: 0–2.5L nil, 2.5–5L 5%, 5–10L 20%, >10L 30%.
+  const slabs = [[250000, 0], [250000, 0.05], [500000, 0.2], [Infinity, 0.3]];
+  let rem = taxable, tax = 0;
+  for (const [w, r] of slabs) { const a = Math.min(rem, w); tax += a * r; rem -= a; if (rem <= 0) break; }
+  if (taxable <= 500000) tax = 0;                 // §87A rebate (old regime)
+  return tax * 1.04;                              // 4% cess
 }
-function calcTaxNew(income) {
-  let tax = 0;
-  const slabs = [
-    [300000, 0],
-    [300000, 0.05],
-    [300000, 0.1],
-    [300000, 0.15],
-    [300000, 0.2],
-    [Infinity, 0.3],
-  ];
-  let rem = income;
-  for (const [amt, rate] of slabs) {
-    const take = Math.min(rem, amt);
-    if (take > 0) tax += take * rate;
-    rem -= take;
-    if (rem <= 0) break;
-  }
-  return tax;
+
+function taxNewRegime(taxable) {
+  if (taxable <= 1200000) return 0;               // §87A rebate (new regime)
+  const slabs = [[400000, 0], [400000, 0.05], [400000, 0.10], [400000, 0.15], [400000, 0.20], [400000, 0.25], [Infinity, 0.30]];
+  let rem = taxable, tax = 0;
+  for (const [w, r] of slabs) { const a = Math.min(rem, w); tax += a * r; rem -= a; if (rem <= 0) break; }
+  // Marginal relief: tax just above ₹12L cannot exceed the income earned over ₹12L.
+  const excess = taxable - 1200000;
+  if (tax > excess) tax = excess;
+  return tax * 1.04;                              // 4% cess
 }
 
 function IncomeTaxCalc() {
@@ -425,42 +414,52 @@ function IncomeTaxCalc() {
   const [deduction80c, setDeduction80c] = useState("150000");
 
   const out = useMemo(() => {
-    const inc = n(income), d80 = n(deduction80c);
+    const inc = n(income), d80 = Math.min(n(deduction80c), 150000);
+    // Standard deduction: ₹50,000 old regime, ₹75,000 new regime (salaried).
     const oldTaxable = Math.max(0, inc - d80 - 50000);
-    const newTaxable = Math.max(0, inc - 50000);
-    const oldTax = calcTaxOld(oldTaxable);
-    const newTax = calcTaxNew(newTaxable);
-    return { oldTaxable, newTaxable, oldTax, newTax };
+    const newTaxable = Math.max(0, inc - 75000);
+    const oldTax = taxOldRegime(oldTaxable);
+    const newTax = taxNewRegime(newTaxable);
+    return { oldTaxable, newTaxable, oldTax, newTax, cheaper: newTax <= oldTax ? "New" : "Old" };
   }, [income, deduction80c]);
 
   return (
     <VStack>
+      <div style={{ fontSize: 12, color: "#94A3B8", fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
+        Slabs: <strong style={{ color: "#E2E8F0" }}>{TAX_FY_LABEL}</strong> · salaried individual estimate
+      </div>
       <Grid2>
         <div><Label>Gross Income (₹)</Label><Input value={income} onChange={setIncome} /></div>
-        <div><Label>80C Deduction (Old Regime)</Label><Input value={deduction80c} onChange={setDeduction80c} /></div>
+        <div><Label>80C Deduction (Old Regime, max ₹1.5L)</Label><Input value={deduction80c} onChange={setDeduction80c} /></div>
       </Grid2>
       <Grid2>
-        <BigResult value={inr(out.oldTax)} label="Old Regime Tax" />
-        <BigResult value={inr(out.newTax)} label="New Regime Tax" />
+        <BigResult value={inr(out.oldTax)} label="Old Regime Tax (incl. cess)" />
+        <BigResult value={inr(out.newTax)} label="New Regime Tax (incl. cess)" />
       </Grid2>
+      <div style={{ padding: "10px 14px", background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.25)", borderRadius: 8, fontSize: 13, color: "#E2E8F0", fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
+        The <strong>{out.cheaper} Regime</strong> is cheaper for this income — you save {inr(Math.abs(out.oldTax - out.newTax))}.
+      </div>
       <Grid2>
         <DataTable
           columns={["Old Regime", "Value"]}
           rows={[
             ["Taxable Income", inr(out.oldTaxable)],
-            ["Estimated Tax", inr(out.oldTax)],
-            ["Take Home (Pre-cess)", inr(n(income) - out.oldTax)],
+            ["Tax + 4% Cess", inr(out.oldTax)],
+            ["Take Home", inr(n(income) - out.oldTax)],
           ]}
         />
         <DataTable
           columns={["New Regime", "Value"]}
           rows={[
             ["Taxable Income", inr(out.newTaxable)],
-            ["Estimated Tax", inr(out.newTax)],
-            ["Take Home (Pre-cess)", inr(n(income) - out.newTax)],
+            ["Tax + 4% Cess", inr(out.newTax)],
+            ["Take Home", inr(n(income) - out.newTax)],
           ]}
         />
       </Grid2>
+      <div style={{ padding: "10px 14px", background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.25)", borderRadius: 8, fontSize: 12, color: "#CBD5E1", lineHeight: 1.6, fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
+        Estimate for a salaried individual under {TAX_FY_LABEL}. Surcharge on incomes above ₹50L, capital-gains rates and other deductions aren't modelled. Verify against the latest Budget or a tax professional before filing — this is not tax advice.
+      </div>
     </VStack>
   );
 }
@@ -632,6 +631,7 @@ const TOOLS = [
   { id: "break-even-calc", cat: "finance", name: "Break-even Calculator", icon: "⚖️", desc: "Break-even units and revenue.", free: true },
   { id: "net-worth-calc", cat: "finance", name: "Net Worth Calculator", icon: "🧾", desc: "Assets minus liabilities.", free: true },
   { id: "budget-calc", cat: "finance", name: "Budget Planner", icon: "📊", desc: "Income vs expenses with visual bar.", free: true },
+  { id: "discount-calculator", cat: "finance", name: "Discount Calculator", icon: "🛍️", desc: "Sale price and savings from a discount %, or the discount % from a sale price, with optional stacked second discount.", free: true },
   // ── India Finance Batch (July 2026) ──
   { id: "emi-calc", cat: "finance", name: "EMI Calculator", icon: "🏦", desc: "Monthly EMI, total interest and year-wise loan schedule for any loan.", free: true },
   { id: "home-loan-emi-calc", cat: "finance", name: "Home Loan EMI Calculator", icon: "🏠", desc: "Home loan EMI with principal/interest split and yearly balance table.", free: true },
@@ -659,6 +659,7 @@ const TOOLS = [
   { id: "sleep-calc", cat: "health", name: "Sleep Calculator", icon: "😴", desc: "Best bed/wake times by 90-min cycles.", free: true },
   { id: "blood-pressure-calc", cat: "health", name: "Blood Pressure Classifier", icon: "🩺", desc: "BP category with chart.", free: true },
   { id: "blood-sugar-converter", cat: "health", name: "Blood Sugar Converter", icon: "🩸", desc: "mg/dL ↔ mmol/L with category.", free: true },
+  { id: "bmi-calculator", cat: "health", name: "BMI Calculator", icon: "🧍", desc: "Body Mass Index from weight and height in metric or imperial, with WHO and Asian-Indian category tables.", free: true },
 
   { id: "aspect-ratio-calc", cat: "unit", name: "Aspect Ratio Calculator", icon: "🖼️", desc: "Find ratio and equivalent dimensions.", free: true },
   { id: "ppi-dpi-calc", cat: "unit", name: "PPI/DPI Calculator", icon: "🖥️", desc: "Pixels per inch from resolution/size.", free: true },
@@ -1071,8 +1072,77 @@ function BudgetCalc() {
   );
 }
 
+function DiscountCalc() {
+  const [mode, setMode] = useState("percent");
+  const [original, setOriginal] = useState("2000");
+  const [discount, setDiscount] = useState("25");
+  const [discount2, setDiscount2] = useState("0");
+  const [sale, setSale] = useState("1500");
+
+  const out = useMemo(() => {
+    const P = n(original);
+    if (mode === "percent") {
+      // Two discounts apply sequentially: the 2nd is taken off the already-reduced price.
+      const d1 = n(discount) / 100, d2 = n(discount2) / 100;
+      const afterFirst = P * (1 - d1);
+      const finalPrice = afterFirst * (1 - d2);
+      const saved = P - finalPrice;
+      const effective = P > 0 ? (saved / P) * 100 : 0;
+      return {
+        finalPrice, saved, effective,
+        rows: [
+          ["Original Price", curr(P)],
+          ["First Discount", pct(n(discount))],
+          ["Price After 1st Discount", curr(afterFirst)],
+          ["Second Discount", pct(n(discount2))],
+          ["Final Sale Price", curr(finalPrice)],
+          ["Total Saved", curr(saved)],
+          ["Effective Discount", pct(effective)],
+        ],
+      };
+    }
+    // mode === "amount": derive the discount % from original + sale price
+    const S = n(sale);
+    const saved = P - S;
+    const effective = P > 0 ? (saved / P) * 100 : 0;
+    return {
+      finalPrice: S, saved, effective,
+      rows: [
+        ["Original Price", curr(P)],
+        ["Sale Price", curr(S)],
+        ["Total Saved", curr(saved)],
+        ["Discount %", pct(effective)],
+      ],
+    };
+  }, [mode, original, discount, discount2, sale]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Mode</Label><SelectInput value={mode} onChange={setMode} options={[{ value: "percent", label: "Price + Discount % → Sale" }, { value: "amount", label: "Price + Sale → Discount %" }]} /></div>
+        <div><Label>Original Price</Label><Input value={original} onChange={setOriginal} /></div>
+      </Grid2>
+      {mode === "percent" ? (
+        <Grid2>
+          <div><Label>Discount %</Label><Input value={discount} onChange={setDiscount} /></div>
+          <div><Label>2nd Discount % (optional)</Label><Input value={discount2} onChange={setDiscount2} /></div>
+        </Grid2>
+      ) : (
+        <div><Label>Sale Price</Label><Input value={sale} onChange={setSale} /></div>
+      )}
+      <Grid3>
+        <BigResult value={curr(out.finalPrice)} label="Sale Price" />
+        <BigResult value={curr(out.saved)} label="You Save" />
+        <BigResult value={pct(out.effective)} label="Effective Discount" />
+      </Grid3>
+      <DataTable columns={["Item", "Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
 const TOOL_COMPONENTS = {
   "investment-return-calc": InvestmentReturnCalc,
+  "discount-calculator": DiscountCalc,
   "rd-calc": RdCalc,
   "ppf-calc": PpfCalc,
   "gratuity-calc": GratuityCalc,
@@ -1463,6 +1533,7 @@ function BloodPressureCalc() {
       </Grid2>
       <DataTable columns={["Metric", "Value"]} rows={out.rows} />
       <DataTable columns={["Category", "Range"]} rows={out.chart} />
+      <Result>⚠️ Not medical advice. This classifies a single reading against standard (ACC/AHA) ranges and is for general information only. A diagnosis needs repeated readings and a clinician — consult a healthcare professional about your blood pressure.</Result>
     </VStack>
   );
 }
@@ -1510,12 +1581,87 @@ function BloodSugarConverter() {
         <BigResult value={`${round(out.mmol, 2)} mmol/L`} label="mmol/L" />
       </Grid2>
       <DataTable columns={["Metric", "Value"]} rows={out.rows} />
+      <Result>⚠️ Not medical advice. The mg/dL ↔ mmol/L conversion is exact, but the range labels are general (ADA) references, not a diagnosis. Discuss any blood-sugar concern with a healthcare professional.</Result>
+    </VStack>
+  );
+}
+
+function bmiCategory(bmi, standard) {
+  if (!Number.isFinite(bmi) || bmi <= 0) return "—";
+  if (standard === "asian") {
+    // Asian-Indian cut-offs (lower thresholds for overweight/obese)
+    if (bmi < 18.5) return "Underweight";
+    if (bmi < 23) return "Normal";
+    if (bmi < 25) return "Overweight";
+    return "Obese";
+  }
+  // WHO standard
+  if (bmi < 18.5) return "Underweight";
+  if (bmi < 25) return "Normal";
+  if (bmi < 30) return "Overweight";
+  return "Obese";
+}
+
+function BmiCalc() {
+  const [unit, setUnit] = useState("metric");
+  const [weight, setWeight] = useState("70");
+  const [height, setHeight] = useState("175");
+
+  const out = useMemo(() => {
+    const w = n(weight), h = n(height);
+    let bmi = 0;
+    if (unit === "metric") {
+      const m = h / 100;                    // cm → m
+      bmi = m > 0 ? w / (m * m) : 0;        // kg / m²
+    } else {
+      bmi = h > 0 ? (703 * w) / (h * h) : 0; // 703 · lb / in²
+    }
+    const valid = w > 0 && h > 0 && Number.isFinite(bmi) && bmi > 0;
+    return {
+      valid,
+      bmi,
+      who: valid ? bmiCategory(bmi, "who") : "—",
+      asian: valid ? bmiCategory(bmi, "asian") : "—",
+    };
+  }, [unit, weight, height]);
+
+  const whoTable = [
+    ["Underweight", "< 18.5"],
+    ["Normal", "18.5 – 24.9"],
+    ["Overweight", "25 – 29.9"],
+    ["Obese", "≥ 30"],
+  ];
+  const asianTable = [
+    ["Underweight", "< 18.5"],
+    ["Normal", "18.5 – 22.9"],
+    ["Overweight", "23 – 24.9"],
+    ["Obese", "≥ 25"],
+  ];
+
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Units</Label><SelectInput value={unit} onChange={setUnit} options={[{ value: "metric", label: "Metric (kg, cm)" }, { value: "imperial", label: "Imperial (lb, in)" }]} /></div>
+        <div><Label>{unit === "metric" ? "Weight (kg)" : "Weight (lb)"}</Label><Input value={weight} onChange={setWeight} /></div>
+        <div><Label>{unit === "metric" ? "Height (cm)" : "Height (in)"}</Label><Input value={height} onChange={setHeight} /></div>
+      </Grid3>
+      <Grid3>
+        <BigResult value={out.valid ? out.bmi.toFixed(1) : "—"} label="BMI" />
+        <BigResult value={out.who} label="WHO Category" />
+        <BigResult value={out.asian} label="Asian-Indian Category" />
+      </Grid3>
+      <Grid2>
+        <DataTable columns={["WHO Standard", "BMI Range"]} rows={whoTable} />
+        <DataTable columns={["Asian-Indian", "BMI Range"]} rows={asianTable} />
+      </Grid2>
+      <Result>⚠️ Not medical advice. BMI is a rough screening ratio and does not account for muscle mass, frame, age, sex or body composition. For an assessment of your weight and health, consult a qualified healthcare professional.</Result>
     </VStack>
   );
 }
 
 Object.assign(TOOL_COMPONENTS, {
   "tdee-calc": TdeeCalc,
+  "bmi-calculator": BmiCalc,
   "macro-calc": MacroCalc,
   "protein-intake-calc": ProteinIntakeCalc,
   "heart-rate-zone-calc": HeartRateZoneCalc,
@@ -2322,7 +2468,7 @@ function ToolPage({ toolId }) {
 
   if (!tool || !ToolComp) {
     return (
-      <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'}>
+      <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'} tools={TOOLS} subcats={CATEGORIES}>
         <div style={{ padding:'48px 20px', textAlign:'center', color:'#94A3B8' }}>
           Tool not found. <a href="#/" style={{ color: PAGE_THEME.color }}>← Back to {PAGE_THEME.name}</a>
         </div>
@@ -2341,8 +2487,8 @@ function ToolPage({ toolId }) {
   const related = TOOLS.filter(t => t.id !== tool.id && t.cat === tool.cat).slice(0, 8);
 
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={toolId}>
-      <ToolPageLayout theme={PAGE_THEME} tool={toolData} related={related}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId} tools={TOOLS} subcats={CATEGORIES}>
+      <ToolPageLayout theme={PAGE_THEME} tool={toolData} tools={TOOLS} subcats={CATEGORIES} related={related}>
         <ToolComp />
       </ToolPageLayout>
     </CategoryLayout>
@@ -2403,7 +2549,7 @@ function SubcatTabs({ cats, active, onSelect }) {
 
 function HomePage() {
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={null}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={null} tools={TOOLS} subcats={CATEGORIES}>
       <CategoryDashboard
         theme={PAGE_THEME}
         tools={TOOLS}
