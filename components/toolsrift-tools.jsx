@@ -33,7 +33,7 @@ export default function ToolsRiftAllTools() {
             fontSize: 13, fontWeight: 600,
           }}>
             <span style={{ fontSize: 14 }}>🛠️</span>
-            All Free Tools · 23 Categories · No signup
+            All Free Tools · 24 Categories · No signup
           </div>
         </BlurUp>
 

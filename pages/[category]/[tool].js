@@ -3,6 +3,21 @@ import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import TOOL_REGISTRY from '../../lib/toolRegistry'
+import TOOL_SEO from '../../lib/toolSeo'
+
+// Map each tool id -> its canonical category (first category in registry order
+// that contains the id). Cross-category duplicate tools (same id in two
+// categories, kept intentionally) then share ONE canonical URL instead of
+// competing as duplicate content.
+const CANONICAL_CAT = (() => {
+  const m = {}
+  for (const [cat, data] of Object.entries(TOOL_REGISTRY)) {
+    for (const t of data.tools) {
+      if (!(t.id in m)) m[t.id] = cat
+    }
+  }
+  return m
+})()
 
 /* ============================================================
    DYNAMIC TOOL PAGE — /[category]/[tool]
@@ -102,23 +117,34 @@ export async function getStaticProps({ params }) {
   for (let i = 1; related.length < 6 && i < catData.tools.length; i++) {
     related.push(catData.tools[(idx + i) % catData.tools.length])
   }
+  const seo = (TOOL_SEO[params.category] && TOOL_SEO[params.category][params.tool]) || null
+  const canonicalCategory = CANONICAL_CAT[params.tool] || params.category
   return {
     props: {
       category: params.category,
       categoryName: catData.name,
       tool,
       related,
+      seo,
+      canonicalCategory,
     },
   }
 }
 
-export default function ToolPage({ category, categoryName, tool, related }) {
+export default function ToolPage({ category, categoryName, tool, related, seo, canonicalCategory }) {
   const Widget = COMPONENTS[category]
   const url = `https://toolsrift.com/${category}/${tool.id}`
-  const title = `${tool.name} — Free Online Tool | ToolsRift`
-  const description = tool.desc
-    ? `${tool.desc}. Free, instant, no signup required. Works in your browser — your data never leaves your device.`
-    : `Use ${tool.name} free online. Instant results, no signup required. Works entirely in your browser.`
+  // Canonical points to the tool's primary category so duplicate cross-listings
+  // consolidate their ranking signal onto one URL.
+  const canonicalUrl = `https://toolsrift.com/${canonicalCategory || category}/${tool.id}`
+  // Unique per-tool title/description from the component's TOOL_META (lifted
+  // into lib/toolSeo.js at build time); fall back to a generic template.
+  const rawTitle = (seo && seo.title) || `${tool.name} — Free Online Tool | ToolsRift`
+  const title = rawTitle.includes('ToolsRift') ? rawTitle : `${rawTitle} | ToolsRift`
+  const description = (seo && seo.desc)
+    || (tool.desc
+      ? `${tool.desc}. Free, instant, no signup required. Works in your browser — your data never leaves your device.`
+      : `Use ${tool.name} free online. Instant results, no signup required. Works entirely in your browser.`)
 
   // HASH BRIDGE: set #/tool/<id> before the widget mounts, so the
   // category component's internal router opens this exact tool.
@@ -172,7 +198,9 @@ export default function ToolPage({ category, categoryName, tool, related }) {
     }
   }, [tool.id])
 
-  const faqs = [
+  // Prefer the tool's own unique FAQ (from TOOL_META); otherwise a generic set.
+  // Using the real per-tool FAQ avoids identical FAQPage schema on every page.
+  const faqs = (seo && seo.faq && seo.faq.length) ? seo.faq : [
     [`Is ${tool.name} free to use?`,
      `Yes. ${tool.name} on ToolsRift is completely free with no signup, no installation and no usage limits.`],
     [`Is my data safe when using ${tool.name}?`,
@@ -186,10 +214,11 @@ export default function ToolPage({ category, categoryName, tool, related }) {
       <Head>
         <title>{title}</title>
         <meta name="description" content={description} />
-        <link rel="canonical" href={url} />
+        {seo && seo.keywords && <meta name="keywords" content={seo.keywords} />}
+        <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
-        <meta property="og:url" content={url} />
+        <meta property="og:url" content={canonicalUrl} />
         <meta property="og:site_name" content="ToolsRift" />
         <meta name="twitter:card" content="summary_large_image" />
         {/* BreadcrumbList schema */}
@@ -207,8 +236,8 @@ export default function ToolPage({ category, categoryName, tool, related }) {
           '@context': 'https://schema.org',
           '@type': 'SoftwareApplication',
           name: tool.name,
-          description: tool.desc || description,
-          url,
+          description,
+          url: canonicalUrl,
           applicationCategory: 'UtilityApplication',
           operatingSystem: 'Any',
           browserRequirements: 'Requires JavaScript',
@@ -287,11 +316,15 @@ export default function ToolPage({ category, categoryName, tool, related }) {
           <h2 style={{ fontSize: 20, fontWeight: 700, fontFamily: "'Sora', sans-serif", margin: '32px 0 12px' }}>
             How to use {tool.name}
           </h2>
-          <ol style={{ fontSize: 15, lineHeight: 1.9, color: C.muted, margin: 0, paddingLeft: 22 }}>
-            <li>Open the {tool.name} above — it loads instantly, no account needed.</li>
-            <li>Enter or upload your input. Everything is processed locally on your device.</li>
-            <li>Get your result immediately and copy or download it with one click.</li>
-          </ol>
+          {seo && seo.howTo ? (
+            <p style={{ fontSize: 15, lineHeight: 1.85, color: C.muted, margin: 0 }}>{seo.howTo}</p>
+          ) : (
+            <ol style={{ fontSize: 15, lineHeight: 1.9, color: C.muted, margin: 0, paddingLeft: 22 }}>
+              <li>Open the {tool.name} above — it loads instantly, no account needed.</li>
+              <li>Enter or upload your input. Everything is processed locally on your device.</li>
+              <li>Get your result immediately and copy or download it with one click.</li>
+            </ol>
+          )}
 
           {/* FAQ (matches the FAQPage schema above) */}
           <h2 style={{ fontSize: 20, fontWeight: 700, fontFamily: "'Sora', sans-serif", margin: '32px 0 12px' }}>

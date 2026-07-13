@@ -17,9 +17,9 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>ToolsRift — 947+ Free Online Tools, No Signup</title>
-        <meta name="description" content="ToolsRift offers 947+ free online tools — calculators, converters, text and PDF tools, image editors, code formatters and more. No signup, no upload, runs in your browser." />
-        <meta property="og:title" content="ToolsRift — 947+ Free Online Tools" />
+        <title>ToolsRift — 957+ Free Online Tools, No Signup</title>
+        <meta name="description" content="ToolsRift offers 957+ free online tools — calculators, converters, text and PDF tools, image editors, code formatters and more. No signup, no upload, runs in your browser." />
+        <meta property="og:title" content="ToolsRift — 957+ Free Online Tools" />
         <meta property="og:description" content="Free online tools for everyone. Calculators, converters, text tools, PDFs, images and more. Browser-based, no signup." />
         <meta property="og:url" content="https://toolsrift.com" />
         <meta property="og:site_name" content="ToolsRift" />
