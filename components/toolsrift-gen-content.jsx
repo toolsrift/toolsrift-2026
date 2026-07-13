@@ -1076,6 +1076,358 @@ function ElevatorPitchGen() {
   );
 }
 
+// ---------- Shared helpers for added tools (W2) ----------
+const hashStr = s => { let h = 5381; const str = String(s); for (let i = 0; i < str.length; i++) { h = ((h << 5) + h + str.charCodeAt(i)) >>> 0; } return h >>> 0; };
+const escapeHtml = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+const COLOR_INPUT = { width:"100%", height:40, background:"none", border:`1px solid ${C.border}`, borderRadius:8, cursor:"pointer" };
+
+// ---------- Added legal document generators ----------
+function AffiliateDisclosureGen() {
+  return <LegalDocTool filename="affiliate-disclosure.txt"
+    fields={[
+      { key:"company", label:"Site / brand name" },
+      { key:"website", label:"Website URL" },
+      { key:"email", label:"Contact email" },
+    ]}
+    build={v => buildDocument("AFFILIATE DISCLOSURE", [
+      { h:"1. Disclosure", p:`${v.company} (${v.website}) participates in affiliate marketing programs. This means we may earn commissions on qualifying purchases made through links on our site, at no additional cost to you.` },
+      { h:"2. How It Works", p:`When you click an affiliate link and make a purchase, we may receive a small commission from the retailer. These commissions help support the operation of our website and allow us to continue producing free content.` },
+      { h:"3. Our Promise", p:`We only recommend products and services we genuinely believe provide value to our readers. Our opinions are our own and are never influenced by commission potential.` },
+      { h:"4. Amazon Associates", p:`As an Amazon Associate, ${v.company} earns from qualifying purchases. Amazon and the Amazon logo are trademarks of Amazon.com, Inc. or its affiliates.` },
+      { h:"5. Your Trust", p:`Your trust matters to us. If you have any questions about our affiliate relationships, please contact us at ${v.email}.` },
+    ])} />;
+}
+
+function ShippingPolicyGen() {
+  return <LegalDocTool filename="shipping-policy.txt"
+    fields={[
+      { key:"company", label:"Store name" },
+      { key:"email", label:"Support email" },
+      { key:"days", label:"Processing time (days)", default:"1-2" },
+      { key:"delivery", label:"Delivery estimate", default:"5-7 business days" },
+    ]}
+    build={v => buildDocument("SHIPPING POLICY", [
+      { h:"1. Order Processing", p:`Orders placed with ${v.company} are processed within ${v.days} business days. Orders are not shipped or delivered on weekends or public holidays.` },
+      { h:"2. Shipping Rates & Delivery", p:`Estimated delivery time is ${v.delivery} after dispatch, depending on your location and chosen shipping method. Shipping charges are calculated and displayed at checkout.` },
+      { h:"3. Shipment Confirmation", p:`You will receive a shipment confirmation email with tracking information once your order has been dispatched. Please allow up to 48 hours for tracking details to update.` },
+      { h:"4. Customs, Duties & Taxes", p:`${v.company} is not responsible for any customs fees, duties, or import taxes applied to international orders. These charges are the responsibility of the customer.` },
+      { h:"5. Damaged or Lost Items", p:`If your order arrives damaged or is lost in transit, contact us at ${v.email} with your order number and photos of any damage so we can help resolve the issue promptly.` },
+      { h:"6. Contact", p:`For any shipping-related questions, reach our support team at ${v.email}.` },
+    ])} />;
+}
+
+function AcceptableUsePolicyGen() {
+  return <LegalDocTool filename="acceptable-use-policy.txt"
+    fields={[
+      { key:"company", label:"Company / Service name" },
+      { key:"website", label:"Website / Service URL" },
+      { key:"email", label:"Contact email" },
+    ]}
+    build={v => buildDocument("ACCEPTABLE USE POLICY", [
+      { h:"1. Purpose", p:`This Acceptable Use Policy governs your use of the services provided by ${v.company} at ${v.website}. By accessing or using our services, you agree to comply with this policy.` },
+      { h:"2. Prohibited Activities", p:`You may not use our services to engage in illegal activity, distribute malware, send spam or bulk unsolicited messages, harass others, infringe intellectual property, or attempt unauthorized access to systems or data.` },
+      { h:"3. Content Standards", p:`You are responsible for all content you submit. Content must not be defamatory, obscene, hateful, or otherwise objectionable, and must not violate the rights of any third party.` },
+      { h:"4. Security", p:`You must not attempt to probe, scan, or test the vulnerability of our systems, breach security or authentication measures, or interfere with service to any user, host, or network.` },
+      { h:"5. Enforcement", p:`${v.company} reserves the right to investigate suspected violations and may suspend or terminate access for any user who breaches this policy, with or without prior notice.` },
+      { h:"6. Reporting & Contact", p:`To report a violation of this policy, contact us at ${v.email}.` },
+    ])} />;
+}
+
+function WarrantyPolicyGen() {
+  return <LegalDocTool filename="warranty-policy.txt"
+    fields={[
+      { key:"company", label:"Company / Brand name" },
+      { key:"email", label:"Support email" },
+      { key:"period", label:"Warranty period", default:"12 months" },
+    ]}
+    build={v => buildDocument("WARRANTY POLICY", [
+      { h:"1. Limited Warranty", p:`${v.company} warrants that its products will be free from defects in materials and workmanship under normal use for a period of ${v.period} from the original date of purchase.` },
+      { h:"2. What Is Covered", p:`This warranty covers genuine manufacturing defects. If a product fails due to such a defect during the warranty period, ${v.company} will repair or replace it, or issue a refund, at our discretion.` },
+      { h:"3. What Is Not Covered", p:`This warranty does not cover damage caused by misuse, accidents, unauthorized modification or repair, normal wear and tear, or failure to follow care and usage instructions.` },
+      { h:"4. How to Make a Claim", p:`To make a warranty claim, contact ${v.email} with your proof of purchase and a description of the defect. We may request photos or the return of the item for inspection.` },
+      { h:"5. Limitations", p:`To the extent permitted by law, ${v.company}'s liability under this warranty is limited to the repair, replacement, or refund of the product. We are not liable for any incidental or consequential damages.` },
+      { h:"6. Contact", p:`For warranty questions, contact ${v.company} at ${v.email}.` },
+    ])} />;
+}
+
+// ---------- Added SVG generators ----------
+function SvgSpinnerGen() {
+  const [color, setColor] = useState("#0EA5E9");
+  const [size, setSize] = useState(48);
+  const [speed, setSpeed] = useState(1);
+  const track = "rgba(255,255,255,0.12)";
+  const svg = `<svg viewBox="0 0 50 50" width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg" style="display:block">\n  <circle cx="25" cy="25" r="20" fill="none" stroke="${track}" stroke-width="5"/>\n  <path d="M25 5 A20 20 0 0 1 45 25" fill="none" stroke="${color}" stroke-width="5" stroke-linecap="round">\n    <animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="${speed}s" repeatCount="indefinite"/>\n  </path>\n</svg>`;
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Color</Label><input type="color" value={color} onChange={e => setColor(e.target.value)} style={COLOR_INPUT} /></div>
+        <div><Label>Size: {size}px</Label><input type="range" min={24} max={120} value={size} onChange={e => setSize(Number(e.target.value))} style={{ width:"100%", accentColor:C.blue }} /></div>
+      </Grid2>
+      <div><Label>Speed: {speed}s per rotation</Label><input type="range" min={0.4} max={3} step={0.1} value={speed} onChange={e => setSpeed(Number(e.target.value))} style={{ width:"100%", accentColor:C.blue }} /></div>
+      <SvgOutput svg={svg} filename="spinner.svg" />
+    </VStack>
+  );
+}
+
+function SvgDividerGen() {
+  const [style, setStyle] = useState("curve");
+  const [color, setColor] = useState("#0EA5E9");
+  const [h, setH] = useState(120);
+  const [flip, setFlip] = useState(false);
+  const W = 1440;
+  let d;
+  if (style === "tilt") d = `M0 ${h} L${W} 0 L${W} ${h} Z`;
+  else if (style === "triangle") d = `M0 ${h} L${W / 2} 0 L${W} ${h} Z`;
+  else if (style === "curve-asym") d = `M0 ${h} C ${W * 0.3} 0 ${W * 0.7} ${h} ${W} ${h * 0.35} L${W} ${h} Z`;
+  else d = `M0 ${h} C ${W * 0.35} 0 ${W * 0.65} 0 ${W} ${h} L${W} ${h} Z`;
+  const flipT = flip ? ` transform="translate(${W},0) scale(-1,1)"` : "";
+  const svg = `<svg viewBox="0 0 ${W} ${h}" width="100%" height="${h}" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto">\n  <path d="${d}" fill="${color}"${flipT}/>\n</svg>`;
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Style</Label><SelectInput value={style} onChange={setStyle} options={[{value:"curve",label:"Curve"},{value:"curve-asym",label:"Asymmetric Curve"},{value:"tilt",label:"Tilt"},{value:"triangle",label:"Triangle"}]} style={{ width:"100%" }} /></div>
+        <div><Label>Color</Label><input type="color" value={color} onChange={e => setColor(e.target.value)} style={COLOR_INPUT} /></div>
+      </Grid2>
+      <div><Label>Height: {h}px</Label><input type="range" min={40} max={300} value={h} onChange={e => setH(Number(e.target.value))} style={{ width:"100%", accentColor:C.blue }} /></div>
+      <Btn variant="secondary" size="sm" onClick={() => setFlip(f => !f)}>↔ Flip Horizontal ({flip ? "on" : "off"})</Btn>
+      <SvgOutput svg={svg} filename="divider.svg" />
+    </VStack>
+  );
+}
+
+function SvgCheckmarkGen() {
+  const [variant, setVariant] = useState("success");
+  const [color, setColor] = useState("#10B981");
+  const [size, setSize] = useState(96);
+  const mark = variant === "error"
+    ? `<path d="M18 18 L38 38 M38 18 L18 38" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.4s" fill="freeze"/></path>`
+    : `<path d="M16 29 L25 38 L41 20" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="60" stroke-dashoffset="60"><animate attributeName="stroke-dashoffset" from="60" to="0" dur="0.5s" fill="freeze"/></path>`;
+  const bg = variant === "error" ? "#EF4444" : color;
+  const svg = `<svg viewBox="0 0 56 56" width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg" style="display:block">\n  <circle cx="28" cy="28" r="26" fill="${bg}"/>\n  ${mark}\n</svg>`;
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Type</Label><SelectInput value={variant} onChange={setVariant} options={[{value:"success",label:"Success ✓"},{value:"error",label:"Error ✕"}]} style={{ width:"100%" }} /></div>
+        <div><Label>Size: {size}px</Label><input type="range" min={48} max={200} value={size} onChange={e => setSize(Number(e.target.value))} style={{ width:"100%", accentColor:C.blue }} /></div>
+      </Grid2>
+      {variant === "success" && <div><Label>Circle color</Label><input type="color" value={color} onChange={e => setColor(e.target.value)} style={COLOR_INPUT} /></div>}
+      <SvgOutput svg={svg} filename="checkmark.svg" />
+    </VStack>
+  );
+}
+
+function SvgBadgeGen() {
+  const [label, setLabel] = useState("build");
+  const [message, setMessage] = useState("passing");
+  const [color, setColor] = useState("#10B981");
+  const textWidth = s => { let w = 0; for (const ch of String(s)) { if ("iljI.,:;'!|".includes(ch)) w += 3; else if ("mwMW".includes(ch)) w += 9; else if (ch >= "A" && ch <= "Z") w += 7.5; else if (ch === " ") w += 4; else w += 6.5; } return w; };
+  const lw = Math.round(textWidth(label)) + 20;
+  const mw = Math.round(textWidth(message)) + 20;
+  const H = 20, total = lw + mw;
+  const lx = (lw / 2).toFixed(1), mx = (lw + mw / 2).toFixed(1);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${total}" height="${H}" viewBox="0 0 ${total} ${H}" role="img" aria-label="${escapeHtml(label)}: ${escapeHtml(message)}" style="display:block">\n  <rect rx="3" width="${total}" height="${H}" fill="#555"/>\n  <rect rx="3" x="${lw}" width="${mw}" height="${H}" fill="${color}"/>\n  <rect x="${lw}" width="4" height="${H}" fill="${color}"/>\n  <g fill="#fff" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" font-size="11" text-anchor="middle">\n    <text x="${lx}" y="14">${escapeHtml(label)}</text>\n    <text x="${mx}" y="14">${escapeHtml(message)}</text>\n  </g>\n</svg>`;
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Label (left)</Label><Input value={label} onChange={setLabel} placeholder="build" /></div>
+        <div><Label>Message (right)</Label><Input value={message} onChange={setMessage} placeholder="passing" /></div>
+      </Grid2>
+      <div><Label>Message color</Label><input type="color" value={color} onChange={e => setColor(e.target.value)} style={COLOR_INPUT} /></div>
+      <SvgOutput svg={svg} filename="badge.svg" />
+    </VStack>
+  );
+}
+
+function SvgAvatarGen() {
+  const [seed, setSeed] = useState("jordan@example.com");
+  const h = hashStr(seed || "user");
+  const hue = h % 360;
+  const fill = `hsl(${hue}, 60%, 52%)`;
+  const on = [];
+  for (let i = 0; i < 15; i++) on.push((hashStr(seed + "#" + i) & 1) === 1);
+  const cell = 70, pad = 5;
+  let rects = "";
+  for (let r = 0; r < 5; r++) for (let c = 0; c < 5; c++) { const cc = c < 3 ? c : 4 - c; if (on[cc * 5 + r]) rects += `<rect x="${pad + c * cell}" y="${pad + r * cell}" width="${cell}" height="${cell}" fill="${fill}"/>`; }
+  const S = pad * 2 + cell * 5;
+  const svg = `<svg viewBox="0 0 ${S} ${S}" width="200" height="200" xmlns="http://www.w3.org/2000/svg" style="display:block">\n  <rect width="${S}" height="${S}" rx="24" fill="#EEF2F6"/>\n  ${rects}\n</svg>`;
+  return (
+    <VStack>
+      <div><Label>Name / email / seed</Label><Input value={seed} onChange={setSeed} placeholder="any text produces a unique avatar" /></div>
+      <div style={{ fontSize:12, color:C.muted }}>Same input always produces the same symmetric identicon.</div>
+      <SvgOutput svg={svg} filename="avatar.svg" />
+    </VStack>
+  );
+}
+
+// ---------- Added content generators ----------
+function AboutUsGen() {
+  const [name, setName] = useState("Acme Studio");
+  const [year, setYear] = useState("2019");
+  const [does, setDoes] = useState("design tools for small businesses");
+  const [values, setValues] = useState("quality, honesty, customer focus");
+  const [text, setText] = useState("");
+  const gen = () => {
+    const vals = values.split(",").map(s => s.trim()).filter(Boolean);
+    setText(
+`About ${name}
+
+Founded in ${year}, ${name} was built on a simple idea: to ${does}. What started as a small project has grown into something we're genuinely proud of, shaped every day by the people we serve.
+
+We ${does}, and we do it with care. Our team believes the best work comes from truly understanding the people we help — listening first, then building solutions that make a real difference.
+
+At the heart of everything we do are our core values: ${vals.join(", ") || "integrity and excellence"}. These aren't just words on a wall; they guide every decision we make and every product we ship.
+
+Thank you for being part of our story. We're only just getting started.`);
+  };
+  useEffect(() => { gen(); /* eslint-disable-next-line */ }, []);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Company / brand name</Label><Input value={name} onChange={setName} /></div>
+        <div><Label>Year founded</Label><Input value={year} onChange={setYear} /></div>
+      </Grid2>
+      <div><Label>What you do</Label><Input value={does} onChange={setDoes} placeholder="e.g. build eco-friendly packaging" /></div>
+      <div><Label>Core values (comma separated)</Label><Input value={values} onChange={setValues} /></div>
+      <Btn onClick={gen}>⚡ Generate About Us</Btn>
+      <BlockOutput text={text} />
+    </VStack>
+  );
+}
+
+function FaqSchemaGen() {
+  const [input, setInput] = useState("What is ToolsRift? | A free online tools platform.\nIs it free? | Yes, every tool is completely free to use.\nDo I need an account? | No signup or account is required.");
+  const out = useMemo(() => {
+    const lines = input.split("\n").map(l => l.trim()).filter(Boolean);
+    const pairs = [];
+    if (lines.some(l => l.includes("|"))) {
+      for (const l of lines) { const idx = l.indexOf("|"); if (idx > 0) { const q = l.slice(0, idx).trim(); const a = l.slice(idx + 1).trim(); if (q && a) pairs.push([q, a]); } }
+    } else {
+      for (let i = 0; i + 1 < lines.length; i += 2) pairs.push([lines[i], lines[i + 1]]);
+    }
+    const obj = { "@context":"https://schema.org", "@type":"FAQPage", mainEntity: pairs.map(([q, a]) => ({ "@type":"Question", name:q, acceptedAnswer:{ "@type":"Answer", text:a } })) };
+    return { count: pairs.length, code: `<script type="application/ld+json">\n${JSON.stringify(obj, null, 2)}\n</script>` };
+  }, [input]);
+  return (
+    <VStack>
+      <div><Label>FAQ items — one per line: Question | Answer</Label><Textarea value={input} onChange={setInput} rows={6} placeholder="How much does it cost? | It is free." /></div>
+      <div style={{ fontSize:12, color:C.muted }}>{out.count} question{out.count === 1 ? "" : "s"} detected · valid JSON-LD FAQPage schema for Google rich results</div>
+      <BlockOutput text={out.code} />
+    </VStack>
+  );
+}
+
+function EmailSignatureGen() {
+  const [name, setName] = useState("Jane Doe");
+  const [title, setTitle] = useState("Marketing Lead");
+  const [company, setCompany] = useState("Acme Inc.");
+  const [phone, setPhone] = useState("+1 555 123 4567");
+  const [email, setEmail] = useState("jane@acme.com");
+  const [website, setWebsite] = useState("https://acme.com");
+  const [color, setColor] = useState("#0EA5E9");
+  const html = useMemo(() => {
+    const e = escapeHtml;
+    const site = website.replace(/^https?:\/\//, "");
+    const roleLine = [title, company].filter(Boolean).map(e).join(" · ");
+    return `<table cellpadding="0" cellspacing="0" style="font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#333;line-height:1.5">
+  <tr>
+    <td style="border-left:3px solid ${e(color)};padding-left:12px">
+      <div style="font-size:16px;font-weight:bold;color:#111">${e(name)}</div>
+      <div style="color:${e(color)};font-weight:bold">${roleLine}</div>
+      <div style="margin-top:6px;color:#555">
+        ${phone ? `${e(phone)}<br>` : ""}${email ? `<a href="mailto:${e(email)}" style="color:#555;text-decoration:none">${e(email)}</a><br>` : ""}${website ? `<a href="${e(website)}" style="color:${e(color)};text-decoration:none">${e(site)}</a>` : ""}
+      </div>
+    </td>
+  </tr>
+</table>`;
+  }, [name, title, company, phone, email, website, color]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Full name</Label><Input value={name} onChange={setName} /></div>
+        <div><Label>Job title</Label><Input value={title} onChange={setTitle} /></div>
+      </Grid2>
+      <Grid2>
+        <div><Label>Company</Label><Input value={company} onChange={setCompany} /></div>
+        <div><Label>Phone</Label><Input value={phone} onChange={setPhone} /></div>
+      </Grid2>
+      <Grid2>
+        <div><Label>Email</Label><Input value={email} onChange={setEmail} /></div>
+        <div><Label>Website</Label><Input value={website} onChange={setWebsite} /></div>
+      </Grid2>
+      <div><Label>Accent color</Label><input type="color" value={color} onChange={e => setColor(e.target.value)} style={COLOR_INPUT} /></div>
+      <Label>Preview</Label>
+      <div style={{ background:"#fff", borderRadius:8, padding:16, border:`1px solid ${C.border}` }} dangerouslySetInnerHTML={{ __html: html }} />
+      <BlockOutput text={html} />
+    </VStack>
+  );
+}
+
+function MissionVisionGen() {
+  const [company, setCompany] = useState("Acme");
+  const [industry, setIndustry] = useState("education");
+  const [audience, setAudience] = useState("students");
+  const [goal, setGoal] = useState("make learning accessible to everyone");
+  const [text, setText] = useState("");
+  const gen = () => {
+    const g = goal.trim() || "deliver exceptional value";
+    setText(
+`MISSION
+At ${company}, our mission is to ${g}. We exist to serve ${audience} by delivering meaningful value in the ${industry} space, every single day.
+
+VISION
+We envision a future where ${audience} everywhere can benefit as we ${g.replace(/^to\s+/i, "")}. ${company} strives to be the most trusted name in ${industry}, setting the standard for what's possible.
+
+VALUES
+• Integrity — we do the right thing, always.
+• Excellence — we hold ourselves to the highest standard.
+• Empathy — we put ${audience} at the center of every decision.
+• Innovation — we constantly seek better ways to serve.`);
+  };
+  useEffect(() => { gen(); /* eslint-disable-next-line */ }, []);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Company name</Label><Input value={company} onChange={setCompany} /></div>
+        <div><Label>Industry</Label><Input value={industry} onChange={setIndustry} /></div>
+      </Grid2>
+      <Grid2>
+        <div><Label>Target audience</Label><Input value={audience} onChange={setAudience} /></div>
+        <div><Label>Primary goal</Label><Input value={goal} onChange={setGoal} /></div>
+      </Grid2>
+      <Btn onClick={gen}>⚡ Generate Mission & Vision</Btn>
+      <BlockOutput text={text} />
+    </VStack>
+  );
+}
+
+function CookieConsentBannerGen() {
+  const [msg, setMsg] = useState("We use cookies to improve your experience.");
+  const [btn, setBtn] = useState("Got it");
+  const [url, setUrl] = useState("/privacy-policy");
+  const [color, setColor] = useState("#0EA5E9");
+  const html = useMemo(() => {
+    const e = escapeHtml;
+    return `<!-- Cookie consent banner (paste before </body>) -->
+<div id="cookie-consent" style="position:fixed;left:0;right:0;bottom:0;background:#0D1117;color:#E2E8F0;padding:14px 18px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:14px;font-family:sans-serif;font-size:14px;box-shadow:0 -2px 12px rgba(0,0,0,.3);z-index:9999">
+  <span>${e(msg)} <a href="${e(url)}" style="color:${e(color)}">Learn more</a></span>
+  <button onclick="document.getElementById('cookie-consent').remove();try{localStorage.setItem('cookieConsent','1')}catch(e){}" style="background:${e(color)};color:#fff;border:none;border-radius:6px;padding:8px 18px;font-size:14px;cursor:pointer">${e(btn)}</button>
+</div>
+<script>try{if(localStorage.getItem('cookieConsent')){var _b=document.getElementById('cookie-consent');if(_b)_b.remove();}}catch(e){}</script>`;
+  }, [msg, btn, url, color]);
+  return (
+    <VStack>
+      <div><Label>Banner message</Label><Textarea value={msg} onChange={setMsg} rows={2} /></div>
+      <Grid2>
+        <div><Label>Button text</Label><Input value={btn} onChange={setBtn} /></div>
+        <div><Label>Policy URL</Label><Input value={url} onChange={setUrl} /></div>
+      </Grid2>
+      <div><Label>Accent color</Label><input type="color" value={color} onChange={e => setColor(e.target.value)} style={COLOR_INPUT} /></div>
+      <div style={{ fontSize:12, color:C.muted }}>Remembers consent via localStorage — the banner won't reappear after the button is clicked.</div>
+      <BlockOutput text={html} />
+    </VStack>
+  );
+}
+
 const TOOLS = [
 { id:"privacy-policy-gen", cat:"legal", name:"Privacy Policy Generator", desc:"Generate a full privacy policy online with company details, cookies, data collection, and third-party processing clauses.", icon:"📜", free:true },
 { id:"terms-conditions-gen", cat:"legal", name:"Terms & Conditions Generator", desc:"Create website terms and conditions online with jurisdiction, acceptable use rules, and service limitation language.", icon:"⚖️", free:true },
@@ -1087,6 +1439,10 @@ const TOOLS = [
 { id:"dmca-notice-gen", cat:"legal", name:"DMCA Notice Generator", desc:"Generate DMCA takedown notice templates online with infringement claims, URLs, and contact declarations.", icon:"📮", free:true },
 { id:"gdpr-compliance-gen", cat:"legal", name:"GDPR Compliance Notice Generator", desc:"Generate GDPR data processing notice text online with lawful basis, rights, and retention disclosures.", icon:"🛡️", free:true },
 { id:"eula-gen", cat:"legal", name:"EULA Generator", desc:"Create End User License Agreement text online for software and apps with restrictions, license scope, and warranty terms.", icon:"📘", free:true },
+{ id:"affiliate-disclosure-gen", cat:"legal", name:"Affiliate Disclosure Generator", desc:"Generate an FTC-style affiliate disclosure statement online with commission, Amazon Associates, and reader-trust clauses.", icon:"🔗", free:true },
+{ id:"shipping-policy-gen", cat:"legal", name:"Shipping Policy Generator", desc:"Create an e-commerce shipping policy online with processing time, delivery estimates, customs, and lost-parcel handling.", icon:"📦", free:true },
+{ id:"acceptable-use-policy-gen", cat:"legal", name:"Acceptable Use Policy Generator", desc:"Generate an acceptable use policy online covering prohibited activities, content standards, security, and enforcement.", icon:"🚧", free:true },
+{ id:"warranty-policy-gen", cat:"legal", name:"Warranty Policy Generator", desc:"Create a product warranty policy online with coverage period, exclusions, claim steps, and liability limitations.", icon:"🛠️", free:true },
 
 { id:"svg-wave-gen", cat:"svg", name:"SVG Wave Generator", desc:"Generate smooth layered SVG wave backgrounds online with controls for height, amplitude, frequency, and color.", icon:"🌊", free:true },
 { id:"svg-blob-gen", cat:"svg", name:"SVG Blob Generator", desc:"Create organic SVG blob shapes online with randomize controls and color selection for hero and section backgrounds.", icon:"🫧", free:true },
@@ -1096,6 +1452,11 @@ const TOOLS = [
 { id:"noise-texture-gen", cat:"svg", name:"Noise Texture Generator", desc:"Generate SVG noise texture backgrounds online using turbulence filters for depth and subtle design grain.", icon:"📺", free:true },
 { id:"geometric-pattern-gen", cat:"svg", name:"Geometric Pattern Generator", desc:"Create geometric SVG art patterns online with triangles, circles, and lines for abstract visual systems.", icon:"📐", free:true },
 { id:"abstract-bg-gen", cat:"svg", name:"Abstract Background Generator", desc:"Generate abstract SVG background artwork online with layered shapes and color harmonies for web sections.", icon:"🖼️", free:true },
+{ id:"svg-spinner-gen", cat:"svg", name:"SVG Spinner Generator", desc:"Generate an animated SVG loading spinner online with adjustable color, size, and rotation speed for any website.", icon:"⏳", free:true },
+{ id:"svg-divider-gen", cat:"svg", name:"SVG Section Divider Generator", desc:"Create SVG section divider shapes online including curve, tilt, and triangle styles with flip and color controls.", icon:"〰️", free:true },
+{ id:"svg-checkmark-gen", cat:"svg", name:"SVG Checkmark Generator", desc:"Generate an animated SVG success checkmark or error cross online with a colored circle badge and draw animation.", icon:"✅", free:true },
+{ id:"svg-badge-gen", cat:"svg", name:"SVG Badge Generator", desc:"Create shields-style status badges as SVG online with custom label, message, and color for READMEs and docs.", icon:"🏅", free:true },
+{ id:"svg-avatar-gen", cat:"svg", name:"SVG Identicon Avatar Generator", desc:"Generate a deterministic symmetric identicon avatar as SVG online from any name, email, or seed string.", icon:"🧩", free:true },
 
 { id:"blog-title-gen", cat:"content", name:"Blog Title Generator", desc:"Generate SEO blog title ideas online from a topic keyword using high-click headline formulas.", icon:"✍️", free:true },
 { id:"youtube-title-gen", cat:"content", name:"YouTube Title Generator", desc:"Generate YouTube video title ideas online from a topic with engaging hooks and discovery-focused wording.", icon:"▶️", free:true },
@@ -1113,6 +1474,11 @@ const TOOLS = [
 { id:"business-name-gen", cat:"content", name:"Business Name Generator", desc:"Generate business name ideas online from industry and keywords with brandable naming patterns.", icon:"🏢", free:true },
 { id:"username-gen", cat:"content", name:"Username Generator", desc:"Generate username ideas online from name or keyword with style variants and availability note prompts.", icon:"👤", free:true },
 { id:"elevator-pitch-gen", cat:"content", name:"Elevator Pitch Generator", desc:"Generate a 30-second elevator pitch online from role and value proposition for networking and interviews.", icon:"🗣️", free:true },
+{ id:"about-us-gen", cat:"content", name:"About Us Page Generator", desc:"Generate an About Us page draft online from company name, founding year, offering, and values.", icon:"🏛️", free:true },
+{ id:"faq-schema-gen", cat:"content", name:"FAQ Schema Generator", desc:"Generate valid FAQPage JSON-LD structured data online from your questions and answers for Google rich results.", icon:"❓", free:true },
+{ id:"email-signature-gen", cat:"content", name:"Email Signature Generator", desc:"Create an HTML email signature online from name, title, contact details, and accent color with live preview.", icon:"✉️", free:true },
+{ id:"mission-vision-gen", cat:"content", name:"Mission & Vision Statement Generator", desc:"Generate mission, vision, and values statements online from company, industry, audience, and goal.", icon:"🎯", free:true },
+{ id:"cookie-consent-banner-gen", cat:"content", name:"Cookie Consent Banner Generator", desc:"Generate a copy-paste cookie consent banner online with HTML, styling, and localStorage remember-choice logic.", icon:"🍪", free:true },
 ];
 
 const CATEGORIES = [
@@ -1142,6 +1508,10 @@ const TOOL_COMPONENTS = {
 "dmca-notice-gen": DmcaNoticeGen,
 "gdpr-compliance-gen": GdprComplianceGen,
 "eula-gen": EulaGen,
+"affiliate-disclosure-gen": AffiliateDisclosureGen,
+"shipping-policy-gen": ShippingPolicyGen,
+"acceptable-use-policy-gen": AcceptableUsePolicyGen,
+"warranty-policy-gen": WarrantyPolicyGen,
 "svg-wave-gen": SvgWaveGen,
 "svg-blob-gen": SvgBlobGen,
 "svg-pattern-gen": SvgPatternGen,
@@ -1150,6 +1520,11 @@ const TOOL_COMPONENTS = {
 "noise-texture-gen": NoiseTextureGen,
 "geometric-pattern-gen": GeometricPatternGen,
 "abstract-bg-gen": AbstractBgGen,
+"svg-spinner-gen": SvgSpinnerGen,
+"svg-divider-gen": SvgDividerGen,
+"svg-checkmark-gen": SvgCheckmarkGen,
+"svg-badge-gen": SvgBadgeGen,
+"svg-avatar-gen": SvgAvatarGen,
 "blog-title-gen": BlogTitleGen,
 "youtube-title-gen": YoutubeTitleGen,
 "youtube-description-gen": YoutubeDescriptionGen,
@@ -1166,6 +1541,11 @@ const TOOL_COMPONENTS = {
 "business-name-gen": BusinessNameGen,
 "username-gen": UsernameGen,
 "elevator-pitch-gen": ElevatorPitchGen,
+"about-us-gen": AboutUsGen,
+"faq-schema-gen": FaqSchemaGen,
+"email-signature-gen": EmailSignatureGen,
+"mission-vision-gen": MissionVisionGen,
+"cookie-consent-banner-gen": CookieConsentBannerGen,
 };
 
 function Breadcrumb({ tool, cat }) {

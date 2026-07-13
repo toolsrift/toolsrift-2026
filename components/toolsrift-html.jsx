@@ -182,6 +182,8 @@ const TOOLS = [
   { id:"html-entities-decode", cat:"converter", name:"HTML Entities Decoder", desc:"Decode HTML entities back to readable characters and symbols from encoded text", icon:"🔓", free:true },
   { id:"html-to-pdf-preview", cat:"converter", name:"HTML Preview", desc:"Preview how HTML code renders in browser with live sandbox iframe visualization", icon:"👁️", free:true },
   { id:"html-table-to-csv", cat:"converter", name:"HTML Table to CSV", desc:"Convert pasted HTML table markup into CSV and JSON. Parses rows and cells, auto-escaping commas, quotes and newlines", icon:"🧾", free:true },
+  { id:"html-nl2br", cat:"converter", name:"Newline to BR Converter", desc:"Convert plain-text line breaks into HTML <br> tags (nl2br), with an optional XHTML self-closing mode and a reverse br-to-newline mode", icon:"↵", free:true },
+  { id:"html-data-uri", cat:"converter", name:"Text/SVG to Data URI", desc:"Encode text, SVG or CSS into a base64 or URL-encoded data URI you can embed inline in HTML or CSS with no external file", icon:"🔗", free:true },
 
   // Generators
   { id:"meta-tag-generator", cat:"generator", name:"Meta Tag Generator", desc:"Generate complete SEO meta tags including title, description, Open Graph, and Twitter Cards", icon:"🏷️", free:true },
@@ -197,11 +199,23 @@ const TOOLS = [
   { id:"schema-json-ld-generator", cat:"generator", name:"Schema.org JSON-LD Generator", desc:"Build schema.org structured data JSON-LD for Article, Product, FAQPage, LocalBusiness, Organization and BreadcrumbList", icon:"🧬", free:true },
   { id:"html-boilerplate-generator", cat:"generator", name:"HTML5 Boilerplate Generator", desc:"Generate a complete HTML5 starter document with meta, Open Graph, Twitter cards, favicons and an optional CSS reset", icon:"📄", free:true },
   { id:"srcset-generator", cat:"generator", name:"Responsive Image Srcset Generator", desc:"Generate responsive img srcset and picture markup from a filename pattern, width list, sizes attribute and alt text", icon:"🌅", free:true },
+  { id:"html-form-generator", cat:"generator", name:"HTML Form Generator", desc:"Build a complete HTML form with method, action, labelled input fields, textarea, select and a submit button from a simple field list", icon:"📮", free:true },
+  { id:"html-select-generator", cat:"generator", name:"HTML Select Dropdown Generator", desc:"Generate a select dropdown with option tags from one line per option, supporting value|label pairs, a name and multiple attribute", icon:"🔽", free:true },
+  { id:"html-video-tag", cat:"generator", name:"HTML Video Tag Generator", desc:"Generate an HTML5 video tag with controls, poster, autoplay, loop, muted and multiple source formats plus a caption track", icon:"🎬", free:true },
+  { id:"html-audio-tag", cat:"generator", name:"HTML Audio Tag Generator", desc:"Generate an HTML5 audio element with controls, autoplay, loop, muted, preload and multiple MP3/OGG/WAV source fallbacks", icon:"🎵", free:true },
+  { id:"html-figure-generator", cat:"generator", name:"HTML Figure & Caption Generator", desc:"Generate a semantic figure element wrapping an image with a figcaption, ideal for accessible captioned images and diagrams", icon:"🖼️", free:true },
+  { id:"html-details-accordion", cat:"generator", name:"HTML Details Accordion Generator", desc:"Generate native details/summary accordion markup from title and content blocks, with an optional open-by-default first item", icon:"📂", free:true },
+  { id:"html-definition-list", cat:"generator", name:"HTML Definition List Generator", desc:"Turn term: definition lines into a semantic dl with dt and dd elements for glossaries, metadata and FAQ-style content", icon:"📖", free:true },
+  { id:"html-semantic5-wrapper", cat:"generator", name:"HTML5 Semantic Layout Generator", desc:"Generate a semantic HTML5 page skeleton with header, nav, main, article, aside, section and footer landmark elements", icon:"🏛️", free:true },
+  { id:"html-blockquote-generator", cat:"generator", name:"HTML Blockquote Generator", desc:"Generate a semantic blockquote with an optional cite URL and a figcaption author attribution for quotes and testimonials", icon:"❝", free:true },
+  { id:"html-nav-menu-generator", cat:"generator", name:"HTML Nav Menu Generator", desc:"Build an accessible nav menu of anchor links from label|url lines, wrapped in nav and an unordered list for site navigation", icon:"🧭", free:true },
 
   // Tools & Utilities
   { id:"html-tag-counter", cat:"tools", name:"HTML Tag Counter", desc:"Count how many of each HTML tag exists in your code with detailed statistics breakdown", icon:"🔢", free:true },
   { id:"html-attribute-extractor", cat:"tools", name:"HTML Attribute Extractor", desc:"Extract all attributes from specific HTML elements and list their names and values", icon:"🔍", free:true },
   { id:"html-comment-remover", cat:"tools", name:"HTML Comment Remover", desc:"Remove all HTML comments from code including multi-line and conditional comments", icon:"💬", free:true },
+  { id:"html-attribute-remover", cat:"tools", name:"HTML Attribute Remover", desc:"Strip every attribute from all HTML tags at once, leaving only bare element names, or remove only a named attribute like class or style", icon:"🧼", free:true },
+  { id:"html-char-entity-finder", cat:"tools", name:"HTML Character Entity Finder", desc:"Scan text for special and non-ASCII characters and list their named, decimal and hexadecimal HTML entity codes for safe encoding", icon:"🔣", free:true },
 ];
 
 const CATEGORIES = [
@@ -475,6 +489,132 @@ const TOOL_META = {
       ["What does the {w} placeholder do?", "The {w} token in your filename pattern is replaced by each width you list. For example image-{w}.jpg with widths 320 and 640 produces image-320.jpg and image-640.jpg in the srcset."],
       ["What is the difference between the img and picture output?", "The img version uses one srcset with width descriptors so the browser picks a size. The picture version adds <source> elements offering a modern format (AVIF or WebP) with a fallback for browsers that don't support it."],
       ["What should the sizes attribute contain?", "sizes tells the browser how wide the image will render at different breakpoints, e.g. (max-width: 600px) 100vw, 600px. The browser uses it with srcset to choose the most appropriate file before layout."]
+    ]
+  },
+  "html-nl2br": {
+    title: "Free Newline to BR Converter – nl2br Online Tool | ToolsRift",
+    desc: "Convert plain-text line breaks to HTML <br> tags online. PHP nl2br equivalent with optional XHTML self-closing mode and a reverse br-to-newline direction.",
+    faq: [
+      ["What does nl2br do?", "It replaces every newline character (\\n, \\r or \\r\\n) in your text with an HTML <br> tag so line breaks survive when the text is rendered inside HTML, mirroring PHP's nl2br() function."],
+      ["What is XHTML mode?", "XHTML and self-closing HTML require void elements to be closed, so XHTML mode outputs <br /> with a trailing slash instead of <br>. Standard HTML5 accepts either form."],
+      ["Can it convert <br> back to newlines?", "Yes, switch to reverse mode to turn <br>, <br/> and <br /> tags back into plain newline characters, which is handy when cleaning HTML into editable plain text."]
+    ]
+  },
+  "html-data-uri": {
+    title: "Free Text/SVG to Data URI Generator – Base64 & URL | ToolsRift",
+    desc: "Encode text, SVG or CSS to a data URI online. Generate base64 or URL-encoded data: URIs to embed assets inline in HTML and CSS with no external requests.",
+    faq: [
+      ["What is a data URI?", "A data URI embeds a file's contents directly in a URL using the data: scheme, so small assets like SVG icons can live inline in HTML or CSS without a separate network request."],
+      ["Base64 or URL-encoding — which should I use?", "Base64 works for any content but adds about 33% size. For SVG, URL-encoding is often smaller and stays human-readable, so this tool generates both and you pick whichever is shorter."],
+      ["Is the encoding done in my browser?", "Yes. Encoding uses your browser's built-in UTF-8-safe base64 and URL encoding entirely on the client, so your text or SVG is never uploaded to any server."]
+    ]
+  },
+  "html-form-generator": {
+    title: "Free HTML Form Generator – Build Form Markup Online | ToolsRift",
+    desc: "Generate a complete HTML form online with method, action, labelled inputs, textarea, select and submit button. Copy accessible, ready-to-style form markup instantly.",
+    faq: [
+      ["What field types can I add?", "Add text, email, password, number, tel, url, date, textarea and select fields. Each field is generated with a matching <label> tied to the input id for accessibility."],
+      ["What is the difference between GET and POST?", "GET appends form data to the URL and suits searches and idempotent requests. POST sends data in the request body and is used for logins, sign-ups and anything that changes data."],
+      ["Is the generated form accessible?", "Every field is paired with a <label for> matching the input id, which lets screen readers announce the field and lets users click the label to focus the input."]
+    ]
+  },
+  "html-select-generator": {
+    title: "Free HTML Select Dropdown Generator – Option Tags | ToolsRift",
+    desc: "Generate an HTML select dropdown online from one option per line. Supports value|label pairs, a name attribute, multiple select and a placeholder option. Copy instantly.",
+    faq: [
+      ["How do I set a different value and label?", "Write each line as value|label, for example us|United States. The text before the pipe becomes the option value and the text after becomes the visible label. A line with no pipe uses the same text for both."],
+      ["What does the multiple attribute do?", "Adding multiple lets users select more than one option, and the control renders as a scrolling list box instead of a single-choice dropdown."],
+      ["What is a placeholder option?", "An optional disabled, selected first option (like Choose one…) prompts the user without being a valid submittable value, improving form usability."]
+    ]
+  },
+  "html-video-tag": {
+    title: "Free HTML5 Video Tag Generator – Embed Video Code | ToolsRift",
+    desc: "Generate an HTML5 <video> tag online with controls, poster, autoplay, loop, muted and multiple source formats plus captions. Copy responsive self-hosted video markup.",
+    faq: [
+      ["Why add multiple source elements?", "Different browsers support different codecs, so offering MP4, WebM and OGG sources lets each browser pick a format it can play, maximising compatibility from one <video> tag."],
+      ["Why does autoplay usually need muted?", "Most browsers block autoplay with sound to protect users, so autoplay only works reliably when the video is also muted. The generator adds muted automatically when you enable autoplay."],
+      ["What is the poster attribute?", "poster sets an image shown before the video plays or while it loads, giving viewers a meaningful preview frame instead of a blank black rectangle."]
+    ]
+  },
+  "html-audio-tag": {
+    title: "Free HTML5 Audio Tag Generator – Embed Audio Code | ToolsRift",
+    desc: "Generate an HTML5 <audio> element online with controls, autoplay, loop, muted, preload and multiple MP3, OGG and WAV source fallbacks. Copy self-hosted audio markup.",
+    faq: [
+      ["Which audio formats should I provide?", "MP3 is the most widely supported, with OGG and WAV as fallbacks. Offering several <source> elements lets each browser choose a format it can decode."],
+      ["What does the preload attribute control?", "preload hints how much audio to fetch before playback: none saves bandwidth, metadata loads only duration info, and auto lets the browser buffer the file eagerly."],
+      ["Do I need controls?", "Without controls there is no visible player, so unless you build custom JavaScript controls you should keep controls enabled so users can play, pause and adjust volume."]
+    ]
+  },
+  "html-figure-generator": {
+    title: "Free HTML Figure & Figcaption Generator – Captioned Image | ToolsRift",
+    desc: "Generate a semantic HTML <figure> with <figcaption> online. Wrap an image, its alt text and a caption in accessible markup for photos, diagrams and illustrations.",
+    faq: [
+      ["When should I use figure instead of a plain image?", "Use <figure> when an image, chart or code block has a caption or is referenced from the main text. It groups the visual with its <figcaption> as a single self-contained unit."],
+      ["What is the difference between alt and figcaption?", "alt is a short text alternative read when the image can't be seen, while figcaption is a visible caption for everyone. They serve different audiences, so provide both."],
+      ["Can figure wrap things other than images?", "Yes. <figure> can wrap illustrations, diagrams, code listings, quotes or videos. This generator focuses on the common image-with-caption pattern."]
+    ]
+  },
+  "html-details-accordion": {
+    title: "Free HTML Details Accordion Generator – FAQ Toggle | ToolsRift",
+    desc: "Generate native HTML <details> and <summary> accordion markup online. Create collapsible FAQ toggles with no JavaScript, with an optional open-by-default section.",
+    faq: [
+      ["Does the accordion need JavaScript?", "No. The <details> and <summary> elements are natively interactive in all modern browsers, so clicking the summary expands and collapses the panel with zero JavaScript."],
+      ["How do I make one section open by default?", "Add the open attribute to a <details> element and it renders expanded on page load. The generator adds open to the first item when you enable that option."],
+      ["Is a details accordion good for SEO and accessibility?", "Yes. The content stays in the HTML so search engines can index it, and the native elements are keyboard accessible and announced correctly by screen readers."]
+    ]
+  },
+  "html-definition-list": {
+    title: "Free HTML Definition List Generator – dl dt dd Markup | ToolsRift",
+    desc: "Generate a semantic HTML definition list online from term: definition lines. Build dl, dt and dd markup for glossaries, metadata and key-value content instantly.",
+    faq: [
+      ["What is a definition list for?", "A <dl> pairs terms (<dt>) with descriptions (<dd>). It suits glossaries, FAQs, metadata and any key-value content where each item has a name and an explanation."],
+      ["How do I enter the terms and definitions?", "Write one pair per line as term: definition. The text before the first colon becomes the <dt> and the rest becomes the <dd>. Lines with no colon are treated as a lone term."],
+      ["Can one term have multiple definitions?", "The HTML spec allows several <dd> elements after a single <dt>. This generator produces one description per line; add extra <dd> tags manually for multiple definitions."]
+    ]
+  },
+  "html-semantic5-wrapper": {
+    title: "Free HTML5 Semantic Layout Generator – Landmark Skeleton | ToolsRift",
+    desc: "Generate an HTML5 semantic page skeleton online with header, nav, main, article, aside, section and footer landmarks for accessible, SEO-friendly document structure.",
+    faq: [
+      ["Why use semantic landmark elements?", "Elements like <header>, <nav>, <main> and <footer> describe the role of each region, helping screen readers offer landmark navigation and giving search engines clearer structure than nested divs."],
+      ["What is the difference between article and section?", "An <article> is self-contained and independently distributable, like a blog post. A <section> is a thematic grouping within a document. Use <article> for standalone content and <section> to chunk a page."],
+      ["Should there be only one main element?", "Yes. A page should contain exactly one visible <main> holding its primary content, excluding repeated headers, navigation and footers."]
+    ]
+  },
+  "html-blockquote-generator": {
+    title: "Free HTML Blockquote Generator – Quote & Cite Markup | ToolsRift",
+    desc: "Generate a semantic HTML <blockquote> online with an optional cite URL and figcaption author attribution. Create accessible quote and testimonial markup instantly.",
+    faq: [
+      ["What is the cite attribute for?", "The cite attribute on <blockquote> holds the source URL of the quotation. It is machine-readable metadata and is not displayed, so add a visible attribution separately."],
+      ["How should I credit the author?", "Wrap the quote in a <figure> and place the attribution in a <figcaption> using <cite> for the source name. This generator can build that accessible structure for you."],
+      ["Blockquote vs q — which do I use?", "Use <blockquote> for longer, block-level quotations set off from the text, and the inline <q> element for short quotes that flow within a sentence."]
+    ]
+  },
+  "html-nav-menu-generator": {
+    title: "Free HTML Nav Menu Generator – Navigation Links | ToolsRift",
+    desc: "Generate an accessible HTML navigation menu online from label|url lines. Build a nav element with an unordered list of anchor links for site headers and footers.",
+    faq: [
+      ["How do I enter the menu items?", "Write one item per line as label|url, for example About|/about. The text before the pipe is the link label and the text after is the href. A line without a pipe links to #."],
+      ["Why wrap links in nav and a list?", "A <nav> landmark lets assistive tech jump straight to navigation, and an unordered list conveys that the links are a related set and how many there are, which improves accessibility."],
+      ["Can I mark the current page?", "Add aria-current=\"page\" to the active link so screen readers announce the user's location. You can add this attribute to the generated markup for the current page's link."]
+    ]
+  },
+  "html-attribute-remover": {
+    title: "Free HTML Attribute Remover – Strip Tag Attributes | ToolsRift",
+    desc: "Remove attributes from HTML online. Strip every attribute from all tags at once for bare element names, or delete only a specific attribute like class, style or id.",
+    faq: [
+      ["What does removing all attributes do?", "It rewrites every tag to just its element name, so <div class=\"x\" id=\"y\"> becomes <div>. Content and tag structure are preserved while all styling hooks and metadata attributes are stripped."],
+      ["Can I remove only one attribute?", "Yes. Enter an attribute name such as style, class or data-id and only that attribute is removed from all tags, leaving every other attribute in place."],
+      ["Does it keep self-closing tags valid?", "Yes. Void and self-closed tags like <br/> are preserved as self-closing when attributes are removed, so the markup stays valid."]
+    ]
+  },
+  "html-char-entity-finder": {
+    title: "Free HTML Character Entity Finder – Entity Code Lookup | ToolsRift",
+    desc: "Find HTML entity codes for special characters online. Scan text for symbols and non-ASCII characters and list their named, decimal and hexadecimal HTML entities.",
+    faq: [
+      ["Which characters are reported?", "The finder lists reserved HTML characters (& < > \" '), and any non-ASCII characters such as ©, €, — or emoji, giving each one its entity codes. Plain printable ASCII letters and digits are skipped."],
+      ["What entity formats does it show?", "For every character it shows the named entity when one exists (like &copy;), the decimal numeric entity (&#169;) and the hexadecimal entity (&#xA9;). Numeric entities work even when no name exists."],
+      ["Why encode special characters as entities?", "Encoding reserved characters prevents them from breaking your markup or being misread as tags, and numeric entities let unusual symbols display reliably regardless of file encoding."]
     ]
   }
 };
@@ -2388,6 +2528,777 @@ function SrcsetGenerator() {
   );
 }
 
+// Newline to BR Converter Component
+function HtmlNl2br() {
+  const [input, setInput] = useState('');
+  const [xhtml, setXhtml] = useState(false);
+  const [reverse, setReverse] = useState(false);
+
+  const output = useMemo(() => {
+    if (!input) return '';
+    if (reverse) {
+      return input.replace(/<br\s*\/?>(\r\n|\r|\n)?/gi, '\n');
+    }
+    const tag = xhtml ? '<br />' : '<br>';
+    return input.replace(/\r\n|\r|\n/g, tag + '\n');
+  }, [input, xhtml, reverse]);
+
+  return (
+    <VStack>
+      <div>
+        <Label>{reverse ? 'HTML with <br> Tags' : 'Plain Text'}</Label>
+        <Textarea value={input} onChange={setInput} rows={8} mono placeholder={reverse ? "Line one<br>Line two<br>Line three" : "Line one\nLine two\nLine three"} />
+      </div>
+      <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+        <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", fontSize:13 }}>
+          <input type="checkbox" checked={reverse} onChange={e => setReverse(e.target.checked)} />
+          Reverse (convert &lt;br&gt; back to newlines)
+        </label>
+        {!reverse && (
+          <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", fontSize:13 }}>
+            <input type="checkbox" checked={xhtml} onChange={e => setXhtml(e.target.checked)} />
+            XHTML mode (use self-closing &lt;br /&gt;)
+          </label>
+        )}
+      </div>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>{reverse ? 'Plain Text Output' : 'HTML Output'}</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={8} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// Text/SVG to Data URI Component
+function HtmlDataUri() {
+  const [input, setInput] = useState('');
+  const [mime, setMime] = useState('image/svg+xml');
+  const [encoding, setEncoding] = useState('base64');
+  const [output, setOutput] = useState('');
+  const [error, setError] = useState('');
+
+  const build = () => {
+    setError(''); setOutput('');
+    if (!input) return;
+    try {
+      let uri;
+      if (encoding === 'base64') {
+        const b64 = btoa(unescape(encodeURIComponent(input)));
+        uri = `data:${mime};base64,${b64}`;
+      } else {
+        // URL-encode, keep it readable/compact for SVG
+        const enc = encodeURIComponent(input).replace(/%20/g, ' ').replace(/'/g, '%27').replace(/"/g, '%22');
+        uri = `data:${mime},${enc}`;
+      }
+      setOutput(uri);
+    } catch (err) {
+      setError('Could not encode input: ' + err.message);
+    }
+  };
+
+  const cssBg = output ? `background-image: url("${output}");` : '';
+
+  return (
+    <VStack>
+      <div>
+        <Label>Text / SVG / CSS Content</Label>
+        <Textarea value={input} onChange={setInput} rows={7} mono placeholder='<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><circle cx="8" cy="8" r="7" fill="tomato"/></svg>' />
+      </div>
+      <Grid2>
+        <div>
+          <Label>MIME Type</Label>
+          <SelectInput value={mime} onChange={setMime} options={[
+            { value:'image/svg+xml', label:'image/svg+xml' },
+            { value:'text/plain', label:'text/plain' },
+            { value:'text/html', label:'text/html' },
+            { value:'text/css', label:'text/css' },
+            { value:'application/json', label:'application/json' }
+          ]} />
+        </div>
+        <div>
+          <Label>Encoding</Label>
+          <SelectInput value={encoding} onChange={setEncoding} options={[
+            { value:'base64', label:'Base64' },
+            { value:'url', label:'URL-encoded' }
+          ]} />
+        </div>
+      </Grid2>
+      <Btn onClick={build} disabled={!input}>Generate Data URI</Btn>
+      {error && (
+        <div style={{ padding:14, background:"rgba(239,68,68,0.1)", border:`1px solid rgba(239,68,68,0.3)`, borderRadius:8, color:C.danger, fontSize:13 }}>⚠ {error}</div>
+      )}
+      {output && (
+        <>
+          <div>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+              <Label>Data URI ({output.length} chars)</Label>
+              <CopyBtn text={output} />
+            </div>
+            <Textarea value={output} onChange={() => {}} rows={5} mono />
+          </div>
+          <div>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+              <Label>CSS Usage</Label>
+              <CopyBtn text={cssBg} />
+            </div>
+            <Result mono>{cssBg}</Result>
+          </div>
+        </>
+      )}
+    </VStack>
+  );
+}
+
+// HTML Form Generator Component
+function HtmlFormGenerator() {
+  const [method, setMethod] = useState('post');
+  const [action, setAction] = useState('/submit');
+  const [fields, setFields] = useState([{ type:'text', name:'name', label:'Name', required:true }]);
+  const [submitText, setSubmitText] = useState('Submit');
+  const [output, setOutput] = useState('');
+
+  const setField = (i, key, v) => setFields(fields.map((f, idx) => idx === i ? { ...f, [key]: v } : f));
+
+  const build = () => {
+    let html = `<form action="${action || '#'}" method="${method}">\n`;
+    fields.forEach(f => {
+      const name = (f.name || '').trim();
+      if (!name) return;
+      const id = name;
+      const req = f.required ? ' required' : '';
+      if (f.label) html += `  <label for="${id}">${f.label}</label>\n`;
+      if (f.type === 'textarea') {
+        html += `  <textarea id="${id}" name="${name}" rows="4"${req}></textarea>\n`;
+      } else if (f.type === 'select') {
+        html += `  <select id="${id}" name="${name}"${req}>\n    <option value="">Choose…</option>\n  </select>\n`;
+      } else {
+        html += `  <input type="${f.type}" id="${id}" name="${name}"${req}>\n`;
+      }
+    });
+    html += `  <button type="submit">${submitText || 'Submit'}</button>\n</form>`;
+    setOutput(html);
+  };
+
+  const TYPES = [
+    { value:'text', label:'Text' }, { value:'email', label:'Email' }, { value:'password', label:'Password' },
+    { value:'number', label:'Number' }, { value:'tel', label:'Telephone' }, { value:'url', label:'URL' },
+    { value:'date', label:'Date' }, { value:'textarea', label:'Textarea' }, { value:'select', label:'Select' }
+  ];
+
+  return (
+    <VStack>
+      <Grid2>
+        <div>
+          <Label>Method</Label>
+          <SelectInput value={method} onChange={setMethod} options={[{ value:'post', label:'POST' }, { value:'get', label:'GET' }]} />
+        </div>
+        <div><Label>Action URL</Label><Input value={action} onChange={setAction} placeholder="/submit" /></div>
+      </Grid2>
+      <div>
+        <Label>Form Fields</Label>
+        <VStack gap={10}>
+          {fields.map((f, i) => (
+            <div key={i} style={{ padding:12, background:"rgba(255,255,255,0.03)", borderRadius:8, border:`1px solid ${C.border}` }}>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+                <span style={{ fontSize:12, fontWeight:600, color:C.orange }}>Field {i + 1}</span>
+                {fields.length > 1 && <Btn size="sm" variant="danger" onClick={() => setFields(fields.filter((_, idx) => idx !== i))}>Remove</Btn>}
+              </div>
+              <Grid2>
+                <div><Label>Name</Label><Input value={f.name} onChange={v => setField(i, 'name', v)} placeholder="email" /></div>
+                <div><Label>Label</Label><Input value={f.label} onChange={v => setField(i, 'label', v)} placeholder="Email" /></div>
+              </Grid2>
+              <div style={{ height:8 }} />
+              <SelectInput value={f.type} onChange={v => setField(i, 'type', v)} options={TYPES} style={{ width:"100%" }} />
+              <div style={{ height:8 }} />
+              <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", fontSize:13 }}>
+                <input type="checkbox" checked={!!f.required} onChange={e => setField(i, 'required', e.target.checked)} />
+                Required
+              </label>
+            </div>
+          ))}
+        </VStack>
+        <div style={{ marginTop:8 }}>
+          <Btn size="sm" variant="secondary" onClick={() => setFields([...fields, { type:'text', name:'', label:'', required:false }])}>+ Add Field</Btn>
+        </div>
+      </div>
+      <div><Label>Submit Button Text</Label><Input value={submitText} onChange={setSubmitText} placeholder="Submit" /></div>
+      <Btn onClick={build}>Generate Form</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>HTML Form Code</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={12} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// HTML Select Dropdown Generator Component
+function HtmlSelectGenerator() {
+  const [name, setName] = useState('choice');
+  const [items, setItems] = useState('us|United States\nca|Canada\nuk|United Kingdom');
+  const [multiple, setMultiple] = useState(false);
+  const [placeholder, setPlaceholder] = useState(true);
+  const [output, setOutput] = useState('');
+
+  const build = () => {
+    const lines = items.split('\n').map(l => l.trim()).filter(Boolean);
+    let html = `<select name="${name || 'choice'}"${multiple ? ' multiple' : ''}>\n`;
+    if (placeholder && !multiple) html += `  <option value="" disabled selected>Choose…</option>\n`;
+    lines.forEach(line => {
+      const parts = line.includes('|') ? line.split('|') : [line, line];
+      const val = parts[0].trim();
+      const label = (parts[1] !== undefined ? parts[1] : parts[0]).trim();
+      html += `  <option value="${val}">${label}</option>\n`;
+    });
+    html += '</select>';
+    setOutput(html);
+  };
+
+  return (
+    <VStack>
+      <div><Label>Name Attribute</Label><Input value={name} onChange={setName} placeholder="country" /></div>
+      <div>
+        <Label>Options (one per line, value|label)</Label>
+        <Textarea value={items} onChange={setItems} rows={7} mono placeholder="us|United States&#10;ca|Canada" />
+      </div>
+      <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+        <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", fontSize:13 }}>
+          <input type="checkbox" checked={multiple} onChange={e => setMultiple(e.target.checked)} />
+          Allow multiple selections
+        </label>
+        <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", fontSize:13 }}>
+          <input type="checkbox" checked={placeholder} onChange={e => setPlaceholder(e.target.checked)} />
+          Add placeholder option (single select)
+        </label>
+      </div>
+      <Btn onClick={build} disabled={!items.trim()}>Generate Select</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>HTML Select Code</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={9} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// HTML Video Tag Generator Component
+function HtmlVideoTag() {
+  const [src, setSrc] = useState('video.mp4');
+  const [width, setWidth] = useState('640');
+  const [poster, setPoster] = useState('');
+  const [controls, setControls] = useState(true);
+  const [autoplay, setAutoplay] = useState(false);
+  const [loop, setLoop] = useState(false);
+  const [muted, setMuted] = useState(false);
+  const [captions, setCaptions] = useState('');
+  const [output, setOutput] = useState('');
+
+  const mimeFor = (file) => {
+    const ext = (file.split('.').pop() || '').toLowerCase();
+    return { mp4:'video/mp4', webm:'video/webm', ogv:'video/ogg', ogg:'video/ogg', mov:'video/quicktime' }[ext] || 'video/mp4';
+  };
+
+  const build = () => {
+    const sources = src.split(/[\n,]/).map(s => s.trim()).filter(Boolean);
+    let attrs = '';
+    if (width) attrs += ` width="${width}"`;
+    if (poster) attrs += ` poster="${poster}"`;
+    if (controls) attrs += ' controls';
+    if (autoplay) { attrs += ' autoplay'; }
+    if (autoplay || muted) attrs += ' muted';
+    if (loop) attrs += ' loop';
+    let html = `<video${attrs}>\n`;
+    sources.forEach(s => { html += `  <source src="${s}" type="${mimeFor(s)}">\n`; });
+    if (captions) html += `  <track kind="captions" src="${captions}" srclang="en" label="English" default>\n`;
+    html += '  Your browser does not support the video tag.\n</video>';
+    setOutput(html);
+  };
+
+  return (
+    <VStack>
+      <div><Label>Video Source(s) — one URL per line for fallbacks</Label><Textarea value={src} onChange={setSrc} rows={3} mono placeholder="video.webm&#10;video.mp4" /></div>
+      <Grid2>
+        <div><Label>Width</Label><Input value={width} onChange={setWidth} placeholder="640" /></div>
+        <div><Label>Poster Image URL</Label><Input value={poster} onChange={setPoster} placeholder="poster.jpg" /></div>
+      </Grid2>
+      <div><Label>Captions VTT URL (optional)</Label><Input value={captions} onChange={setCaptions} placeholder="captions.vtt" /></div>
+      <div style={{ display:"flex", flexWrap:"wrap", gap:"8px 16px" }}>
+        {[['Controls', controls, setControls], ['Autoplay', autoplay, setAutoplay], ['Loop', loop, setLoop], ['Muted', muted, setMuted]].map(([lbl, val, set]) => (
+          <label key={lbl} style={{ display:"flex", alignItems:"center", gap:6, cursor:"pointer", fontSize:13 }}>
+            <input type="checkbox" checked={val} onChange={e => set(e.target.checked)} />{lbl}
+          </label>
+        ))}
+      </div>
+      <Btn onClick={build} disabled={!src.trim()}>Generate Video Tag</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>HTML Video Code</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={9} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// HTML Audio Tag Generator Component
+function HtmlAudioTag() {
+  const [src, setSrc] = useState('audio.mp3');
+  const [controls, setControls] = useState(true);
+  const [autoplay, setAutoplay] = useState(false);
+  const [loop, setLoop] = useState(false);
+  const [muted, setMuted] = useState(false);
+  const [preload, setPreload] = useState('metadata');
+  const [output, setOutput] = useState('');
+
+  const mimeFor = (file) => {
+    const ext = (file.split('.').pop() || '').toLowerCase();
+    return { mp3:'audio/mpeg', ogg:'audio/ogg', oga:'audio/ogg', wav:'audio/wav', m4a:'audio/mp4', aac:'audio/aac', flac:'audio/flac' }[ext] || 'audio/mpeg';
+  };
+
+  const build = () => {
+    const sources = src.split(/[\n,]/).map(s => s.trim()).filter(Boolean);
+    let attrs = '';
+    if (controls) attrs += ' controls';
+    if (autoplay) attrs += ' autoplay';
+    if (loop) attrs += ' loop';
+    if (muted) attrs += ' muted';
+    if (preload !== 'auto') attrs += ` preload="${preload}"`;
+    let html = `<audio${attrs}>\n`;
+    sources.forEach(s => { html += `  <source src="${s}" type="${mimeFor(s)}">\n`; });
+    html += '  Your browser does not support the audio element.\n</audio>';
+    setOutput(html);
+  };
+
+  return (
+    <VStack>
+      <div><Label>Audio Source(s) — one URL per line for fallbacks</Label><Textarea value={src} onChange={setSrc} rows={3} mono placeholder="audio.ogg&#10;audio.mp3" /></div>
+      <div>
+        <Label>Preload</Label>
+        <SelectInput value={preload} onChange={setPreload} options={[
+          { value:'metadata', label:'Metadata (duration only)' },
+          { value:'auto', label:'Auto (buffer file)' },
+          { value:'none', label:'None (save bandwidth)' }
+        ]} />
+      </div>
+      <div style={{ display:"flex", flexWrap:"wrap", gap:"8px 16px" }}>
+        {[['Controls', controls, setControls], ['Autoplay', autoplay, setAutoplay], ['Loop', loop, setLoop], ['Muted', muted, setMuted]].map(([lbl, val, set]) => (
+          <label key={lbl} style={{ display:"flex", alignItems:"center", gap:6, cursor:"pointer", fontSize:13 }}>
+            <input type="checkbox" checked={val} onChange={e => set(e.target.checked)} />{lbl}
+          </label>
+        ))}
+      </div>
+      <Btn onClick={build} disabled={!src.trim()}>Generate Audio Tag</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>HTML Audio Code</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={8} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// HTML Figure & Caption Generator Component
+function HtmlFigureGenerator() {
+  const [src, setSrc] = useState('');
+  const [alt, setAlt] = useState('');
+  const [caption, setCaption] = useState('');
+  const [width, setWidth] = useState('');
+  const [output, setOutput] = useState('');
+
+  const build = () => {
+    if (!src.trim()) return;
+    let img = `<img src="${src}" alt="${alt || ''}"`;
+    if (width) img += ` width="${width}"`;
+    img += '>';
+    let html = '<figure>\n  ' + img + '\n';
+    if (caption) html += `  <figcaption>${caption}</figcaption>\n`;
+    html += '</figure>';
+    setOutput(html);
+  };
+
+  return (
+    <VStack>
+      <div><Label>Image URL (src)</Label><Input value={src} onChange={setSrc} placeholder="https://example.com/photo.jpg" /></div>
+      <div><Label>Alt Text</Label><Input value={alt} onChange={setAlt} placeholder="A red fox in the snow" /></div>
+      <div><Label>Caption</Label><Input value={caption} onChange={setCaption} placeholder="Fig 1. A red fox foraging in winter." /></div>
+      <div><Label>Width (optional)</Label><Input value={width} onChange={setWidth} placeholder="600" /></div>
+      <Btn onClick={build} disabled={!src.trim()}>Generate Figure</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>HTML Figure Code</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={6} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// HTML Details Accordion Generator Component
+function HtmlDetailsAccordion() {
+  const [rows, setRows] = useState([{ title:'What is your return policy?', body:'You can return items within 30 days.' }, { title:'Do you ship internationally?', body:'Yes, we ship worldwide.' }]);
+  const [openFirst, setOpenFirst] = useState(false);
+  const [output, setOutput] = useState('');
+
+  const setRow = (i, key, v) => setRows(rows.map((r, idx) => idx === i ? { ...r, [key]: v } : r));
+
+  const build = () => {
+    const valid = rows.filter(r => r.title.trim());
+    let html = '';
+    valid.forEach((r, i) => {
+      const open = (openFirst && i === 0) ? ' open' : '';
+      html += `<details${open}>\n  <summary>${r.title.trim()}</summary>\n  <p>${r.body.trim()}</p>\n</details>\n`;
+    });
+    setOutput(html.trim());
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>Accordion Items</Label>
+        <VStack gap={10}>
+          {rows.map((r, i) => (
+            <div key={i} style={{ padding:12, background:"rgba(255,255,255,0.03)", borderRadius:8, border:`1px solid ${C.border}` }}>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+                <span style={{ fontSize:12, fontWeight:600, color:C.orange }}>Item {i + 1}</span>
+                {rows.length > 1 && <Btn size="sm" variant="danger" onClick={() => setRows(rows.filter((_, idx) => idx !== i))}>Remove</Btn>}
+              </div>
+              <Input value={r.title} onChange={v => setRow(i, 'title', v)} placeholder="Summary / question" />
+              <div style={{ height:8 }} />
+              <Textarea value={r.body} onChange={v => setRow(i, 'body', v)} rows={2} placeholder="Details / answer" />
+            </div>
+          ))}
+        </VStack>
+        <div style={{ marginTop:8 }}>
+          <Btn size="sm" variant="secondary" onClick={() => setRows([...rows, { title:'', body:'' }])}>+ Add Item</Btn>
+        </div>
+      </div>
+      <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", fontSize:13 }}>
+        <input type="checkbox" checked={openFirst} onChange={e => setOpenFirst(e.target.checked)} />
+        Open first item by default
+      </label>
+      <Btn onClick={build}>Generate Accordion</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>HTML Accordion Code</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={10} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// HTML Definition List Generator Component
+function HtmlDefinitionList() {
+  const [items, setItems] = useState('HTML: HyperText Markup Language\nCSS: Cascading Style Sheets\nJS: JavaScript');
+  const [output, setOutput] = useState('');
+
+  const build = () => {
+    const lines = items.split('\n').map(l => l.trim()).filter(Boolean);
+    let html = '<dl>\n';
+    lines.forEach(line => {
+      const idx = line.indexOf(':');
+      if (idx === -1) { html += `  <dt>${line}</dt>\n`; return; }
+      const term = line.slice(0, idx).trim();
+      const def = line.slice(idx + 1).trim();
+      html += `  <dt>${term}</dt>\n  <dd>${def}</dd>\n`;
+    });
+    html += '</dl>';
+    setOutput(html);
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>Terms &amp; Definitions (one per line, term: definition)</Label>
+        <Textarea value={items} onChange={setItems} rows={8} mono placeholder="HTML: HyperText Markup Language" />
+      </div>
+      <Btn onClick={build} disabled={!items.trim()}>Generate Definition List</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>HTML Definition List Code</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={10} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// HTML5 Semantic Layout Generator Component
+function HtmlSemantic5Wrapper() {
+  const [title, setTitle] = useState('My Page');
+  const [nav, setNav] = useState(true);
+  const [aside, setAside] = useState(true);
+  const [sections, setSections] = useState('2');
+  const [output, setOutput] = useState('');
+
+  const build = () => {
+    const secCount = Math.max(1, Math.min(6, parseInt(sections) || 1));
+    let html = '<body>\n';
+    html += `  <header>\n    <h1>${title || 'My Page'}</h1>\n`;
+    if (nav) html += '    <nav>\n      <ul>\n        <li><a href="#">Home</a></li>\n        <li><a href="#">About</a></li>\n      </ul>\n    </nav>\n';
+    html += '  </header>\n\n';
+    html += '  <main>\n    <article>\n';
+    for (let i = 1; i <= secCount; i++) {
+      html += `      <section>\n        <h2>Section ${i}</h2>\n        <p>Content goes here.</p>\n      </section>\n`;
+    }
+    html += '    </article>\n';
+    if (aside) html += '    <aside>\n      <h2>Related</h2>\n      <p>Sidebar content.</p>\n    </aside>\n';
+    html += '  </main>\n\n';
+    html += '  <footer>\n    <p>&copy; 2026 Example</p>\n  </footer>\n</body>';
+    setOutput(html);
+  };
+
+  return (
+    <VStack>
+      <div><Label>Page Heading (H1)</Label><Input value={title} onChange={setTitle} placeholder="My Page" /></div>
+      <div><Label>Number of Sections (1-6)</Label><Input value={sections} onChange={setSections} placeholder="2" /></div>
+      <div style={{ display:"flex", flexWrap:"wrap", gap:"8px 16px" }}>
+        <label style={{ display:"flex", alignItems:"center", gap:6, cursor:"pointer", fontSize:13 }}>
+          <input type="checkbox" checked={nav} onChange={e => setNav(e.target.checked)} />Include &lt;nav&gt;
+        </label>
+        <label style={{ display:"flex", alignItems:"center", gap:6, cursor:"pointer", fontSize:13 }}>
+          <input type="checkbox" checked={aside} onChange={e => setAside(e.target.checked)} />Include &lt;aside&gt;
+        </label>
+      </div>
+      <Btn onClick={build}>Generate Semantic Layout</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>HTML5 Semantic Skeleton</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={14} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// HTML Blockquote Generator Component
+function HtmlBlockquoteGenerator() {
+  const [quote, setQuote] = useState('');
+  const [author, setAuthor] = useState('');
+  const [cite, setCite] = useState('');
+  const [output, setOutput] = useState('');
+
+  const build = () => {
+    if (!quote.trim()) return;
+    const citeAttr = cite ? ` cite="${cite}"` : '';
+    let html;
+    if (author) {
+      html = `<figure>\n  <blockquote${citeAttr}>\n    <p>${quote.trim()}</p>\n  </blockquote>\n  <figcaption>— <cite>${author}</cite></figcaption>\n</figure>`;
+    } else {
+      html = `<blockquote${citeAttr}>\n  <p>${quote.trim()}</p>\n</blockquote>`;
+    }
+    setOutput(html);
+  };
+
+  return (
+    <VStack>
+      <div><Label>Quote Text</Label><Textarea value={quote} onChange={setQuote} rows={3} placeholder="The only way to do great work is to love what you do." /></div>
+      <div><Label>Author / Source (optional)</Label><Input value={author} onChange={setAuthor} placeholder="Steve Jobs" /></div>
+      <div><Label>Cite URL (optional)</Label><Input value={cite} onChange={setCite} placeholder="https://example.com/source" /></div>
+      <Btn onClick={build} disabled={!quote.trim()}>Generate Blockquote</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>HTML Blockquote Code</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={8} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// HTML Nav Menu Generator Component
+function HtmlNavMenuGenerator() {
+  const [items, setItems] = useState('Home|/\nAbout|/about\nServices|/services\nContact|/contact');
+  const [ariaLabel, setAriaLabel] = useState('Main');
+  const [output, setOutput] = useState('');
+
+  const build = () => {
+    const lines = items.split('\n').map(l => l.trim()).filter(Boolean);
+    const label = ariaLabel ? ` aria-label="${ariaLabel}"` : '';
+    let html = `<nav${label}>\n  <ul>\n`;
+    lines.forEach(line => {
+      const parts = line.includes('|') ? line.split('|') : [line, '#'];
+      const text = parts[0].trim();
+      const url = (parts[1] !== undefined ? parts[1] : '#').trim() || '#';
+      html += `    <li><a href="${url}">${text}</a></li>\n`;
+    });
+    html += '  </ul>\n</nav>';
+    setOutput(html);
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>Menu Items (one per line, label|url)</Label>
+        <Textarea value={items} onChange={setItems} rows={7} mono placeholder="Home|/&#10;About|/about" />
+      </div>
+      <div><Label>Nav aria-label (optional)</Label><Input value={ariaLabel} onChange={setAriaLabel} placeholder="Main" /></div>
+      <Btn onClick={build} disabled={!items.trim()}>Generate Nav Menu</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>HTML Nav Menu Code</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={10} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// HTML Attribute Remover Component
+function HtmlAttributeRemover() {
+  const [input, setInput] = useState('');
+  const [mode, setMode] = useState('all');
+  const [attrName, setAttrName] = useState('style');
+  const [output, setOutput] = useState('');
+
+  const build = () => {
+    if (!input.trim()) return;
+    let result;
+    if (mode === 'all') {
+      result = input.replace(/<(\/?)([a-zA-Z][a-zA-Z0-9-]*)((?:[^>"']|"[^"]*"|'[^']*')*?)(\/?)>/g,
+        (m, close, name, attrs, selfclose) => `<${close}${name}${selfclose ? ' /' : ''}>`);
+    } else {
+      const n = (attrName || '').trim();
+      if (!n) { setOutput('Enter an attribute name to remove.'); return; }
+      const re = new RegExp(`\\s+${n.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\$&')}(=("[^"]*"|'[^']*'|[^\\s>]*))?`, 'gi');
+      result = input.replace(/<[^>]+>/g, tag => tag.replace(re, ''));
+    }
+    setOutput(result);
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>HTML Code</Label>
+        <Textarea value={input} onChange={setInput} rows={9} mono placeholder='<div class="box" id="main" style="color:red">Hello</div>' />
+      </div>
+      <div>
+        <Label>Mode</Label>
+        <SelectInput value={mode} onChange={setMode} options={[
+          { value:'all', label:'Remove ALL attributes' },
+          { value:'named', label:'Remove one named attribute' }
+        ]} />
+      </div>
+      {mode === 'named' && (
+        <div><Label>Attribute Name</Label><Input value={attrName} onChange={setAttrName} placeholder="style" /></div>
+      )}
+      <Btn onClick={build} disabled={!input.trim()}>Remove Attributes</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>Cleaned HTML</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={9} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// HTML Character Entity Finder Component
+const ENTITY_NAMES = { '&':'amp','<':'lt','>':'gt','"':'quot',"'":'#39','©':'copy','®':'reg','™':'trade','€':'euro','£':'pound','¥':'yen','¢':'cent','°':'deg','±':'plusmn','×':'times','÷':'divide','—':'mdash','–':'ndash','…':'hellip','“':'ldquo','”':'rdquo','‘':'lsquo','’':'rsquo','«':'laquo','»':'raquo','•':'bull','§':'sect','¶':'para','†':'dagger','‡':'Dagger','‰':'permil','µ':'micro','¼':'frac14','½':'frac12','¾':'frac34','¹':'sup1','²':'sup2','³':'sup3','←':'larr','→':'rarr','↑':'uarr','↓':'darr','↔':'harr','⇐':'lArr','⇒':'rArr','∞':'infin','≈':'asymp','≠':'ne','≤':'le','≥':'ge','∑':'sum','∏':'prod','√':'radic','∂':'part','∫':'int','∆':'#8710','π':'pi','α':'alpha','β':'beta','γ':'gamma','δ':'delta','λ':'lambda','Ω':'Omega','★':'#9733','☆':'#9734','♥':'hearts','♦':'diams','♣':'clubs','♠':'spades','✓':'#10003','✔':'#10004','✗':'#10007','✘':'#10008','☑':'#9745','☒':'#9746','☐':'#9744','¡':'iexcl','¿':'iquest','ª':'ordf','º':'ordm' };
+
+function HtmlCharEntityFinder() {
+  const [input, setInput] = useState('');
+  const [rows, setRows] = useState(null);
+
+  const scan = () => {
+    if (!input) { setRows([]); return; }
+    const seen = new Map();
+    for (const ch of input) {
+      const code = ch.codePointAt(0);
+      if (code < 32) continue; // control chars
+      if (code >= 32 && code < 127 && !'&<>"\''.includes(ch)) continue; // plain printable ASCII
+      if (seen.has(ch)) continue;
+      const named = ENTITY_NAMES[ch];
+      seen.set(ch, {
+        char: ch,
+        named: named ? (named.startsWith('#') ? null : `&${named};`) : null,
+        numeric: `&#${code};`,
+        hex: `&#x${code.toString(16).toUpperCase()};`,
+        code
+      });
+    }
+    setRows(Array.from(seen.values()));
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>Text to Scan</Label>
+        <Textarea value={input} onChange={setInput} rows={7} placeholder="Café — €5 © 2026 ★ ☕ résumé" />
+      </div>
+      <Btn onClick={scan} disabled={!input}>Find Entities</Btn>
+      {rows && (
+        rows.length === 0 ? (
+          <div style={{ padding:14, background:"rgba(16,185,129,0.1)", border:`1px solid rgba(16,185,129,0.3)`, borderRadius:8, color:C.success, fontSize:13 }}>
+            ✓ No special or non-ASCII characters found — this text is plain ASCII.
+          </div>
+        ) : (
+          <div>
+            <BigResult value={rows.length} label="Special Characters" />
+            <div style={{ marginTop:16 }}>
+              <Label>Entity Codes</Label>
+              <Result mono>
+                {rows.map((r, i) => (
+                  <div key={i} style={{ display:"grid", gridTemplateColumns:"40px 1fr 1fr 1fr", gap:8, marginBottom:4, alignItems:"center" }}>
+                    <span style={{ fontSize:18, color:C.orange, textAlign:"center" }}>{r.char}</span>
+                    <span>{r.named || '—'}</span>
+                    <span>{r.numeric}</span>
+                    <span>{r.hex}</span>
+                  </div>
+                ))}
+              </Result>
+              <div style={{ display:"flex", justifyContent:"flex-end", marginTop:8 }}>
+                <CopyBtn text={rows.map(r => `${r.char}\t${r.named || ''}\t${r.numeric}\t${r.hex}`).join('\n')} />
+              </div>
+            </div>
+          </div>
+        )
+      )}
+    </VStack>
+  );
+}
+
 const TOOL_COMPONENTS = {
   "html-formatter": HtmlFormatter,
   "html-minifier": HtmlMinifier,
@@ -2418,6 +3329,20 @@ const TOOL_COMPONENTS = {
   "schema-json-ld-generator": SchemaJsonLdGenerator,
   "html-boilerplate-generator": HtmlBoilerplateGenerator,
   "srcset-generator": SrcsetGenerator,
+  "html-nl2br": HtmlNl2br,
+  "html-data-uri": HtmlDataUri,
+  "html-form-generator": HtmlFormGenerator,
+  "html-select-generator": HtmlSelectGenerator,
+  "html-video-tag": HtmlVideoTag,
+  "html-audio-tag": HtmlAudioTag,
+  "html-figure-generator": HtmlFigureGenerator,
+  "html-details-accordion": HtmlDetailsAccordion,
+  "html-definition-list": HtmlDefinitionList,
+  "html-semantic5-wrapper": HtmlSemantic5Wrapper,
+  "html-blockquote-generator": HtmlBlockquoteGenerator,
+  "html-nav-menu-generator": HtmlNavMenuGenerator,
+  "html-attribute-remover": HtmlAttributeRemover,
+  "html-char-entity-finder": HtmlCharEntityFinder,
 };
 
 function Breadcrumb({ tool, cat }) {

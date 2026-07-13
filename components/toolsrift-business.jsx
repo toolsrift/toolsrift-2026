@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef, useCallback } from "react";
+﻿import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { getCategoryById } from '../lib/categoryThemes';
 import CategoryLayout from './shared/CategoryLayout';
 import CategoryDashboard from './shared/CategoryDashboard';
@@ -67,6 +67,18 @@ const TOOLS = [
   { id: "landing-copy-gen", cat: "marketing", name: "Landing Page Copy Generator", icon: "🚀", desc: "Generate landing page sections: hero, features, CTA" },
   { id: "roi-calculator", cat: "finance", name: "ROI Calculator", icon: "💰", desc: "Calculate marketing return on investment" },
   { id: "break-even-calc", cat: "finance", name: "Break Even Calculator", icon: "⚖️", desc: "Find your break-even point in units and revenue" },
+  { id: "purchase-order-gen", cat: "documents", name: "Purchase Order Generator", icon: "📦", desc: "Create purchase orders with line items, tax, and totals" },
+  { id: "packing-slip-gen", cat: "documents", name: "Packing Slip Generator", icon: "📬", desc: "Generate itemized packing slips for shipments and orders" },
+  { id: "timesheet-gen", cat: "documents", name: "Timesheet Generator", icon: "⏱️", desc: "Build a weekly timesheet with hours, overtime, and pay" },
+  { id: "expense-report-gen", cat: "documents", name: "Expense Report Generator", icon: "💳", desc: "Create expense reports with category breakdowns and totals" },
+  { id: "markup-margin-calc", cat: "finance", name: "Markup & Margin Calculator", icon: "🏷️", desc: "Calculate markup, profit margin, and selling price" },
+  { id: "cagr-calc", cat: "finance", name: "CAGR Calculator", icon: "📈", desc: "Compute compound annual growth rate over any period" },
+  { id: "clv-calc", cat: "finance", name: "Customer Lifetime Value Calculator", icon: "💎", desc: "Estimate customer lifetime value from order and margin data" },
+  { id: "business-hours-gen", cat: "marketing", name: "Business Hours Schema Generator", icon: "🕒", desc: "Generate schema.org opening-hours JSON-LD for local SEO" },
+  { id: "meeting-agenda-gen", cat: "strategy", name: "Meeting Agenda Generator", icon: "🗓️", desc: "Build a structured meeting agenda with timed discussion items" },
+  { id: "memo-gen", cat: "career", name: "Business Memo Generator", icon: "📝", desc: "Create a formatted business memorandum (memo)" },
+  { id: "press-release-gen", cat: "marketing", name: "Press Release Generator", icon: "📰", desc: "Draft a professional press release from a few key details" },
+  { id: "job-description-gen", cat: "career", name: "Job Description Generator", icon: "📋", desc: "Generate a structured job description for any role" },
 ];
 
 const SEO = {
@@ -85,6 +97,18 @@ const SEO = {
   "landing-copy-gen":{title:"Free Landing Page Copy Generator",faq:[["What sections does a landing page need?","Hero with headline, value proposition, features/benefits, social proof, FAQ, and a clear CTA."],["What is a good landing page conversion rate?","Average is 2-5%. Top performers hit 10%+. Focus on one clear CTA."]]},
   "roi-calculator":{title:"Free Marketing ROI Calculator",faq:[["How is marketing ROI calculated?","ROI = ((Revenue - Cost) / Cost) × 100. It shows the percentage return on your marketing investment."],["What is a good marketing ROI?","A 5:1 ratio (500% ROI) is considered strong. 10:1 is exceptional. Below 2:1 is generally not profitable."]]},
   "break-even-calc":{title:"Free Break Even Calculator",faq:[["What is the break-even point?","The point where total revenue equals total costs — no profit, no loss."],["How is break-even calculated?","Break-even units = Fixed Costs / (Selling Price - Variable Cost per Unit)."]]},
+  "purchase-order-gen":{title:"Free Purchase Order Generator",faq:[["What is a purchase order?","A purchase order (PO) is a buyer-issued document authorizing a purchase, listing items, quantities, agreed prices, and delivery details."],["How is a PO different from an invoice?","A purchase order is sent by the buyer to order goods. An invoice is sent by the seller to request payment for those goods."]]},
+  "packing-slip-gen":{title:"Free Packing Slip Generator",faq:[["What is a packing slip?","A packing slip is a document included with a shipment that lists the items and quantities being sent, but usually omits prices."],["Do I need a packing slip and an invoice?","A packing slip helps the recipient verify the contents of a shipment, while an invoice handles billing. Many businesses include both."]]},
+  "timesheet-gen":{title:"Free Timesheet Generator",faq:[["How is overtime calculated?","This tool treats hours over 40 in a week as overtime, paid at 1.5× the base rate by default. Regular hours are paid at the base rate."],["Can I use this for payroll?","It gives a clear breakdown of regular hours, overtime, and gross pay. Confirm figures against your local labor laws before payroll."]]},
+  "expense-report-gen":{title:"Free Expense Report Generator",faq:[["What should an expense report include?","Date, category, description, and amount for each expense, plus subtotals per category and an overall total for reimbursement."],["Can I group expenses by category?","Yes. This generator automatically totals each spending category (travel, meals, supplies, etc.) and sums the grand total."]]},
+  "markup-margin-calc":{title:"Free Markup & Margin Calculator",faq:[["What is the difference between markup and margin?","Markup is profit as a percentage of cost: (Price − Cost) / Cost. Margin is profit as a percentage of price: (Price − Cost) / Price."],["How do I set a price for a target margin?","Price = Cost / (1 − Margin%). This tool shows the required price for any target margin you enter."]]},
+  "cagr-calc":{title:"Free CAGR Calculator",faq:[["What is CAGR?","Compound Annual Growth Rate is the smoothed annual rate at which a value grows over multiple periods: (End/Start)^(1/Years) − 1."],["Why use CAGR instead of average growth?","CAGR accounts for compounding and gives a single, comparable annual rate, whereas a simple average can overstate volatile returns."]]},
+  "clv-calc":{title:"Free Customer Lifetime Value Calculator",faq:[["How is customer lifetime value calculated?","LTV = Average Order Value × Purchase Frequency (per year) × Customer Lifespan (years) × Gross Margin %."],["Why does CLV matter?","CLV tells you how much revenue a customer generates over time, so you can set a sensible customer acquisition cost (CAC) budget."]]},
+  "business-hours-gen":{title:"Free Business Hours Schema Generator",faq:[["What is opening-hours structured data?","It is schema.org JSON-LD markup that tells Google your open and close times, helping your hours appear in search and maps."],["Where do I put the generated code?","Paste the JSON-LD script into the <head> of your website's homepage or contact page so search engines can read it."]]},
+  "meeting-agenda-gen":{title:"Free Meeting Agenda Generator",faq:[["What makes a good meeting agenda?","A clear objective, timed discussion topics with an owner for each, attendee list, and a defined start and end time to keep things focused."],["How long should each agenda item be?","Assign realistic time blocks. This tool sums the minutes so you can keep the total within your scheduled meeting length."]]},
+  "memo-gen":{title:"Free Business Memo Generator",faq:[["What is a business memo?","A memorandum is a short internal document with a standard TO / FROM / DATE / SUBJECT header used to share information within an organization."],["How long should a memo be?","Keep it concise — usually under one page. State the purpose in the first line and end with any required action."]]},
+  "press-release-gen":{title:"Free Press Release Generator",faq:[["What is the structure of a press release?","Headline, dateline (city and date), an opening paragraph answering who/what/when/where/why, supporting body, a quote, and boilerplate."],["What is a boilerplate?","A short standard paragraph about your company placed at the end of every press release describing what your organization does."]]},
+  "job-description-gen":{title:"Free Job Description Generator",faq:[["What should a job description include?","Job title, company overview, responsibilities, required qualifications, preferred skills, location, employment type, and how to apply."],["How do I write an effective job description?","Use clear, inclusive language, list concrete responsibilities, and separate must-have requirements from nice-to-have skills."]]},
 };
 
 // ─── SHARED UI ─────────────────────────────────────────────────
@@ -655,6 +679,445 @@ function BreakEvenCalc(){
   </V>);
 }
 
+// ─── TOOL: PURCHASE ORDER GENERATOR ────────────────────────────
+function PurchaseOrderGen(){
+  const[from,setFrom]=useState({name:"",addr:""});
+  const[to,setTo]=useState({name:"",addr:""});
+  const[po,setPo]=useState("PO-001");
+  const[date,setDate]=useState(new Date().toISOString().split("T")[0]);
+  const[deliver,setDeliver]=useState("");
+  const[items,setItems]=useState([{desc:"",qty:1,rate:0}]);
+  const[taxRate,setTaxRate]=useState("0");const[notes,setNotes]=useState("");
+  const add=()=>setItems([...items,{desc:"",qty:1,rate:0}]);
+  const upd=(i,f,v)=>{const n=[...items];n[i][f]=v;setItems(n)};
+  const rm=(i)=>setItems(items.filter((_,j)=>j!==i));
+  const sub=items.reduce((s,it)=>s+p(it.qty)*p(it.rate),0);
+  const tax=sub*p(taxRate)/100;const total=sub+tax;
+  return(<V>
+    <G2>
+      <Card><Lab>Buyer (Your Business)</Lab><Input value={from.name} onChange={v=>setFrom({...from,name:v})} placeholder="Business Name" style={{marginBottom:8}}/><Input value={from.addr} onChange={v=>setFrom({...from,addr:v})} placeholder="Address" multiline rows={2}/></Card>
+      <Card><Lab>Vendor / Supplier</Lab><Input value={to.name} onChange={v=>setTo({...to,name:v})} placeholder="Vendor Name" style={{marginBottom:8}}/><Input value={to.addr} onChange={v=>setTo({...to,addr:v})} placeholder="Vendor Address" multiline rows={2}/></Card>
+    </G2>
+    <G3><div><Lab>PO #</Lab><Input value={po} onChange={setPo}/></div><div><Lab>Date</Lab><Input type="date" value={date} onChange={setDate}/></div><div><Lab>Delivery Date</Lab><Input type="date" value={deliver} onChange={setDeliver}/></div></G3>
+    <Lab>Line Items</Lab>
+    {items.map((it,i)=>(<div key={i} style={{display:"flex",gap:8,alignItems:"end",marginBottom:8}}>
+      <div style={{flex:3}}>{i===0&&<Lab>Description</Lab>}<Input value={it.desc} onChange={v=>upd(i,"desc",v)} placeholder="Item or material"/></div>
+      <div style={{flex:1}}>{i===0&&<Lab>Qty</Lab>}<Input value={String(it.qty)} onChange={v=>upd(i,"qty",v)} placeholder="1"/></div>
+      <div style={{flex:1}}>{i===0&&<Lab>Unit ($)</Lab>}<Input value={String(it.rate)} onChange={v=>upd(i,"rate",v)} placeholder="0"/></div>
+      <div style={{flex:1,textAlign:"right",paddingBottom:10,color:S.text,fontWeight:700,fontFamily:S.mono}}>{$(p(it.qty)*p(it.rate))}</div>
+      {items.length>1&&<Btn v="ghost" s="sm" onClick={()=>rm(i)}>✕</Btn>}
+    </div>))}
+    <Btn v="secondary" s="sm" onClick={add}>+ Add Line Item</Btn>
+    <G2><NumInput label="Tax Rate (%)" value={taxRate} onChange={setTaxRate} placeholder="0"/><div><Lab>Notes / Terms</Lab><Input value={notes} onChange={setNotes} placeholder="Shipping terms, payment terms..." multiline rows={2}/></div></G2>
+    <div style={{borderRadius:10,overflow:"hidden",boxShadow:"0 4px 24px rgba(0,0,0,0.4)"}}>
+      <div className="tr-print-doc" style={{background:"white",color:"#1E293B",padding:"32px 40px",fontFamily:S.font}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"start",marginBottom:20,paddingBottom:16,borderBottom:"2px solid #E2E8F0"}}>
+          <div>
+            <div style={{fontSize:22,fontWeight:800,color:"#0F172A",fontFamily:S.display}}>{from.name||"Your Business"}</div>
+            {from.addr&&<div style={{fontSize:12,color:"#64748B",marginTop:2,whiteSpace:"pre-wrap"}}>{from.addr}</div>}
+          </div>
+          <div style={{textAlign:"right"}}>
+            <div style={{fontSize:26,fontWeight:900,color:"#059669",fontFamily:S.display,letterSpacing:"-1px"}}>PURCHASE ORDER</div>
+            <div style={{fontSize:12,color:"#64748B",marginTop:4}}>#{po}</div>
+            <div style={{fontSize:12,color:"#64748B"}}>Date: {date}</div>
+            {deliver&&<div style={{fontSize:12,color:"#64748B"}}>Deliver by: {deliver}</div>}
+          </div>
+        </div>
+        <div style={{marginBottom:16}}>
+          <div style={{fontSize:11,fontWeight:700,color:"#94A3B8",textTransform:"uppercase",marginBottom:4}}>Vendor</div>
+          <div style={{fontSize:14,fontWeight:600,color:"#0F172A"}}>{to.name||"Vendor Name"}</div>
+          {to.addr&&<div style={{fontSize:12,color:"#64748B",whiteSpace:"pre-wrap"}}>{to.addr}</div>}
+        </div>
+        <table style={{width:"100%",borderCollapse:"collapse",marginBottom:16}}>
+          <thead><tr style={{background:"#F8FAFC"}}><th style={{padding:"8px 10px",textAlign:"left",fontSize:11,fontWeight:700,color:"#64748B",textTransform:"uppercase"}}>Description</th><th style={{padding:"8px 10px",textAlign:"center",fontSize:11,fontWeight:700,color:"#64748B",textTransform:"uppercase",width:60}}>Qty</th><th style={{padding:"8px 10px",textAlign:"right",fontSize:11,fontWeight:700,color:"#64748B",textTransform:"uppercase",width:80}}>Unit</th><th style={{padding:"8px 10px",textAlign:"right",fontSize:11,fontWeight:700,color:"#64748B",textTransform:"uppercase",width:90}}>Amount</th></tr></thead>
+          <tbody>{items.filter(it=>it.desc||p(it.rate)).map((it,i)=><tr key={i} style={{borderBottom:"1px solid #F1F5F9"}}><td style={{padding:"8px 10px",fontSize:13,color:"#1E293B"}}>{it.desc||"-"}</td><td style={{padding:"8px 10px",textAlign:"center",fontSize:13,color:"#475569"}}>{p(it.qty)}</td><td style={{padding:"8px 10px",textAlign:"right",fontSize:13,color:"#475569"}}>{$(p(it.rate))}</td><td style={{padding:"8px 10px",textAlign:"right",fontSize:13,fontWeight:600,color:"#0F172A"}}>{$(p(it.qty)*p(it.rate))}</td></tr>)}</tbody>
+        </table>
+        <div style={{display:"flex",justifyContent:"flex-end"}}>
+          <div style={{minWidth:220}}>
+            <div style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderBottom:"1px solid #E2E8F0",fontSize:13,color:"#64748B"}}><span>Subtotal</span><span style={{fontWeight:600,color:"#1E293B"}}>{$(sub)}</span></div>
+            <div style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderBottom:"1px solid #E2E8F0",fontSize:13,color:"#64748B"}}><span>Tax ({p(taxRate)}%)</span><span style={{fontWeight:600,color:"#1E293B"}}>{$(tax)}</span></div>
+            <div style={{display:"flex",justifyContent:"space-between",padding:"10px 0",fontSize:16,fontWeight:800,color:"#059669"}}><span>Total</span><span>{$(total)}</span></div>
+          </div>
+        </div>
+        {notes&&<div style={{marginTop:12,padding:"10px 14px",background:"#F8FAFC",borderRadius:6,fontSize:12,color:"#475569"}}>{notes}</div>}
+      </div>
+      <div className="tr-no-print" style={{position:"sticky",bottom:0,background:"rgba(6,9,15,0.92)",backdropFilter:"blur(12px)",padding:"12px 16px",display:"flex",gap:10,alignItems:"center",justifyContent:"flex-end",borderTop:"1px solid rgba(5,150,105,0.2)"}}>
+        <span style={{fontSize:12,color:S.muted,marginRight:"auto"}}>Purchase order ready</span>
+        <Btn s="sm" v="secondary" onClick={()=>window.print()}>🖨️ Print / Save PDF</Btn>
+        <CopyBtn text={`Purchase Order #${po}\n${from.name} → ${to.name}\nSubtotal: ${$(sub)}\nTax: ${$(tax)}\nTotal: ${$(total)}`}/>
+      </div>
+    </div>
+  </V>);
+}
+
+// ─── TOOL: PACKING SLIP GENERATOR ──────────────────────────────
+function PackingSlipGen(){
+  const[from,setFrom]=useState("");const[to,setTo]=useState("");
+  const[slip,setSlip]=useState("PS-001");const[order,setOrder]=useState("");
+  const[date,setDate]=useState(new Date().toISOString().split("T")[0]);
+  const[items,setItems]=useState([{desc:"",sku:"",qty:1}]);
+  const[notes,setNotes]=useState("");
+  const add=()=>setItems([...items,{desc:"",sku:"",qty:1}]);
+  const upd=(i,f,v)=>{const n=[...items];n[i][f]=v;setItems(n)};
+  const rm=(i)=>setItems(items.filter((_,j)=>j!==i));
+  const totalQty=items.reduce((s,it)=>s+p(it.qty),0);
+  return(<V>
+    <G2><div><Lab>Ship From</Lab><Input value={from} onChange={setFrom} placeholder="Your Warehouse / Business" multiline rows={2}/></div><div><Lab>Ship To</Lab><Input value={to} onChange={setTo} placeholder="Recipient Name & Address" multiline rows={2}/></div></G2>
+    <G3><div><Lab>Slip #</Lab><Input value={slip} onChange={setSlip}/></div><div><Lab>Order #</Lab><Input value={order} onChange={setOrder} placeholder="ORD-1234"/></div><div><Lab>Date</Lab><Input type="date" value={date} onChange={setDate}/></div></G3>
+    <Lab>Items</Lab>
+    {items.map((it,i)=>(<div key={i} style={{display:"flex",gap:8,alignItems:"end",marginBottom:8}}>
+      <div style={{flex:3}}>{i===0&&<Lab>Description</Lab>}<Input value={it.desc} onChange={v=>upd(i,"desc",v)} placeholder="Product name"/></div>
+      <div style={{flex:2}}>{i===0&&<Lab>SKU</Lab>}<Input value={it.sku} onChange={v=>upd(i,"sku",v)} placeholder="SKU-001"/></div>
+      <div style={{flex:1}}>{i===0&&<Lab>Qty</Lab>}<Input value={String(it.qty)} onChange={v=>upd(i,"qty",v)} placeholder="1"/></div>
+      {items.length>1&&<Btn v="ghost" s="sm" onClick={()=>rm(i)}>✕</Btn>}
+    </div>))}
+    <Btn v="secondary" s="sm" onClick={add}>+ Add Item</Btn>
+    <div><Lab>Notes</Lab><Input value={notes} onChange={setNotes} placeholder="Handle with care, thank you for your order!" multiline rows={2}/></div>
+    <div style={{borderRadius:10,overflow:"hidden",boxShadow:"0 4px 24px rgba(0,0,0,0.4)"}}>
+      <div className="tr-print-doc" style={{background:"white",color:"#1E293B",padding:"32px 40px",fontFamily:S.font}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"start",marginBottom:20,paddingBottom:16,borderBottom:"2px solid #E2E8F0"}}>
+          <div style={{fontSize:12,color:"#64748B",whiteSpace:"pre-wrap",maxWidth:220}}><div style={{fontSize:11,fontWeight:700,color:"#94A3B8",textTransform:"uppercase",marginBottom:2}}>Ship From</div>{from||"Your Business"}</div>
+          <div style={{textAlign:"right"}}>
+            <div style={{fontSize:24,fontWeight:900,color:"#059669",fontFamily:S.display,letterSpacing:"-1px"}}>PACKING SLIP</div>
+            <div style={{fontSize:12,color:"#64748B",marginTop:4}}>Slip #{slip}</div>
+            {order&&<div style={{fontSize:12,color:"#64748B"}}>Order #{order}</div>}
+            <div style={{fontSize:12,color:"#64748B"}}>Date: {date}</div>
+          </div>
+        </div>
+        <div style={{marginBottom:16}}>
+          <div style={{fontSize:11,fontWeight:700,color:"#94A3B8",textTransform:"uppercase",marginBottom:4}}>Ship To</div>
+          <div style={{fontSize:13,color:"#1E293B",whiteSpace:"pre-wrap"}}>{to||"Recipient"}</div>
+        </div>
+        <table style={{width:"100%",borderCollapse:"collapse",marginBottom:16}}>
+          <thead><tr style={{background:"#F8FAFC"}}><th style={{padding:"8px 10px",textAlign:"left",fontSize:11,fontWeight:700,color:"#64748B",textTransform:"uppercase"}}>Item</th><th style={{padding:"8px 10px",textAlign:"left",fontSize:11,fontWeight:700,color:"#64748B",textTransform:"uppercase",width:110}}>SKU</th><th style={{padding:"8px 10px",textAlign:"center",fontSize:11,fontWeight:700,color:"#64748B",textTransform:"uppercase",width:60}}>Qty</th></tr></thead>
+          <tbody>{items.filter(it=>it.desc||it.sku).map((it,i)=><tr key={i} style={{borderBottom:"1px solid #F1F5F9"}}><td style={{padding:"8px 10px",fontSize:13,color:"#1E293B"}}>{it.desc||"-"}</td><td style={{padding:"8px 10px",fontSize:13,color:"#475569",fontFamily:S.mono}}>{it.sku||"-"}</td><td style={{padding:"8px 10px",textAlign:"center",fontSize:13,fontWeight:600,color:"#0F172A"}}>{p(it.qty)}</td></tr>)}</tbody>
+        </table>
+        <div style={{display:"flex",justifyContent:"flex-end",padding:"8px 10px",background:"#F8FAFC",borderRadius:6,fontWeight:700,fontSize:14,color:"#0F172A"}}><span style={{marginRight:16}}>Total Items</span><span>{fmt(totalQty,0)}</span></div>
+        {notes&&<div style={{marginTop:12,textAlign:"center",fontSize:12,color:"#64748B",fontStyle:"italic"}}>{notes}</div>}
+      </div>
+      <div className="tr-no-print" style={{position:"sticky",bottom:0,background:"rgba(6,9,15,0.92)",backdropFilter:"blur(12px)",padding:"12px 16px",display:"flex",gap:10,alignItems:"center",justifyContent:"flex-end",borderTop:"1px solid rgba(5,150,105,0.2)"}}>
+        <span style={{fontSize:12,color:S.muted,marginRight:"auto"}}>Packing slip ready</span>
+        <Btn s="sm" v="secondary" onClick={()=>window.print()}>🖨️ Print / Save PDF</Btn>
+        <CopyBtn text={`Packing Slip #${slip}${order?` (Order #${order})`:""}\n${items.filter(it=>it.desc).map(it=>`${p(it.qty)}x ${it.desc}${it.sku?` [${it.sku}]`:""}`).join("\n")}\nTotal items: ${fmt(totalQty,0)}`}/>
+      </div>
+    </div>
+  </V>);
+}
+
+// ─── TOOL: TIMESHEET GENERATOR ─────────────────────────────────
+function TimesheetGen(){
+  const DAYS=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+  const[emp,setEmp]=useState("");const[period,setPeriod]=useState("");
+  const[rate,setRate]=useState("25");const[otMult,setOtMult]=useState("1.5");
+  const[hours,setHours]=useState(DAYS.map(()=>""));
+  const updH=(i,v)=>{const n=[...hours];n[i]=v;setHours(n)};
+  const total=hours.reduce((s,h)=>s+p(h),0);
+  const reg=Math.min(total,40);const ot=Math.max(0,total-40);
+  const r=p(rate),om=p(otMult)||1.5;
+  const regPay=reg*r,otPay=ot*r*om,gross=regPay+otPay;
+  return(<V>
+    <G2><div><Lab>Employee Name</Lab><Input value={emp} onChange={setEmp} placeholder="John Doe"/></div><div><Lab>Pay Period</Lab><Input value={period} onChange={setPeriod} placeholder="Jan 1 - Jan 7, 2026"/></div></G2>
+    <G2><NumInput label="Hourly Rate ($)" value={rate} onChange={setRate} placeholder="25"/><NumInput label="Overtime Multiplier (×)" value={otMult} onChange={setOtMult} placeholder="1.5"/></G2>
+    <Lab>Hours Worked</Lab>
+    {DAYS.map((d,i)=>(<div key={d} style={{display:"flex",gap:12,alignItems:"center",marginBottom:6}}>
+      <div style={{width:110,fontSize:13,color:S.muted,fontWeight:600}}>{d}</div>
+      <div style={{flex:1}}><Input value={hours[i]} onChange={v=>updH(i,v)} placeholder="0"/></div>
+      <div style={{width:80,textAlign:"right",fontSize:13,color:S.text,fontFamily:S.mono}}>{$(p(hours[i])*r)}</div>
+    </div>))}
+    <G3>
+      <Big label="Total Hours" value={fmt(total,2)} sub={ot>0?`${fmt(reg,2)} reg + ${fmt(ot,2)} OT`:"regular"}/>
+      <Big label="Overtime Hours" value={fmt(ot,2)} color={ot>0?S.orange:S.muted}/>
+      <Big label="Gross Pay" value={$(gross)} color={S.green}/>
+    </G3>
+    <Res label="Regular Pay" value={`${fmt(reg,2)} h × ${$(r)} = ${$(regPay)}`} mono/>
+    <Res label="Overtime Pay" value={`${fmt(ot,2)} h × ${$(r*om)} = ${$(otPay)}`} mono color={ot>0?S.orange:undefined}/>
+    <Res label="Total Gross Pay" value={$(gross)} mono color={S.green}/>
+    <div style={{textAlign:"right"}}><CopyBtn text={`Timesheet — ${emp||"Employee"} (${period||"period"})\nTotal hours: ${fmt(total,2)} (${fmt(reg,2)} reg + ${fmt(ot,2)} OT)\nRate: ${$(r)}/h, OT ×${om}\nGross pay: ${$(gross)}`}/></div>
+  </V>);
+}
+
+// ─── TOOL: EXPENSE REPORT GENERATOR ────────────────────────────
+function ExpenseReportGen(){
+  const CATS=["Travel","Meals","Lodging","Supplies","Software","Other"];
+  const[name,setName]=useState("");const[period,setPeriod]=useState("");
+  const[rows,setRows]=useState([{date:"",cat:"Travel",desc:"",amt:0}]);
+  const add=()=>setRows([...rows,{date:"",cat:"Travel",desc:"",amt:0}]);
+  const upd=(i,f,v)=>{const n=[...rows];n[i][f]=v;setRows(n)};
+  const rm=(i)=>setRows(rows.filter((_,j)=>j!==i));
+  const total=rows.reduce((s,r)=>s+p(r.amt),0);
+  const byCat={};rows.forEach(r=>{if(p(r.amt))byCat[r.cat]=(byCat[r.cat]||0)+p(r.amt)});
+  return(<V>
+    <G2><div><Lab>Employee / Name</Lab><Input value={name} onChange={setName} placeholder="Jane Smith"/></div><div><Lab>Report Period</Lab><Input value={period} onChange={setPeriod} placeholder="March 2026"/></div></G2>
+    <Lab>Expenses</Lab>
+    {rows.map((r,i)=>(<div key={i} style={{display:"flex",gap:8,alignItems:"end",marginBottom:8}}>
+      <div style={{flex:2}}>{i===0&&<Lab>Date</Lab>}<Input type="date" value={r.date} onChange={v=>upd(i,"date",v)}/></div>
+      <div style={{flex:2}}>{i===0&&<Lab>Category</Lab>}<Sel value={r.cat} onChange={v=>upd(i,"cat",v)} options={CATS}/></div>
+      <div style={{flex:3}}>{i===0&&<Lab>Description</Lab>}<Input value={r.desc} onChange={v=>upd(i,"desc",v)} placeholder="What was it for?"/></div>
+      <div style={{flex:1}}>{i===0&&<Lab>Amount ($)</Lab>}<Input value={String(r.amt)} onChange={v=>upd(i,"amt",v)} placeholder="0"/></div>
+      {rows.length>1&&<Btn v="ghost" s="sm" onClick={()=>rm(i)}>✕</Btn>}
+    </div>))}
+    <Btn v="secondary" s="sm" onClick={add}>+ Add Expense</Btn>
+    <Big label="Total Expenses" value={$(total)} sub={period||"reimbursable"} color={S.green}/>
+    {Object.keys(byCat).length>0&&<div>
+      <Lab>By Category</Lab>
+      {Object.entries(byCat).map(([c,v])=><Res key={c} label={c} value={$(v)} mono/>)}
+    </div>}
+    <div style={{textAlign:"right"}}><CopyBtn text={`Expense Report — ${name||"Name"} (${period||"period"})\n${rows.filter(r=>p(r.amt)).map(r=>`${r.date||"—"}  ${r.cat}  ${r.desc}  ${$(p(r.amt))}`).join("\n")}\n${Object.entries(byCat).map(([c,v])=>`${c}: ${$(v)}`).join("\n")}\nTotal: ${$(total)}`}/></div>
+  </V>);
+}
+
+// ─── TOOL: MARKUP & MARGIN CALCULATOR ──────────────────────────
+function MarkupMarginCalc(){
+  const[cost,setCost]=useState("");const[price,setPrice]=useState("");const[targetMargin,setTargetMargin]=useState("");
+  const c=p(cost),pr=p(price);const profit=pr-c;
+  const markup=c?profit/c*100:0;const margin=pr?profit/pr*100:0;
+  const tm=p(targetMargin);
+  const priceForMargin=(tm>0&&tm<100&&c>0)?c/(1-tm/100):null;
+  return(<V>
+    <G2><NumInput label="Unit Cost ($)" value={cost} onChange={setCost} placeholder="60"/><NumInput label="Selling Price ($)" value={price} onChange={setPrice} placeholder="100"/></G2>
+    {cost&&price?<>
+      <G3>
+        <Big label="Profit" value={$(profit)} color={profit>=0?S.green:S.red}/>
+        <Big label="Markup" value={`${fmt(markup)}%`} color={S.blue}/>
+        <Big label="Margin" value={`${fmt(margin)}%`} color={S.accent}/>
+      </G3>
+      <Res label="Cost" value={$(c)} mono/>
+      <Res label="Selling Price" value={$(pr)} mono/>
+      <Res label="Profit per Unit" value={$(profit)} mono color={profit>=0?S.green:S.red}/>
+      <Res label="Markup on Cost" value={`${fmt(markup)}%`} mono/>
+      <Res label="Profit Margin on Price" value={`${fmt(margin)}%`} mono/>
+    </>:<div style={{padding:16,background:S.accentLight,borderRadius:8,color:S.muted,fontSize:14,textAlign:"center"}}>Enter cost and price to see markup and margin</div>}
+    <Card>
+      <Lab>Reverse: Price for a Target Margin</Lab>
+      <NumInput label="Target Margin (%)" value={targetMargin} onChange={setTargetMargin} placeholder="40"/>
+      {priceForMargin!==null
+        ?<div style={{marginTop:10}}><Res label={`Sell at (for ${fmt(tm)}% margin on cost ${$(c)})`} value={$(priceForMargin)} mono color={S.green}/><Res label="Profit per unit" value={$(priceForMargin-c)} mono/></div>
+        :<div style={{marginTop:10,fontSize:12,color:S.muted}}>Enter a unit cost above and a target margin between 0 and 100%.</div>}
+    </Card>
+    <div style={{textAlign:"right"}}><CopyBtn text={`Cost ${$(c)}, Price ${$(pr)}\nProfit: ${$(profit)}\nMarkup: ${fmt(markup)}%\nMargin: ${fmt(margin)}%`}/></div>
+  </V>);
+}
+
+// ─── TOOL: CAGR CALCULATOR ─────────────────────────────────────
+function CagrCalc(){
+  const[start,setStart]=useState("");const[end,setEnd]=useState("");const[years,setYears]=useState("");
+  const s=p(start),e=p(end),y=p(years);
+  const valid=s>0&&y>0&&end!=="";
+  const cagr=valid?(Math.pow(e/s,1/y)-1)*100:null;
+  const totalGrowth=s>0?(e-s)/s*100:null;
+  const multiple=s>0?e/s:null;
+  return(<V>
+    <G3>
+      <NumInput label="Starting Value ($)" value={start} onChange={setStart} placeholder="1000"/>
+      <NumInput label="Ending Value ($)" value={end} onChange={setEnd} placeholder="1331"/>
+      <NumInput label="Number of Years" value={years} onChange={setYears} placeholder="3"/>
+    </G3>
+    {valid?<>
+      <Big label="CAGR (Compound Annual Growth Rate)" value={`${fmt(cagr)}%`} color={cagr>=0?S.green:S.red}/>
+      <G2>
+        <Res label="Total Growth" value={`${fmt(totalGrowth)}%`} mono color={totalGrowth>=0?S.green:S.red}/>
+        <Res label="Growth Multiple" value={`${fmt(multiple)}×`} mono/>
+      </G2>
+      <Lab>Projected Value Each Year</Lab>
+      {Array.from({length:Math.min(Math.ceil(y),10)},(_,i)=>i+1).map(yr=><Res key={yr} label={`Year ${yr}`} value={$(s*Math.pow(1+cagr/100,yr))} mono/>)}
+    </>:<div style={{padding:16,background:S.accentLight,borderRadius:8,color:S.muted,fontSize:14,textAlign:"center"}}>Enter a positive starting value, ending value, and number of years</div>}
+    {valid&&<div style={{textAlign:"right"}}><CopyBtn text={`CAGR: ${fmt(cagr)}%\n${$(s)} → ${$(e)} over ${fmt(y,2)} years\nTotal growth: ${fmt(totalGrowth)}% (${fmt(multiple)}×)`}/></div>}
+  </V>);
+}
+
+// ─── TOOL: CUSTOMER LIFETIME VALUE CALCULATOR ──────────────────
+function ClvCalc(){
+  const[aov,setAov]=useState("");const[freq,setFreq]=useState("");const[lifespan,setLifespan]=useState("");const[margin,setMargin]=useState("100");
+  const a=p(aov),f=p(freq),l=p(lifespan),m=p(margin);
+  const annualRevenue=a*f;
+  const annualProfit=annualRevenue*(m/100);
+  const ltv=annualProfit*l;
+  const has=aov&&freq&&lifespan;
+  return(<V>
+    <G2>
+      <NumInput label="Average Order Value ($)" value={aov} onChange={setAov} placeholder="50"/>
+      <NumInput label="Purchases per Year" value={freq} onChange={setFreq} placeholder="4"/>
+    </G2>
+    <G2>
+      <NumInput label="Avg Customer Lifespan (years)" value={lifespan} onChange={setLifespan} placeholder="3"/>
+      <NumInput label="Gross Margin (%)" value={margin} onChange={setMargin} placeholder="100"/>
+    </G2>
+    {has?<>
+      <Big label="Customer Lifetime Value (LTV)" value={$(ltv)} sub={`over ${fmt(l,1)} years`} color={S.green}/>
+      <Res label="Annual Revenue per Customer" value={$(annualRevenue)} mono/>
+      <Res label="Annual Profit per Customer" value={$(annualProfit)} mono color={S.accent}/>
+      <Res label="Total Orders (lifetime)" value={fmt(f*l,1)} mono/>
+      <Res label="Suggested Max CAC (3:1 LTV:CAC)" value={$(ltv/3)} mono color={S.blue}/>
+      <div style={{textAlign:"right"}}><CopyBtn text={`Customer LTV: ${$(ltv)}\nAOV ${$(a)} × ${fmt(f,1)}/yr × ${fmt(l,1)} yrs × ${fmt(m)}% margin\nMax CAC (3:1): ${$(ltv/3)}`}/></div>
+    </>:<div style={{padding:16,background:S.accentLight,borderRadius:8,color:S.muted,fontSize:14,textAlign:"center"}}>Enter order value, frequency, and lifespan to estimate LTV</div>}
+  </V>);
+}
+
+// ─── TOOL: BUSINESS HOURS SCHEMA GENERATOR ─────────────────────
+function BusinessHoursGen(){
+  const DAYS=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+  const[name,setName]=useState("");
+  const[hours,setHours]=useState(()=>{const h={};DAYS.forEach((d,i)=>{h[d]={open:"09:00",close:"17:00",closed:i>=5}});return h;});
+  const setDay=(d,f,v)=>setHours(prev=>({...prev,[d]:{...prev[d],[f]:v}}));
+  const spec=DAYS.filter(d=>!hours[d].closed&&hours[d].open&&hours[d].close).map(d=>({
+    "@type":"OpeningHoursSpecification",dayOfWeek:`https://schema.org/${d}`,opens:hours[d].open,closes:hours[d].close
+  }));
+  const schema={"@context":"https://schema.org","@type":"LocalBusiness",name:name||"Your Business Name",openingHoursSpecification:spec};
+  const jsonLd=`<script type="application/ld+json">\n${JSON.stringify(schema,null,2)}\n</script>`;
+  const human=DAYS.map(d=>`${d}: ${hours[d].closed?"Closed":`${hours[d].open} – ${hours[d].close}`}`).join("\n");
+  return(<V>
+    <div><Lab>Business Name</Lab><Input value={name} onChange={setName} placeholder="Acme Coffee Shop"/></div>
+    <Lab>Opening Hours</Lab>
+    {DAYS.map(d=>(<div key={d} style={{display:"flex",gap:10,alignItems:"center",marginBottom:6}}>
+      <div style={{width:100,fontSize:13,color:S.muted,fontWeight:600}}>{d}</div>
+      <Btn v={hours[d].closed?"secondary":"primary"} s="sm" onClick={()=>setDay(d,"closed",!hours[d].closed)} style={{width:80,justifyContent:"center"}}>{hours[d].closed?"Closed":"Open"}</Btn>
+      {!hours[d].closed&&<>
+        <Input type="time" value={hours[d].open} onChange={v=>setDay(d,"open",v)} style={{width:130}}/>
+        <span style={{color:S.muted}}>–</span>
+        <Input type="time" value={hours[d].close} onChange={v=>setDay(d,"close",v)} style={{width:130}}/>
+      </>}
+    </div>))}
+    <Card>
+      <Lab>Human-Readable Hours</Lab>
+      <pre style={{fontSize:13,color:S.text,whiteSpace:"pre-wrap",fontFamily:S.font,lineHeight:1.7,margin:0}}>{human}</pre>
+    </Card>
+    <div style={{position:"relative"}}>
+      <Lab>schema.org JSON-LD (paste in your page &lt;head&gt;)</Lab>
+      <pre style={{background:"rgba(0,0,0,0.4)",padding:16,borderRadius:10,fontSize:12,color:"#86EFAC",whiteSpace:"pre-wrap",fontFamily:S.mono,lineHeight:1.6,overflowX:"auto"}}>{jsonLd}</pre>
+      <div style={{position:"absolute",top:24,right:8}}><CopyBtn text={jsonLd}/></div>
+    </div>
+  </V>);
+}
+
+// ─── TOOL: MEETING AGENDA GENERATOR ────────────────────────────
+function MeetingAgendaGen(){
+  const[title,setTitle]=useState("");const[date,setDate]=useState(new Date().toISOString().split("T")[0]);
+  const[time,setTime]=useState("");const[location,setLocation]=useState("");const[attendees,setAttendees]=useState("");
+  const[items,setItems]=useState([{topic:"",owner:"",mins:"10"}]);
+  const add=()=>setItems([...items,{topic:"",owner:"",mins:"10"}]);
+  const upd=(i,f,v)=>{const n=[...items];n[i][f]=v;setItems(n)};
+  const rm=(i)=>setItems(items.filter((_,j)=>j!==i));
+  const totalMins=items.reduce((s,it)=>s+p(it.mins),0);
+  return(<V>
+    <div><Lab>Meeting Title</Lab><Input value={title} onChange={setTitle} placeholder="Q2 Product Planning"/></div>
+    <G3><div><Lab>Date</Lab><Input type="date" value={date} onChange={setDate}/></div><div><Lab>Time</Lab><Input type="time" value={time} onChange={setTime}/></div><div><Lab>Location</Lab><Input value={location} onChange={setLocation} placeholder="Zoom / Room 4B"/></div></G3>
+    <div><Lab>Attendees (comma separated)</Lab><Input value={attendees} onChange={setAttendees} placeholder="Alice, Bob, Carol"/></div>
+    <Lab>Agenda Items</Lab>
+    {items.map((it,i)=>(<div key={i} style={{display:"flex",gap:8,alignItems:"end",marginBottom:8}}>
+      <div style={{flex:3}}>{i===0&&<Lab>Topic</Lab>}<Input value={it.topic} onChange={v=>upd(i,"topic",v)} placeholder="Discussion topic"/></div>
+      <div style={{flex:2}}>{i===0&&<Lab>Owner</Lab>}<Input value={it.owner} onChange={v=>upd(i,"owner",v)} placeholder="Who leads"/></div>
+      <div style={{flex:1}}>{i===0&&<Lab>Min</Lab>}<Input value={String(it.mins)} onChange={v=>upd(i,"mins",v)} placeholder="10"/></div>
+      {items.length>1&&<Btn v="ghost" s="sm" onClick={()=>rm(i)}>✕</Btn>}
+    </div>))}
+    <Btn v="secondary" s="sm" onClick={add}>+ Add Agenda Item</Btn>
+    <div style={{borderRadius:10,overflow:"hidden",boxShadow:"0 4px 24px rgba(0,0,0,0.4)"}}>
+      <div className="tr-print-doc" style={{background:"white",color:"#1E293B",padding:"32px 40px",fontFamily:S.font}}>
+        <div style={{borderBottom:"3px solid #059669",paddingBottom:14,marginBottom:16}}>
+          <div style={{fontSize:24,fontWeight:800,color:"#0F172A",fontFamily:S.display}}>{title||"Meeting Agenda"}</div>
+          <div style={{fontSize:12,color:"#64748B",marginTop:4}}>{[date,time,location].filter(Boolean).join(" · ")}</div>
+        </div>
+        {attendees&&<div style={{marginBottom:16,fontSize:12,color:"#475569"}}><strong style={{color:"#0F172A"}}>Attendees: </strong>{attendees}</div>}
+        <table style={{width:"100%",borderCollapse:"collapse",marginBottom:14}}>
+          <thead><tr style={{background:"#F8FAFC"}}><th style={{padding:"8px 10px",textAlign:"left",fontSize:11,fontWeight:700,color:"#64748B",textTransform:"uppercase",width:30}}>#</th><th style={{padding:"8px 10px",textAlign:"left",fontSize:11,fontWeight:700,color:"#64748B",textTransform:"uppercase"}}>Topic</th><th style={{padding:"8px 10px",textAlign:"left",fontSize:11,fontWeight:700,color:"#64748B",textTransform:"uppercase",width:120}}>Owner</th><th style={{padding:"8px 10px",textAlign:"right",fontSize:11,fontWeight:700,color:"#64748B",textTransform:"uppercase",width:70}}>Time</th></tr></thead>
+          <tbody>{items.filter(it=>it.topic).map((it,i)=><tr key={i} style={{borderBottom:"1px solid #F1F5F9"}}><td style={{padding:"8px 10px",fontSize:13,color:"#94A3B8"}}>{i+1}</td><td style={{padding:"8px 10px",fontSize:13,color:"#1E293B"}}>{it.topic}</td><td style={{padding:"8px 10px",fontSize:13,color:"#475569"}}>{it.owner||"—"}</td><td style={{padding:"8px 10px",textAlign:"right",fontSize:13,color:"#475569"}}>{p(it.mins)} min</td></tr>)}</tbody>
+        </table>
+        <div style={{display:"flex",justifyContent:"flex-end",fontSize:13,fontWeight:700,color:"#059669"}}>Total: {totalMins} min ({fmt(totalMins/60,1)} h)</div>
+      </div>
+      <div className="tr-no-print" style={{position:"sticky",bottom:0,background:"rgba(6,9,15,0.92)",backdropFilter:"blur(12px)",padding:"12px 16px",display:"flex",gap:10,alignItems:"center",justifyContent:"flex-end",borderTop:"1px solid rgba(5,150,105,0.2)"}}>
+        <span style={{fontSize:12,color:S.muted,marginRight:"auto"}}>Agenda ready · {totalMins} min total</span>
+        <Btn s="sm" v="secondary" onClick={()=>window.print()}>🖨️ Print / Save PDF</Btn>
+        <CopyBtn text={`${title||"Meeting Agenda"}\n${[date,time,location].filter(Boolean).join(" · ")}\n${attendees?`Attendees: ${attendees}\n`:""}\n${items.filter(it=>it.topic).map((it,i)=>`${i+1}. ${it.topic}${it.owner?` (${it.owner})`:""} — ${p(it.mins)} min`).join("\n")}\nTotal: ${totalMins} min`}/>
+      </div>
+    </div>
+  </V>);
+}
+
+// ─── TOOL: BUSINESS MEMO GENERATOR ─────────────────────────────
+function MemoGen(){
+  const[to,setTo]=useState("");const[from,setFrom]=useState("");
+  const[date,setDate]=useState(new Date().toISOString().split("T")[0]);
+  const[subject,setSubject]=useState("");const[body,setBody]=useState("");
+  return(<V>
+    <G2><div><Lab>To</Lab><Input value={to} onChange={setTo} placeholder="All Staff"/></div><div><Lab>From</Lab><Input value={from} onChange={setFrom} placeholder="Jane Smith, Operations"/></div></G2>
+    <G2><div><Lab>Date</Lab><Input type="date" value={date} onChange={setDate}/></div><div><Lab>Subject</Lab><Input value={subject} onChange={setSubject} placeholder="Updated remote work policy"/></div></G2>
+    <div><Lab>Body</Lab><Input value={body} onChange={setBody} placeholder="Write the memo content here..." multiline rows={6}/></div>
+    <div style={{borderRadius:10,overflow:"hidden",boxShadow:"0 4px 24px rgba(0,0,0,0.4)"}}>
+      <div className="tr-print-doc" style={{background:"white",color:"#1E293B",padding:"40px",fontFamily:S.font}}>
+        <div style={{fontSize:24,fontWeight:900,color:"#0F172A",fontFamily:S.display,letterSpacing:"0.05em",marginBottom:20}}>MEMORANDUM</div>
+        <div style={{borderTop:"2px solid #E2E8F0",borderBottom:"2px solid #E2E8F0",padding:"14px 0",marginBottom:20}}>
+          {[["TO",to||"—"],["FROM",from||"—"],["DATE",date],["SUBJECT",subject||"—"]].map(([l,v])=><div key={l} style={{display:"flex",fontSize:13,marginBottom:6}}><span style={{width:90,fontWeight:800,color:"#64748B"}}>{l}:</span><span style={{color:"#1E293B",fontWeight:l==="SUBJECT"?700:400}}>{v}</span></div>)}
+        </div>
+        <div style={{fontSize:14,color:"#374151",lineHeight:1.8,whiteSpace:"pre-wrap"}}>{body||"Memo content will appear here as you type."}</div>
+      </div>
+      <div className="tr-no-print" style={{position:"sticky",bottom:0,background:"rgba(6,9,15,0.92)",backdropFilter:"blur(12px)",padding:"12px 16px",display:"flex",gap:10,alignItems:"center",justifyContent:"flex-end",borderTop:"1px solid rgba(5,150,105,0.2)"}}>
+        <span style={{fontSize:12,color:S.muted,marginRight:"auto"}}>Memo ready</span>
+        <Btn s="sm" v="secondary" onClick={()=>window.print()}>🖨️ Print / Save PDF</Btn>
+        <CopyBtn text={`MEMORANDUM\n\nTO: ${to||"—"}\nFROM: ${from||"—"}\nDATE: ${date}\nSUBJECT: ${subject||"—"}\n\n${body||""}`}/>
+      </div>
+    </div>
+  </V>);
+}
+
+// ─── TOOL: PRESS RELEASE GENERATOR ─────────────────────────────
+function PressReleaseGen(){
+  const[company,setCompany]=useState("");const[city,setCity]=useState("");
+  const[date,setDate]=useState(new Date().toISOString().split("T")[0]);
+  const[headline,setHeadline]=useState("");const[summary,setSummary]=useState("");
+  const[details,setDetails]=useState("");const[quote,setQuote]=useState("");const[speaker,setSpeaker]=useState("");
+  const[boiler,setBoiler]=useState("");const[contact,setContact]=useState("");
+  const output=useMemo(()=>{
+    if(!headline&&!company)return "";
+    const dateline=`${city||"[CITY]"} — ${date} — `;
+    const lead=summary?`${dateline}${summary}`:`${dateline}${company||"[Company]"} today announced ${headline||"[announcement]"}.`;
+    const parts=["FOR IMMEDIATE RELEASE\n",(headline||"[Headline]").toUpperCase(),"",lead];
+    if(details)parts.push("",details);
+    if(quote)parts.push("",`"${quote}"${speaker?` said ${speaker}.`:""}`);
+    parts.push("","### About "+(company||"[Company]"),boiler||"[Company boilerplate — a short paragraph describing what your company does.]");
+    if(contact)parts.push("","Media Contact:",contact);
+    parts.push("","### END ###");
+    return parts.join("\n");
+  },[company,city,date,headline,summary,details,quote,speaker,boiler,contact]);
+  return(<V>
+    <G2><div><Lab>Company Name</Lab><Input value={company} onChange={setCompany} placeholder="Acme Inc."/></div><div><Lab>City</Lab><Input value={city} onChange={setCity} placeholder="San Francisco, CA"/></div></G2>
+    <G2><div><Lab>Release Date</Lab><Input type="date" value={date} onChange={setDate}/></div><div><Lab>Spokesperson</Lab><Input value={speaker} onChange={setSpeaker} placeholder="Jane Doe, CEO"/></div></G2>
+    <div><Lab>Headline</Lab><Input value={headline} onChange={setHeadline} placeholder="Acme Launches Revolutionary New Product"/></div>
+    <div><Lab>Summary (opening paragraph)</Lab><Input value={summary} onChange={setSummary} placeholder="Who, what, when, where, and why in one or two sentences." multiline rows={2}/></div>
+    <div><Lab>Body Details</Lab><Input value={details} onChange={setDetails} placeholder="Supporting facts, features, availability, pricing..." multiline rows={3}/></div>
+    <div><Lab>Quote</Lab><Input value={quote} onChange={setQuote} placeholder="This launch marks a milestone for our customers..." multiline rows={2}/></div>
+    <div><Lab>Company Boilerplate</Lab><Input value={boiler} onChange={setBoiler} placeholder="Acme Inc. is a leading provider of..." multiline rows={2}/></div>
+    <div><Lab>Media Contact</Lab><Input value={contact} onChange={setContact} placeholder="press@acme.com · +1 234 567 890"/></div>
+    {output&&<div style={{position:"relative"}}><pre style={{background:"rgba(0,0,0,0.4)",padding:20,borderRadius:10,fontSize:14,color:S.text,whiteSpace:"pre-wrap",lineHeight:1.8,fontFamily:S.font}}>{output}</pre><div style={{position:"absolute",top:8,right:8}}><CopyBtn text={output}/></div></div>}
+  </V>);
+}
+
+// ─── TOOL: JOB DESCRIPTION GENERATOR ───────────────────────────
+function JobDescriptionGen(){
+  const[title,setTitle]=useState("");const[company,setCompany]=useState("");const[location,setLocation]=useState("");
+  const[type,setType]=useState("Full-time");const[overview,setOverview]=useState("");
+  const[resp,setResp]=useState("");const[req,setReq]=useState("");const[nice,setNice]=useState("");const[apply,setApply]=useState("");
+  const bullets=(txt)=>txt.split("\n").map(l=>l.trim()).filter(Boolean).map(l=>`• ${l.replace(/^[•\-*]\s*/,"")}`).join("\n");
+  const output=useMemo(()=>{
+    if(!title)return "";
+    const parts=[`${title}${company?` — ${company}`:""}`,[location,type].filter(Boolean).join(" · "),""];
+    if(overview)parts.push("ABOUT THE ROLE",overview,"");
+    if(resp)parts.push("RESPONSIBILITIES",bullets(resp),"");
+    if(req)parts.push("REQUIREMENTS",bullets(req),"");
+    if(nice)parts.push("NICE TO HAVE",bullets(nice),"");
+    if(apply)parts.push("HOW TO APPLY",apply);
+    return parts.join("\n").replace(/\n{3,}/g,"\n\n").trim();
+  },[title,company,location,type,overview,resp,req,nice,apply]);
+  return(<V>
+    <G2><div><Lab>Job Title</Lab><Input value={title} onChange={setTitle} placeholder="Senior Frontend Engineer"/></div><div><Lab>Company</Lab><Input value={company} onChange={setCompany} placeholder="Acme Inc."/></div></G2>
+    <G2><div><Lab>Location</Lab><Input value={location} onChange={setLocation} placeholder="Remote / New York, NY"/></div><Sel label="Employment Type" value={type} onChange={setType} options={["Full-time","Part-time","Contract","Internship","Temporary"]}/></G2>
+    <div><Lab>Role Overview</Lab><Input value={overview} onChange={setOverview} placeholder="A short paragraph about the role and team." multiline rows={2}/></div>
+    <div><Lab>Responsibilities (one per line)</Lab><Input value={resp} onChange={setResp} placeholder={"Build and maintain UI\nCollaborate with designers\nWrite tests"} multiline rows={3}/></div>
+    <div><Lab>Requirements (one per line)</Lab><Input value={req} onChange={setReq} placeholder={"5+ years React\nStrong CSS skills"} multiline rows={3}/></div>
+    <div><Lab>Nice to Have (one per line)</Lab><Input value={nice} onChange={setNice} placeholder={"TypeScript\nOpen-source contributions"} multiline rows={2}/></div>
+    <div><Lab>How to Apply</Lab><Input value={apply} onChange={setApply} placeholder="Email your resume to jobs@acme.com" multiline rows={2}/></div>
+    {output&&<div style={{position:"relative"}}><pre style={{background:"rgba(0,0,0,0.4)",padding:20,borderRadius:10,fontSize:14,color:S.text,whiteSpace:"pre-wrap",lineHeight:1.7,fontFamily:S.font}}>{output}</pre><div style={{position:"absolute",top:8,right:8}}><CopyBtn text={output}/></div></div>}
+  </V>);
+}
+
 // ─── TOOL REGISTRY ─────────────────────────────────────────────
 const TOOL_COMPONENTS = {
   "invoice-gen":InvoiceGenerator,"receipt-gen":ReceiptGenerator,"quotation-gen":QuotationGenerator,
@@ -662,6 +1125,10 @@ const TOOL_COMPONENTS = {
   "swot-gen":SwotGen,"marketing-plan-gen":MarketingPlanGen,"persona-gen":PersonaGen,
   "utm-builder":UtmBuilder,"ad-copy-gen":AdCopyGen,"sales-copy-gen":SalesCopyGen,
   "landing-copy-gen":LandingCopyGen,"roi-calculator":RoiCalculator,"break-even-calc":BreakEvenCalc,
+  "purchase-order-gen":PurchaseOrderGen,"packing-slip-gen":PackingSlipGen,"timesheet-gen":TimesheetGen,
+  "expense-report-gen":ExpenseReportGen,"markup-margin-calc":MarkupMarginCalc,"cagr-calc":CagrCalc,
+  "clv-calc":ClvCalc,"business-hours-gen":BusinessHoursGen,"meeting-agenda-gen":MeetingAgendaGen,
+  "memo-gen":MemoGen,"press-release-gen":PressReleaseGen,"job-description-gen":JobDescriptionGen,
 };
 
 // ─── FAQ SECTION ───────────────────────────────────────────────
@@ -794,7 +1261,7 @@ function ToolsRiftBusiness(){
     if(seo)document.title=`${seo.title} | ${BRAND.name}`;
     else if(activeTool)document.title=`${activeTool.name} - Free Online | ${BRAND.name}`;
     else if(page==="dashboard")document.title=`Business & Marketing Tools | ${BRAND.name}`;
-    else document.title=`${BRAND.name} - 15 Free Business & Marketing Tools`;
+    else document.title=`${BRAND.name} - 27 Free Business & Marketing Tools`;
   },[page,seo,activeTool]);
 
   return(
