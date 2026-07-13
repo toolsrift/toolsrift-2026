@@ -274,7 +274,7 @@ function ExploreOthers({ theme }) {
           <div style={{
             fontFamily: theme.fonts.head, fontSize: FS.xl, fontWeight: 700,
             color: COLORS.textBright, letterSpacing: '-0.015em',
-          }}>918+ free tools across 23 categories</div>
+          }}>947+ free tools across 23 categories</div>
         </div>
         <div style={{
           display: 'grid', gap: 10,

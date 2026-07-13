@@ -190,6 +190,14 @@ const TOOLS = [
   { id:"tap-code", cat:"encoding", name:"Tap Code Translator", desc:"Encode text as prisoner tap-code row,column taps and decode taps back to letters (K→C)", icon:"👊", free:true },
   { id:"beaufort-cipher", cat:"encoding", name:"Beaufort Cipher", desc:"Encrypt and decrypt with the reciprocal Beaufort cipher using a keyword", icon:"🧭", free:true },
   { id:"gronsfeld-cipher", cat:"encoding", name:"Gronsfeld Cipher", desc:"Encrypt and decrypt with the Gronsfeld cipher using a numeric digit key", icon:"🔢", free:true },
+  { id:"vigenere-cipher", cat:"encoding", name:"Vigenère Cipher", desc:"Encrypt and decrypt text with the classic Vigenère polyalphabetic cipher using a keyword", icon:"🗝️", free:true },
+  { id:"autokey-vigenere", cat:"encoding", name:"Autokey Vigenère Cipher", desc:"Encrypt and decrypt with the autokey cipher where the plaintext extends the keyword stream", icon:"🔑", free:true },
+  { id:"playfair-cipher", cat:"encoding", name:"Playfair Cipher", desc:"Encrypt and decrypt with the Playfair digraph cipher using a 5×5 keyword square (I/J merged)", icon:"🔲", free:true },
+  { id:"columnar-transposition-cipher", cat:"encoding", name:"Columnar Transposition Cipher", desc:"Encrypt and decrypt with keyword columnar transposition. Columns are read in alphabetical key order", icon:"📊", free:true },
+  { id:"scytale-cipher", cat:"encoding", name:"Scytale Cipher", desc:"Encrypt and decrypt with the ancient Spartan scytale rod transposition cipher. Round-trip guaranteed", icon:"📜", free:true },
+  { id:"keyword-substitution-cipher", cat:"encoding", name:"Keyword Substitution Cipher", desc:"Build a mixed cipher alphabet from a keyword and encrypt/decrypt monoalphabetic substitution text", icon:"🔡", free:true },
+  { id:"bifid-cipher", cat:"encoding", name:"Bifid Cipher", desc:"Encrypt and decrypt with the Bifid cipher combining a Polybius square with coordinate fractionation", icon:"🧩", free:true },
+  { id:"four-square-cipher", cat:"encoding", name:"Four-Square Cipher", desc:"Encrypt and decrypt digraphs using two keyword squares and two plain 5×5 squares. Round-trip guaranteed", icon:"⬛", free:true },
 ];
 
 const CATEGORIES = [
@@ -375,6 +383,78 @@ const TOOL_META = {
       ["What is the Gronsfeld cipher?", "A variant of the Vigenère cipher that uses a key made of digits (0–9) instead of letters. Each digit shifts the corresponding letter forward by that many positions."],
       ["What is a valid key?", "Any string of digits, such as '31415'. The key repeats across the message. Non-digit characters in the key are ignored."],
       ["How is 'PROCEED' encrypted with key 31415?", "P+3=S, R+1=S, O+4=S, C+1=D, E+5=J, E+3=H, D+1=E, giving 'SSSDJHE'. Decoding with the same key reverses each shift."]
+    ]
+  },
+  "vigenere-cipher": {
+    title: "Free Vigenère Cipher – Encrypt & Decrypt with Keyword | ToolsRift",
+    desc: "Encrypt and decrypt text with the classic Vigenère polyalphabetic cipher. Uses a repeating keyword to shift each letter. Free online encoder and decoder.",
+    faq: [
+      ["How does the Vigenère cipher work?", "Each plaintext letter is shifted by the corresponding letter of a repeating keyword. Encryption is C = (P + K) mod 26 and decryption is P = (C − K) mod 26, where K is the keyword letter's position (A=0)."],
+      ["Why is Vigenère stronger than Caesar?", "Because the shift changes with every keyword letter, the same plaintext letter can map to different ciphertext letters. This defeats the simple frequency analysis that breaks single-shift Caesar ciphers."],
+      ["What happens to spaces and punctuation?", "Only A–Z letters are enciphered and output is uppercased. Spaces, digits, and punctuation pass through unchanged, and the keyword only advances on letters."]
+    ]
+  },
+  "autokey-vigenere": {
+    title: "Free Autokey Vigenère Cipher – Encoder & Decoder | ToolsRift",
+    desc: "Encrypt and decrypt with the autokey Vigenère cipher, where the message itself extends the keyword to form a non-repeating key stream. Free online tool.",
+    faq: [
+      ["How is the autokey cipher different from Vigenère?", "Instead of repeating the keyword, the autokey cipher appends the plaintext to the keyword to build the key stream. This non-repeating key removes the periodicity that makes the standard Vigenère cipher easier to break."],
+      ["What is the primer or keyword?", "The keyword (primer) is a short starting key. Encryption uses the keyword followed by the plaintext letters as the key stream; decryption recovers the plaintext one letter at a time and feeds it back into the key."],
+      ["Does a known example verify it?", "Yes. Encrypting 'ATTACKATDAWN' with keyword 'QUEENLY' gives 'QNXEPVYTWTWP', the classic textbook autokey result, and decoding with the same keyword restores the original."]
+    ]
+  },
+  "playfair-cipher": {
+    title: "Free Playfair Cipher – Digraph Encrypt & Decrypt Online | ToolsRift",
+    desc: "Encrypt and decrypt with the Playfair cipher using a 5×5 keyword square. Encodes letter pairs (digraphs) with I and J merged. Free online encoder and decoder.",
+    faq: [
+      ["How does the Playfair cipher work?", "A keyword fills a 5×5 grid (I and J share a cell). The message is split into letter pairs; each pair is transformed by the row/column rules — same row shifts right, same column shifts down, otherwise the pair forms a rectangle and swaps columns."],
+      ["Why are X letters inserted?", "If a pair contains two identical letters (like the LL in HELLO) an X separates them, and a trailing X pads an odd-length message. This is why decrypted text may contain extra X letters where padding was added."],
+      ["Does J appear in the output?", "No. J is merged into I before encryption, so decrypted text shows I wherever the original had J. This is standard for the classic Playfair square."]
+    ]
+  },
+  "columnar-transposition-cipher": {
+    title: "Free Columnar Transposition Cipher – Encoder & Decoder | ToolsRift",
+    desc: "Encrypt and decrypt with the keyword columnar transposition cipher. Columns are read in alphabetical key order. Guaranteed round-trip. Free online tool.",
+    faq: [
+      ["How does columnar transposition work?", "The message is written in rows beneath a keyword. Columns are then read off in the alphabetical order of the keyword letters to form the ciphertext. It rearranges letters rather than substituting them."],
+      ["How is the column order chosen?", "Each keyword letter is ranked alphabetically (ties broken left to right). For example 'ZEBRAS' ranks its columns 6-3-2-4-1-5, so column A is read first, then B, then E, and so on."],
+      ["Does decryption restore the exact text?", "Yes. The tool recomputes each column's length from the message length and keyword, so decoding with the same keyword returns your exact original letters. Encrypting 'WEAREDISCOVEREDFLEEATONCE' with 'ZEBRAS' gives 'EVLNACDTESEAROFODEECWIREE'."]
+    ]
+  },
+  "scytale-cipher": {
+    title: "Free Scytale Cipher – Spartan Rod Transposition Online | ToolsRift",
+    desc: "Encrypt and decrypt with the ancient scytale cipher, a Spartan transposition cipher that wraps text around a rod. Adjustable turns. Guaranteed round-trip.",
+    faq: [
+      ["What is the scytale cipher?", "One of the oldest known ciphers, used by ancient Spartans. A strip of parchment was wound around a rod of a specific thickness; the message was written across the wraps and only lined up again on a rod of the same size."],
+      ["What does the 'columns' setting mean?", "It represents the rod's circumference — how many characters fit around one turn. The text is written across that many columns row by row, then read down each column to produce the ciphertext."],
+      ["Is the original text restored exactly?", "Yes. The scytale is a pure transposition (it only rearranges characters), and this tool tracks the exact grid, so decoding with the same number of columns returns your original text including spaces and punctuation."]
+    ]
+  },
+  "keyword-substitution-cipher": {
+    title: "Free Keyword Substitution Cipher – Mixed Alphabet Encoder | ToolsRift",
+    desc: "Encrypt and decrypt with a keyword substitution cipher. A keyword builds a mixed cipher alphabet for monoalphabetic substitution. Free online encoder and decoder.",
+    faq: [
+      ["How is the cipher alphabet built?", "The keyword is written first with duplicate letters removed, then the remaining unused letters of the alphabet follow in order. 'KEYWORD' produces the cipher alphabet KEYWORDABCFGHIJLMNPQSTUVXZ."],
+      ["How does encryption work?", "It is a monoalphabetic substitution: plaintext A maps to the first cipher letter, B to the second, and so on. Each letter is always replaced by the same cipher letter, so it can be broken by frequency analysis."],
+      ["Does it round-trip perfectly?", "Yes for letters. Encoding then decoding with the same keyword restores the original letters (output is uppercased). Spaces, digits, and punctuation pass through unchanged."]
+    ]
+  },
+  "bifid-cipher": {
+    title: "Free Bifid Cipher – Polybius Fractionation Encoder | ToolsRift",
+    desc: "Encrypt and decrypt with the Bifid cipher, combining a 5×5 Polybius square with coordinate fractionation for extra diffusion. Optional keyword. Free online tool.",
+    faq: [
+      ["How does the Bifid cipher work?", "Each letter is converted to its row and column in a 5×5 Polybius square. All the row numbers are written out first, then all the column numbers; this combined sequence is re-paired into new coordinates and turned back into letters, spreading each letter's influence across the message."],
+      ["Can I use a keyword square?", "Yes. A keyword rearranges the Polybius square (I and J share a cell). Leave the keyword blank to use the plain A–Z square. Both sides must use the same keyword to decode correctly."],
+      ["Does it restore the original?", "Yes, for letters. Because fractionation is fully reversible, decoding with the same square returns the original text (J is read back as I, output uppercased)."]
+    ]
+  },
+  "four-square-cipher": {
+    title: "Free Four-Square Cipher – Two-Keyword Digraph Encoder | ToolsRift",
+    desc: "Encrypt and decrypt with the four-square cipher using two keyword squares and two plain 5×5 squares. Encodes letter pairs. Guaranteed round-trip. Free online tool.",
+    faq: [
+      ["How does the four-square cipher work?", "Four 5×5 grids are arranged in a square: the top-left and bottom-right are plain alphabets, the top-right and bottom-left are keyword squares. Each plaintext pair is located in the two plain squares, and the ciphertext letters are read from the two keyword squares at the intersecting corners."],
+      ["How is it different from Playfair?", "Four-square uses two separate keyword squares instead of one, and it never has to insert filler letters between doubled letters. Only an odd-length message is padded with a trailing X."],
+      ["Does it round-trip exactly?", "Yes. Encoding then decoding an even-length letter message with the same two keywords restores it exactly (J is merged into I, output uppercased)."]
     ]
   }
 };
@@ -1554,6 +1634,398 @@ function GronsfeldCipher() {
   );
 }
 
+// ── Vigenère Cipher ──
+function vigenereRun(text, key, decode) {
+  const k = key.toUpperCase().replace(/[^A-Z]/g, "");
+  if (!k) return text;
+  let ki = 0;
+  return text.toUpperCase().replace(/[A-Z]/g, c => {
+    const p = c.charCodeAt(0) - 65, kk = k.charCodeAt(ki % k.length) - 65; ki++;
+    const s = decode ? -kk : kk;
+    return String.fromCharCode(65 + (((p + s) % 26 + 26) % 26));
+  });
+}
+function VigenereCipher() {
+  const [mode, setMode] = useState("encode");
+  const [input, setInput] = useState("");
+  const [key, setKey] = useState("LEMON");
+  const output = useMemo(() => !input ? "" : vigenereRun(input, key, mode === "decode"), [input, key, mode]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Mode</Label><SelectInput value={mode} onChange={setMode} options={[{ value:"encode", label:"Encrypt" }, { value:"decode", label:"Decrypt" }]} /></div>
+        <div><Label>Keyword</Label><Input value={key} onChange={setKey} placeholder="LEMON" /></div>
+      </Grid2>
+      <div><Label>Your Text</Label><Textarea value={input} onChange={setInput} rows={6} placeholder="ATTACKATDAWN" /></div>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}><Label>{mode === "encode" ? "Encrypted" : "Decrypted"}</Label><CopyBtn text={output} /></div>
+          <Result mono={false}>{output}</Result>
+        </div>
+      )}
+      <Card><div style={{ fontSize:12, color:C.muted, lineHeight:1.7 }}>The <b style={{ color:C.text }}>Vigenère cipher</b> shifts each letter by the next keyword letter, C = (P + K) mod 26. Only letters are enciphered; the keyword repeats across the message.</div></Card>
+    </VStack>
+  );
+}
+
+// ── Autokey Vigenère Cipher ──
+function autokeyEncode(text, key) {
+  const k = key.toUpperCase().replace(/[^A-Z]/g, "");
+  if (!k) return text;
+  const pt = text.toUpperCase();
+  const keystream = k + pt.replace(/[^A-Z]/g, "");
+  let ki = 0;
+  return pt.replace(/[A-Z]/g, c => {
+    const p = c.charCodeAt(0) - 65, kk = keystream.charCodeAt(ki) - 65; ki++;
+    return String.fromCharCode(65 + ((p + kk) % 26));
+  });
+}
+function autokeyDecode(text, key) {
+  const k = key.toUpperCase().replace(/[^A-Z]/g, "");
+  if (!k) return text;
+  const ks = k.split("");
+  let ki = 0;
+  return text.toUpperCase().replace(/[A-Z]/g, c => {
+    const cc = c.charCodeAt(0) - 65, kk = ks[ki].charCodeAt(0) - 65;
+    const p = ((cc - kk) % 26 + 26) % 26; ki++;
+    ks.push(String.fromCharCode(65 + p));
+    return String.fromCharCode(65 + p);
+  });
+}
+function AutokeyVigenere() {
+  const [mode, setMode] = useState("encode");
+  const [input, setInput] = useState("");
+  const [key, setKey] = useState("QUEENLY");
+  const output = useMemo(() => !input ? "" : mode === "encode" ? autokeyEncode(input, key) : autokeyDecode(input, key), [input, key, mode]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Mode</Label><SelectInput value={mode} onChange={setMode} options={[{ value:"encode", label:"Encrypt" }, { value:"decode", label:"Decrypt" }]} /></div>
+        <div><Label>Keyword (primer)</Label><Input value={key} onChange={setKey} placeholder="QUEENLY" /></div>
+      </Grid2>
+      <div><Label>Your Text</Label><Textarea value={input} onChange={setInput} rows={6} placeholder="ATTACKATDAWN" /></div>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}><Label>{mode === "encode" ? "Encrypted" : "Decrypted"}</Label><CopyBtn text={output} /></div>
+          <Result mono={false}>{output}</Result>
+        </div>
+      )}
+      <Card><div style={{ fontSize:12, color:C.muted, lineHeight:1.7 }}>The <b style={{ color:C.text }}>autokey</b> key stream is the keyword followed by the plaintext itself, so it never repeats. Decoding feeds each recovered letter back into the key.</div></Card>
+    </VStack>
+  );
+}
+
+// ── Playfair Cipher (5×5, I/J merged) ──
+function pfSquare(key) {
+  const seen = new Set(); let s = "";
+  for (const c of (key.toUpperCase().replace(/J/g, "I").replace(/[^A-Z]/g, "") + "ABCDEFGHIKLMNOPQRSTUVWXYZ")) {
+    if (!seen.has(c)) { seen.add(c); s += c; }
+  }
+  return s;
+}
+function playfairEncode(text, key) {
+  const sq = pfSquare(key);
+  const pos = c => { const i = sq.indexOf(c); return [Math.floor(i / 5), i % 5]; };
+  const t = text.toUpperCase().replace(/J/g, "I").replace(/[^A-Z]/g, "");
+  const pairs = []; let i = 0;
+  while (i < t.length) {
+    let a = t[i], b = t[i + 1];
+    if (!b) { b = "X"; i += 1; }
+    else if (a === b) { b = "X"; i += 1; }
+    else { i += 2; }
+    pairs.push([a, b]);
+  }
+  return pairs.map(([a, b]) => {
+    let [r1, c1] = pos(a), [r2, c2] = pos(b);
+    if (r1 === r2) { c1 = (c1 + 1) % 5; c2 = (c2 + 1) % 5; }
+    else if (c1 === c2) { r1 = (r1 + 1) % 5; r2 = (r2 + 1) % 5; }
+    else { const tmp = c1; c1 = c2; c2 = tmp; }
+    return sq[r1 * 5 + c1] + sq[r2 * 5 + c2];
+  }).join("");
+}
+function playfairDecode(text, key) {
+  const sq = pfSquare(key);
+  const pos = c => { const i = sq.indexOf(c); return [Math.floor(i / 5), i % 5]; };
+  const t = text.toUpperCase().replace(/J/g, "I").replace(/[^A-Z]/g, "");
+  let out = "";
+  for (let i = 0; i + 1 < t.length; i += 2) {
+    let [r1, c1] = pos(t[i]), [r2, c2] = pos(t[i + 1]);
+    if (r1 === r2) { c1 = (c1 + 4) % 5; c2 = (c2 + 4) % 5; }
+    else if (c1 === c2) { r1 = (r1 + 4) % 5; r2 = (r2 + 4) % 5; }
+    else { const tmp = c1; c1 = c2; c2 = tmp; }
+    out += sq[r1 * 5 + c1] + sq[r2 * 5 + c2];
+  }
+  return out;
+}
+function PlayfairCipher() {
+  const [mode, setMode] = useState("encode");
+  const [input, setInput] = useState("");
+  const [key, setKey] = useState("PLAYFAIR EXAMPLE");
+  const output = useMemo(() => !input ? "" : mode === "encode" ? playfairEncode(input, key) : playfairDecode(input, key), [input, key, mode]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Mode</Label><SelectInput value={mode} onChange={setMode} options={[{ value:"encode", label:"Encrypt" }, { value:"decode", label:"Decrypt" }]} /></div>
+        <div><Label>Keyword</Label><Input value={key} onChange={setKey} placeholder="PLAYFAIR EXAMPLE" /></div>
+      </Grid2>
+      <div><Label>{mode === "encode" ? "Plaintext" : "Ciphertext"}</Label><Textarea value={input} onChange={setInput} rows={5} placeholder={mode === "encode" ? "HIDE THE GOLD" : "BMODZBXDNABE"} /></div>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}><Label>{mode === "encode" ? "Ciphertext" : "Plaintext"}</Label><CopyBtn text={output} /></div>
+          <Result mono>{output}</Result>
+        </div>
+      )}
+      <Card><div style={{ fontSize:12, color:C.muted, lineHeight:1.7 }}>Letters are enciphered in <b style={{ color:C.text }}>pairs</b> on a 5×5 keyword square (I/J merged). Doubled letters are split with X, and odd length is padded with X.</div></Card>
+    </VStack>
+  );
+}
+
+// ── Columnar Transposition (irregular columns) ──
+function keyOrder(key) {
+  const letters = key.toUpperCase().replace(/[^A-Z0-9]/g, "").split("");
+  return letters.map((c, i) => [c, i]).sort((a, b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : a[1] - b[1]).map(x => x[1]);
+}
+function columnarEncode(text, key) {
+  const cols = key.toUpperCase().replace(/[^A-Z0-9]/g, "").length;
+  if (cols < 1) return text;
+  const t = text.toUpperCase().replace(/[^A-Z]/g, "");
+  const columns = Array.from({ length: cols }, () => []);
+  for (let i = 0; i < t.length; i++) columns[i % cols].push(t[i]);
+  return keyOrder(key).map(ci => columns[ci].join("")).join("");
+}
+function columnarDecode(cipher, key) {
+  const cols = key.toUpperCase().replace(/[^A-Z0-9]/g, "").length;
+  if (cols < 1) return cipher;
+  const t = cipher.toUpperCase().replace(/[^A-Z]/g, "");
+  const n = t.length, base = Math.floor(n / cols), rem = n % cols;
+  const colLen = i => base + (i < rem ? 1 : 0);
+  const columns = Array.from({ length: cols }, () => []);
+  let p = 0;
+  for (const ci of keyOrder(key)) { const len = colLen(ci); columns[ci] = t.slice(p, p + len).split(""); p += len; }
+  let out = ""; const rows = base + (rem > 0 ? 1 : 0);
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) if (r < columns[c].length) out += columns[c][r];
+  return out;
+}
+function ColumnarTransposition() {
+  const [mode, setMode] = useState("encode");
+  const [input, setInput] = useState("");
+  const [key, setKey] = useState("ZEBRAS");
+  const output = useMemo(() => !input ? "" : mode === "encode" ? columnarEncode(input, key) : columnarDecode(input, key), [input, key, mode]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Mode</Label><SelectInput value={mode} onChange={setMode} options={[{ value:"encode", label:"Encrypt" }, { value:"decode", label:"Decrypt" }]} /></div>
+        <div><Label>Keyword</Label><Input value={key} onChange={setKey} placeholder="ZEBRAS" /></div>
+      </Grid2>
+      <div><Label>{mode === "encode" ? "Plaintext" : "Ciphertext"}</Label><Textarea value={input} onChange={setInput} rows={5} placeholder={mode === "encode" ? "WEAREDISCOVEREDFLEEATONCE" : "EVLNACDTESEAROFODEECWIREE"} /></div>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}><Label>{mode === "encode" ? "Ciphertext" : "Plaintext"}</Label><CopyBtn text={output} /></div>
+          <Result mono>{output}</Result>
+        </div>
+      )}
+      <Card><div style={{ fontSize:12, color:C.muted, lineHeight:1.7 }}>Text is written in rows under the keyword, then columns are read in <b style={{ color:C.text }}>alphabetical key order</b>. Decoding the ciphertext with the same keyword restores the exact letters.</div></Card>
+    </VStack>
+  );
+}
+
+// ── Scytale Cipher (rod transposition) ──
+function scytaleEncode(text, cols) {
+  if (cols < 2) return text;
+  const columns = Array.from({ length: cols }, () => []);
+  for (let i = 0; i < text.length; i++) columns[i % cols].push(text[i]);
+  return columns.map(c => c.join("")).join("");
+}
+function scytaleDecode(cipher, cols) {
+  if (cols < 2) return cipher;
+  const n = cipher.length, base = Math.floor(n / cols), rem = n % cols;
+  const colLen = i => base + (i < rem ? 1 : 0);
+  const columns = []; let p = 0;
+  for (let i = 0; i < cols; i++) { columns.push(cipher.slice(p, p + colLen(i)).split("")); p += colLen(i); }
+  let out = ""; const rows = base + (rem > 0 ? 1 : 0);
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) if (r < columns[c].length) out += columns[c][r];
+  return out;
+}
+function ScytaleCipher() {
+  const [mode, setMode] = useState("encode");
+  const [input, setInput] = useState("");
+  const [cols, setCols] = useState(4);
+  const output = useMemo(() => !input ? "" : mode === "encode" ? scytaleEncode(input, cols) : scytaleDecode(input, cols), [input, cols, mode]);
+  return (
+    <VStack>
+      <div><Label>Mode</Label><div style={{ display:"flex", gap:8 }}>
+        <Btn variant={mode === "encode" ? "primary" : "secondary"} onClick={() => setMode("encode")}>Encrypt</Btn>
+        <Btn variant={mode === "decode" ? "primary" : "secondary"} onClick={() => setMode("decode")}>Decrypt</Btn>
+      </div></div>
+      <div>
+        <Label>Columns (rod circumference): {cols}</Label>
+        <input type="range" min="2" max="12" value={cols} onChange={e => setCols(parseInt(e.target.value))} style={{ width:"100%", accentColor:C.indigo }} />
+        <div style={{ display:"flex", justifyContent:"space-between", fontSize:11, color:C.muted, marginTop:4 }}><span>2</span><span>7</span><span>12</span></div>
+      </div>
+      <div><Label>{mode === "encode" ? "Plaintext" : "Ciphertext"}</Label><Textarea value={input} onChange={setInput} rows={5} placeholder={mode === "encode" ? "IAMHURTVERYBADLYHELP" : "IRYELAT DPMVBLHUEAYU..."} /></div>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}><Label>{mode === "encode" ? "Ciphertext" : "Plaintext"}</Label><CopyBtn text={output} /></div>
+          <Result mono>{output}</Result>
+          <div style={{ fontSize:11, color:C.muted, marginTop:6 }}>💡 Decoding with the same column count restores your exact original text, including spaces.</div>
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// ── Keyword Substitution Cipher (mixed alphabet) ──
+function keywordAlphabet(key) {
+  const seen = new Set(); let s = "";
+  for (const c of (key.toUpperCase().replace(/[^A-Z]/g, "") + "ABCDEFGHIJKLMNOPQRSTUVWXYZ")) {
+    if (!seen.has(c)) { seen.add(c); s += c; }
+  }
+  return s;
+}
+function keywordSubEncode(text, key) {
+  const cipher = keywordAlphabet(key);
+  return text.toUpperCase().replace(/[A-Z]/g, c => cipher[c.charCodeAt(0) - 65]);
+}
+function keywordSubDecode(text, key) {
+  const cipher = keywordAlphabet(key);
+  return text.toUpperCase().replace(/[A-Z]/g, c => String.fromCharCode(65 + cipher.indexOf(c)));
+}
+function KeywordSubstitution() {
+  const [mode, setMode] = useState("encode");
+  const [input, setInput] = useState("");
+  const [key, setKey] = useState("KEYWORD");
+  const cipher = useMemo(() => keywordAlphabet(key), [key]);
+  const output = useMemo(() => !input ? "" : mode === "encode" ? keywordSubEncode(input, key) : keywordSubDecode(input, key), [input, key, mode]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Mode</Label><SelectInput value={mode} onChange={setMode} options={[{ value:"encode", label:"Encrypt" }, { value:"decode", label:"Decrypt" }]} /></div>
+        <div><Label>Keyword</Label><Input value={key} onChange={setKey} placeholder="KEYWORD" /></div>
+      </Grid2>
+      <div>
+        <Label>Cipher Alphabet</Label>
+        <div style={{ background:"rgba(0,0,0,0.3)", border:`1px solid ${C.border}`, borderRadius:8, padding:"10px 12px", fontFamily:"'JetBrains Mono',monospace", fontSize:12, color:C.muted, lineHeight:1.7, wordBreak:"break-all" }}>
+          <div>ABCDEFGHIJKLMNOPQRSTUVWXYZ</div>
+          <div style={{ color:C.indigo }}>{cipher}</div>
+        </div>
+      </div>
+      <div><Label>Your Text</Label><Textarea value={input} onChange={setInput} rows={5} placeholder="THE QUICK BROWN FOX" /></div>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}><Label>{mode === "encode" ? "Encrypted" : "Decrypted"}</Label><CopyBtn text={output} /></div>
+          <Result mono={false}>{output}</Result>
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// ── Bifid Cipher (Polybius + fractionation) ──
+function bifidSquare(key) {
+  const seen = new Set(); let s = "";
+  for (const c of ((key || "").toUpperCase().replace(/J/g, "I").replace(/[^A-Z]/g, "") + "ABCDEFGHIKLMNOPQRSTUVWXYZ")) {
+    if (!seen.has(c)) { seen.add(c); s += c; }
+  }
+  return s;
+}
+function bifidEncode(text, key) {
+  const sq = bifidSquare(key);
+  const t = text.toUpperCase().replace(/J/g, "I").replace(/[^A-Z]/g, "");
+  const rows = [], cols = [];
+  for (const c of t) { const i = sq.indexOf(c); rows.push(Math.floor(i / 5)); cols.push(i % 5); }
+  const seq = rows.concat(cols);
+  let out = "";
+  for (let i = 0; i < t.length; i++) out += sq[seq[2 * i] * 5 + seq[2 * i + 1]];
+  return out;
+}
+function bifidDecode(text, key) {
+  const sq = bifidSquare(key);
+  const t = text.toUpperCase().replace(/J/g, "I").replace(/[^A-Z]/g, "");
+  const seq = [];
+  for (const c of t) { const i = sq.indexOf(c); seq.push(Math.floor(i / 5)); seq.push(i % 5); }
+  const n = t.length, rows = seq.slice(0, n), cols = seq.slice(n);
+  let out = "";
+  for (let i = 0; i < n; i++) out += sq[rows[i] * 5 + cols[i]];
+  return out;
+}
+function BifidCipher() {
+  const [mode, setMode] = useState("encode");
+  const [input, setInput] = useState("");
+  const [key, setKey] = useState("");
+  const output = useMemo(() => !input ? "" : mode === "encode" ? bifidEncode(input, key) : bifidDecode(input, key), [input, key, mode]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Mode</Label><SelectInput value={mode} onChange={setMode} options={[{ value:"encode", label:"Encrypt" }, { value:"decode", label:"Decrypt" }]} /></div>
+        <div><Label>Keyword (optional)</Label><Input value={key} onChange={setKey} placeholder="blank = plain A–Z square" /></div>
+      </Grid2>
+      <div><Label>{mode === "encode" ? "Plaintext" : "Ciphertext"}</Label><Textarea value={input} onChange={setInput} rows={5} placeholder={mode === "encode" ? "DEFENDTHEEASTWALL" : "FFYHMKHYCPLIASH..."} /></div>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}><Label>{mode === "encode" ? "Ciphertext" : "Plaintext"}</Label><CopyBtn text={output} /></div>
+          <Result mono>{output}</Result>
+        </div>
+      )}
+      <Card><div style={{ fontSize:12, color:C.muted, lineHeight:1.7 }}>Each letter's <b style={{ color:C.text }}>row and column</b> are separated, all rows written before all columns, then re-paired — spreading each letter across the message (I/J merged).</div></Card>
+    </VStack>
+  );
+}
+
+// ── Four-Square Cipher (two keyword squares) ──
+const FS_PLAIN = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
+function fsSquare(key) {
+  const seen = new Set(); let s = "";
+  for (const c of ((key || "").toUpperCase().replace(/J/g, "I").replace(/[^A-Z]/g, "") + "ABCDEFGHIKLMNOPQRSTUVWXYZ")) {
+    if (!seen.has(c)) { seen.add(c); s += c; }
+  }
+  return s;
+}
+function fourSquareEncode(text, k1, k2) {
+  const tr = fsSquare(k1), bl = fsSquare(k2), pl = FS_PLAIN;
+  let t = text.toUpperCase().replace(/J/g, "I").replace(/[^A-Z]/g, "");
+  if (t.length % 2) t += "X";
+  let out = "";
+  for (let i = 0; i < t.length; i += 2) {
+    const a = pl.indexOf(t[i]), b = pl.indexOf(t[i + 1]);
+    out += tr[Math.floor(a / 5) * 5 + (b % 5)] + bl[Math.floor(b / 5) * 5 + (a % 5)];
+  }
+  return out;
+}
+function fourSquareDecode(text, k1, k2) {
+  const tr = fsSquare(k1), bl = fsSquare(k2), pl = FS_PLAIN;
+  const t = text.toUpperCase().replace(/J/g, "I").replace(/[^A-Z]/g, "");
+  let out = "";
+  for (let i = 0; i + 1 < t.length; i += 2) {
+    const a = tr.indexOf(t[i]), b = bl.indexOf(t[i + 1]);
+    out += pl[Math.floor(a / 5) * 5 + (b % 5)] + pl[Math.floor(b / 5) * 5 + (a % 5)];
+  }
+  return out;
+}
+function FourSquareCipher() {
+  const [mode, setMode] = useState("encode");
+  const [input, setInput] = useState("");
+  const [k1, setK1] = useState("EXAMPLE");
+  const [k2, setK2] = useState("KEYWORD");
+  const output = useMemo(() => !input ? "" : mode === "encode" ? fourSquareEncode(input, k1, k2) : fourSquareDecode(input, k1, k2), [input, k1, k2, mode]);
+  return (
+    <VStack>
+      <div><Label>Mode</Label><SelectInput value={mode} onChange={setMode} options={[{ value:"encode", label:"Encrypt" }, { value:"decode", label:"Decrypt" }]} /></div>
+      <Grid2>
+        <div><Label>Keyword 1 (top-right)</Label><Input value={k1} onChange={setK1} placeholder="EXAMPLE" /></div>
+        <div><Label>Keyword 2 (bottom-left)</Label><Input value={k2} onChange={setK2} placeholder="KEYWORD" /></div>
+      </Grid2>
+      <div><Label>{mode === "encode" ? "Plaintext" : "Ciphertext"}</Label><Textarea value={input} onChange={setInput} rows={5} placeholder={mode === "encode" ? "HELP ME OBIWAN" : "..."} /></div>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}><Label>{mode === "encode" ? "Ciphertext" : "Plaintext"}</Label><CopyBtn text={output} /></div>
+          <Result mono>{output}</Result>
+        </div>
+      )}
+      <Card><div style={{ fontSize:12, color:C.muted, lineHeight:1.7 }}>Letter pairs are found in two plain squares; ciphertext is read from the two <b style={{ color:C.text }}>keyword squares</b> at the opposite corners. No filler between doubles is needed (I/J merged).</div></Card>
+    </VStack>
+  );
+}
+
 const TOOL_COMPONENTS = {
   "morse-code": MorseCode,
   "nato-alphabet": NatoAlphabet,
@@ -1575,6 +2047,14 @@ const TOOL_COMPONENTS = {
   "tap-code": TapCode,
   "beaufort-cipher": BeaufortCipher,
   "gronsfeld-cipher": GronsfeldCipher,
+  "vigenere-cipher": VigenereCipher,
+  "autokey-vigenere": AutokeyVigenere,
+  "playfair-cipher": PlayfairCipher,
+  "columnar-transposition-cipher": ColumnarTransposition,
+  "scytale-cipher": ScytaleCipher,
+  "keyword-substitution-cipher": KeywordSubstitution,
+  "bifid-cipher": BifidCipher,
+  "four-square-cipher": FourSquareCipher,
 };
 
 function Breadcrumb({ tool, cat }) {

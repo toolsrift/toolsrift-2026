@@ -71,7 +71,7 @@ export default function SiteFooter({ accent = '#3B82F6', fonts }) {
               <img src="/logo.svg" alt="ToolsRift" style={{ height: 28 }} />
             </a>
             <p style={{ color: C.muted, fontSize: 13, lineHeight: 1.65, margin: 0, maxWidth: 280 }}>
-              918+ free online tools across 23 categories. Runs in your browser. No sign-up.
+              947+ free online tools across 23 categories. Runs in your browser. No sign-up.
             </p>
           </div>
 
