@@ -239,7 +239,20 @@ const TOOLS = [
   { id:"exif-reader", cat:"exif", name:"EXIF Reader", desc:"Full EXIF data viewer from image", icon:"🧾", free:true },
   { id:"exif-remover", cat:"exif", name:"EXIF Remover", desc:"Strip all metadata from image", icon:"🧽", free:true },
   { id:"dpi-checker", cat:"exif", name:"DPI Checker", desc:"Check image DPI/PPI", icon:"🖼️", free:true },
-  { id:"color-space", cat:"exif", name:"Color Space Converter", desc:"Convert between RGB and simulated CMYK", icon:"🎨", free:true }
+  { id:"color-space", cat:"exif", name:"Color Space Converter", desc:"Convert between RGB and simulated CMYK", icon:"🎨", free:true },
+  { id:"image-threshold", cat:"filters", name:"Image Threshold", desc:"Binarize an image to pure black and white by luma threshold", icon:"◐", free:true },
+  { id:"image-posterize", cat:"filters", name:"Image Posterize", desc:"Reduce colors to a set number of levels per channel", icon:"🎚️", free:true },
+  { id:"image-contrast", cat:"filters", name:"Image Contrast", desc:"Increase or decrease image contrast precisely", icon:"◑", free:true },
+  { id:"image-gamma", cat:"filters", name:"Image Gamma Correction", desc:"Adjust midtone brightness with a gamma curve", icon:"📈", free:true },
+  { id:"image-saturation", cat:"filters", name:"Image Saturation", desc:"Boost or mute image color saturation", icon:"🌈", free:true },
+  { id:"image-hue-rotate", cat:"filters", name:"Image Hue Rotate", desc:"Shift all image colors around the hue wheel", icon:"🎨", free:true },
+  { id:"image-tint", cat:"filters", name:"Image Tint", desc:"Multiply an image by a color for a color-wash effect", icon:"🖌️", free:true },
+  { id:"image-duotone", cat:"filters", name:"Image Duotone", desc:"Map image brightness onto a two-color gradient", icon:"🟣", free:true },
+  { id:"image-color-replace", cat:"filters", name:"Image Color Replace", desc:"Swap one color for another within a tolerance", icon:"🔁", free:true },
+  { id:"image-round-corners", cat:"tools", name:"Round Corners", desc:"Add rounded corners with transparent background", icon:"⬜", free:true },
+  { id:"image-circle-crop", cat:"tools", name:"Circle Crop", desc:"Crop an image into a transparent circle", icon:"⭕", free:true },
+  { id:"image-padding", cat:"basic", name:"Image Padding", desc:"Add a colored margin around an image", icon:"🔲", free:true },
+  { id:"image-ascii-art", cat:"analysis", name:"ASCII Art Generator", desc:"Convert an image into copyable ASCII text art", icon:"🔠", free:true }
 ];
 
 const TOOL_META = TOOLS.reduce((acc, t) => {
@@ -612,7 +625,7 @@ function NoiseTexture() {
 
 function Checkerboard() {
   const [out, setOut] = useState(null); const [size, setSize] = useState(50);
-  const run = () => { const cvs=document.createElement('canvas'); const ctx=cvs.getContext('2d'); cvs.width=500; cvs.height=500; for(let y=0;y<500/size;y++){ for(let x=0;x<500/size;x++){ ctx.fillStyle=(x+y)%2===0?"#fff":"#ccc"; ctx.fillRect(x*size,y*size,size,size); } } setOut({dataUrl:cvs.toDataURL(),w:500,h:500}); };
+  const run = () => { const sq=Math.max(1,Math.min(500,parseInt(size,10)||50)); const cvs=document.createElement('canvas'); const ctx=cvs.getContext('2d'); cvs.width=500; cvs.height=500; for(let y=0;y<500/sq;y++){ for(let x=0;x<500/sq;x++){ ctx.fillStyle=(x+y)%2===0?"#fff":"#ccc"; ctx.fillRect(x*sq,y*sq,sq,sq); } } setOut({dataUrl:cvs.toDataURL(),w:500,h:500}); };
   return <Lab isGenerator onProcess={run} output={out}><Label>Square Size</Label><Input type="number" value={size} onChange={setSize}/></Lab>;
 }
 
@@ -1086,6 +1099,175 @@ function ColorSpace() {
   return <Lab file={file} setFile={setFile} onProcess={run} output={out}><Label>Simulates CMYK extraction visually</Label></Lab>;
 }
 
+// ─── New filter/utility tools (verified per-pixel math) ───
+
+function ImageThreshold() {
+  const [file, setFile] = useState(null); const [out, setOut] = useState(null); const [t, setT] = useState(128);
+  const process = useCanvasProcess();
+  const run = async () => setOut(await process(file, (img, cvs, ctx) => {
+    cvs.width=img.width; cvs.height=img.height; ctx.drawImage(img,0,0);
+    const id=ctx.getImageData(0,0,cvs.width,cvs.height); const d=id.data; const th=parseInt(t)||0;
+    for(let i=0;i<d.length;i+=4){ const luma=d[i]*0.299+d[i+1]*0.587+d[i+2]*0.114; const v=luma>=th?255:0; d[i]=v; d[i+1]=v; d[i+2]=v; }
+    ctx.putImageData(id,0,0);
+  }));
+  return <Lab file={file} setFile={setFile} onProcess={run} output={out}><Label>Threshold (0 - 255)</Label><Input type="number" value={t} onChange={setT}/></Lab>;
+}
+
+function ImagePosterize() {
+  const [file, setFile] = useState(null); const [out, setOut] = useState(null); const [levels, setLevels] = useState(4);
+  const process = useCanvasProcess();
+  const run = async () => setOut(await process(file, (img, cvs, ctx) => {
+    cvs.width=img.width; cvs.height=img.height; ctx.drawImage(img,0,0);
+    const n=Math.max(2, Math.min(64, parseInt(levels)||2)); const step=255/(n-1);
+    const id=ctx.getImageData(0,0,cvs.width,cvs.height); const d=id.data;
+    for(let i=0;i<d.length;i+=4){ for(let c=0;c<3;c++){ d[i+c]=Math.round(Math.round(d[i+c]/step)*step); } }
+    ctx.putImageData(id,0,0);
+  }));
+  return <Lab file={file} setFile={setFile} onProcess={run} output={out}><Label>Levels per channel (2 - 64)</Label><Input type="number" value={levels} onChange={setLevels}/></Lab>;
+}
+
+function ImageContrast() {
+  const [file, setFile] = useState(null); const [out, setOut] = useState(null); const [c, setC] = useState(50);
+  const process = useCanvasProcess();
+  const run = async () => setOut(await process(file, (img, cvs, ctx) => {
+    cvs.width=img.width; cvs.height=img.height; ctx.drawImage(img,0,0);
+    let amt=parseInt(c)||0; if(amt<-255)amt=-255; if(amt>255)amt=255;
+    const f=(259*(amt+255))/(255*(259-amt));
+    const id=ctx.getImageData(0,0,cvs.width,cvs.height); const d=id.data;
+    for(let i=0;i<d.length;i+=4){ for(let ch=0;ch<3;ch++){ let v=Math.round(f*(d[i+ch]-128)+128); d[i+ch]=v<0?0:v>255?255:v; } }
+    ctx.putImageData(id,0,0);
+  }));
+  return <Lab file={file} setFile={setFile} onProcess={run} output={out}><Label>Contrast (-255 to 255)</Label><Input type="number" value={c} onChange={setC}/></Lab>;
+}
+
+function ImageGamma() {
+  const [file, setFile] = useState(null); const [out, setOut] = useState(null); const [g, setG] = useState(1.5);
+  const process = useCanvasProcess();
+  const run = async () => setOut(await process(file, (img, cvs, ctx) => {
+    cvs.width=img.width; cvs.height=img.height; ctx.drawImage(img,0,0);
+    let gm=parseFloat(g); if(!(gm>0))gm=1;
+    const lut=new Uint8ClampedArray(256); for(let v=0;v<256;v++){ lut[v]=Math.round(255*Math.pow(v/255, 1/gm)); }
+    const id=ctx.getImageData(0,0,cvs.width,cvs.height); const d=id.data;
+    for(let i=0;i<d.length;i+=4){ d[i]=lut[d[i]]; d[i+1]=lut[d[i+1]]; d[i+2]=lut[d[i+2]]; }
+    ctx.putImageData(id,0,0);
+  }));
+  return <Lab file={file} setFile={setFile} onProcess={run} output={out}><Label>Gamma (0.1 - 5.0)</Label><Input type="number" value={g} onChange={setG}/></Lab>;
+}
+
+const ImageSaturation = FilterFactory(v => `saturate(${v}%)`, 150, "Saturation %");
+const ImageHueRotate = FilterFactory(v => `hue-rotate(${v}deg)`, 90, "Hue rotation (deg)", "range", 0, 360);
+
+function ImageTint() {
+  const [file, setFile] = useState(null); const [out, setOut] = useState(null); const [col, setCol] = useState("#F43F5E");
+  const process = useCanvasProcess();
+  const run = async () => setOut(await process(file, (img, cvs, ctx) => {
+    cvs.width=img.width; cvs.height=img.height; ctx.drawImage(img,0,0);
+    const tr=parseInt(col.slice(1,3),16), tg=parseInt(col.slice(3,5),16), tb=parseInt(col.slice(5,7),16);
+    const id=ctx.getImageData(0,0,cvs.width,cvs.height); const d=id.data;
+    for(let i=0;i<d.length;i+=4){ d[i]=Math.round(d[i]*tr/255); d[i+1]=Math.round(d[i+1]*tg/255); d[i+2]=Math.round(d[i+2]*tb/255); }
+    ctx.putImageData(id,0,0);
+  }));
+  return <Lab file={file} setFile={setFile} onProcess={run} output={out}><Label>Tint Color</Label><Input type="color" value={col} onChange={setCol}/></Lab>;
+}
+
+function ImageDuotone() {
+  const [file, setFile] = useState(null); const [out, setOut] = useState(null);
+  const [sh, setSh] = useState("#1E1B4B"); const [hi, setHi] = useState("#FBCFE8");
+  const process = useCanvasProcess();
+  const run = async () => setOut(await process(file, (img, cvs, ctx) => {
+    cvs.width=img.width; cvs.height=img.height; ctx.drawImage(img,0,0);
+    const s=[parseInt(sh.slice(1,3),16),parseInt(sh.slice(3,5),16),parseInt(sh.slice(5,7),16)];
+    const h=[parseInt(hi.slice(1,3),16),parseInt(hi.slice(3,5),16),parseInt(hi.slice(5,7),16)];
+    const id=ctx.getImageData(0,0,cvs.width,cvs.height); const d=id.data;
+    for(let i=0;i<d.length;i+=4){ const t=(d[i]*0.299+d[i+1]*0.587+d[i+2]*0.114)/255; d[i]=Math.round(s[0]+t*(h[0]-s[0])); d[i+1]=Math.round(s[1]+t*(h[1]-s[1])); d[i+2]=Math.round(s[2]+t*(h[2]-s[2])); }
+    ctx.putImageData(id,0,0);
+  }));
+  return <Lab file={file} setFile={setFile} onProcess={run} output={out}>
+    <Grid2><VStack><Label>Shadow Color</Label><Input type="color" value={sh} onChange={setSh}/></VStack><VStack><Label>Highlight Color</Label><Input type="color" value={hi} onChange={setHi}/></VStack></Grid2>
+  </Lab>;
+}
+
+function ImageColorReplace() {
+  const [file, setFile] = useState(null); const [out, setOut] = useState(null);
+  const [from, setFrom] = useState("#FFFFFF"); const [to, setTo] = useState("#F43F5E"); const [tol, setTol] = useState(40);
+  const process = useCanvasProcess();
+  const run = async () => setOut(await process(file, (img, cvs, ctx) => {
+    cvs.width=img.width; cvs.height=img.height; ctx.drawImage(img,0,0);
+    const fr=[parseInt(from.slice(1,3),16),parseInt(from.slice(3,5),16),parseInt(from.slice(5,7),16)];
+    const tt=[parseInt(to.slice(1,3),16),parseInt(to.slice(3,5),16),parseInt(to.slice(5,7),16)];
+    const tolN=parseFloat(tol)||0;
+    const id=ctx.getImageData(0,0,cvs.width,cvs.height); const d=id.data;
+    for(let i=0;i<d.length;i+=4){ const dist=Math.sqrt((d[i]-fr[0])**2+(d[i+1]-fr[1])**2+(d[i+2]-fr[2])**2); if(dist<=tolN){ d[i]=tt[0]; d[i+1]=tt[1]; d[i+2]=tt[2]; } }
+    ctx.putImageData(id,0,0);
+  }));
+  return <Lab file={file} setFile={setFile} onProcess={run} output={out}>
+    <Grid2><VStack><Label>From Color</Label><Input type="color" value={from} onChange={setFrom}/></VStack><VStack><Label>To Color</Label><Input type="color" value={to} onChange={setTo}/></VStack></Grid2>
+    <Label>Tolerance (0 - 441)</Label><Input type="number" value={tol} onChange={setTol}/>
+  </Lab>;
+}
+
+function ImageRoundCorners() {
+  const [file, setFile] = useState(null); const [out, setOut] = useState(null); const [r, setR] = useState(40);
+  const process = useCanvasProcess();
+  const run = async () => setOut(await process(file, (img, cvs, ctx) => {
+    cvs.width=img.width; cvs.height=img.height;
+    const rad=Math.min(parseInt(r)||0, cvs.width/2, cvs.height/2); const w=cvs.width, h=cvs.height;
+    ctx.beginPath();
+    ctx.moveTo(rad,0); ctx.lineTo(w-rad,0); ctx.arcTo(w,0,w,rad,rad);
+    ctx.lineTo(w,h-rad); ctx.arcTo(w,h,w-rad,h,rad);
+    ctx.lineTo(rad,h); ctx.arcTo(0,h,0,h-rad,rad);
+    ctx.lineTo(0,rad); ctx.arcTo(0,0,rad,0,rad);
+    ctx.closePath(); ctx.clip(); ctx.drawImage(img,0,0);
+  }));
+  return <Lab file={file} setFile={setFile} onProcess={run} output={out}><Label>Corner radius (px)</Label><Input type="number" value={r} onChange={setR}/></Lab>;
+}
+
+function ImageCircleCrop() {
+  const [file, setFile] = useState(null); const [out, setOut] = useState(null);
+  const process = useCanvasProcess();
+  const run = async () => setOut(await process(file, (img, cvs, ctx) => {
+    const size=Math.min(img.width, img.height); cvs.width=size; cvs.height=size;
+    ctx.beginPath(); ctx.arc(size/2, size/2, size/2, 0, Math.PI*2); ctx.closePath(); ctx.clip();
+    ctx.drawImage(img, (size-img.width)/2, (size-img.height)/2);
+  }));
+  return <Lab file={file} setFile={setFile} onProcess={run} output={out}><Label>Crops center square into a transparent circle</Label></Lab>;
+}
+
+function ImagePadding() {
+  const [file, setFile] = useState(null); const [out, setOut] = useState(null); const [pad, setPad] = useState(40); const [col, setCol] = useState("#FFFFFF");
+  const process = useCanvasProcess();
+  const run = async () => setOut(await process(file, (img, cvs, ctx) => {
+    const p=Math.max(0, parseInt(pad)||0); cvs.width=img.width+p*2; cvs.height=img.height+p*2;
+    ctx.fillStyle=col; ctx.fillRect(0,0,cvs.width,cvs.height); ctx.drawImage(img,p,p);
+  }));
+  return <Lab file={file} setFile={setFile} onProcess={run} output={out}>
+    <Grid2><VStack><Label>Padding (px)</Label><Input type="number" value={pad} onChange={setPad}/></VStack><VStack><Label>Background</Label><Input type="color" value={col} onChange={setCol}/></VStack></Grid2>
+  </Lab>;
+}
+
+const ASCII_RAMP = "@%#*+=-:. ";
+function ImageAsciiArt() {
+  const [file, setFile] = useState(null); const [txt, setTxt] = useState(""); const [cols, setCols] = useState(80);
+  const process = useCanvasProcess();
+  const run = async () => {
+    if(!file) return;
+    await process(file, (img, cvs, ctx) => {
+      const w=Math.max(20, Math.min(200, parseInt(cols)||80));
+      const h=Math.max(1, Math.round(w * (img.height/img.width) * 0.5)); // chars are ~2x tall
+      cvs.width=w; cvs.height=h; ctx.drawImage(img,0,0,w,h);
+      const d=ctx.getImageData(0,0,w,h).data; let s="";
+      for(let y=0;y<h;y++){ for(let x=0;x<w;x++){ const i=(y*w+x)*4; const luma=d[i]*0.299+d[i+1]*0.587+d[i+2]*0.114; const idx=Math.floor((luma/255)*(ASCII_RAMP.length-1)); s+=ASCII_RAMP[idx]; } s+="\n"; }
+      setTxt(s);
+    });
+  };
+  return <Lab file={file} setFile={setFile} onProcess={run} customOutput={ txt ? (
+    <VStack>
+      <pre style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:5, lineHeight:1, color:C.text, background:"#000", padding:8, borderRadius:6, overflow:"auto", maxHeight:360, whiteSpace:"pre" }}>{txt}</pre>
+      <CopyBtn text={txt} />
+    </VStack>
+  ) : null }><Label>Output width (chars, 20 - 200)</Label><Input type="number" value={cols} onChange={setCols}/></Lab>;
+}
+
 const TOOL_COMPONENTS = {
   "image-resizer": ImageResizer, "image-cropper": ImageCropper, "image-compressor": ImageCompressor, "image-converter": ImageConverter, "image-rotator": ImageRotator, "image-flipper": ImageFlipper, "image-thumbnail": ImageThumbnail,
   "image-grayscale": ImageGrayscale, "image-brightness": ImageBrightness, "image-blur": ImageBlur, "image-sharpen": ImageSharpen, "image-invert": ImageInvert, "image-sepia": ImageSepia, "image-pixelate": ImagePixelate, "image-emboss": ImageEmboss, "image-vignette": ImageVignette,
@@ -1093,7 +1275,9 @@ const TOOL_COMPONENTS = {
   "image-color-picker": ImageColorPicker, "image-dominant-colors": ImageDominantColors, "image-metadata": ImageMetadata, "image-info": ImageInfo, "image-histogram": ImageHistogram,
   "placeholder-image": PlaceholderImage, "gradient-image": GradientImage, "solid-color-image": SolidColorImage, "noise-texture": NoiseTexture, "checkerboard": Checkerboard, "favicon-generator": FaviconGenerator, "og-image-preview": OgImagePreview, "qr-code-generator": QrCodeGenerator, "barcode-generator": BarcodeGenerator, "avatar-generator": AvatarGenerator,
   "image-base64": ImageBase64, "base64-to-image": Base64ToImage, "svg-to-png": SvgToPng, "image-to-svg": ImageToSvg, "sprite-sheet": SpriteSheet, "image-splitter": ImageSplitter, "image-collage": ImageCollage, "pdf-to-image": PdfToImage, "image-to-pdf": ImageToPdf, "screenshot-taker": ScreenshotTaker,
-  "exif-reader": ExifReader, "exif-remover": ExifRemover, "dpi-checker": DpiChecker, "color-space": ColorSpace
+  "exif-reader": ExifReader, "exif-remover": ExifRemover, "dpi-checker": DpiChecker, "color-space": ColorSpace,
+  "image-threshold": ImageThreshold, "image-posterize": ImagePosterize, "image-contrast": ImageContrast, "image-gamma": ImageGamma, "image-saturation": ImageSaturation, "image-hue-rotate": ImageHueRotate, "image-tint": ImageTint, "image-duotone": ImageDuotone, "image-color-replace": ImageColorReplace,
+  "image-round-corners": ImageRoundCorners, "image-circle-crop": ImageCircleCrop, "image-padding": ImagePadding, "image-ascii-art": ImageAsciiArt
 };
 
 function Breadcrumb({ tool, cat }) {

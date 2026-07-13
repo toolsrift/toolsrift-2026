@@ -179,8 +179,13 @@ function InvestmentReturnCalc() {
     }
     const totalInvested = P + add * y;
     const gain = bal - totalInvested;
-    const cagr = y > 0 && P > 0 ? (Math.pow(bal / P, 1 / y) - 1) * 100 : 0;
-    return { fv: bal, gain, cagr, rows };
+    const hasContrib = add > 0;
+    // With annual contributions, bal reflects deposits too, so (bal/P) is NOT a
+    // true annualized return. Only report CAGR when there are no contributions;
+    // otherwise report total growth over the invested amount.
+    const cagr = !hasContrib && y > 0 && P > 0 ? (Math.pow(bal / P, 1 / y) - 1) * 100 : 0;
+    const totalGrowth = totalInvested > 0 ? (bal / totalInvested - 1) * 100 : 0;
+    return { fv: bal, gain, cagr, totalGrowth, hasContrib, rows };
   }, [principal, rate, years, annualAdd]);
 
   return (
@@ -196,7 +201,9 @@ function InvestmentReturnCalc() {
       <Grid3>
         <BigResult value={curr(out.fv)} label="Final Value" />
         <BigResult value={curr(out.gain)} label="Total Gain" />
-        <BigResult value={pct(out.cagr)} label="CAGR" />
+        {out.hasContrib
+          ? <BigResult value={pct(out.totalGrowth)} label="Total Growth" />
+          : <BigResult value={pct(out.cagr)} label="CAGR" />}
       </Grid3>
       <DataTable columns={["Year", "Start", "Interest", "Contribution", "End Balance"]} rows={out.rows} />
     </VStack>
@@ -210,7 +217,7 @@ function RdCalc() {
 
   const out = useMemo(() => {
     const P = n(monthly), r = n(rate) / 100 / 12, m = Math.max(1, Math.floor(n(years) * 12));
-    const fv = P * (((Math.pow(1 + r, m) - 1) / r) * (1 + r));
+    const fv = r === 0 ? P * m : P * (((Math.pow(1 + r, m) - 1) / r) * (1 + r));
     const total = P * m;
     const interest = fv - total;
     let bal = 0;
@@ -648,6 +655,19 @@ const TOOLS = [
   { id: "inflation-calc", cat: "finance", name: "Inflation Calculator", icon: "📉", desc: "Future cost of expenses and how inflation erodes the value of money.", free: true },
   { id: "simple-vs-compound-calc", cat: "finance", name: "Simple vs Compound Interest", icon: "⚖️", desc: "Side-by-side comparison showing the power of compounding year by year.", free: true },
   { id: "loan-prepayment-calc", cat: "finance", name: "Loan Prepayment Calculator", icon: "✂️", desc: "Interest saved and tenure reduced by paying extra EMI every month.", free: true },
+  // ── Investment & Business Finance Batch (W3) ──
+  { id: "rule-of-72-calc", cat: "finance", name: "Rule of 72 Calculator", icon: "⏳", desc: "Estimate how many years it takes for money to double at a given interest rate, with the exact compounding answer for comparison.", free: true },
+  { id: "npv-calc", cat: "finance", name: "NPV Calculator", icon: "💹", desc: "Net Present Value of a project by discounting a series of yearly cash flows at your required rate of return.", free: true },
+  { id: "irr-calc", cat: "finance", name: "IRR Calculator", icon: "🔁", desc: "Internal Rate of Return of an investment's cash flows, solved numerically so NPV equals zero.", free: true },
+  { id: "payback-period-calc", cat: "finance", name: "Payback Period Calculator", icon: "🕗", desc: "How long an investment takes to recover its initial cost from annual cash inflows, in years and months.", free: true },
+  { id: "dividend-yield-calc", cat: "finance", name: "Dividend Yield Calculator", icon: "💰", desc: "Annual dividend yield of a stock from its dividend per share and current market price, plus yearly income on your holding.", free: true },
+  { id: "pe-ratio-calc", cat: "finance", name: "P/E Ratio Calculator", icon: "📊", desc: "Price-to-earnings ratio and earnings yield of a stock from its share price and earnings per share.", free: true },
+  { id: "dividend-payout-ratio-calc", cat: "finance", name: "Dividend Payout Ratio Calculator", icon: "🥧", desc: "Share of net income paid to shareholders as dividends, with the retention ratio kept for growth.", free: true },
+  { id: "salary-hike-calc", cat: "finance", name: "Salary Hike Calculator", icon: "📈", desc: "New salary after a percentage raise, or the hike percentage between an old and new salary, with the increment amount.", free: true },
+  { id: "overtime-pay-calc", cat: "finance", name: "Overtime Pay Calculator", icon: "🕔", desc: "Total pay from regular hours plus overtime hours at a chosen overtime multiplier such as time-and-a-half or double time.", free: true },
+  { id: "currency-denomination-calc", cat: "finance", name: "Cash Denomination Breakdown", icon: "🪙", desc: "Break any amount into the fewest currency notes and coins for INR or USD, ideal for cash handling and petty cash.", free: true },
+  { id: "effective-annual-rate-calc", cat: "finance", name: "Effective Annual Rate Calculator", icon: "🔂", desc: "Effective annual rate (APY) from a nominal interest rate and its compounding frequency, including continuous compounding.", free: true },
+  { id: "annualized-return-calc", cat: "finance", name: "Annualized Return Calculator", icon: "📆", desc: "Holding period return and annualized return of an investment from its buy value, sell value, income and days held.", free: true },
 
   { id: "tdee-calc", cat: "health", name: "TDEE Calculator", icon: "🔥", desc: "Daily energy expenditure by activity.", free: true },
   { id: "macro-calc", cat: "health", name: "Macro Calculator", icon: "🥗", desc: "Protein/carbs/fats from calorie goal.", free: true },
@@ -1971,10 +1991,11 @@ function HomeLoanEmiCalc() {
     const P = n(amount), r = n(rate) / 100 / 12, m = Math.max(1, Math.round(n(years) * 12));
     const emi = r > 0 ? (P * r * Math.pow(1 + r, m)) / (Math.pow(1 + r, m) - 1) : P / m;
     const total = emi * m, interest = total - P;
-    let bal = P; const rows = [];
+    let bal = P; const rows = []; let princYr = 0, intrYr = 0;
     for (let i = 1; i <= m; i++) {
       const intr = bal * r, princ = emi - intr; bal = Math.max(0, bal - princ);
-      if (i % 12 === 0 || i === m) rows.push([Math.ceil(i / 12), inr(princ * 12), inr(intr * 12), inr(bal)]);
+      princYr += princ; intrYr += intr;
+      if (i % 12 === 0 || i === m) { rows.push([Math.ceil(i / 12), inr(princYr), inr(intrYr), inr(bal)]); princYr = 0; intrYr = 0; }
     }
     return { emi, total, interest, rows };
   }, [amount, rate, years]);
@@ -2456,6 +2477,430 @@ Object.assign(TOOL_COMPONENTS, {
   "loan-prepayment-calc": LoanPrepaymentCalc,
 });
 // ───── END INDIA FINANCE BATCH ───────────────────────────────────────────────
+
+// ───── INVESTMENT & BUSINESS FINANCE BATCH (W3) — 12 calculators ─────────────
+
+// Parse a comma/newline separated list of numbers, keeping zeros and negatives.
+function parseNums(s) {
+  return String(s).split(/[,\n]+/).map((x) => x.trim()).filter((x) => x !== "").map((x) => parseFloat(x)).filter((x) => Number.isFinite(x));
+}
+
+function RuleOf72Calc() {
+  const [rate, setRate] = useState("8");
+
+  const out = useMemo(() => {
+    const r = n(rate);
+    const approx = r > 0 ? 72 / r : Infinity;
+    const exact = r > 0 ? Math.log(2) / Math.log(1 + r / 100) : Infinity;
+    const triple = r > 0 ? Math.log(3) / Math.log(1 + r / 100) : Infinity;
+    const rows = [
+      ["Interest Rate", pct(r)],
+      ["Rule of 72 (approx.)", Number.isFinite(approx) ? `${round(approx, 2)} years` : "—"],
+      ["Exact Doubling Time", Number.isFinite(exact) ? `${round(exact, 2)} years` : "—"],
+      ["Time to Triple", Number.isFinite(triple) ? `${round(triple, 2)} years` : "—"],
+    ];
+    return { approx, exact, rows };
+  }, [rate]);
+
+  return (
+    <VStack>
+      <div><Label>Annual Interest Rate %</Label><Input value={rate} onChange={setRate} /></div>
+      <Grid2>
+        <BigResult value={Number.isFinite(out.approx) ? `${round(out.approx, 2)} yr` : "—"} label="Doubling Time (Rule of 72)" />
+        <BigResult value={Number.isFinite(out.exact) ? `${round(out.exact, 2)} yr` : "—"} label="Exact Doubling Time" />
+      </Grid2>
+      <DataTable columns={["Metric", "Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function NpvCalc() {
+  const [rate, setRate] = useState("10");
+  const [flows, setFlows] = useState("-1000, 500, 500, 500");
+
+  const out = useMemo(() => {
+    const r = n(rate) / 100;
+    const cfs = parseNums(flows);
+    let npv = 0;
+    const rows = [];
+    cfs.forEach((cf, t) => {
+      const pv = cf / Math.pow(1 + r, t);
+      npv += pv;
+      rows.push([t, curr(cf), round(1 / Math.pow(1 + r, t), 6), curr(pv)]);
+    });
+    const sumIn = cfs.slice(1).reduce((s, x) => s + x, 0);
+    return { npv, verdict: cfs.length < 2 ? "—" : (npv >= 0 ? "Accept — value-adding" : "Reject — destroys value"), rows, sumIn };
+  }, [rate, flows]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Discount Rate % (p.a.)</Label><Input value={rate} onChange={setRate} /></div>
+        <div><Label>Cash Flows (t=0 first)</Label><Textarea value={flows} onChange={setFlows} rows={4} /></div>
+      </Grid2>
+      <BigResult value={curr(out.npv)} label="Net Present Value" sub={out.verdict} />
+      <DataTable columns={["Year", "Cash Flow", "Discount Factor", "Present Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function IrrCalc() {
+  const [flows, setFlows] = useState("-1000, 500, 500, 500");
+
+  const out = useMemo(() => {
+    const cfs = parseNums(flows);
+    const f = (r) => cfs.reduce((s, cf, t) => s + cf / Math.pow(1 + r, t), 0);
+    let irr = null;
+    if (cfs.length >= 2) {
+      let lo = -0.9999, hi = 10, flo = f(lo), fhi = f(hi);
+      if (flo * fhi <= 0) {
+        for (let i = 0; i < 200; i++) {
+          const mid = (lo + hi) / 2, fm = f(mid);
+          if (Math.abs(fm) < 1e-9) { irr = mid; break; }
+          if (flo * fm < 0) { hi = mid; fhi = fm; } else { lo = mid; flo = fm; }
+          irr = (lo + hi) / 2;
+        }
+      }
+    }
+    const rows = cfs.map((cf, t) => [t, curr(cf)]);
+    return { irr, rows, ok: irr !== null };
+  }, [flows]);
+
+  return (
+    <VStack>
+      <div><Label>Cash Flows (t=0 first, comma or newline)</Label><Textarea value={flows} onChange={setFlows} rows={4} /></div>
+      <BigResult value={out.ok ? pct(out.irr * 100) : "—"} label="Internal Rate of Return" sub={out.ok ? "Rate where NPV = 0" : "No sign change — IRR undefined for these flows"} />
+      <DataTable columns={["Year", "Cash Flow"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function PaybackPeriodCalc() {
+  const [investment, setInvestment] = useState("1000");
+  const [inflows, setInflows] = useState("400, 400, 400, 400");
+
+  const out = useMemo(() => {
+    const inv = Math.abs(n(investment));
+    const flows = parseNums(inflows);
+    let cum = 0, years = null;
+    const rows = [];
+    for (let i = 0; i < flows.length; i++) {
+      const prev = cum; cum += flows[i];
+      rows.push([i + 1, curr(flows[i]), curr(cum)]);
+      if (years === null && cum >= inv && flows[i] > 0) years = i + (inv - prev) / flows[i];
+    }
+    const months = years !== null ? Math.round((years % 1) * 12) : 0;
+    return { years, whole: years !== null ? Math.floor(years) : 0, months, rows };
+  }, [investment, inflows]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Initial Investment</Label><Input value={investment} onChange={setInvestment} /></div>
+        <div><Label>Annual Cash Inflows</Label><Textarea value={inflows} onChange={setInflows} rows={4} /></div>
+      </Grid2>
+      <BigResult value={out.years !== null ? `${round(out.years, 2)} yr` : "Never"} label="Payback Period" sub={out.years !== null ? `≈ ${out.whole} yr ${out.months} mo` : "Inflows never recover the investment"} />
+      <DataTable columns={["Year", "Inflow", "Cumulative"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function DividendYieldCalc() {
+  const [dividend, setDividend] = useState("20");
+  const [price, setPrice] = useState("400");
+  const [shares, setShares] = useState("100");
+
+  const out = useMemo(() => {
+    const d = n(dividend), p = n(price), s = n(shares);
+    const yld = p > 0 ? (d / p) * 100 : 0;
+    const annualIncome = d * s;
+    const invested = p * s;
+    const rows = [
+      ["Dividend / Share", curr(d)],
+      ["Market Price", curr(p)],
+      ["Dividend Yield", p > 0 ? pct(yld) : "—"],
+      ["Shares Held", s],
+      ["Annual Dividend Income", curr(annualIncome)],
+      ["Amount Invested", curr(invested)],
+    ];
+    return { yld, annualIncome, rows, valid: p > 0 };
+  }, [dividend, price, shares]);
+
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Dividend / Share</Label><Input value={dividend} onChange={setDividend} /></div>
+        <div><Label>Market Price / Share</Label><Input value={price} onChange={setPrice} /></div>
+        <div><Label>Shares Held</Label><Input value={shares} onChange={setShares} /></div>
+      </Grid3>
+      <Grid2>
+        <BigResult value={out.valid ? pct(out.yld) : "—"} label="Dividend Yield" />
+        <BigResult value={curr(out.annualIncome)} label="Annual Dividend Income" />
+      </Grid2>
+      <DataTable columns={["Metric", "Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function PeRatioCalc() {
+  const [price, setPrice] = useState("400");
+  const [eps, setEps] = useState("20");
+
+  const out = useMemo(() => {
+    const p = n(price), e = n(eps);
+    const pe = e !== 0 ? p / e : Infinity;
+    const earnYield = p > 0 ? (e / p) * 100 : 0;
+    const rows = [
+      ["Share Price", curr(p)],
+      ["Earnings / Share (EPS)", curr(e)],
+      ["P/E Ratio", Number.isFinite(pe) ? round(pe, 2) : "—"],
+      ["Earnings Yield", p > 0 ? pct(earnYield) : "—"],
+    ];
+    return { pe, earnYield, rows };
+  }, [price, eps]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Share Price</Label><Input value={price} onChange={setPrice} /></div>
+        <div><Label>Earnings / Share (EPS)</Label><Input value={eps} onChange={setEps} /></div>
+      </Grid2>
+      <Grid2>
+        <BigResult value={Number.isFinite(out.pe) ? round(out.pe, 2) : "—"} label="P/E Ratio" />
+        <BigResult value={n(price) > 0 ? pct(out.earnYield) : "—"} label="Earnings Yield" />
+      </Grid2>
+      <DataTable columns={["Metric", "Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function DividendPayoutRatioCalc() {
+  const [dividends, setDividends] = useState("40");
+  const [netIncome, setNetIncome] = useState("100");
+
+  const out = useMemo(() => {
+    const d = n(dividends), ni = n(netIncome);
+    const payout = ni > 0 ? (d / ni) * 100 : 0;
+    const retention = ni > 0 ? 100 - payout : 0;
+    const rows = [
+      ["Total Dividends", curr(d)],
+      ["Net Income", curr(ni)],
+      ["Payout Ratio", ni > 0 ? pct(payout) : "—"],
+      ["Retention Ratio", ni > 0 ? pct(retention) : "—"],
+    ];
+    return { payout, retention, rows, valid: ni > 0 };
+  }, [dividends, netIncome]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Total Dividends Paid</Label><Input value={dividends} onChange={setDividends} /></div>
+        <div><Label>Net Income</Label><Input value={netIncome} onChange={setNetIncome} /></div>
+      </Grid2>
+      <Grid2>
+        <BigResult value={out.valid ? pct(out.payout) : "—"} label="Dividend Payout Ratio" />
+        <BigResult value={out.valid ? pct(out.retention) : "—"} label="Retention Ratio" />
+      </Grid2>
+      <DataTable columns={["Metric", "Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function SalaryHikeCalc() {
+  const [mode, setMode] = useState("newSalary");
+  const [oldSalary, setOldSalary] = useState("50000");
+  const [hikePct, setHikePct] = useState("15");
+  const [newSalary, setNewSalary] = useState("57500");
+
+  const out = useMemo(() => {
+    const o = n(oldSalary);
+    if (mode === "newSalary") {
+      const h = n(hikePct) / 100;
+      const nw = o * (1 + h);
+      return { main: curr(nw), rows: [["Old Salary", curr(o)], ["Hike %", pct(h * 100)], ["Increment", curr(nw - o)], ["New Salary", curr(nw)]] };
+    }
+    const nw = n(newSalary);
+    const h = o > 0 ? ((nw - o) / o) * 100 : 0;
+    return { main: o > 0 ? pct(h) : "—", rows: [["Old Salary", curr(o)], ["New Salary", curr(nw)], ["Increment", curr(nw - o)], ["Hike %", o > 0 ? pct(h) : "—"]] };
+  }, [mode, oldSalary, hikePct, newSalary]);
+
+  return (
+    <VStack>
+      <div><Label>Mode</Label><SelectInput value={mode} onChange={setMode} options={[{ value: "newSalary", label: "Find New Salary from Hike %" }, { value: "hikePct", label: "Find Hike % from Salaries" }]} /></div>
+      <Grid3>
+        <div><Label>Old Salary</Label><Input value={oldSalary} onChange={setOldSalary} /></div>
+        <div><Label>Hike %</Label><Input value={hikePct} onChange={setHikePct} /></div>
+        <div><Label>New Salary</Label><Input value={newSalary} onChange={setNewSalary} /></div>
+      </Grid3>
+      <BigResult value={out.main} label={mode === "newSalary" ? "New Salary" : "Hike Percentage"} />
+      <DataTable columns={["Component", "Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function OvertimePayCalc() {
+  const [rate, setRate] = useState("20");
+  const [regHrs, setRegHrs] = useState("40");
+  const [otHrs, setOtHrs] = useState("10");
+  const [mult, setMult] = useState("1.5");
+
+  const out = useMemo(() => {
+    const r = n(rate), reg = n(regHrs), ot = n(otHrs), m = n(mult);
+    const regPay = r * reg;
+    const otRate = r * m;
+    const otPay = otRate * ot;
+    const total = regPay + otPay;
+    const rows = [
+      ["Regular Pay", `${curr(r)} × ${round(reg, 2)} h`, curr(regPay)],
+      ["Overtime Rate", `${curr(r)} × ${round(m, 2)}`, curr(otRate)],
+      ["Overtime Pay", `${curr(otRate)} × ${round(ot, 2)} h`, curr(otPay)],
+      ["Total Pay", "", curr(total)],
+    ];
+    return { total, regPay, otPay, rows };
+  }, [rate, regHrs, otHrs, mult]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Hourly Rate</Label><Input value={rate} onChange={setRate} /></div>
+        <div><Label>Regular Hours</Label><Input value={regHrs} onChange={setRegHrs} /></div>
+      </Grid2>
+      <Grid2>
+        <div><Label>Overtime Hours</Label><Input value={otHrs} onChange={setOtHrs} /></div>
+        <div><Label>Overtime Multiplier</Label><SelectInput value={mult} onChange={setMult} options={[{ value: "1.5", label: "1.5× (time-and-a-half)" }, { value: "2", label: "2× (double time)" }, { value: "1.25", label: "1.25×" }, { value: "1", label: "1× (flat)" }]} /></div>
+      </Grid2>
+      <Grid2>
+        <BigResult value={curr(out.total)} label="Total Pay" />
+        <BigResult value={curr(out.otPay)} label="Overtime Pay" />
+      </Grid2>
+      <DataTable columns={["Component", "Basis", "Amount"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+const DENOMS = {
+  INR: { sym: "₹", list: [2000, 500, 200, 100, 50, 20, 10, 5, 2, 1] },
+  USD: { sym: "$", list: [100, 50, 20, 10, 5, 1] },
+};
+
+function CurrencyDenominationCalc() {
+  const [amount, setAmount] = useState("1234");
+  const [ccy, setCcy] = useState("INR");
+
+  const out = useMemo(() => {
+    const cfg = DENOMS[ccy] || DENOMS.INR;
+    let rem = Math.floor(Math.abs(n(amount)));
+    const total = rem;
+    const rows = [];
+    let count = 0;
+    for (const d of cfg.list) {
+      const c = Math.floor(rem / d);
+      if (c > 0) { rows.push([`${cfg.sym}${d}`, c, `${cfg.sym}${(d * c).toLocaleString()}`]); rem -= d * c; count += c; }
+    }
+    return { rows, count, total, sym: cfg.sym, remainder: rem };
+  }, [amount, ccy]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Amount</Label><Input value={amount} onChange={setAmount} /></div>
+        <div><Label>Currency</Label><SelectInput value={ccy} onChange={setCcy} options={[{ value: "INR", label: "₹ Indian Rupee" }, { value: "USD", label: "$ US Dollar" }]} /></div>
+      </Grid2>
+      <Grid2>
+        <BigResult value={`${out.sym}${out.total.toLocaleString()}`} label="Whole Amount" />
+        <BigResult value={String(out.count)} label="Total Notes / Coins" />
+      </Grid2>
+      <DataTable columns={["Denomination", "Count", "Subtotal"]} rows={out.rows} />
+      {out.remainder > 0 ? <div style={{ fontSize: 12, color: C.muted }}>Note: smallest available unit is {out.sym}1 — {out.sym}{out.remainder} could not be broken down further.</div> : null}
+    </VStack>
+  );
+}
+
+function EffectiveAnnualRateCalc() {
+  const [nominal, setNominal] = useState("12");
+  const [periods, setPeriods] = useState("12");
+
+  const out = useMemo(() => {
+    const i = n(nominal) / 100;
+    const p = Math.floor(n(periods));
+    const ear = p <= 0 ? (Math.exp(i) - 1) * 100 : (Math.pow(1 + i / p, p) - 1) * 100;
+    const rows = [
+      ["Nominal Rate (APR)", pct(n(nominal))],
+      ["Compounding / Year", p <= 0 ? "Continuous" : p],
+      ["Effective Annual Rate", pct(ear)],
+      ["Extra vs Nominal", pct(ear - n(nominal))],
+    ];
+    return { ear, rows };
+  }, [nominal, periods]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Nominal Rate % (APR)</Label><Input value={nominal} onChange={setNominal} /></div>
+        <div><Label>Compounding Frequency</Label><SelectInput value={periods} onChange={setPeriods} options={[{ value: "1", label: "Annually (1)" }, { value: "2", label: "Semi-annually (2)" }, { value: "4", label: "Quarterly (4)" }, { value: "12", label: "Monthly (12)" }, { value: "365", label: "Daily (365)" }, { value: "0", label: "Continuous" }]} /></div>
+      </Grid2>
+      <BigResult value={pct(out.ear)} label="Effective Annual Rate (APY)" />
+      <DataTable columns={["Metric", "Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+function AnnualizedReturnCalc() {
+  const [begin, setBegin] = useState("100000");
+  const [end, setEnd] = useState("125000");
+  const [income, setIncome] = useState("3000");
+  const [days, setDays] = useState("365");
+
+  const out = useMemo(() => {
+    const b = n(begin), e = n(end), inc = n(income), d = n(days);
+    if (b <= 0 || d <= 0) return { hpr: 0, ann: 0, rows: [], valid: false };
+    const hpr = (e - b + inc) / b;
+    const ann = Math.pow(1 + hpr, 365 / d) - 1;
+    const rows = [
+      ["Buy Value", curr(b)],
+      ["Sell Value", curr(e)],
+      ["Income / Dividends", curr(inc)],
+      ["Days Held", round(d, 0)],
+      ["Holding Period Return", pct(hpr * 100)],
+      ["Annualized Return", pct(ann * 100)],
+    ];
+    return { hpr: hpr * 100, ann: ann * 100, rows, valid: true };
+  }, [begin, end, income, days]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Buy Value</Label><Input value={begin} onChange={setBegin} /></div>
+        <div><Label>Sell Value</Label><Input value={end} onChange={setEnd} /></div>
+      </Grid2>
+      <Grid2>
+        <div><Label>Income / Dividends</Label><Input value={income} onChange={setIncome} /></div>
+        <div><Label>Days Held</Label><Input value={days} onChange={setDays} /></div>
+      </Grid2>
+      <Grid2>
+        <BigResult value={out.valid ? pct(out.hpr) : "—"} label="Total Return" />
+        <BigResult value={out.valid ? pct(out.ann) : "—"} label="Annualized Return" />
+      </Grid2>
+      <DataTable columns={["Metric", "Value"]} rows={out.rows} />
+    </VStack>
+  );
+}
+
+Object.assign(TOOL_COMPONENTS, {
+  "rule-of-72-calc": RuleOf72Calc,
+  "npv-calc": NpvCalc,
+  "irr-calc": IrrCalc,
+  "payback-period-calc": PaybackPeriodCalc,
+  "dividend-yield-calc": DividendYieldCalc,
+  "pe-ratio-calc": PeRatioCalc,
+  "dividend-payout-ratio-calc": DividendPayoutRatioCalc,
+  "salary-hike-calc": SalaryHikeCalc,
+  "overtime-pay-calc": OvertimePayCalc,
+  "currency-denomination-calc": CurrencyDenominationCalc,
+  "effective-annual-rate-calc": EffectiveAnnualRateCalc,
+  "annualized-return-calc": AnnualizedReturnCalc,
+});
+// ───── END INVESTMENT & BUSINESS FINANCE BATCH ───────────────────────────────
 
 
 function ToolPage({ toolId }) {

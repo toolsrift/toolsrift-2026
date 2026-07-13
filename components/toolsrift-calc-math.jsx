@@ -546,6 +546,20 @@ const TOOLS = [
   { id:"arc-length-calc", cat:"geometry", name:"Arc Length Calculator", icon:"⭕", desc:"Arc length and sector area from radius and angle.", free:true },
   { id:"golden-ratio-calc", cat:"geometry", name:"Golden Ratio Calculator", icon:"🌀", desc:"Golden dimensions from one measurement.", free:true },
   { id:"coordinate-calc", cat:"geometry", name:"Coordinate Line Properties", icon:"🧮", desc:"Slope, distance, midpoint, and equation together.", free:true },
+  { id:"circle-calc", cat:"geometry", name:"Circle Calculator", icon:"⭕", desc:"Full circle report from radius, diameter, circumference, or area — solves all four properties at once with formulas.", free:true },
+  { id:"triangle-solver", cat:"geometry", name:"Triangle Solver (SSS)", icon:"🔺", desc:"Solve a triangle from three sides: Heron area, perimeter, all three interior angles, and equilateral/isosceles/scalene type.", free:true },
+  { id:"sphere-calc", cat:"geometry", name:"Sphere Calculator", icon:"🔵", desc:"Sphere volume, surface area, diameter, and great-circle circumference from the radius with exact formulas.", free:true },
+  { id:"cylinder-calc", cat:"geometry", name:"Cylinder Calculator", icon:"🥫", desc:"Cylinder volume, base area, lateral surface, and total surface area from radius and height with formulas.", free:true },
+  { id:"cone-calc", cat:"geometry", name:"Cone Calculator", icon:"🍦", desc:"Cone volume, slant height, lateral surface, base area, and total surface area from radius and height.", free:true },
+  { id:"ellipse-calc", cat:"geometry", name:"Ellipse Calculator", icon:"🥚", desc:"Ellipse area, Ramanujan perimeter, eccentricity, and focal distance from the two semi-axes.", free:true },
+  { id:"regular-polygon-calc", cat:"geometry", name:"Regular Polygon Calculator", icon:"⬡", desc:"Regular polygon interior/exterior angle, perimeter, apothem, area, and circumradius from side count and length.", free:true },
+  { id:"trapezoid-calc", cat:"geometry", name:"Trapezoid Calculator", icon:"⏢", desc:"Trapezoid area, median (midsegment), and perimeter from the two parallel sides, height, and legs.", free:true },
+  { id:"vector-2d-calc", cat:"geometry", name:"2D Vector Calculator", icon:"➡️", desc:"Magnitude, dot product, 2D cross (scalar), sum, and angle between two 2D vectors.", free:true },
+  { id:"vector-3d-calc", cat:"geometry", name:"3D Vector Calculator", icon:"🧭", desc:"Magnitudes, dot product, cross product vector, and angle between two 3D vectors.", free:true },
+  { id:"distance-3d-calc", cat:"geometry", name:"3D Distance Calculator", icon:"📐", desc:"Euclidean distance between two points in 3D space with the full √((Δx)²+(Δy)²+(Δz)²) breakdown.", free:true },
+  { id:"cubic-solver", cat:"advanced", name:"Cubic Equation Solver", icon:"📉", desc:"Solve ax³+bx²+cx+d=0 for all three roots (real and complex) using the discriminant and Cardano/trigonometric method.", free:true },
+  { id:"proportion-solver", cat:"number", name:"Proportion Solver", icon:"⚖️", desc:"Solve a/b = c/d for the missing term via cross multiplication. Leave one box blank to find x.", free:true },
+  { id:"percent-error-calc", cat:"number", name:"Percent Error Calculator", icon:"🎯", desc:"Percent error between a measured/experimental value and the true/theoretical value, with absolute error.", free:true },
 
   { id:"gcd-lcm-calc", cat:"advanced", name:"GCD & LCM Calculator", icon:"➗", desc:"Compute GCD/LCM for 2–5 numbers with steps.", free:true },
   { id:"factorial-calc", cat:"advanced", name:"Factorial Calculator", icon:"❗", desc:"Factorial up to 20! with expansion.", free:true },
@@ -1086,13 +1100,14 @@ function tokenizeBool(expr) {
     .split("");
 }
 function varsInExpr(expr) {
-  const vars = new Set((expr.match(/[A-Z]/gi) || []).map(v => v.toUpperCase()));
+  const masked = expr.replace(/AND|OR|NOT|XOR/gi, " ");
+  const vars = new Set((masked.match(/[A-Z]/gi) || []).map(v => v.toUpperCase()));
   return Array.from(vars).sort();
 }
 function evalBoolExpr(expr, env) {
-  let s = expr.toUpperCase();
-  for (const k of Object.keys(env)) s = s.replaceAll(k, env[k] ? "1" : "0");
-  s = s.replace(/\s+/g, "").replace(/AND/g, "&").replace(/OR/g, "|").replace(/NOT/g, "!").replace(/XOR/g, "^");
+  let s = expr.toUpperCase().replace(/\s+/g, "");
+  s = s.replace(/XOR/g, "^").replace(/AND/g, "&").replace(/OR/g, "|").replace(/NOT/g, "!");
+  s = s.replace(/[A-Z]/g, (ch) => (env[ch] ? "1" : "0"));
   function parse(tokens) {
     let i = 0;
     function parsePrimary() {
@@ -1945,8 +1960,498 @@ function DecimalToFractionCalc() {
   );
 }
 
+const PI = Math.PI;
+
+function CircleCalc() {
+  const [known, setKnown] = useState("radius");
+  const [val, setVal] = useState("5");
+  const out = useMemo(() => {
+    const v = n(val);
+    if (v <= 0) return { err: "Enter a positive value." };
+    let r;
+    if (known === "radius") r = v;
+    else if (known === "diameter") r = v / 2;
+    else if (known === "circumference") r = v / (2 * PI);
+    else r = Math.sqrt(v / PI); // area
+    return {
+      err: "", r,
+      area: PI * r * r, circ: 2 * PI * r, dia: 2 * r,
+      steps: `r = ${round(r)}\nArea = πr² = ${round(PI * r * r)}\nCircumference = 2πr = ${round(2 * PI * r)}\nDiameter = 2r = ${round(2 * r)}`,
+    };
+  }, [known, val]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Known Value</Label><SelectInput value={known} onChange={setKnown} options={[{value:"radius",label:"Radius"},{value:"diameter",label:"Diameter"},{value:"circumference",label:"Circumference"},{value:"area",label:"Area"}]} /></div>
+        <div><Label>Value</Label><Input value={val} onChange={setVal} /></div>
+      </Grid2>
+      {out.err ? <Result>{`⚠️ ${out.err}`}</Result> : <>
+        <Grid3>
+          <BigResult value={round(out.area)} label="Area" />
+          <BigResult value={round(out.circ)} label="Circumference" />
+          <BigResult value={round(out.dia)} label="Diameter" />
+        </Grid3>
+        <Result>{out.steps}</Result>
+        <ShapeSVG shape="circle" labels={{ r: round(out.r) }} />
+      </>}
+    </VStack>
+  );
+}
+
+function TriangleSolver() {
+  const [a, setA] = useState("3");
+  const [b, setB] = useState("4");
+  const [c, setC] = useState("5");
+  const out = useMemo(() => {
+    const A = n(a), B = n(b), Cc = n(c);
+    if (A <= 0 || B <= 0 || Cc <= 0) return { err: "All sides must be positive." };
+    if (A + B <= Cc || A + Cc <= B || B + Cc <= A) return { err: "Triangle inequality fails: no triangle with these sides." };
+    const s = (A + B + Cc) / 2;
+    const area = Math.sqrt(s * (s - A) * (s - B) * (s - Cc));
+    const angA = Math.acos((B * B + Cc * Cc - A * A) / (2 * B * Cc)) * 180 / PI;
+    const angB = Math.acos((A * A + Cc * Cc - B * B) / (2 * A * Cc)) * 180 / PI;
+    const angC = 180 - angA - angB;
+    const set = new Set([A, B, Cc]);
+    const type = set.size === 1 ? "Equilateral" : set.size === 2 ? "Isosceles" : "Scalene";
+    const right = [angA, angB, angC].some(x => Math.abs(x - 90) < 1e-6) ? " (right triangle)" : "";
+    return {
+      err: "", area, s, per: A + B + Cc, angA, angB, angC, type: type + right,
+      steps: `s = (a+b+c)/2 = ${round(s)}\nArea = √(s(s-a)(s-b)(s-c)) = ${round(area)}\nAngle A (opp a) = ${round(angA, 4)}°\nAngle B (opp b) = ${round(angB, 4)}°\nAngle C (opp c) = ${round(angC, 4)}°\nType: ${type + right}`,
+    };
+  }, [a, b, c]);
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Side a</Label><Input value={a} onChange={setA} /></div>
+        <div><Label>Side b</Label><Input value={b} onChange={setB} /></div>
+        <div><Label>Side c</Label><Input value={c} onChange={setC} /></div>
+      </Grid3>
+      {out.err ? <Result>{`⚠️ ${out.err}`}</Result> : <>
+        <Grid2>
+          <BigResult value={round(out.area)} label="Area (Heron)" />
+          <BigResult value={round(out.per)} label="Perimeter" />
+        </Grid2>
+        <Result>{out.steps}</Result>
+      </>}
+    </VStack>
+  );
+}
+
+function SphereCalc() {
+  const [r, setR] = useState("3");
+  const out = useMemo(() => {
+    const R = n(r);
+    if (R <= 0) return { err: "Radius must be positive." };
+    return {
+      err: "", vol: 4 / 3 * PI * R ** 3, sa: 4 * PI * R * R, dia: 2 * R, gc: 2 * PI * R,
+      steps: `Volume = 4/3·πr³ = ${round(4 / 3 * PI * R ** 3)}\nSurface area = 4πr² = ${round(4 * PI * R * R)}\nDiameter = 2r = ${round(2 * R)}\nGreat-circle circumference = 2πr = ${round(2 * PI * R)}`,
+    };
+  }, [r]);
+  return (
+    <VStack>
+      <div><Label>Radius r</Label><Input value={r} onChange={setR} /></div>
+      {out.err ? <Result>{`⚠️ ${out.err}`}</Result> : <>
+        <Grid2>
+          <BigResult value={round(out.vol)} label="Volume" />
+          <BigResult value={round(out.sa)} label="Surface Area" />
+        </Grid2>
+        <Result>{out.steps}</Result>
+      </>}
+    </VStack>
+  );
+}
+
+function CylinderCalc() {
+  const [r, setR] = useState("3");
+  const [h, setH] = useState("5");
+  const out = useMemo(() => {
+    const R = n(r), H = n(h);
+    if (R <= 0 || H <= 0) return { err: "Radius and height must be positive." };
+    return {
+      err: "", vol: PI * R * R * H, base: PI * R * R, lat: 2 * PI * R * H, total: 2 * PI * R * (R + H),
+      steps: `Volume = πr²h = ${round(PI * R * R * H)}\nBase area = πr² = ${round(PI * R * R)}\nLateral surface = 2πrh = ${round(2 * PI * R * H)}\nTotal surface = 2πr(r+h) = ${round(2 * PI * R * (R + H))}`,
+    };
+  }, [r, h]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Radius r</Label><Input value={r} onChange={setR} /></div>
+        <div><Label>Height h</Label><Input value={h} onChange={setH} /></div>
+      </Grid2>
+      {out.err ? <Result>{`⚠️ ${out.err}`}</Result> : <>
+        <Grid2>
+          <BigResult value={round(out.vol)} label="Volume" />
+          <BigResult value={round(out.total)} label="Total Surface Area" />
+        </Grid2>
+        <Result>{out.steps}</Result>
+      </>}
+    </VStack>
+  );
+}
+
+function ConeCalc() {
+  const [r, setR] = useState("3");
+  const [h, setH] = useState("4");
+  const out = useMemo(() => {
+    const R = n(r), H = n(h);
+    if (R <= 0 || H <= 0) return { err: "Radius and height must be positive." };
+    const l = Math.sqrt(R * R + H * H);
+    return {
+      err: "", vol: 1 / 3 * PI * R * R * H, slant: l, lat: PI * R * l, base: PI * R * R, total: PI * R * l + PI * R * R,
+      steps: `Slant height l = √(r²+h²) = ${round(l)}\nVolume = 1/3·πr²h = ${round(1 / 3 * PI * R * R * H)}\nLateral surface = πrl = ${round(PI * R * l)}\nBase area = πr² = ${round(PI * R * R)}\nTotal surface = πr(l+r) = ${round(PI * R * l + PI * R * R)}`,
+    };
+  }, [r, h]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Radius r</Label><Input value={r} onChange={setR} /></div>
+        <div><Label>Height h</Label><Input value={h} onChange={setH} /></div>
+      </Grid2>
+      {out.err ? <Result>{`⚠️ ${out.err}`}</Result> : <>
+        <Grid3>
+          <BigResult value={round(out.vol)} label="Volume" />
+          <BigResult value={round(out.slant)} label="Slant Height" />
+          <BigResult value={round(out.total)} label="Total Surface" />
+        </Grid3>
+        <Result>{out.steps}</Result>
+      </>}
+    </VStack>
+  );
+}
+
+function EllipseCalc() {
+  const [a, setA] = useState("5");
+  const [b, setB] = useState("3");
+  const out = useMemo(() => {
+    const A0 = n(a), B0 = n(b);
+    if (A0 <= 0 || B0 <= 0) return { err: "Both semi-axes must be positive." };
+    const A = Math.max(A0, B0), B = Math.min(A0, B0);
+    const per = PI * (3 * (A0 + B0) - Math.sqrt((3 * A0 + B0) * (A0 + 3 * B0)));
+    const ecc = Math.sqrt(1 - (B * B) / (A * A));
+    const foci = Math.sqrt(A * A - B * B);
+    return {
+      err: "", area: PI * A0 * B0, per, ecc, foci,
+      steps: `Area = πab = ${round(PI * A0 * B0)}\nPerimeter ≈ π[3(a+b)−√((3a+b)(a+3b))] = ${round(per)}  (Ramanujan)\nEccentricity e = √(1−b²/a²) = ${round(ecc)}\nFocal distance c = √(a²−b²) = ${round(foci)}`,
+    };
+  }, [a, b]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Semi-axis a</Label><Input value={a} onChange={setA} /></div>
+        <div><Label>Semi-axis b</Label><Input value={b} onChange={setB} /></div>
+      </Grid2>
+      {out.err ? <Result>{`⚠️ ${out.err}`}</Result> : <>
+        <Grid2>
+          <BigResult value={round(out.area)} label="Area" />
+          <BigResult value={round(out.per)} label="Perimeter (approx.)" />
+        </Grid2>
+        <Result>{out.steps}</Result>
+        <ShapeSVG shape="ellipse" labels={{ a, b }} />
+      </>}
+    </VStack>
+  );
+}
+
+function RegularPolygonCalc() {
+  const [sides, setSides] = useState("6");
+  const [side, setSide] = useState("4");
+  const out = useMemo(() => {
+    const N = Math.floor(n(sides)), s = n(side);
+    if (N < 3) return { err: "A polygon needs at least 3 sides." };
+    if (s <= 0) return { err: "Side length must be positive." };
+    const interior = (N - 2) * 180 / N;
+    const exterior = 360 / N;
+    const per = N * s;
+    const apothem = s / (2 * Math.tan(PI / N));
+    const area = 0.5 * per * apothem;
+    const circum = s / (2 * Math.sin(PI / N));
+    return {
+      err: "", interior, exterior, per, apothem, area, circum,
+      steps: `Interior angle = (n−2)·180/n = ${round(interior, 4)}°\nExterior angle = 360/n = ${round(exterior, 4)}°\nPerimeter = n·s = ${round(per)}\nApothem = s/(2·tan(π/n)) = ${round(apothem)}\nArea = ½·perimeter·apothem = ${round(area)}\nCircumradius = s/(2·sin(π/n)) = ${round(circum)}`,
+    };
+  }, [sides, side]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Number of Sides n</Label><Input value={sides} onChange={setSides} /></div>
+        <div><Label>Side Length s</Label><Input value={side} onChange={setSide} /></div>
+      </Grid2>
+      {out.err ? <Result>{`⚠️ ${out.err}`}</Result> : <>
+        <Grid3>
+          <BigResult value={round(out.area)} label="Area" />
+          <BigResult value={round(out.per)} label="Perimeter" />
+          <BigResult value={`${round(out.interior, 4)}°`} label="Interior Angle" />
+        </Grid3>
+        <Result>{out.steps}</Result>
+      </>}
+    </VStack>
+  );
+}
+
+function TrapezoidCalc() {
+  const [a, setA] = useState("8");
+  const [b, setB] = useState("4");
+  const [h, setH] = useState("3");
+  const [c, setC] = useState("5");
+  const [d, setD] = useState("5");
+  const out = useMemo(() => {
+    const A = n(a), B = n(b), H = n(h), C0 = n(c), D0 = n(d);
+    if (A <= 0 || B <= 0 || H <= 0) return { err: "Parallel sides a, b and height h must be positive." };
+    return {
+      err: "", area: 0.5 * (A + B) * H, mid: (A + B) / 2, per: A + B + C0 + D0,
+      steps: `Area = ½(a+b)·h = ½(${A}+${B})·${H} = ${round(0.5 * (A + B) * H)}\nMedian (midsegment) = (a+b)/2 = ${round((A + B) / 2)}\nPerimeter = a+b+c+d = ${round(A + B + C0 + D0)}`,
+    };
+  }, [a, b, h, c, d]);
+  return (
+    <VStack>
+      <Grid3>
+        <div><Label>Parallel side a</Label><Input value={a} onChange={setA} /></div>
+        <div><Label>Parallel side b</Label><Input value={b} onChange={setB} /></div>
+        <div><Label>Height h</Label><Input value={h} onChange={setH} /></div>
+      </Grid3>
+      <Grid2>
+        <div><Label>Leg c</Label><Input value={c} onChange={setC} /></div>
+        <div><Label>Leg d</Label><Input value={d} onChange={setD} /></div>
+      </Grid2>
+      {out.err ? <Result>{`⚠️ ${out.err}`}</Result> : <>
+        <Grid3>
+          <BigResult value={round(out.area)} label="Area" />
+          <BigResult value={round(out.mid)} label="Median" />
+          <BigResult value={round(out.per)} label="Perimeter" />
+        </Grid3>
+        <Result>{out.steps}</Result>
+      </>}
+    </VStack>
+  );
+}
+
+function Vector2DCalc() {
+  const [ux, setUx] = useState("3"), [uy, setUy] = useState("4");
+  const [vx, setVx] = useState("1"), [vy, setVy] = useState("2");
+  const out = useMemo(() => {
+    const UX = n(ux), UY = n(uy), VX = n(vx), VY = n(vy);
+    const mu = Math.hypot(UX, UY), mv = Math.hypot(VX, VY);
+    const dot = UX * VX + UY * VY, cross = UX * VY - UY * VX;
+    const ang = (mu === 0 || mv === 0) ? null : Math.acos(Math.max(-1, Math.min(1, dot / (mu * mv)))) * 180 / PI;
+    return {
+      mu, mv, dot, cross, ang, sx: UX + VX, sy: UY + VY,
+      steps: `|u| = √(uₓ²+u_y²) = ${round(mu)}\n|v| = ${round(mv)}\nu·v = uₓvₓ + u_yv_y = ${round(dot)}\nCross (z) = uₓv_y − u_yvₓ = ${round(cross)}\nu + v = (${round(UX + VX)}, ${round(UY + VY)})\nAngle = ${ang === null ? "undefined (zero vector)" : round(ang, 4) + "°"}`,
+    };
+  }, [ux, uy, vx, vy]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>u = (uₓ, u_y)</Label><Grid2><Input value={ux} onChange={setUx} /><Input value={uy} onChange={setUy} /></Grid2></div>
+        <div><Label>v = (vₓ, v_y)</Label><Grid2><Input value={vx} onChange={setVx} /><Input value={vy} onChange={setVy} /></Grid2></div>
+      </Grid2>
+      <Grid3>
+        <BigResult value={round(out.dot)} label="Dot Product" />
+        <BigResult value={round(out.cross)} label="Cross (z)" />
+        <BigResult value={out.ang === null ? "—" : `${round(out.ang, 3)}°`} label="Angle" />
+      </Grid3>
+      <Result>{out.steps}</Result>
+    </VStack>
+  );
+}
+
+function Vector3DCalc() {
+  const [ux, setUx] = useState("1"), [uy, setUy] = useState("2"), [uz, setUz] = useState("3");
+  const [vx, setVx] = useState("4"), [vy, setVy] = useState("5"), [vz, setVz] = useState("6");
+  const out = useMemo(() => {
+    const U = [n(ux), n(uy), n(uz)], V = [n(vx), n(vy), n(vz)];
+    const mu = Math.hypot(...U), mv = Math.hypot(...V);
+    const dot = U[0] * V[0] + U[1] * V[1] + U[2] * V[2];
+    const cross = [U[1] * V[2] - U[2] * V[1], U[2] * V[0] - U[0] * V[2], U[0] * V[1] - U[1] * V[0]];
+    const ang = (mu === 0 || mv === 0) ? null : Math.acos(Math.max(-1, Math.min(1, dot / (mu * mv)))) * 180 / PI;
+    return {
+      mu, mv, dot, cross, mcross: Math.hypot(...cross), ang,
+      steps: `|u| = ${round(mu)}   |v| = ${round(mv)}\nu·v = ${round(dot)}\nu×v = (${round(cross[0])}, ${round(cross[1])}, ${round(cross[2])})\n|u×v| = ${round(Math.hypot(...cross))}\nAngle = ${ang === null ? "undefined (zero vector)" : round(ang, 4) + "°"}`,
+    };
+  }, [ux, uy, uz, vx, vy, vz]);
+  return (
+    <VStack>
+      <div><Label>u = (uₓ, u_y, u_z)</Label><Grid3><Input value={ux} onChange={setUx} /><Input value={uy} onChange={setUy} /><Input value={uz} onChange={setUz} /></Grid3></div>
+      <div><Label>v = (vₓ, v_y, v_z)</Label><Grid3><Input value={vx} onChange={setVx} /><Input value={vy} onChange={setVy} /><Input value={vz} onChange={setVz} /></Grid3></div>
+      <Grid3>
+        <BigResult value={round(out.dot)} label="Dot Product" />
+        <BigResult value={`(${round(out.cross[0])}, ${round(out.cross[1])}, ${round(out.cross[2])})`} label="Cross Product" />
+        <BigResult value={out.ang === null ? "—" : `${round(out.ang, 3)}°`} label="Angle" />
+      </Grid3>
+      <Result>{out.steps}</Result>
+    </VStack>
+  );
+}
+
+function Distance3DCalc() {
+  const [x1, setX1] = useState("0"), [y1, setY1] = useState("0"), [z1, setZ1] = useState("0");
+  const [x2, setX2] = useState("1"), [y2, setY2] = useState("2"), [z2, setZ2] = useState("2");
+  const out = useMemo(() => {
+    const dx = n(x2) - n(x1), dy = n(y2) - n(y1), dz = n(z2) - n(z1);
+    const d = Math.hypot(dx, dy, dz);
+    return {
+      d,
+      steps: `d = √((x₂−x₁)² + (y₂−y₁)² + (z₂−z₁)²)\nΔx=${round(dx)}, Δy=${round(dy)}, Δz=${round(dz)}\nd = √(${round(dx * dx)} + ${round(dy * dy)} + ${round(dz * dz)})\nd = √${round(dx * dx + dy * dy + dz * dz)} = ${round(d)}`,
+    };
+  }, [x1, y1, z1, x2, y2, z2]);
+  return (
+    <VStack>
+      <div><Label>Point 1 (x₁, y₁, z₁)</Label><Grid3><Input value={x1} onChange={setX1} /><Input value={y1} onChange={setY1} /><Input value={z1} onChange={setZ1} /></Grid3></div>
+      <div><Label>Point 2 (x₂, y₂, z₂)</Label><Grid3><Input value={x2} onChange={setX2} /><Input value={y2} onChange={setY2} /><Input value={z2} onChange={setZ2} /></Grid3></div>
+      <BigResult value={round(out.d)} label="3D Distance" />
+      <Result>{out.steps}</Result>
+    </VStack>
+  );
+}
+
+function CubicSolver() {
+  const [a, setA] = useState("1"), [b, setB] = useState("-6"), [c, setC] = useState("11"), [d, setD] = useState("-6");
+  const out = useMemo(() => {
+    const A = n(a), B = n(b), Cc = n(c), D = n(d);
+    if (A === 0) return { err: "a cannot be 0 (that would not be cubic)." };
+    const p = (3 * A * Cc - B * B) / (3 * A * A);
+    const q = (2 * B ** 3 - 9 * A * B * Cc + 27 * A * A * D) / (27 * A ** 3);
+    const shift = -B / (3 * A);
+    const disc = (q * q) / 4 + (p ** 3) / 27;
+    const roots = [];
+    let kind;
+    if (Math.abs(p) < 1e-12 && Math.abs(q) < 1e-12) {
+      roots.push(shift, shift, shift); kind = "Triple real root";
+    } else if (disc > 1e-10) {
+      const sq = Math.sqrt(disc);
+      const u = Math.cbrt(-q / 2 + sq), v = Math.cbrt(-q / 2 - sq);
+      const t = u + v;
+      const re = -t / 2 + shift, im = Math.sqrt(3) / 2 * (u - v);
+      roots.push(t + shift, { re, im }, { re, im: -im });
+      kind = "One real root, two complex conjugate roots";
+    } else if (Math.abs(disc) <= 1e-10) {
+      const u = Math.cbrt(-q / 2);
+      roots.push(2 * u + shift, -u + shift, -u + shift); kind = "Three real roots (a repeated root)";
+    } else {
+      const r = Math.sqrt(-(p ** 3) / 27);
+      const phi = Math.acos(Math.max(-1, Math.min(1, -q / (2 * r))));
+      const m = 2 * Math.cbrt(r);
+      for (let k = 0; k < 3; k++) roots.push(m * Math.cos((phi + 2 * PI * k) / 3) + shift);
+      kind = "Three distinct real roots";
+    }
+    const fmt = (x) => typeof x === "number" ? round(x, 6) : `${round(x.re, 6)} ${x.im >= 0 ? "+" : "−"} ${round(Math.abs(x.im), 6)}i`;
+    return {
+      err: "", kind, list: roots.map(fmt),
+      steps: `Equation: ${A}x³ + ${B}x² + ${Cc}x + ${D} = 0\nDiscriminant Δ = ${round(disc, 6)}\n${kind}\n` + roots.map((x, i) => `x${i + 1} = ${fmt(x)}`).join("\n"),
+    };
+  }, [a, b, c, d]);
+  return (
+    <VStack>
+      <Grid2>
+        <Grid2>
+          <div><Label>a</Label><Input value={a} onChange={setA} /></div>
+          <div><Label>b</Label><Input value={b} onChange={setB} /></div>
+        </Grid2>
+        <Grid2>
+          <div><Label>c</Label><Input value={c} onChange={setC} /></div>
+          <div><Label>d</Label><Input value={d} onChange={setD} /></div>
+        </Grid2>
+      </Grid2>
+      {out.err ? <Result>{`⚠️ ${out.err}`}</Result> : <>
+        <BigResult value={out.list.join(",  ")} label="Roots" />
+        <Result>{out.steps}</Result>
+      </>}
+    </VStack>
+  );
+}
+
+function ProportionSolver() {
+  const [a, setA] = useState("2"), [b, setB] = useState("3"), [c, setC] = useState(""), [d, setD] = useState("12");
+  const out = useMemo(() => {
+    const raw = { a, b, c, d };
+    const blanks = Object.keys(raw).filter(k => raw[k].trim() === "");
+    if (blanks.length === 0) {
+      const A = n(a), B = n(b), C0 = n(c), D0 = n(d);
+      const ok = B !== 0 && D0 !== 0 && Math.abs(A / B - C0 / D0) < 1e-9;
+      return { solved: false, main: ok ? "True proportion ✓" : "Not a proportion ✗", steps: `${A}/${B} = ${round(A / B, 6)}\n${C0}/${D0} = ${round(C0 / D0, 6)}\nCross products: ${A}×${D0} = ${round(A * D0)} vs ${B}×${C0} = ${round(B * C0)}` };
+    }
+    if (blanks.length !== 1) return { err: "Leave exactly one box blank to solve for it (or fill all four to verify)." };
+    const A = n(a), B = n(b), C0 = n(c), D0 = n(d);
+    const m = blanks[0];
+    let v, denomZero = false;
+    if (m === "a") { if (D0 === 0) denomZero = true; v = (B * C0) / D0; }
+    else if (m === "b") { if (C0 === 0) denomZero = true; v = (A * D0) / C0; }
+    else if (m === "c") { if (B === 0) denomZero = true; v = (A * D0) / B; }
+    else { if (A === 0) denomZero = true; v = (B * C0) / A; }
+    if (denomZero) return { err: "Cannot solve: division by zero in cross multiplication." };
+    return {
+      solved: true, main: `${m} = ${round(v, 6)}`,
+      steps: `a/b = c/d  →  a·d = b·c (cross multiply)\nSolving for ${m}: ${m} = ${round(v, 6)}\nCheck: ${round((m === "a" ? v : A) / (m === "b" ? v : B), 6)} = ${round((m === "c" ? v : C0) / (m === "d" ? v : D0), 6)}`,
+    };
+  }, [a, b, c, d]);
+  return (
+    <VStack>
+      <Result mono={false}>Leave <b>one</b> box blank to solve for it. a/b = c/d</Result>
+      <Grid2>
+        <Grid2>
+          <div><Label>a</Label><Input value={a} onChange={setA} placeholder="?" /></div>
+          <div><Label>b</Label><Input value={b} onChange={setB} placeholder="?" /></div>
+        </Grid2>
+        <Grid2>
+          <div><Label>c</Label><Input value={c} onChange={setC} placeholder="?" /></div>
+          <div><Label>d</Label><Input value={d} onChange={setD} placeholder="?" /></div>
+        </Grid2>
+      </Grid2>
+      {out.err ? <Result>{`⚠️ ${out.err}`}</Result> : <>
+        <BigResult value={out.main} label={out.solved ? "Missing Term" : "Verification"} />
+        <Result>{out.steps}</Result>
+      </>}
+    </VStack>
+  );
+}
+
+function PercentErrorCalc() {
+  const [measured, setMeasured] = useState("98");
+  const [actual, setActual] = useState("100");
+  const out = useMemo(() => {
+    if (measured.trim() === "" || actual.trim() === "") return { err: "Enter both measured and true values." };
+    const M = Number(measured), Ac = Number(actual);
+    if (!Number.isFinite(M) || !Number.isFinite(Ac)) return { err: "Enter numeric values." };
+    if (Ac === 0) return { err: "Percent error is undefined when the true value is 0." };
+    const absErr = Math.abs(M - Ac);
+    const pct = absErr / Math.abs(Ac) * 100;
+    return {
+      err: "", pct, absErr,
+      steps: `Absolute error = |measured − true| = |${round(M, 6)} − ${round(Ac, 6)}| = ${round(absErr, 6)}\nPercent error = |measured − true| / |true| × 100\n= ${round(absErr, 6)} / ${round(Math.abs(Ac), 6)} × 100\n= ${round(pct, 4)}%`,
+    };
+  }, [measured, actual]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Measured / Experimental</Label><Input value={measured} onChange={setMeasured} /></div>
+        <div><Label>True / Theoretical</Label><Input value={actual} onChange={setActual} /></div>
+      </Grid2>
+      {out.err ? <Result>{`⚠️ ${out.err}`}</Result> : <>
+        <Grid2>
+          <BigResult value={`${round(out.pct, 4)}%`} label="Percent Error" />
+          <BigResult value={round(out.absErr, 6)} label="Absolute Error" />
+        </Grid2>
+        <Result>{out.steps}</Result>
+      </>}
+    </VStack>
+  );
+}
+
 const TOOL_COMPONENTS = {
   "area-calc": AreaCalc,
+  "circle-calc": CircleCalc,
+  "triangle-solver": TriangleSolver,
+  "sphere-calc": SphereCalc,
+  "cylinder-calc": CylinderCalc,
+  "cone-calc": ConeCalc,
+  "ellipse-calc": EllipseCalc,
+  "regular-polygon-calc": RegularPolygonCalc,
+  "trapezoid-calc": TrapezoidCalc,
+  "vector-2d-calc": Vector2DCalc,
+  "vector-3d-calc": Vector3DCalc,
+  "distance-3d-calc": Distance3DCalc,
+  "cubic-solver": CubicSolver,
+  "proportion-solver": ProportionSolver,
+  "percent-error-calc": PercentErrorCalc,
   "mean-median-mode": MeanMedianModeCalc,
   "roman-numeral-converter": RomanNumeralConverter,
   "perimeter-calc": PerimeterCalc,

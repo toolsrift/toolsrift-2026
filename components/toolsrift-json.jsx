@@ -270,6 +270,7 @@ const TOOLS = [
   {id:"jsonl-converter",    cat:"convert",  name:"JSON ⇄ JSONL Converter",    desc:"Convert a JSON array to JSONL/NDJSON and back, line by line",  icon:"📑", free:true},
   {id:"json-to-go",         cat:"convert",  name:"JSON to Go Struct",         desc:"Generate a Go struct with json tags from a JSON sample",  icon:"🐹", free:true},
   {id:"json-to-python",     cat:"convert",  name:"JSON to Python TypedDict",  desc:"Generate a Python TypedDict class from a JSON sample",    icon:"🐍", free:true},
+  {id:"json-to-sql",        cat:"convert",  name:"JSON to SQL INSERT",        desc:"Generate SQL INSERT statements from a JSON array of objects", icon:"🗄️", free:true},
 ];
 
 const CATEGORIES = [
@@ -290,6 +291,7 @@ const TOOL_META = {
   "jsonl-converter":    {title:"JSON to JSONL / NDJSON Converter (Both Ways)",           desc:"Convert a JSON array to JSONL (newline-delimited JSON) and back. One compact object per line, with per-line error reporting.", faq:[["What is JSONL / NDJSON?","JSONL (also called NDJSON) is newline-delimited JSON — one complete JSON value per line. It is used for streaming, logs, and big-data pipelines."],["Does it validate each line?","Yes — when converting JSONL back to an array, every non-empty line is parsed and the exact line number of any failure is reported."],["Does the array need to be objects?","No — any JSON array works. Each element becomes one line, whether it is an object, number, string, or nested array."]]},
   "json-to-go":         {title:"JSON to Go Struct Generator — Struct with json Tags",     desc:"Generate a Go struct from a JSON sample, with PascalCase fields and json tags. Nested objects become nested struct types.", faq:[["What types does it infer?","string→string, whole numbers→int, decimals→float64, true/false→bool, null→interface{}, arrays→[]T, and objects→nested structs."],["Is the output ready to compile?","It is a strong starting point. Review numeric widths, optional fields, and pointer usage — inference is intentionally conservative."],["How are nested objects handled?","Each nested object gets its own named struct type, referenced by field, with matching json tags for the original keys."]]},
   "json-to-python":     {title:"JSON to Python TypedDict Generator",                     desc:"Generate a Python TypedDict from a JSON sample. Nested objects become nested TypedDicts, with functional syntax for non-identifier keys.", faq:[["Why TypedDict instead of dataclass?","TypedDict describes dictionary shapes exactly as JSON decodes them, so it matches json.loads output without conversion."],["What about keys that aren't valid identifiers?","Keys like 'first-name' use the functional TypedDict(...) syntax so any string key is supported."],["Is the output final?","Treat it as a starting point — verify Optional fields and numeric types, since they are inferred from a single sample."]]},
+  "json-to-sql":        {title:"JSON to SQL INSERT Generator — Convert JSON to SQL",     desc:"Convert a JSON array of objects into ready-to-run SQL INSERT statements. Escapes quotes, handles NULL, numbers, booleans and nested values.", faq:[["What JSON shape is expected?","An array of objects, e.g. [{\"id\":1,\"name\":\"Al\"}]. A single object is wrapped into a one-row insert automatically."],["How are values escaped?","Strings are single-quoted with embedded quotes doubled ('' ), numbers and booleans are written literally, null becomes NULL, and nested objects/arrays are stored as JSON strings."],["Can I change the table name?","Yes — set the table name field and the tool regenerates every INSERT statement instantly."]]},
 };
 
 // �"����� YAML HELPERS �������������������������������������������������������������������������������������������������������������������������"�
@@ -1798,6 +1800,46 @@ function JsonToPython() {
   );
 }
 
+function jsonToSql(data, table) {
+  let rows = Array.isArray(data) ? data : (typeof data === "object" && data !== null ? [data] : []);
+  rows = rows.filter(r => r && typeof r === "object" && !Array.isArray(r));
+  if (!rows.length) return "";
+  const cols = [...new Set(rows.flatMap(r => Object.keys(r)))];
+  const esc = v => {
+    if (v === null || v === undefined) return "NULL";
+    if (typeof v === "number") return Number.isFinite(v) ? String(v) : "NULL";
+    if (typeof v === "boolean") return v ? "TRUE" : "FALSE";
+    if (typeof v === "object") v = JSON.stringify(v);
+    return `'${String(v).replace(/'/g, "''")}'`;
+  };
+  const colList = cols.map(c => `\`${c}\``).join(", ");
+  return rows.map(row => `INSERT INTO \`${table}\` (${colList}) VALUES (${cols.map(c => esc(row[c])).join(", ")});`).join("\n");
+}
+function JsonToSql() {
+  const [input,setInput]=useState(JSON.stringify([{id:1,name:"Alice",active:true},{id:2,name:"O'Brien",active:false}],null,2));
+  const [table,setTable]=useState("users");
+  const [error,setError]=useState("");
+  const output=useMemo(()=>{
+    if(!input.trim()) return "";
+    try{
+      const parsed=JSON.parse(input);
+      const sql=jsonToSql(parsed, (table||"table").replace(/[`\s]/g,"_"));
+      setError(sql?"":"Provide a JSON object or a non-empty array of objects.");
+      return sql;
+    }catch(e){ setError(e.message); return ""; }
+  },[input,table]);
+  return (
+    <VStack>
+      <div><Label>Table Name</Label><Input value={table} onChange={setTable} placeholder="users" style={{maxWidth:220}}/></div>
+      <ErrorBox msg={error}/>
+      <Grid2>
+        <JsonEditor value={input} onChange={setInput} label="Input JSON (array of objects)" height={320}/>
+        <div><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}><Label>SQL INSERT Statements</Label>{output&&<CopyBtn text={output}/>}</div><Textarea value={output} onChange={()=>{}} rows={15} readOnly mono/></div>
+      </Grid2>
+    </VStack>
+  );
+}
+
 // �"����� COMPONENT MAP �����������������������������������������������������������������������������������������������������������������������"�
 const TOOL_COMPONENTS = {
   "json-formatter":    JsonFormatter,
@@ -1829,6 +1871,7 @@ const TOOL_COMPONENTS = {
   "jsonl-converter":   JsonlConverter,
   "json-to-go":        JsonToGo,
   "json-to-python":    JsonToPython,
+  "json-to-sql":       JsonToSql,
 };
 
 // �"����� PAGE SHELLS ���������������������������������������������������������������������������������������������������������������������������"�

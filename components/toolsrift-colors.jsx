@@ -357,6 +357,20 @@ const TOOLS = [
   {id:"contrast-grid",      cat:"a11y",     name:"Contrast Grid Checker",       desc:"Check WCAG contrast for every foreground/background pair in a palette at once", icon:"▦", free:true},
   {id:"oklch-converter",    cat:"convert",  name:"OKLCH Color Converter",       desc:"Convert HEX/RGB to and from OKLCH and OKLab (CSS Color 4)",      icon:"🧭", free:true},
   {id:"material-palette",   cat:"generate", name:"Material Tonal Palette",      desc:"Generate a 50–900 tonal scale from one base color for design systems", icon:"🎚️", free:true},
+  {id:"complementary-color",cat:"convert",  name:"Complementary Color Finder",  desc:"Find the exact complementary (opposite) color for any hex value",  icon:"🔀", free:true},
+  {id:"color-inverter",     cat:"convert",  name:"Color Inverter",              desc:"Invert any color to its RGB negative (255 minus each channel)",   icon:"♻️", free:true},
+  {id:"lighten-darken",     cat:"convert",  name:"Lighten / Darken Color",      desc:"Lighten or darken any color by a precise percentage of lightness", icon:"🔆", free:true},
+  {id:"hsl-adjuster",       cat:"generate", name:"HSL Adjuster",                desc:"Shift hue, saturation and lightness of a color with live preview", icon:"🎛️", free:true},
+  {id:"alpha-blend",        cat:"convert",  name:"Alpha Blend Calculator",      desc:"Composite a translucent color over a background to a solid hex",   icon:"🫧", free:true},
+  {id:"cmyk-rgb-converter", cat:"convert",  name:"CMYK ↔ RGB Converter",        desc:"Convert print CMYK percentages to RGB / HEX and back both ways",   icon:"🖨️", free:true},
+  {id:"grayscale-converter",cat:"convert",  name:"Grayscale Converter",         desc:"Convert any color to perceptual grayscale using Rec.601 luma",    icon:"⚫", free:true},
+  {id:"sepia-converter",    cat:"convert",  name:"Sepia Tone Converter",        desc:"Apply the classic sepia photo tone matrix to any color",          icon:"🟤", free:true},
+  {id:"hex-shorthand",      cat:"convert",  name:"HEX Shorthand Expander",      desc:"Expand 3-digit hex to 6-digit and shorten collapsible hex codes",  icon:"✂️", free:true},
+  {id:"pastel-generator",   cat:"generate", name:"Pastel Color Generator",      desc:"Turn any bold color into a soft pastel version instantly",        icon:"🍬", free:true},
+  {id:"css-color-mix",      cat:"generate", name:"CSS color-mix() Generator",   desc:"Build a CSS color-mix() in srgb and preview the computed result",  icon:"🧬", free:true},
+  {id:"nearest-tailwind",   cat:"reference",name:"Nearest Tailwind Color",      desc:"Find the closest Tailwind CSS color name and shade for any hex",   icon:"🌬️", free:true},
+  {id:"blend-modes",        cat:"generate", name:"Color Blend Mode Calculator", desc:"Compute multiply, screen, overlay and more blend results of 2 colors", icon:"🎞️", free:true},
+  {id:"rgb-percentage",     cat:"convert",  name:"RGB Percentage Converter",    desc:"Convert HEX to percentage rgb(), 0–1 float and 8-bit integer forms", icon:"💯", free:true},
 ];
 
 const CATEGORIES = [
@@ -373,6 +387,20 @@ const TOOL_META = {
   "color-contrast":  {title:"Color Contrast Checker – WCAG AA/AAA Compliance", desc:"Check foreground/background color contrast ratios against WCAG 2.1 AA and AAA standards for accessibility compliance.", faq:[["What is WCAG?","Web Content Accessibility Guidelines — standards ensuring web content is accessible to people with disabilities."],["What contrast ratio is required?","WCAG AA requires 4.5:1 for normal text, 3:1 for large text. AAA requires 7:1 and 4.5:1 respectively."],["What counts as large text?","18pt (24px) or 14pt bold (approximately 18.67px bold) is considered large text."]]},
   "color-harmonies": {title:"Color Harmonies Generator – Complementary, Triadic & More", desc:"Generate color palettes based on color theory harmony rules: complementary, analogous, triadic, tetradic and split-complementary.", faq:[["What is a complementary color?","The color directly opposite on the color wheel, 180° away. Creates maximum contrast."],["What is a triadic harmony?","Three colors evenly spaced 120° apart on the color wheel. Creates vibrant, balanced palettes."],["What is analogous?","Colors that are adjacent on the color wheel (within 30°). Creates harmonious, natural-looking palettes."]]},
   "tailwind-colors": {title:"Tailwind CSS Color Palette – Browse & Copy All Colors", desc:"Browse the complete Tailwind CSS color palette (v3). Click any swatch to copy its hex value or Tailwind class name.", faq:[["How many Tailwind colors are there?","Tailwind v3 includes 22 color families, each with 11 shades from 50 to 950."],["How do I use these in my project?","Use the class names like bg-blue-500 or text-pink-400 directly in your HTML."],["Can I customize Tailwind colors?","Yes — add custom colors in tailwind.config.js under the theme.extend.colors key."]]},
+  "complementary-color": {title:"Free Complementary Color Finder | ToolsRift", desc:"Find the exact complementary color (180° opposite on the color wheel) for any HEX. See both swatches with RGB and HSL values and copy in one click.", faq:[["What is a complementary color?","The color directly opposite on the color wheel — 180° away in hue — which produces the strongest visual contrast when paired."],["How is the complement calculated?","We convert your color to HSL, add 180° to the hue while keeping saturation and lightness, then convert back to HEX."],["Is grey's complement the same color?","Yes — neutral greys have no hue, so their complement is the same grey. Complements only differ for saturated colors."]]},
+  "color-inverter": {title:"Free Color Inverter – RGB Negative | ToolsRift", desc:"Invert any color to its photographic RGB negative by subtracting each channel from 255. Preview the original and inverted swatch and copy the result.", faq:[["How does color inversion work?","Each RGB channel is subtracted from 255, so red 236 becomes 19. This is the same as a photo negative."],["Is inverting the same as the complement?","No. Inversion is 255 minus each RGB channel; a complement rotates the hue 180° in HSL. They usually give different results."],["Does inverting twice return the original?","Yes — inversion is its own inverse, so applying it twice restores the exact original color."]]},
+  "lighten-darken": {title:"Free Lighten & Darken Color Tool | ToolsRift", desc:"Lighten or darken any HEX color by a precise percentage of HSL lightness. Live preview plus a full tint-to-shade strip you can copy instantly.", faq:[["How does lightening work?","We convert to HSL and add your percentage to the lightness channel, clamped between 0% and 100%, then convert back to HEX."],["Does the hue change when I darken?","No. Only the lightness value changes, so the underlying hue and saturation stay the same for consistent tints and shades."],["What is the difference between a tint and a shade?","A tint is a lighter version (more white), a shade is a darker version (more black). This tool produces both."]]},
+  "hsl-adjuster": {title:"Free HSL Adjuster – Hue, Saturation, Lightness | ToolsRift", desc:"Interactively shift the hue, saturation and lightness of any color with sliders and see the HEX, RGB and HSL update live. Copy the adjusted color.", faq:[["What is HSL?","Hue (0–360° color wheel), Saturation (vividness) and Lightness (brightness). It is a more intuitive model than raw RGB for editing colors."],["How do I rotate a hue?","Move the hue slider — adding 120° or 240° gives triadic colors, and 180° gives the complement."],["Are the deltas applied cumulatively?","The sliders set an offset from your base color, so resetting them to zero returns the original color exactly."]]},
+  "alpha-blend": {title:"Free Alpha Blend Calculator | ToolsRift", desc:"Composite a semi-transparent foreground color over a solid background and get the resulting opaque HEX. Perfect for flattening rgba overlays.", faq:[["What does alpha blending compute?","The solid color you would see when a foreground with a given alpha sits over a background: out = fg×alpha + bg×(1−alpha) per channel."],["Why flatten an rgba color?","Some tools and formats need a solid HEX. Flattening tells you the exact opaque color an overlay produces on a known background."],["What alpha gives a 50/50 mix?","An alpha of 0.5 blends the foreground and background equally, producing the midpoint color between them."]]},
+  "cmyk-rgb-converter": {title:"Free CMYK to RGB Converter (Both Ways) | ToolsRift", desc:"Convert CMYK print percentages to RGB and HEX, or convert RGB/HEX back to CMYK. Instant two-way conversion for print and screen color work.", faq:[["What is CMYK?","Cyan, Magenta, Yellow and Key (black) — the subtractive color model used by printers, expressed as 0–100% ink coverage."],["Is CMYK to RGB exact?","This uses the standard mathematical conversion. True print color also depends on ICC profiles and paper, so treat it as a close approximation."],["Why does RGB→CMYK→RGB shift slightly?","CMYK has a smaller gamut and the rounding to whole percentages loses a little precision, so round-trips can differ by a point or two."]]},
+  "grayscale-converter": {title:"Free Grayscale Color Converter | ToolsRift", desc:"Convert any color to true perceptual grayscale using the Rec.601 luma formula (0.299R + 0.587G + 0.114B). Preview and copy the grey HEX.", faq:[["How is grayscale calculated?","We use Rec.601 luma: 0.299×R + 0.587×G + 0.114×B, which weights green highest because the eye is most sensitive to it."],["Why not just average the channels?","A simple average ignores how the eye perceives brightness. Luma weighting produces greys that match perceived lightness far better."],["Is the result always neutral grey?","Yes — the red, green and blue channels are set to the same luma value, giving a perfectly neutral grey."]]},
+  "sepia-converter": {title:"Free Sepia Tone Color Converter | ToolsRift", desc:"Apply the classic sepia photo-tone matrix to any color for a warm vintage brown look. See the original and sepia swatch and copy the HEX.", faq:[["What is a sepia tone?","A warm brownish tint reminiscent of old photographs, produced by a fixed color matrix applied to each RGB channel."],["What matrix is used?","The widely-used sepia matrix: R'=0.393R+0.769G+0.189B, G'=0.349R+0.686G+0.168B, B'=0.272R+0.534G+0.131B, clamped to 0–255."],["Can I sepia a whole image here?","This tool tones a single color. For images, apply the same matrix as a CSS or canvas filter across every pixel."]]},
+  "hex-shorthand": {title:"Free HEX Shorthand Expander & Shortener | ToolsRift", desc:"Expand 3-digit shorthand hex (#ABC) to full 6-digit form and collapse eligible 6-digit codes to shorthand. Clean, valid HEX every time.", faq:[["What is shorthand hex?","A 3-digit form like #ABC where each digit is doubled, so #ABC expands to #AABBCC. It only works when each channel's two digits match."],["Can every color be shortened?","No. A 6-digit hex only collapses to shorthand when each pair of digits is identical (e.g. #33AAFF → #3AF); otherwise it stays 6-digit."],["Does it accept codes without a #?","Yes — you can paste with or without the leading hash and the tool normalizes the output for you."]]},
+  "pastel-generator": {title:"Free Pastel Color Generator | ToolsRift", desc:"Turn any bold or dark color into a soft, light pastel version instantly. Great for backgrounds, tags and gentle UI palettes. Copy the pastel HEX.", faq:[["What makes a color a pastel?","Pastels are high in lightness and low-to-moderate in saturation, giving a soft, airy feel. We raise lightness and reduce saturation."],["Will my hue stay the same?","Yes — the hue is preserved so a red stays a pinkish-red pastel and a blue stays a soft blue."],["Can I pastel a very dark color?","Yes. The tool lifts lightness into the pastel range regardless of how dark the input is, keeping the original hue."]]},
+  "css-color-mix": {title:"Free CSS color-mix() Generator | ToolsRift", desc:"Build a modern CSS color-mix(in srgb, …) declaration from two colors and a ratio, and preview the exact computed HEX it resolves to.", faq:[["What is CSS color-mix()?","A CSS Color 5 function that blends two colors in a chosen color space. color-mix(in srgb, red 30%, blue) mixes 30% red with 70% blue."],["Does the preview match the browser?","We compute the srgb result the same way browsers do for the srgb space — linear interpolation of the gamma-encoded channels."],["Which browsers support color-mix()?","color-mix() is supported in all current major browsers. The generated HEX is a safe fallback for older ones."]]},
+  "nearest-tailwind": {title:"Free Nearest Tailwind Color Finder | ToolsRift", desc:"Enter any HEX and find the closest Tailwind CSS color name and shade using perceptual CIELAB distance. Copy the class name or hex instantly.", faq:[["How is the nearest color found?","We compute the CIELAB ΔE distance from your color to every Tailwind shade and return the closest match — perceptually accurate, not just numeric."],["Which Tailwind version is used?","The default Tailwind v3 palette of core color families, each with shades 50 through 900."],["What does a distance of 0 mean?","A ΔE of 0 means your color is an exact Tailwind color, so you can use its class name directly with no visible difference."]]},
+  "blend-modes": {title:"Free Color Blend Mode Calculator | ToolsRift", desc:"Compute the result of multiply, screen, overlay, darken, lighten, difference and add blend modes for two colors. See every result and copy the HEX.", faq:[["What are blend modes?","Formulas that combine a base and blend color per channel — the same math Photoshop and CSS mix-blend-mode use for layers."],["How does multiply differ from screen?","Multiply darkens (channels multiplied, so white keeps the base and black forces black); screen lightens (the inverse, so black keeps the base)."],["Is overlay order sensitive?","Yes — overlay uses the base color to decide between multiply and screen, so swapping base and blend can change the result."]]},
+  "rgb-percentage": {title:"Free RGB Percentage Converter | ToolsRift", desc:"Convert any HEX color into percentage rgb(), 0–1 normalized float and 8-bit integer forms — the values design tokens and shaders expect.", faq:[["What is percentage rgb()?","CSS allows rgb() channels as percentages, e.g. rgb(100%, 50%, 0%). Each 0–255 value is divided by 255 and expressed as a percent."],["What are the 0–1 float values for?","Graphics and shader code (WebGL, SwiftUI, design tokens) often expect channels normalized to a 0–1 range instead of 0–255."],["Is the conversion lossless?","The integer form is exact; the percentage and float forms are rounded for readability but map back to the same 8-bit color."]]},
 };
 
 // ─── TOOL COMPONENTS ─────────────────────────────────────────────────────────
@@ -435,12 +463,16 @@ function ColorConverter() {
   const [h,setH]=useState(330); const [s,setS]=useState(81); const [l,setL]=useState(604);
   const [c,setC]=useState(0); const [m,setM]=useState(69); const [y,setY]=useState(35); const [k,setK]=useState(7);
 
-  const sync = useCallback((source, val) => {
+  const sync = useCallback((source, val, next) => {
     let rgb2;
+    const nx = next || {};
+    const rr=nx.r!==undefined?nx.r:r, gg=nx.g!==undefined?nx.g:g, bb=nx.b!==undefined?nx.b:b;
+    const hh=nx.h!==undefined?nx.h:h, ss=nx.s!==undefined?nx.s:s, ll=nx.l!==undefined?nx.l:l;
+    const cc=nx.c!==undefined?nx.c:c, mm=nx.m!==undefined?nx.m:m, yy=nx.y!==undefined?nx.y:y, kk=nx.k!==undefined?nx.k:k;
     if(source==="hex"&&hexValid(val)) { rgb2=hexToRgb(val); }
-    else if(source==="rgb") { rgb2={r,g,b}; }
-    else if(source==="hsl") { rgb2=hslToRgb(h,s,l/10); }
-    else if(source==="cmyk") { rgb2=cmykToRgb(c,m,y,k); }
+    else if(source==="rgb") { rgb2={r:rr,g:gg,b:bb}; }
+    else if(source==="hsl") { rgb2=hslToRgb(hh,ss,ll/10); }
+    else if(source==="cmyk") { rgb2=cmykToRgb(cc,mm,yy,kk); }
     if(!rgb2) return;
     const hx=rgbToHex(rgb2.r,rgb2.g,rgb2.b);
     const hl=rgbToHsl(rgb2.r,rgb2.g,rgb2.b);
@@ -474,9 +506,9 @@ function ColorConverter() {
           <Input value={hex} onChange={v=>{setHex(v);sync("hex",v);}} mono placeholder="#EC4899"/>
         </div>
       )}
-      {mode==="rgb"&&<Grid3><div><Label>R (0–255)</Label><Input value={r} onChange={v=>{setR(Number(v));sync("rgb");}} type="number" mono/></div><div><Label>G (0–255)</Label><Input value={g} onChange={v=>{setG(Number(v));sync("rgb");}} type="number" mono/></div><div><Label>B (0–255)</Label><Input value={b} onChange={v=>{setB(Number(v));sync("rgb");}} type="number" mono/></div></Grid3>}
-      {mode==="hsl"&&<Grid3><div><Label>H (0–360)</Label><Input value={h} onChange={v=>{setH(Number(v));sync("hsl");}} type="number" mono/></div><div><Label>S (0–100)</Label><Input value={s} onChange={v=>{setS(Number(v));sync("hsl");}} type="number" mono/></div><div><Label>L (0–100)</Label><Input value={Math.round(l/10)} onChange={v=>{setL(Number(v)*10);sync("hsl");}} type="number" mono/></div></Grid3>}
-      {mode==="cmyk"&&<div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:10}}>{[["C",c,setC],["M",m,setM],["Y",y,setY],["K",k,setK]].map(([lbl,val,set])=><div key={lbl}><Label>{lbl} %</Label><Input value={val} onChange={v=>{set(Number(v));sync("cmyk");}} type="number" mono/></div>)}</div>}
+      {mode==="rgb"&&<Grid3><div><Label>R (0–255)</Label><Input value={r} onChange={v=>{setR(Number(v));sync("rgb",null,{r:Number(v)});}} type="number" mono/></div><div><Label>G (0–255)</Label><Input value={g} onChange={v=>{setG(Number(v));sync("rgb",null,{g:Number(v)});}} type="number" mono/></div><div><Label>B (0–255)</Label><Input value={b} onChange={v=>{setB(Number(v));sync("rgb",null,{b:Number(v)});}} type="number" mono/></div></Grid3>}
+      {mode==="hsl"&&<Grid3><div><Label>H (0–360)</Label><Input value={h} onChange={v=>{setH(Number(v));sync("hsl",null,{h:Number(v)});}} type="number" mono/></div><div><Label>S (0–100)</Label><Input value={s} onChange={v=>{setS(Number(v));sync("hsl",null,{s:Number(v)});}} type="number" mono/></div><div><Label>L (0–100)</Label><Input value={Math.round(l/10)} onChange={v=>{setL(Number(v)*10);sync("hsl",null,{l:Number(v)*10});}} type="number" mono/></div></Grid3>}
+      {mode==="cmyk"&&<div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:10}}>{[["C",c,setC,"c"],["M",m,setM,"m"],["Y",y,setY,"y"],["K",k,setK,"k"]].map(([lbl,val,set,key])=><div key={lbl}><Label>{lbl} %</Label><Input value={val} onChange={v=>{set(Number(v));sync("cmyk",null,{[key]:Number(v)});}} type="number" mono/></div>)}</div>}
       <div style={{height:80,borderRadius:10,background:hexValid(hex)?hex:"#000",border:`1px solid ${C.border}`,transition:"background .1s"}}/>
       <Card>
         {allFormats.map(([l2,v2])=><StatRow key={l2} label={l2} value={v2}/>)}
@@ -1509,6 +1541,503 @@ function MaterialPalette() {
   );
 }
 
+// ─── ADDED COLOR TOOLS (batch) ───────────────────────────────────────────────
+const clampN = (v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+
+function SwatchBox({ label, hex, sub, copy=true, height=96 }) {
+  const v = hexValid(hex);
+  const lum = getLuminance(v?hex:"#000000");
+  const fg = lum>0.4?"#000":"#fff";
+  return (
+    <div>
+      {label&&<Label>{label}</Label>}
+      <div style={{height,borderRadius:12,background:v?hex:"#000",border:`1px solid ${C.border}`,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:6}} className="fade-in">
+        <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:16,fontWeight:700,color:fg}}>{hex}</span>
+        {sub&&<span style={{fontSize:11,color:lum>0.4?"rgba(0,0,0,0.6)":"rgba(255,255,255,0.65)"}}>{sub}</span>}
+        {copy&&<CopyBtn text={hex} label="Copy"/>}
+      </div>
+    </div>
+  );
+}
+
+function InvalidHex({ msg="Enter a valid 6-digit hex color like #3B82F6." }) {
+  return <div style={{padding:12,background:"rgba(239,68,68,0.1)",border:"1px solid rgba(239,68,68,0.3)",borderRadius:8,fontSize:13,color:C.text}}>{msg}</div>;
+}
+
+function ComplementaryColor() {
+  const [hex, setHex] = useState("#EC4899");
+  const valid = hexValid(hex);
+  const rgb = hexToRgb(valid?hex:"#EC4899");
+  const [h,s,l] = rgbToHsl(rgb.r,rgb.g,rgb.b);
+  const comp = hslToHex((h+180)%360,s,l);
+  return (
+    <VStack>
+      <ColorInput label="Base Color" value={hex} onChange={setHex}/>
+      {valid ? (
+        <>
+          <Grid2>
+            <SwatchBox label="Base" hex={hex.toUpperCase()} sub={`hue ${h}°`}/>
+            <SwatchBox label="Complement (+180°)" hex={comp} sub={`hue ${(h+180)%360}°`}/>
+          </Grid2>
+          <div style={{height:44,display:"flex",borderRadius:10,overflow:"hidden",border:`1px solid ${C.border}`}}>
+            <div style={{flex:1,background:hex}}/><div style={{flex:1,background:comp}}/>
+          </div>
+          <Card>
+            <StatRow label="Base HEX" value={hex.toUpperCase()}/>
+            <StatRow label="Complement HEX" value={comp} accent={C.pink}/>
+            <StatRow label="Complement RGB" value={(()=>{const c=hexToRgb(comp);return `rgb(${c.r}, ${c.g}, ${c.b})`;})()}/>
+            <StatRow label="Complement HSL" value={`hsl(${(h+180)%360}, ${s}%, ${l}%)`}/>
+          </Card>
+        </>
+      ) : <InvalidHex/>}
+    </VStack>
+  );
+}
+
+function ColorInverter() {
+  const [hex, setHex] = useState("#EC4899");
+  const valid = hexValid(hex);
+  const rgb = hexToRgb(valid?hex:"#EC4899");
+  const inv = rgbToHex(255-rgb.r,255-rgb.g,255-rgb.b);
+  const ci = hexToRgb(inv);
+  return (
+    <VStack>
+      <ColorInput label="Color" value={hex} onChange={setHex}/>
+      {valid ? (
+        <>
+          <Grid2>
+            <SwatchBox label="Original" hex={hex.toUpperCase()}/>
+            <SwatchBox label="Inverted (RGB negative)" hex={inv}/>
+          </Grid2>
+          <Card>
+            <StatRow label="Original RGB" value={`rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`}/>
+            <StatRow label="Inverted HEX" value={inv} accent={C.pink}/>
+            <StatRow label="Inverted RGB" value={`rgb(${ci.r}, ${ci.g}, ${ci.b})`}/>
+          </Card>
+          <div style={{fontSize:12,color:C.muted,lineHeight:1.6}}>Each channel is subtracted from 255 (a photographic negative). Inverting twice returns the original color.</div>
+        </>
+      ) : <InvalidHex/>}
+    </VStack>
+  );
+}
+
+function LightenDarken() {
+  const [hex, setHex] = useState("#3B82F6");
+  const [amt, setAmt] = useState(20);
+  const valid = hexValid(hex);
+  const rgb = hexToRgb(valid?hex:"#3B82F6");
+  const [h,s,l] = rgbToHsl(rgb.r,rgb.g,rgb.b);
+  const out = hslToHex(h,s,clampN(l+amt,0,100));
+  const strip = useMemo(()=>[-40,-30,-20,-10,0,10,20,30,40].map(d=>({d,c:hslToHex(h,s,clampN(l+d,0,100))})),[h,s,l]);
+  return (
+    <VStack>
+      <ColorInput label="Base Color" value={hex} onChange={setHex}/>
+      {valid ? (
+        <>
+          <Slider label={`Lightness ${amt>=0?"+":""}${amt}%`} value={amt} onChange={setAmt} min={-100} max={100} step={1} unit="%"/>
+          <SwatchBox label="Result" hex={out} sub={`lightness ${clampN(l+amt,0,100)}%`}/>
+          <div>
+            <Label>Tint / Shade Strip</Label>
+            <div style={{display:"flex",height:56,borderRadius:10,overflow:"hidden",marginTop:6,border:`1px solid ${C.border}`}}>
+              {strip.map(({d,c})=>(
+                <div key={d} style={{flex:1,background:c,cursor:"pointer",display:"flex",alignItems:"flex-end",justifyContent:"center",paddingBottom:3}} onClick={()=>setAmt(d)} title={`${d>=0?"+":""}${d}% → ${c}`}>
+                  <span style={{fontSize:8,color:getLuminance(c)>0.4?"rgba(0,0,0,0.6)":"rgba(255,255,255,0.7)",fontFamily:"'JetBrains Mono',monospace"}}>{d>0?"+"+d:d}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <Card>
+            <StatRow label="Result HEX" value={out} accent={C.pink}/>
+            <StatRow label="Result RGB" value={(()=>{const c=hexToRgb(out);return `rgb(${c.r}, ${c.g}, ${c.b})`;})()}/>
+          </Card>
+        </>
+      ) : <InvalidHex/>}
+    </VStack>
+  );
+}
+
+function HslAdjuster() {
+  const [hex, setHex] = useState("#EC4899");
+  const [dh, setDh] = useState(0);
+  const [ds, setDs] = useState(0);
+  const [dl, setDl] = useState(0);
+  const valid = hexValid(hex);
+  const rgb = hexToRgb(valid?hex:"#EC4899");
+  const [h,s,l] = rgbToHsl(rgb.r,rgb.g,rgb.b);
+  const nh=(h+dh+360)%360, ns=clampN(s+ds,0,100), nl=clampN(l+dl,0,100);
+  const out = hslToHex(nh,ns,nl);
+  const co = hexToRgb(out);
+  return (
+    <VStack>
+      <ColorInput label="Base Color" value={hex} onChange={setHex}/>
+      {valid ? (
+        <>
+          <Grid2>
+            <SwatchBox label="Base" hex={hex.toUpperCase()} sub={`hsl(${h}, ${s}%, ${l}%)`}/>
+            <SwatchBox label="Adjusted" hex={out} sub={`hsl(${nh}, ${ns}%, ${nl}%)`}/>
+          </Grid2>
+          <Slider label={`Hue ${dh>=0?"+":""}${dh}°`} value={dh} onChange={setDh} min={-180} max={180} step={1} unit="°"/>
+          <Slider label={`Saturation ${ds>=0?"+":""}${ds}%`} value={ds} onChange={setDs} min={-100} max={100} step={1} unit="%"/>
+          <Slider label={`Lightness ${dl>=0?"+":""}${dl}%`} value={dl} onChange={setDl} min={-100} max={100} step={1} unit="%"/>
+          <div style={{display:"flex",gap:8}}><Btn variant="secondary" size="sm" onClick={()=>{setDh(0);setDs(0);setDl(0);}}>Reset</Btn></div>
+          <Card>
+            <StatRow label="Adjusted HEX" value={out} accent={C.pink}/>
+            <StatRow label="Adjusted RGB" value={`rgb(${co.r}, ${co.g}, ${co.b})`}/>
+            <StatRow label="Adjusted HSL" value={`hsl(${nh}, ${ns}%, ${nl}%)`}/>
+          </Card>
+        </>
+      ) : <InvalidHex/>}
+    </VStack>
+  );
+}
+
+function AlphaBlend() {
+  const [fg, setFg] = useState("#EC4899");
+  const [bg, setBg] = useState("#0D1117");
+  const [alpha, setAlpha] = useState(50);
+  const valid = hexValid(fg)&&hexValid(bg);
+  const f = hexToRgb(hexValid(fg)?fg:"#EC4899");
+  const b = hexToRgb(hexValid(bg)?bg:"#0D1117");
+  const a = alpha/100;
+  const mix = (x,y)=>Math.round(x*a+y*(1-a));
+  const out = rgbToHex(mix(f.r,b.r),mix(f.g,b.g),mix(f.b,b.b));
+  return (
+    <VStack>
+      <Grid2>
+        <ColorInput label="Foreground" value={fg} onChange={setFg}/>
+        <ColorInput label="Background" value={bg} onChange={setBg}/>
+      </Grid2>
+      <Slider label="Foreground Alpha" value={alpha} onChange={setAlpha} min={0} max={100} unit="%"/>
+      {valid ? (
+        <>
+          <div style={{position:"relative",height:96,borderRadius:12,overflow:"hidden",border:`1px solid ${C.border}`,background:bg}}>
+            <div style={{position:"absolute",inset:0,background:`rgba(${f.r},${f.g},${f.b},${a.toFixed(2)})`,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:6}}>
+              <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:16,fontWeight:700,color:getLuminance(out)>0.4?"#000":"#fff"}}>{out}</span>
+              <CopyBtn text={out} label="Copy Flattened"/>
+            </div>
+          </div>
+          <Card>
+            <StatRow label="Overlay rgba()" value={`rgba(${f.r}, ${f.g}, ${f.b}, ${a.toFixed(2)})`}/>
+            <StatRow label="Flattened HEX" value={out} accent={C.pink}/>
+            <StatRow label="Flattened RGB" value={(()=>{const c=hexToRgb(out);return `rgb(${c.r}, ${c.g}, ${c.b})`;})()}/>
+          </Card>
+          <div style={{fontSize:12,color:C.muted,lineHeight:1.6}}>out = fg × α + bg × (1 − α), computed per channel. This is the solid color the translucent overlay produces on this background.</div>
+        </>
+      ) : <InvalidHex/>}
+    </VStack>
+  );
+}
+
+function CmykRgbConverter() {
+  const [c,setC]=useState(0),[m,setM]=useState(69),[y,setY]=useState(35),[k,setK]=useState(7);
+  const [hex,setHex]=useState("#3B82F6");
+  const rgbFromCmyk = cmykToRgb(clampN(+c||0,0,100),clampN(+m||0,0,100),clampN(+y||0,0,100),clampN(+k||0,0,100));
+  const hexFromCmyk = rgbToHex(rgbFromCmyk.r,rgbFromCmyk.g,rgbFromCmyk.b);
+  const validHex = hexValid(hex);
+  const rgbFromHex = hexToRgb(validHex?hex:"#3B82F6");
+  const cmykFromHex = rgbToCmyk(rgbFromHex.r,rgbFromHex.g,rgbFromHex.b);
+  const numCell = (lbl,val,set)=>(<div><Label>{lbl} %</Label><Input value={val} onChange={v=>set(v)} type="number" mono/></div>);
+  return (
+    <VStack>
+      <Card>
+        <Label>CMYK → RGB / HEX</Label>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:10,marginTop:8}}>
+          {numCell("C",c,setC)}{numCell("M",m,setM)}{numCell("Y",y,setY)}{numCell("K",k,setK)}
+        </div>
+        <div style={{marginTop:12}}><SwatchBox hex={hexFromCmyk} height={64}/></div>
+        <div style={{marginTop:10}}>
+          <StatRow label="RGB" value={`rgb(${rgbFromCmyk.r}, ${rgbFromCmyk.g}, ${rgbFromCmyk.b})`}/>
+          <StatRow label="HEX" value={hexFromCmyk} accent={C.pink}/>
+        </div>
+      </Card>
+      <Card>
+        <Label>RGB / HEX → CMYK</Label>
+        <div style={{marginTop:8}}><ColorInput value={hex} onChange={setHex}/></div>
+        {validHex ? (
+          <div style={{marginTop:10}}>
+            <StatRow label="CMYK" value={`cmyk(${cmykFromHex.c}%, ${cmykFromHex.m}%, ${cmykFromHex.y}%, ${cmykFromHex.k}%)`} accent={C.pink}/>
+            <StatRow label="C / M / Y / K" value={`${cmykFromHex.c} / ${cmykFromHex.m} / ${cmykFromHex.y} / ${cmykFromHex.k}`}/>
+          </div>
+        ) : <div style={{marginTop:10}}><InvalidHex/></div>}
+      </Card>
+    </VStack>
+  );
+}
+
+function GrayscaleConverter() {
+  const [hex, setHex] = useState("#EC4899");
+  const valid = hexValid(hex);
+  const rgb = hexToRgb(valid?hex:"#EC4899");
+  const yv = Math.round(0.299*rgb.r+0.587*rgb.g+0.114*rgb.b);
+  const grey = rgbToHex(yv,yv,yv);
+  return (
+    <VStack>
+      <ColorInput label="Color" value={hex} onChange={setHex}/>
+      {valid ? (
+        <>
+          <Grid2>
+            <SwatchBox label="Original" hex={hex.toUpperCase()}/>
+            <SwatchBox label="Grayscale" hex={grey} sub={`luma ${yv}`}/>
+          </Grid2>
+          <Card>
+            <StatRow label="Grayscale HEX" value={grey} accent={C.pink}/>
+            <StatRow label="Grayscale RGB" value={`rgb(${yv}, ${yv}, ${yv})`}/>
+            <StatRow label="Luma (Rec.601)" value={yv}/>
+          </Card>
+          <div style={{fontSize:12,color:C.muted,lineHeight:1.6}}>Grey = 0.299·R + 0.587·G + 0.114·B — the Rec.601 luma weighting that matches how bright the eye perceives each channel.</div>
+        </>
+      ) : <InvalidHex/>}
+    </VStack>
+  );
+}
+
+function SepiaConverter() {
+  const [hex, setHex] = useState("#3B82F6");
+  const valid = hexValid(hex);
+  const rgb = hexToRgb(valid?hex:"#3B82F6");
+  const sr = clampN(Math.round(0.393*rgb.r+0.769*rgb.g+0.189*rgb.b),0,255);
+  const sg = clampN(Math.round(0.349*rgb.r+0.686*rgb.g+0.168*rgb.b),0,255);
+  const sb = clampN(Math.round(0.272*rgb.r+0.534*rgb.g+0.131*rgb.b),0,255);
+  const sepia = rgbToHex(sr,sg,sb);
+  return (
+    <VStack>
+      <ColorInput label="Color" value={hex} onChange={setHex}/>
+      {valid ? (
+        <>
+          <Grid2>
+            <SwatchBox label="Original" hex={hex.toUpperCase()}/>
+            <SwatchBox label="Sepia Tone" hex={sepia}/>
+          </Grid2>
+          <Card>
+            <StatRow label="Sepia HEX" value={sepia} accent={C.pink}/>
+            <StatRow label="Sepia RGB" value={`rgb(${sr}, ${sg}, ${sb})`}/>
+          </Card>
+          <div style={{fontSize:12,color:C.muted,lineHeight:1.6}}>Applies the classic sepia matrix per channel, then clamps to 0–255 for a warm vintage brown look.</div>
+        </>
+      ) : <InvalidHex/>}
+    </VStack>
+  );
+}
+
+function HexShorthand() {
+  const [val, setVal] = useState("#3AF");
+  const norm = (v)=>{ v=v.trim(); if(!v) return ""; return v.startsWith("#")?v:"#"+v; };
+  const raw = norm(val).replace("#","");
+  const validLen = raw.length===3||raw.length===6;
+  const hexChars = /^[0-9a-fA-F]*$/.test(raw);
+  const ok = validLen && hexChars;
+  const expanded = !ok ? null : (raw.length===3 ? "#"+raw.split("").map(x=>x+x).join("").toUpperCase() : "#"+raw.toUpperCase());
+  const shortened = (()=>{
+    if(!expanded) return null;
+    const h=expanded.replace("#","");
+    return (h[0]===h[1]&&h[2]===h[3]&&h[4]===h[5]) ? "#"+(h[0]+h[2]+h[4]).toUpperCase() : null;
+  })();
+  return (
+    <VStack>
+      <div><Label>HEX Code (3 or 6 digit, # optional)</Label><Input value={val} onChange={setVal} mono placeholder="#3AF or 33AAFF"/></div>
+      {ok ? (
+        <>
+          <SwatchBox hex={expanded} height={64}/>
+          <Card>
+            <StatRow label="Expanded (6-digit)" value={expanded} accent={C.pink}/>
+            <StatRow label="Shorthand (3-digit)" value={shortened || "— not collapsible"} mono={!!shortened}/>
+          </Card>
+          {!shortened && <div style={{fontSize:12,color:C.muted,lineHeight:1.6}}>This color can't be written in 3-digit shorthand because at least one channel's two hex digits differ.</div>}
+        </>
+      ) : <InvalidHex msg="Enter a 3-digit (#ABC) or 6-digit (#AABBCC) hex code."/>}
+    </VStack>
+  );
+}
+
+function PastelGenerator() {
+  const [hex, setHex] = useState("#B91C1C");
+  const valid = hexValid(hex);
+  const rgb = hexToRgb(valid?hex:"#B91C1C");
+  const [h,s,l] = rgbToHsl(rgb.r,rgb.g,rgb.b);
+  const ns = clampN(Math.round(s*0.5),25,60);
+  const nl = clampN(Math.round(70+l*0.2),78,90);
+  const pastel = hslToHex(h,ns,nl);
+  const cp = hexToRgb(pastel);
+  return (
+    <VStack>
+      <ColorInput label="Bold Color" value={hex} onChange={setHex}/>
+      {valid ? (
+        <>
+          <Grid2>
+            <SwatchBox label="Original" hex={hex.toUpperCase()}/>
+            <SwatchBox label="Pastel" hex={pastel} sub={`hsl(${h}, ${ns}%, ${nl}%)`}/>
+          </Grid2>
+          <Card>
+            <StatRow label="Pastel HEX" value={pastel} accent={C.pink}/>
+            <StatRow label="Pastel RGB" value={`rgb(${cp.r}, ${cp.g}, ${cp.b})`}/>
+            <StatRow label="Pastel HSL" value={`hsl(${h}, ${ns}%, ${nl}%)`}/>
+          </Card>
+          <div style={{fontSize:12,color:C.muted,lineHeight:1.6}}>The hue is kept while saturation is softened and lightness is lifted into the pastel range for an airy, gentle tone.</div>
+        </>
+      ) : <InvalidHex/>}
+    </VStack>
+  );
+}
+
+function CssColorMix() {
+  const [a, setA] = useState("#EC4899");
+  const [b, setB] = useState("#3B82F6");
+  const [pctA, setPctA] = useState(50);
+  const valid = hexValid(a)&&hexValid(b);
+  const ca = hexToRgb(hexValid(a)?a:"#EC4899");
+  const cb = hexToRgb(hexValid(b)?b:"#3B82F6");
+  const t = pctA/100;
+  const mix = (x,y)=>Math.round(x*t+y*(1-t));
+  const result = rgbToHex(mix(ca.r,cb.r),mix(ca.g,cb.g),mix(ca.b,cb.b));
+  const css = `color-mix(in srgb, ${a.toUpperCase()} ${pctA}%, ${b.toUpperCase()})`;
+  return (
+    <VStack>
+      <Grid2>
+        <ColorInput label="Color A" value={a} onChange={setA}/>
+        <ColorInput label="Color B" value={b} onChange={setB}/>
+      </Grid2>
+      <Slider label={`Color A weight — ${pctA}% A + ${100-pctA}% B`} value={pctA} onChange={setPctA} min={0} max={100} unit="%"/>
+      {valid ? (
+        <>
+          <SwatchBox label="Computed Result (srgb)" hex={result}/>
+          <div>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}><Label>CSS color-mix()</Label><CopyBtn text={css}/></div>
+            <div style={{background:"rgba(0,0,0,0.35)",borderRadius:8,padding:"12px 14px",fontFamily:"'JetBrains Mono',monospace",fontSize:13,color:C.text,wordBreak:"break-all"}}>{css}</div>
+          </div>
+          <Card>
+            <StatRow label="Computed HEX" value={result} accent={C.pink}/>
+            <StatRow label="Computed RGB" value={(()=>{const c=hexToRgb(result);return `rgb(${c.r}, ${c.g}, ${c.b})`;})()}/>
+          </Card>
+          <div style={{fontSize:12,color:C.muted,lineHeight:1.6}}>The preview shows the exact result browsers compute for the srgb color space. Use the CSS as-is; the HEX is a safe fallback.</div>
+        </>
+      ) : <InvalidHex/>}
+    </VStack>
+  );
+}
+
+function NearestTailwind() {
+  const [hex, setHex] = useState("#4F86E8");
+  const valid = hexValid(hex);
+  const matches = useMemo(()=>{
+    if(!valid) return [];
+    const list = [];
+    for(const [fam,shades] of Object.entries(TAILWIND)) {
+      shades.forEach((sh,i)=>list.push({name:`${fam}-${TW_SHADES[i]}`,hex:sh,dist:colorDistance(hex,sh)}));
+    }
+    return list.sort((a,b)=>a.dist-b.dist).slice(0,6);
+  },[hex,valid]);
+  const best = matches[0];
+  return (
+    <VStack>
+      <ColorInput label="Your Color" value={hex} onChange={setHex}/>
+      {valid && best ? (
+        <>
+          <div className="fade-in" style={{display:"flex",gap:16,alignItems:"center",padding:"16px 20px",background:"rgba(168,85,247,0.08)",border:"1px solid rgba(168,85,247,0.22)",borderRadius:12}}>
+            <div style={{width:72,height:72,borderRadius:12,background:best.hex,border:`1px solid ${C.border}`,flexShrink:0}}/>
+            <div>
+              <div style={{fontFamily:"'Sora',sans-serif",fontSize:20,fontWeight:700,color:C.text}}>{best.name}</div>
+              <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:13,color:C.muted,marginTop:4}}>{best.hex} — ΔE {best.dist.toFixed(1)}</div>
+              <div style={{marginTop:8,display:"flex",gap:8}}>
+                <CopyBtn text={best.name} label="Copy Class"/>
+                <CopyBtn text={best.hex} label="Copy HEX"/>
+              </div>
+            </div>
+          </div>
+          <div>
+            <Label>Closest Matches</Label>
+            <div style={{display:"flex",flexDirection:"column",gap:6,marginTop:6}}>
+              {matches.map((mm)=>(
+                <div key={mm.name} style={{display:"flex",gap:10,alignItems:"center",padding:"8px 12px",background:"rgba(255,255,255,0.02)",borderRadius:8}}>
+                  <div style={{width:28,height:28,borderRadius:6,background:mm.hex,border:`1px solid ${C.border}`,flexShrink:0}}/>
+                  <span style={{flex:1,fontSize:13,color:C.text}}>{mm.name}</span>
+                  <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:C.muted}}>{mm.hex}</span>
+                  <span style={{fontSize:11,color:C.muted}}>ΔE {mm.dist.toFixed(1)}</span>
+                  <CopyBtn text={mm.hex} label=""/>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      ) : <InvalidHex/>}
+    </VStack>
+  );
+}
+
+function BlendModes() {
+  const [a, setA] = useState("#FF6633");
+  const [b, setB] = useState("#3399FF");
+  const valid = hexValid(a)&&hexValid(b);
+  const ca = hexToRgb(hexValid(a)?a:"#FF6633");
+  const cb = hexToRgb(hexValid(b)?b:"#3399FF");
+  const modes = ["multiply","screen","overlay","darken","lighten","difference","add"];
+  const ch = (mode,x,y)=>{
+    switch(mode){
+      case "multiply": return x*y/255;
+      case "screen": return 255-(255-x)*(255-y)/255;
+      case "overlay": return x<128?2*x*y/255:255-2*(255-x)*(255-y)/255;
+      case "darken": return Math.min(x,y);
+      case "lighten": return Math.max(x,y);
+      case "difference": return Math.abs(x-y);
+      case "add": return Math.min(255,x+y);
+      default: return x;
+    }
+  };
+  const blend = (mode)=>rgbToHex(Math.round(ch(mode,ca.r,cb.r)),Math.round(ch(mode,ca.g,cb.g)),Math.round(ch(mode,ca.b,cb.b)));
+  return (
+    <VStack>
+      <Grid2>
+        <ColorInput label="Base Color" value={a} onChange={setA}/>
+        <ColorInput label="Blend Color" value={b} onChange={setB}/>
+      </Grid2>
+      {valid ? (
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:10}}>
+          {modes.map(mode=>{
+            const res=blend(mode);
+            return (
+              <div key={mode} style={{background:"rgba(255,255,255,0.02)",border:`1px solid ${C.border}`,borderRadius:10,overflow:"hidden"}}>
+                <div style={{height:52,background:res,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:12,fontWeight:700,color:getLuminance(res)>0.4?"#000":"#fff"}}>{res}</span>
+                </div>
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"6px 10px"}}>
+                  <span style={{fontSize:12,color:C.text,textTransform:"capitalize"}}>{mode}</span>
+                  <CopyBtn text={res} label=""/>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : <InvalidHex/>}
+    </VStack>
+  );
+}
+
+function RgbPercentage() {
+  const [hex, setHex] = useState("#3B82F6");
+  const valid = hexValid(hex);
+  const rgb = hexToRgb(valid?hex:"#3B82F6");
+  const p = v=>+(v/255*100).toFixed(1);
+  const f = v=>+(v/255).toFixed(3);
+  const pctStr = `rgb(${p(rgb.r)}%, ${p(rgb.g)}%, ${p(rgb.b)}%)`;
+  const floatStr = `${f(rgb.r)}, ${f(rgb.g)}, ${f(rgb.b)}`;
+  return (
+    <VStack>
+      <ColorInput label="HEX Color" value={hex} onChange={setHex}/>
+      {valid ? (
+        <>
+          <SwatchBox hex={hex.toUpperCase()} height={64}/>
+          <Card>
+            <StatRow label="Percentage rgb()" value={pctStr} accent={C.pink}/>
+            <StatRow label="8-bit integer" value={`${rgb.r}, ${rgb.g}, ${rgb.b}`}/>
+            <StatRow label="Normalized 0–1 float" value={floatStr}/>
+            <StatRow label="Vec3 (GLSL)" value={`vec3(${f(rgb.r)}, ${f(rgb.g)}, ${f(rgb.b)})`}/>
+          </Card>
+          <div style={{fontSize:12,color:C.muted,lineHeight:1.6}}>Percentage and float forms are rounded for readability but map back to the same 8-bit color.</div>
+        </>
+      ) : <InvalidHex/>}
+    </VStack>
+  );
+}
+
 const TOOL_COMPONENTS = {
   "contrast-grid":     ContrastGrid,
   "oklch-converter":   OklchConverter,
@@ -1533,6 +2062,20 @@ const TOOL_COMPONENTS = {
   "hex-rgba":          HexRgba,
   "color-sorter":      ColorSorter,
   "color-scheme":      ColorScheme,
+  "complementary-color": ComplementaryColor,
+  "color-inverter":      ColorInverter,
+  "lighten-darken":      LightenDarken,
+  "hsl-adjuster":        HslAdjuster,
+  "alpha-blend":         AlphaBlend,
+  "cmyk-rgb-converter":  CmykRgbConverter,
+  "grayscale-converter": GrayscaleConverter,
+  "sepia-converter":     SepiaConverter,
+  "hex-shorthand":       HexShorthand,
+  "pastel-generator":    PastelGenerator,
+  "css-color-mix":       CssColorMix,
+  "nearest-tailwind":    NearestTailwind,
+  "blend-modes":         BlendModes,
+  "rgb-percentage":      RgbPercentage,
 };
 
 // ─── PAGE SHELLS ──────────────────────────────────────────────────────────────

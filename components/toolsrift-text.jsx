@@ -196,6 +196,8 @@ const TOOLS = [
   { id:"unique-words",        cat:"analysis",  name:"Unique Word Extractor",    desc:"Extract all unique words from a block of text",      icon:"🔍", free:true },
   { id:"palindrome-checker",  cat:"analysis",  name:"Palindrome Checker",       desc:"Check if text, words or phrases are palindromes",    icon:"🔤", free:true },
   { id:"anagram-checker",     cat:"analysis",  name:"Anagram Checker",          desc:"Check if two words or phrases are anagrams",         icon:"🔤", free:true },
+  { id:"count-occurrences",   cat:"analysis",  name:"Count Occurrences",        desc:"Count how many times a word or phrase appears in text", icon:"🔢", free:true },
+  { id:"duplicate-word-finder", cat:"analysis", name:"Duplicate Word Finder",   desc:"Find words that repeat, ranked by how often they occur", icon:"👯", free:true },
   // Transform
   { id:"text-reverser",       cat:"transform", name:"Text Reverser",            desc:"Reverse characters or words in any text",            icon:"↩️", free:true },
   { id:"text-sorter",         cat:"transform", name:"Line Sorter",              desc:"Sort lines alphabetically, reverse, or randomly",    icon:"🎲", free:true },
@@ -212,6 +214,9 @@ const TOOLS = [
   { id:"case-converter",      cat:"transform", name:"Case Converter",            desc:"Convert text to UPPERCASE, lowercase, Title, camelCase, snake_case & more", icon:"🔠", free:true },
   { id:"remove-accents",      cat:"transform", name:"Remove Accents & Diacritics", desc:"Strip accents and diacritics (café→cafe) and transliterate ligatures", icon:"🅰️", free:true },
   { id:"invisible-char-remover", cat:"transform", name:"Invisible Character Remover", desc:"Remove zero-width spaces, BOM & hidden characters from pasted text", icon:"👻", free:true },
+  { id:"strip-html-tags",     cat:"transform", name:"Strip HTML Tags",          desc:"Remove all HTML tags and decode entities to get clean plain text", icon:"🧼", free:true },
+  { id:"remove-numbers",      cat:"transform", name:"Remove Numbers",           desc:"Strip all digits (or all non-digits) from your text",  icon:"🔢", free:true },
+  { id:"remove-line-breaks",  cat:"transform", name:"Remove Line Breaks",       desc:"Collapse line breaks into spaces or join text into one line", icon:"↵", free:true },
   // Format
   { id:"url-slug",            cat:"format",    name:"URL Slug Generator",       desc:"Generate SEO-friendly URL slugs from any title",     icon:"🔗", free:true },
   { id:"add-line-numbers",    cat:"format",    name:"Add Line Numbers",         desc:"Prefix every line with sequential line numbers",     icon:"⚡", free:true },
@@ -235,12 +240,26 @@ const TOOLS = [
   { id:"url-extractor",       cat:"extract",   name:"URL Extractor",            desc:"Extract all URLs and links from any text content",   icon:"🔗", free:true },
   { id:"hashtag-extractor",   cat:"extract",   name:"Hashtag & Mention Extractor", desc:"Extract #hashtags and @mentions from text",      icon:"#",  free:true },
   { id:"sentence-splitter",   cat:"extract",   name:"Sentence Splitter",        desc:"Split a paragraph into individual sentences",        icon:"✂️", free:true },
+  { id:"extract-column",      cat:"extract",   name:"Column Extractor",         desc:"Extract a single column from delimited (CSV/TSV) text lines", icon:"📊", free:true },
   // Convert
   { id:"text-to-morse",       cat:"convert",   name:"Text to Morse Code",       desc:"Convert English text to Morse code dots and dashes", icon:"📡", free:true },
   { id:"morse-to-text",       cat:"convert",   name:"Morse Code to Text",       desc:"Decode Morse code back to readable English text",    icon:"📡", free:true },
   { id:"text-diff",           cat:"convert",   name:"Text Comparison / Diff",   desc:"Compare two texts and highlight the differences",    icon:"⚖️", free:true },
   { id:"number-to-words",     cat:"convert",   name:"Number to Words",          desc:"Convert any number to its written word form",        icon:"🔄", free:true },
   { id:"words-to-number",     cat:"convert",   name:"Words to Number",          desc:"Convert written number words back to digits",        icon:"🔄", free:true },
+  // Batch W3 additions
+  { id:"letter-frequency",    cat:"analysis",  name:"Letter Frequency Counter", desc:"Count how often each letter A–Z appears with ranked bars", icon:"🔤", free:true },
+  { id:"vowel-consonant-counter", cat:"analysis", name:"Vowel & Consonant Counter", desc:"Count vowels, consonants, digits, spaces and punctuation", icon:"🅰️", free:true },
+  { id:"acronym-generator",   cat:"transform", name:"Acronym Generator",        desc:"Build an acronym from the first letter of each word",  icon:"🔠", free:true },
+  { id:"alphabetize-words",   cat:"transform", name:"Alphabetize Words",        desc:"Sort all words in your text into A–Z or Z–A order",   icon:"🔡", free:true },
+  { id:"censor-words",        cat:"transform", name:"Word Censor / Bad Word Filter", desc:"Mask a custom list of words with asterisks or symbols", icon:"🚫", free:true },
+  { id:"space-between-letters", cat:"transform", name:"Space Between Letters",   desc:"Insert a space or separator between every character",  icon:"␣", free:true },
+  { id:"remove-specific-chars", cat:"transform", name:"Remove Specific Characters", desc:"Delete every occurrence of characters you choose",    icon:"🧽", free:true },
+  { id:"reverse-each-word",   cat:"transform", name:"Reverse Each Word",        desc:"Reverse the letters inside each word, keeping word order", icon:"🔃", free:true },
+  { id:"remove-duplicate-words", cat:"transform", name:"Remove Duplicate Words", desc:"Delete repeated words, keeping the first of each",     icon:"👯", free:true },
+  { id:"add-prefix-suffix",   cat:"format",    name:"Add Prefix & Suffix",      desc:"Add text to the start and end of every line",         icon:"➕", free:true },
+  { id:"initials-extractor",  cat:"extract",   name:"Initials Extractor",       desc:"Turn full names into initials like John Doe → J.D.",  icon:"🔖", free:true },
+  { id:"capitalized-words",   cat:"extract",   name:"Capitalized Word Extractor", desc:"Pull out all capitalized words (names, places, terms)", icon:"🔍", free:true },
 ];
 
 const CATEGORIES = [
@@ -292,6 +311,36 @@ const TOOL_META = {
     title:"Anagram Checker — Check if Two Words are Anagrams",
     desc:"Check if two words or phrases are anagrams of each other. Case-insensitive, ignores spaces and punctuation.",
     faq:[["What is an anagram?","A word formed by rearranging the letters of another, like 'listen' and 'silent'."],["Does it ignore spaces?","Yes — spaces and punctuation are stripped before comparison."],["Can I check phrases?","Yes — 'Astronomer' and 'Moon starer' are anagrams when spaces are ignored."]]
+  },
+  "count-occurrences": {
+    title:"Count Occurrences — Count Word or Phrase Frequency in Text",
+    desc:"Count how many times a specific word, character, or phrase appears in your text. Case-sensitive and overlapping match options included.",
+    faq:[["Does it count overlapping matches?","Optionally — enable overlapping mode to count 'ana' twice in 'banana', or leave it off to count non-overlapping matches once."],["Is the search case-sensitive?","You choose. Toggle case sensitivity to treat 'The' and 'the' as the same or different."],["Can I count a single character?","Yes — search for any string, including a single character, space, or punctuation mark."]]
+  },
+  "duplicate-word-finder": {
+    title:"Duplicate Word Finder — Find Repeated Words in Text",
+    desc:"Find every word that appears more than once in your text, ranked by frequency. Great for tightening writing and spotting repetition.",
+    faq:[["How are words matched?","Matching is case-insensitive and ignores punctuation, so 'Cat,' and 'cat' count as the same word."],["What counts as a duplicate?","Any word appearing two or more times. The list is sorted from most to least frequent."],["Does it find duplicate lines too?","This tool focuses on words. Use the Remove Duplicate Lines tool for whole-line duplicates."]]
+  },
+  "strip-html-tags": {
+    title:"Strip HTML Tags — Remove HTML & Get Plain Text Online",
+    desc:"Remove all HTML tags from a snippet and decode common entities to produce clean, readable plain text. Perfect for pasting rich content.",
+    faq:[["Does it decode HTML entities?","Yes — common entities like &amp;, &lt;, &gt;, &quot;, &#39; and &nbsp; are converted back to their characters."],["Will it keep the text content of tags?","Yes — only the tags themselves are removed; the visible text between them is preserved."],["Is it safe for untrusted HTML?","The tool strips tags for display only and never executes any script, so pasted markup is treated purely as text."]]
+  },
+  "remove-numbers": {
+    title:"Remove Numbers from Text — Strip Digits Online",
+    desc:"Remove all digits from your text, or invert the operation to keep only the numbers. Instant, private, and runs in your browser.",
+    faq:[["Does it remove numbers written as words?","No — it removes numeric digits (0–9). Words like 'three' are left untouched."],["Can I keep only the numbers instead?","Yes — switch to 'keep only digits' mode to strip everything except numbers."],["Are decimal points and commas removed?","Digits are removed; separators like '.' and ',' remain unless you also clean them separately."]]
+  },
+  "remove-line-breaks": {
+    title:"Remove Line Breaks — Join Text into One Line Online",
+    desc:"Collapse line breaks into spaces or remove them entirely to join wrapped text into a single continuous line. Extra spaces are tidied up.",
+    faq:[["What's the difference between the modes?","'Replace with space' keeps words separated; 'remove entirely' joins lines with no gap. Both collapse resulting double spaces."],["Does it affect paragraph breaks?","All line breaks are treated the same. If you need to keep paragraphs, use the wrap/unwrap tools instead."],["Will Windows (CRLF) line endings work?","Yes — both \\n and \\r\\n line endings are handled."]]
+  },
+  "extract-column": {
+    title:"Column Extractor — Extract a Column from CSV/TSV Text",
+    desc:"Pull a single column out of delimited text. Choose comma, tab, pipe, or a custom delimiter and grab any column by its position.",
+    faq:[["Which delimiters are supported?","Comma, tab, semicolon, pipe, space, or any custom delimiter you type."],["How do I pick the column?","Enter the 1-based column number. Column 1 is the first field on each line."],["What if a line has fewer columns?","Lines missing that column produce an empty result on their own line, keeping row alignment intact."]]
   },
   "text-reverser": {
     title:"Text Reverser — Reverse Text, Words & Characters Online",
@@ -492,6 +541,66 @@ const TOOL_META = {
     title:"Words to Number Converter — Text to Digits",
     desc:"Convert number words like 'forty-two' or 'one thousand five hundred' back to numeric digits.",
     faq:[["What formats are recognized?","'forty-two', 'forty two', 'one thousand five hundred and twenty' and similar."],["Are ordinals supported?","Yes — 'first', 'second', 'twenty-third' are converted to 1, 2, 23."],["What is the largest input handled?","Up to trillions — 'nine hundred ninety-nine trillion...' is fully supported."]]
+  },
+  "letter-frequency": {
+    title:"Letter Frequency Counter — Count Each Letter A–Z Online",
+    desc:"Count how many times every letter A–Z appears in your text, ranked with percentages and bars. Great for cryptograms, puzzles, and linguistics.",
+    faq:[["Is the count case-insensitive?","Yes — uppercase and lowercase of the same letter are combined, so 'A' and 'a' count together."],["Are numbers and symbols counted?","No — only the 26 letters A–Z are tallied. Digits, spaces, and punctuation are ignored."],["What is letter frequency used for?","Solving substitution ciphers and cryptograms, language analysis, and word games where knowing common letters (E, T, A) helps."]]
+  },
+  "vowel-consonant-counter": {
+    title:"Vowel & Consonant Counter — Count Letters by Type",
+    desc:"Count vowels, consonants, digits, spaces and punctuation in any text. See the vowel-to-consonant ratio and per-vowel breakdown instantly.",
+    faq:[["Which letters count as vowels?","A, E, I, O and U are counted as vowels. Y is treated as a consonant by this tool."],["Does it count digits and punctuation separately?","Yes — the report breaks totals into vowels, consonants, digits, spaces, and punctuation marks."],["Is it case-insensitive?","Yes — 'E' and 'e' both count as the vowel E, and casing does not affect any total."]]
+  },
+  "acronym-generator": {
+    title:"Acronym Generator — Make an Acronym from Any Phrase",
+    desc:"Generate an acronym from the first letter of each word, such as 'For Your Information' → FYI. Optionally skip small words like 'of', 'the', and 'and'.",
+    faq:[["How is the acronym built?","The first letter of each word is taken and uppercased, then joined together with no spaces."],["Can I ignore small words?","Yes — enable 'skip small words' to drop common words like a, an, the, of, and, for when building the acronym (the first word is always kept)."],["Does it work on multiple lines?","Each line is treated as its own phrase, so you get one acronym per line."]]
+  },
+  "alphabetize-words": {
+    title:"Alphabetize Words — Sort Words in Text A–Z Online",
+    desc:"Sort every word in your text into alphabetical A–Z or reverse Z–A order. Optionally remove duplicate words. Perfect for word lists and vocabulary.",
+    faq:[["Does it sort words or lines?","Words — all words across your whole text are collected and reordered. Use the Line Sorter tool if you need to sort whole lines."],["Is sorting case-sensitive?","No — sorting is case-insensitive, so 'Apple' and 'apple' are ordered together while keeping their original capitalization."],["Can I remove duplicate words?","Yes — enable 'remove duplicates' to keep only one copy of each word while sorting."]]
+  },
+  "censor-words": {
+    title:"Word Censor — Bad Word Filter & Text Masking Online",
+    desc:"Mask a custom list of words with asterisks or any symbol. Whole-word, case-insensitive matching keeps surrounding text intact. Ideal for cleaning up quotes and comments.",
+    faq:[["How are words matched?","Matching is whole-word and case-insensitive, so 'Bad' and 'bad' are both censored, but 'badminton' is left untouched."],["Can I change the mask character?","Yes — choose asterisk (*), or any symbol. Each censored word is replaced with that character repeated to its length."],["How do I enter the word list?","Type the words to censor separated by commas or spaces in the word-list box."]]
+  },
+  "space-between-letters": {
+    title:"Space Between Letters — Add Spacing to Text Online",
+    desc:"Insert a space or custom separator between every character to create s p a c e d o u t text. Popular for headings, social media, and aesthetic typography.",
+    faq:[["What separator can I use?","A single space by default, but you can enter any separator such as a dash, dot, or bullet to place between each character."],["Are spaces in my text affected?","Existing spaces become part of the character stream, so you'll see the separator around them too. Line breaks are preserved."],["Is this the same as bold or fancy text?","No — this only adds spacing between normal characters. For stylized Unicode fonts, use a fancy text generator instead."]]
+  },
+  "remove-specific-chars": {
+    title:"Remove Specific Characters — Delete Chosen Characters Online",
+    desc:"Delete every occurrence of the exact characters you specify from your text. Optional case-insensitive mode. Great for stripping unwanted symbols or letters.",
+    faq:[["How do I choose which characters to remove?","Type the characters to delete into the box — every one of them is removed wherever it appears (for example 'aeiou' removes all vowels)."],["Is it case-sensitive?","By default yes. Enable case-insensitive mode to remove both upper and lower case versions of each character."],["Can I remove spaces or punctuation?","Yes — include a space or any punctuation mark in your character list and it will be removed too."]]
+  },
+  "reverse-each-word": {
+    title:"Reverse Each Word — Flip Letters, Keep Word Order",
+    desc:"Reverse the letters inside each word while keeping the words in their original order and place. Different from full text reversal — perfect for puzzles and fun.",
+    faq:[["How is this different from the Text Reverser?","This reverses the letters within each word but keeps word and line order. Full reversal flips the entire string end to end."],["Is word order changed?","No — words stay exactly where they are; only the characters inside each word are mirrored."],["Does punctuation move?","Punctuation attached to a word is reversed along with it, since a word is treated as a run of non-space characters."]]
+  },
+  "remove-duplicate-words": {
+    title:"Remove Duplicate Words — Delete Repeated Words Online",
+    desc:"Remove repeated words from your text, keeping only the first occurrence of each. Case-insensitive matching tightens writing and cleans up word lists.",
+    faq:[["Which occurrence is kept?","The first appearance of each word is kept; every later duplicate is removed, preserving the original order."],["Is matching case-insensitive?","Yes — 'Go' and 'go' are treated as the same word, and punctuation around a word is ignored when comparing."],["Does this remove duplicate lines?","No — it works at the word level. Use the Remove Duplicate Lines tool for whole-line duplicates."]]
+  },
+  "add-prefix-suffix": {
+    title:"Add Prefix & Suffix — Prepend & Append to Each Line",
+    desc:"Add custom text to the start and end of every line at once. Perfect for wrapping lists in quotes, building HTML, SQL values, or Markdown bullets.",
+    faq:[["Does it apply to every line?","Yes — the prefix is added to the beginning and the suffix to the end of each line in your input."],["Can I skip empty lines?","Yes — enable 'skip empty lines' so blank lines are left untouched instead of being wrapped."],["What are common uses?","Wrapping items in quotes for code, adding <li> and </li> around list items, or prefixing lines with '- ' for Markdown."]]
+  },
+  "initials-extractor": {
+    title:"Initials Extractor — Convert Names to Initials Online",
+    desc:"Turn full names into initials such as John Doe → J.D. Process one name per line with an optional separator and dot style. Great for monograms and abbreviations.",
+    faq:[["How does it pick initials?","It takes the first letter of each word on a line, uppercases it, and joins the letters — so 'Mary Jane Watson' becomes 'M.J.W.'."],["Can I change the separator?","Yes — use dots (J.D.), no separator (JD), or a custom separator between the initials."],["Does it handle one name per line?","Yes — each line is treated as a separate name, so you can convert a whole list of names at once."]]
+  },
+  "capitalized-words": {
+    title:"Capitalized Word Extractor — Find Proper Nouns in Text",
+    desc:"Extract every capitalized word from your text — useful for pulling out names, places, brands, and key terms. Optionally keep only unique words.",
+    faq:[["What counts as a capitalized word?","Any word that begins with an uppercase letter A–Z, which usually captures names, places, and other proper nouns."],["Are duplicates removed?","By default only unique capitalized words are shown, in the order they first appear. You can toggle this off to keep every match."],["Will it catch sentence-start words too?","Yes — words capitalized only because they start a sentence are also matched, since the tool can't know intent from capitalization alone."]]
   },
 };
 
@@ -1786,7 +1895,7 @@ function TextToMorse() {
     };
     for (const c of encoded) {
       if (c==="•") { beep(U); t += (U)/1000; }
-      else if (c==="—") { beep(U*3); t += (U)/1000; }
+      else if (c==="-") { beep(U*3); t += (U)/1000; }
       else if (c===" ") t += (U*2)/1000;
       else if (c==="/") t += (U*5)/1000;
     }
@@ -1906,7 +2015,16 @@ function NumberToWords() {
     return r.trim();
   };
   const n = parseFloat(num);
-  const result = !isNaN(n) && num!=="" ? (system==="intl"?numToWords(Math.floor(n)):toIndian(Math.floor(Math.abs(n)))) : "";
+  const digitWords = ["zero","one","two","three","four","five","six","seven","eight","nine"];
+  const spell = (str, intFn) => {
+    const t = String(str).trim();
+    const neg = t.startsWith("-");
+    const parts = t.replace(/^[+-]/,"").split(".");
+    let words = intFn(parseInt(parts[0]||"0",10));
+    if (parts[1]) words += " point " + parts[1].split("").map(d=>digitWords[+d]).join(" ");
+    return (neg?"negative ":"")+words.trim();
+  };
+  const result = !isNaN(n) && num!=="" ? (system==="intl"?spell(num,numToWords):spell(num,toIndian)) : "";
   return (
     <VStack>
       <div style={{ display:"flex", gap:10, alignItems:"flex-end" }}>
@@ -2144,6 +2262,499 @@ function InvisibleCharRemover() {
   );
 }
 
+function CountOccurrences() {
+  const [text, setText] = useState("");
+  const [needle, setNeedle] = useState("");
+  const [overlap, setOverlap] = useState(false);
+  const [caseSensitive, setCaseSensitive] = useState(false);
+  const count = useMemo(() => {
+    if (!text || !needle) return 0;
+    const h = caseSensitive ? text : text.toLowerCase();
+    const n = caseSensitive ? needle : needle.toLowerCase();
+    let c = 0, i = 0;
+    while ((i = h.indexOf(n, i)) !== -1) { c++; i += overlap ? 1 : n.length; }
+    return c;
+  }, [text, needle, overlap, caseSensitive]);
+  const words = text.trim() ? text.trim().split(/\s+/).filter(Boolean).length : 0;
+  return (
+    <VStack>
+      <div><Label>Text</Label><Textarea value={text} onChange={setText} placeholder="Paste or type your text here..." rows={7} /></div>
+      <Grid2>
+        <div><Label>Word or phrase to count</Label><Input value={needle} onChange={setNeedle} placeholder="e.g. the" /></div>
+        <div style={{ display:"flex", flexDirection:"column", gap:8, justifyContent:"center" }}>
+          <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", fontSize:13, color:C.text }}><input type="checkbox" checked={caseSensitive} onChange={e=>setCaseSensitive(e.target.checked)} /> Case sensitive</label>
+          <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", fontSize:13, color:C.text }}><input type="checkbox" checked={overlap} onChange={e=>setOverlap(e.target.checked)} /> Count overlapping matches</label>
+        </div>
+      </Grid2>
+      {needle && (
+        <Grid3>
+          <BigResult value={count} label={`"${needle.length>12?needle.slice(0,12)+"…":needle}" found`} />
+          <StatBox value={words} label="Total Words" />
+          <StatBox value={text.length} label="Total Characters" />
+        </Grid3>
+      )}
+    </VStack>
+  );
+}
+
+function DuplicateWordFinder() {
+  const [text, setText] = useState("");
+  const dupes = useMemo(() => {
+    const words = (text.toLowerCase().match(/[a-z0-9']+/g) || []);
+    const m = {};
+    words.forEach(w => { m[w] = (m[w] || 0) + 1; });
+    return Object.entries(m).filter(([,c]) => c > 1).sort((a,b) => b[1]-a[1]);
+  }, [text]);
+  const listText = dupes.map(([w,c]) => `${w}: ${c}`).join("\n");
+  return (
+    <VStack>
+      <div><Label>Text</Label><Textarea value={text} onChange={setText} placeholder="Paste text to find repeated words..." rows={7} /></div>
+      {text.trim() && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>{dupes.length ? `${dupes.length} repeated word${dupes.length!==1?"s":""}` : "No repeated words"}</Label>
+            {listText && <CopyBtn text={listText} />}
+          </div>
+          {dupes.length > 0 && (
+            <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
+              {dupes.map(([w,c]) => (
+                <span key={w} style={{ display:"inline-flex", alignItems:"center", gap:6, background:"rgba(139,92,246,0.1)", border:`1px solid rgba(139,92,246,0.25)`, borderRadius:20, padding:"4px 12px", fontSize:13, color:C.text }}>
+                  {w}<span style={{ background:C.blue, color:"#fff", borderRadius:10, padding:"1px 7px", fontSize:11, fontWeight:700 }}>{c}</span>
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+function StripHtmlTags() {
+  const [text, setText] = useState("");
+  const output = useMemo(() => {
+    if (!text) return "";
+    return text
+      .replace(/<[^>]*>/g, " ")
+      .replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&apos;/g, "'")
+      .replace(/[ \t]+/g, " ").replace(/ *\n */g, "\n").trim();
+  }, [text]);
+  return (
+    <VStack>
+      <div><Label>HTML Input</Label><Textarea value={text} onChange={setText} placeholder="<p>Paste HTML <b>here</b></p>" rows={7} /></div>
+      {output && <div><div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}><Label>Plain Text</Label><CopyBtn text={output} /></div><Result mono={false}>{output}</Result></div>}
+    </VStack>
+  );
+}
+
+function RemoveNumbers() {
+  const [text, setText] = useState("");
+  const [mode, setMode] = useState("digits");
+  const output = useMemo(() => !text ? "" : mode === "digits" ? text.replace(/[0-9]/g, "") : (text.match(/[0-9]/g) || []).join(""), [text, mode]);
+  return (
+    <VStack>
+      <div><Label>Mode</Label><SelectInput value={mode} onChange={setMode} options={[{ value:"digits", label:"Remove all digits" }, { value:"keep", label:"Keep only digits" }]} /></div>
+      <div><Label>Text</Label><Textarea value={text} onChange={setText} placeholder="Order #12345 shipped on 2026-07-13" rows={6} /></div>
+      {output && <div><div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}><Label>Result</Label><CopyBtn text={output} /></div><Result mono={false}>{output}</Result></div>}
+    </VStack>
+  );
+}
+
+function RemoveLineBreaks() {
+  const [text, setText] = useState("");
+  const [mode, setMode] = useState("space");
+  const output = useMemo(() => {
+    if (!text) return "";
+    const joined = text.replace(/\r?\n/g, mode === "space" ? " " : "");
+    return joined.replace(/[ \t]+/g, " ").trim();
+  }, [text, mode]);
+  return (
+    <VStack>
+      <div><Label>Mode</Label><SelectInput value={mode} onChange={setMode} options={[{ value:"space", label:"Replace breaks with a space" }, { value:"none", label:"Remove breaks entirely" }]} /></div>
+      <div><Label>Text with line breaks</Label><Textarea value={text} onChange={setText} placeholder={"first line\nsecond line\nthird line"} rows={7} /></div>
+      {output && <div><div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}><Label>Single Line</Label><CopyBtn text={output} /></div><Result mono={false}>{output}</Result></div>}
+    </VStack>
+  );
+}
+
+function ExtractColumn() {
+  const [text, setText] = useState("");
+  const [delim, setDelim] = useState(",");
+  const [col, setCol] = useState("1");
+  const output = useMemo(() => {
+    if (!text) return "";
+    const d = delim === "\\t" ? "\t" : delim;
+    const idx = Math.max(0, (parseInt(col) || 1) - 1);
+    return text.split(/\r?\n/).map(line => line.split(d)[idx] ?? "").join("\n");
+  }, [text, delim, col]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Delimiter</Label><SelectInput value={delim} onChange={setDelim} options={[{ value:",", label:"Comma (,)" }, { value:"\\t", label:"Tab" }, { value:";", label:"Semicolon (;)" }, { value:"|", label:"Pipe (|)" }, { value:" ", label:"Space" }]} /></div>
+        <div><Label>Column number (1-based)</Label><Input value={col} onChange={setCol} placeholder="1" /></div>
+      </Grid2>
+      <div><Label>Delimited Text</Label><Textarea value={text} onChange={setText} placeholder={"id,name,email\n1,Alice,a@x.com\n2,Bob,b@x.com"} rows={7} /></div>
+      {output && <div><div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}><Label>Column {parseInt(col)||1}</Label><CopyBtn text={output} /></div><Result>{output}</Result></div>}
+    </VStack>
+  );
+}
+
+function LetterFrequency() {
+  const [text, setText] = useState("");
+  const rows = useMemo(() => {
+    const map = {};
+    for (const ch of text.toLowerCase()) { if (ch >= "a" && ch <= "z") map[ch] = (map[ch]||0)+1; }
+    const total = Object.values(map).reduce((a,b)=>a+b,0);
+    return Object.entries(map).sort((a,b)=>b[1]-a[1]).map(([letter,count])=>({ letter, count, pct: total?((count/total)*100).toFixed(1):"0" }));
+  }, [text]);
+  const max = rows[0]?.count || 1;
+  const copyText = rows.map(r=>`${r.letter.toUpperCase()}: ${r.count} (${r.pct}%)`).join("\n");
+  return (
+    <VStack>
+      <Textarea value={text} onChange={setText} placeholder="Paste text to count letter frequency..." rows={5} />
+      {rows.length > 0 ? (
+        <>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+            <Label>{rows.length} distinct letters</Label>
+            <CopyBtn text={copyText} />
+          </div>
+          <div style={{ maxHeight:380, overflowY:"auto", display:"flex", flexDirection:"column", gap:4 }}>
+            {rows.map((r,i) => (
+              <div key={r.letter} style={{ display:"flex", alignItems:"center", gap:10, padding:"6px 10px", background:"rgba(255,255,255,0.02)", borderRadius:6 }}>
+                <span style={{ width:28, textAlign:"right", fontSize:11, color:C.muted }}>{i+1}</span>
+                <span style={{ width:32, fontFamily:"'JetBrains Mono',monospace", fontSize:14, fontWeight:600, color:C.text, textTransform:"uppercase" }}>{r.letter}</span>
+                <div style={{ flex:1, height:6, background:"rgba(255,255,255,0.06)", borderRadius:3, overflow:"hidden" }}>
+                  <div style={{ height:"100%", width:`${(r.count/max)*100}%`, background:`linear-gradient(90deg,${C.blue},${C.blueD})`, borderRadius:3 }} />
+                </div>
+                <span style={{ width:40, textAlign:"right", fontWeight:600, fontSize:13, color:C.text }}>{r.count}</span>
+                <span style={{ width:44, textAlign:"right", fontSize:11, color:C.muted }}>{r.pct}%</span>
+              </div>
+            ))}
+          </div>
+        </>
+      ) : <div style={{ color:C.muted, textAlign:"center", padding:32, fontSize:13 }}>Enter text above to see letter frequency</div>}
+    </VStack>
+  );
+}
+
+function VowelConsonantCounter() {
+  const [text, setText] = useState("");
+  const s = useMemo(() => {
+    let v=0, c=0, d=0, sp=0, punct=0;
+    const vmap = { a:0,e:0,i:0,o:0,u:0 };
+    for (const raw of text) {
+      const ch = raw.toLowerCase();
+      if ("aeiou".includes(ch)) { v++; vmap[ch]++; }
+      else if (ch >= "a" && ch <= "z") c++;
+      else if (ch >= "0" && ch <= "9") d++;
+      else if (/\s/.test(ch)) sp++;
+      else punct++;
+    }
+    const ratio = c ? (v/c).toFixed(2) : v ? "∞" : "—";
+    return { v, c, d, sp, punct, vmap, ratio };
+  }, [text]);
+  return (
+    <VStack>
+      <Textarea value={text} onChange={setText} placeholder="Type or paste text to count vowels and consonants..." rows={6} />
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:10 }}>
+        {[["Vowels",s.v],["Consonants",s.c],["Vowel : Consonant",s.ratio],["Digits",s.d],["Spaces",s.sp],["Punctuation",s.punct]].map(([l,val])=><StatBox key={l} value={val} label={l}/>)}
+      </div>
+      <Card>
+        <Label>Vowel Breakdown</Label>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(5,1fr)", gap:8, marginTop:8 }}>
+          {["a","e","i","o","u"].map(vl => (
+            <div key={vl} style={{ textAlign:"center", background:"rgba(255,255,255,0.03)", border:`1px solid ${C.border}`, borderRadius:8, padding:"10px 6px" }}>
+              <div style={{ fontFamily:"'Sora',sans-serif", fontSize:18, fontWeight:700, color:C.blue }}>{s.vmap[vl]}</div>
+              <div style={{ fontSize:12, color:C.muted, textTransform:"uppercase" }}>{vl}</div>
+            </div>
+          ))}
+        </div>
+      </Card>
+    </VStack>
+  );
+}
+
+const ACRONYM_SMALL = new Set(["a","an","and","or","the","of","for","to","in","on","at","by","with","from","as","but","nor","per","via"]);
+function AcronymGenerator() {
+  const [text, setText] = useState("");
+  const [skipSmall, setSkipSmall] = useState(false);
+  const output = useMemo(() => {
+    if (!text.trim()) return "";
+    return text.split("\n").map(line => {
+      const words = line.trim().split(/\s+/).filter(Boolean);
+      let ws = words;
+      if (skipSmall) ws = words.filter((w,i)=> i===0 || !ACRONYM_SMALL.has(w.toLowerCase().replace(/[^a-z]/g,"")));
+      return ws.map(w=>{ const m=w.match(/[A-Za-z0-9]/); return m ? m[0].toUpperCase() : ""; }).join("");
+    }).join("\n");
+  }, [text, skipSmall]);
+  return (
+    <VStack>
+      <div style={{ display:"flex", gap:12, alignItems:"center", flexWrap:"wrap" }}>
+        <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", fontSize:13, color:C.text }}>
+          <input type="checkbox" checked={skipSmall} onChange={e=>setSkipSmall(e.target.checked)} /> Skip small words (of, the, and…)
+        </label>
+      </div>
+      <Grid2>
+        <div><Label>Phrase (one per line)</Label><Textarea value={text} onChange={setText} placeholder={"For Your Information\nAs Soon As Possible"} rows={6} /></div>
+        <div><Label>Acronym</Label>{output && <div style={{ position:"relative" }}><Result>{output}</Result><div style={{ position:"absolute", top:8, right:8 }}><CopyBtn text={output} /></div></div>}</div>
+      </Grid2>
+    </VStack>
+  );
+}
+
+function AlphabetizeWords() {
+  const [text, setText] = useState("");
+  const [order, setOrder] = useState("asc");
+  const [dedupe, setDedupe] = useState(false);
+  const [output, setOutput] = useState("");
+  const [count, setCount] = useState(0);
+  const run = () => {
+    let words = text.trim().split(/\s+/).filter(Boolean);
+    words.sort((a,b)=>a.toLowerCase().localeCompare(b.toLowerCase()));
+    if (order==="desc") words.reverse();
+    if (dedupe) {
+      const seen = new Set(), out = [];
+      for (const w of words) { const k=w.toLowerCase(); if(!seen.has(k)){ seen.add(k); out.push(w); } }
+      words = out;
+    }
+    setCount(words.length);
+    setOutput(words.join(" "));
+  };
+  return (
+    <VStack>
+      <div style={{ display:"flex", gap:10, flexWrap:"wrap", alignItems:"center" }}>
+        <SelectInput value={order} onChange={setOrder} options={[{value:"asc",label:"A → Z"},{value:"desc",label:"Z → A"}]} />
+        <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", fontSize:13, color:C.text }}>
+          <input type="checkbox" checked={dedupe} onChange={e=>setDedupe(e.target.checked)} /> Remove duplicate words
+        </label>
+        <Btn onClick={run} disabled={!text.trim()}>Alphabetize</Btn>
+      </div>
+      <Grid2>
+        <div><Label>Input Text</Label><Textarea value={text} onChange={setText} placeholder="banana apple cherry mango kiwi..." rows={8} /></div>
+        <div><Label>Sorted Words</Label>{output && <><div style={{ position:"relative" }}><Textarea value={output} onChange={()=>{}} rows={8} mono /><div style={{ position:"absolute", top:8, right:8 }}><CopyBtn text={output} /></div></div><div style={{ fontSize:12, color:C.muted, marginTop:6 }}>{count} words</div></>}</div>
+      </Grid2>
+    </VStack>
+  );
+}
+
+function CensorWords() {
+  const [text, setText] = useState("");
+  const [list, setList] = useState("");
+  const [mask, setMask] = useState("*");
+  const output = useMemo(() => {
+    const bad = list.split(/[\s,]+/).map(w=>w.trim()).filter(Boolean);
+    if (!text || !bad.length) return text;
+    const m = (mask && mask[0]) || "*";
+    const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+    let re;
+    try { re = new RegExp("\\b("+bad.map(esc).join("|")+")\\b","gi"); }
+    catch { return text; }
+    return text.replace(re, w => m.repeat(w.length));
+  }, [text, list, mask]);
+  return (
+    <VStack>
+      <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
+        <div style={{ flex:1, minWidth:200 }}><Label>Words to Censor (comma or space separated)</Label><Input value={list} onChange={setList} placeholder="bad, worse, ugly" /></div>
+        <div style={{ width:120 }}><Label>Mask Char</Label><Input value={mask} onChange={setMask} placeholder="*" /></div>
+      </div>
+      <Grid2>
+        <div><Label>Input Text</Label><Textarea value={text} onChange={setText} placeholder="Paste text to censor..." rows={7} /></div>
+        <div><Label>Censored Output</Label><div style={{ position:"relative" }}><Textarea value={output} onChange={()=>{}} rows={7} /><div style={{ position:"absolute", top:8, right:8 }}><CopyBtn text={output} /></div></div></div>
+      </Grid2>
+    </VStack>
+  );
+}
+
+function SpaceBetweenLetters() {
+  const [text, setText] = useState("");
+  const [sep, setSep] = useState(" ");
+  const output = useMemo(() => {
+    if (!text) return "";
+    const s = sep === "" ? " " : sep;
+    return text.split("\n").map(line => line.split("").join(s)).join("\n");
+  }, [text, sep]);
+  return (
+    <VStack>
+      <div style={{ display:"flex", gap:10, flexWrap:"wrap", alignItems:"center" }}>
+        <div><Label>Separator</Label><Input value={sep} onChange={setSep} placeholder="(space)" style={{ width:120 }} /></div>
+        <div style={{ display:"flex", gap:6, alignItems:"flex-end" }}>
+          {[[" ","Space"],["-","Dash"],["•","Bullet"],["·","Dot"]].map(([v,l])=>(
+            <Btn key={l} variant="secondary" size="sm" onClick={()=>setSep(v)}>{l}</Btn>
+          ))}
+        </div>
+      </div>
+      <Grid2>
+        <div><Label>Input</Label><Textarea value={text} onChange={setText} placeholder="hello" rows={6} /></div>
+        <div><Label>Spaced Output</Label>{output && <div style={{ position:"relative" }}><Result>{output}</Result><div style={{ position:"absolute", top:8, right:8 }}><CopyBtn text={output} /></div></div>}</div>
+      </Grid2>
+    </VStack>
+  );
+}
+
+function RemoveSpecificChars() {
+  const [text, setText] = useState("");
+  const [chars, setChars] = useState("");
+  const [ci, setCi] = useState(false);
+  const [output, setOutput] = useState("");
+  const [removed, setRemoved] = useState(0);
+  const run = () => {
+    if (!chars) { setOutput(text); setRemoved(0); return; }
+    let set = new Set(chars.split(""));
+    if (ci) { const s2 = new Set(); for (const c of set) { s2.add(c.toLowerCase()); s2.add(c.toUpperCase()); } set = s2; }
+    let n = 0;
+    const out = text.split("").filter(c => { if (set.has(c)) { n++; return false; } return true; }).join("");
+    setOutput(out); setRemoved(n);
+  };
+  return (
+    <VStack>
+      <div style={{ display:"flex", gap:10, flexWrap:"wrap", alignItems:"center" }}>
+        <div style={{ flex:1, minWidth:180 }}><Label>Characters to Remove</Label><Input value={chars} onChange={setChars} placeholder="e.g. aeiou or !?." /></div>
+        <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", fontSize:13, color:C.text, marginTop:20 }}>
+          <input type="checkbox" checked={ci} onChange={e=>setCi(e.target.checked)} /> Case-insensitive
+        </label>
+        <Btn onClick={run} disabled={!text} style={{ marginTop:14 }}>Remove</Btn>
+      </div>
+      <Grid2>
+        <div><Label>Input</Label><Textarea value={text} onChange={setText} placeholder="Paste text here..." rows={7} /></div>
+        <div><Label>Output</Label>{output && <><div style={{ position:"relative" }}><Textarea value={output} onChange={()=>{}} rows={7} /><div style={{ position:"absolute", top:8, right:8 }}><CopyBtn text={output} /></div></div><div style={{ fontSize:12, color:C.muted, marginTop:6 }}>{removed} characters removed</div></>}</div>
+      </Grid2>
+    </VStack>
+  );
+}
+
+function ReverseEachWord() {
+  const [text, setText] = useState("");
+  const output = useMemo(() => text.replace(/[^\s]+/g, w => w.split("").reverse().join("")), [text]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Input Text</Label><Textarea value={text} onChange={setText} placeholder="hello world" rows={7} /></div>
+        <div><Label>Each Word Reversed</Label>{output && <div style={{ position:"relative" }}><Result>{output}</Result><div style={{ position:"absolute", top:8, right:8 }}><CopyBtn text={output} /></div></div>}</div>
+      </Grid2>
+    </VStack>
+  );
+}
+
+function RemoveDuplicateWords() {
+  const [text, setText] = useState("");
+  const [output, setOutput] = useState("");
+  const [stats, setStats] = useState(null);
+  const run = () => {
+    const words = text.trim().split(/\s+/).filter(Boolean);
+    const seen = new Set(), out = [];
+    for (const w of words) {
+      const key = w.toLowerCase().replace(/[^a-z0-9]/g,"");
+      if (key === "" || !seen.has(key)) { seen.add(key); out.push(w); }
+    }
+    setStats({ before: words.length, after: out.length, removed: words.length - out.length });
+    setOutput(out.join(" "));
+  };
+  return (
+    <VStack>
+      <Btn onClick={run} disabled={!text.trim()} style={{ alignSelf:"flex-start" }}>Remove Duplicate Words</Btn>
+      <Grid2>
+        <div><Label>Input Text</Label><Textarea value={text} onChange={setText} placeholder="the cat sat on the mat the cat ran" rows={7} /></div>
+        <div>
+          <Label>Deduplicated Output</Label>
+          {stats && <div style={{ marginBottom:8, display:"flex", gap:8 }}><Badge color="green">{stats.after} kept</Badge><Badge color="amber">{stats.removed} removed</Badge></div>}
+          {output && <div style={{ position:"relative" }}><Textarea value={output} onChange={()=>{}} rows={7} /><div style={{ position:"absolute", top:8, right:8 }}><CopyBtn text={output} /></div></div>}
+        </div>
+      </Grid2>
+    </VStack>
+  );
+}
+
+function AddPrefixSuffix() {
+  const [text, setText] = useState("");
+  const [prefix, setPrefix] = useState("");
+  const [suffix, setSuffix] = useState("");
+  const [skipEmpty, setSkipEmpty] = useState(true);
+  const output = useMemo(() => {
+    if (!text) return "";
+    return text.split("\n").map(l => (skipEmpty && l.trim()==="") ? l : prefix + l + suffix).join("\n");
+  }, [text, prefix, suffix, skipEmpty]);
+  return (
+    <VStack>
+      <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
+        <div style={{ flex:1, minWidth:160 }}><Label>Prefix (start of line)</Label><Input value={prefix} onChange={setPrefix} placeholder={'e.g. "- " or "<li>"'} /></div>
+        <div style={{ flex:1, minWidth:160 }}><Label>Suffix (end of line)</Label><Input value={suffix} onChange={setSuffix} placeholder={'e.g. "," or "</li>"'} /></div>
+      </div>
+      <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", fontSize:13, color:C.text }}>
+        <input type="checkbox" checked={skipEmpty} onChange={e=>setSkipEmpty(e.target.checked)} /> Skip empty lines
+      </label>
+      <Grid2>
+        <div><Label>Input (one item per line)</Label><Textarea value={text} onChange={setText} placeholder={"apple\nbanana\ncherry"} rows={8} /></div>
+        <div><Label>Output</Label>{output && <div style={{ position:"relative" }}><Textarea value={output} onChange={()=>{}} rows={8} mono /><div style={{ position:"absolute", top:8, right:8 }}><CopyBtn text={output} /></div></div>}</div>
+      </Grid2>
+    </VStack>
+  );
+}
+
+function InitialsExtractor() {
+  const [text, setText] = useState("");
+  const [sepMode, setSepMode] = useState("dot");
+  const [upper, setUpper] = useState(true);
+  const output = useMemo(() => {
+    if (!text.trim()) return "";
+    const sep = sepMode==="dot" ? "." : sepMode==="space" ? " " : sepMode==="dash" ? "-" : "";
+    return text.split("\n").map(line => {
+      const words = line.trim().split(/\s+/).filter(Boolean);
+      if (!words.length) return "";
+      let ini = words.map(w => { const m = w.match(/[A-Za-z0-9]/); return m ? m[0] : ""; }).filter(Boolean);
+      if (upper) ini = ini.map(x => x.toUpperCase());
+      let out = ini.join(sep);
+      if (sepMode==="dot" && out) out += ".";
+      return out;
+    }).join("\n");
+  }, [text, sepMode, upper]);
+  return (
+    <VStack>
+      <div style={{ display:"flex", gap:10, flexWrap:"wrap", alignItems:"center" }}>
+        <div><Label>Style</Label><SelectInput value={sepMode} onChange={setSepMode} options={[{value:"dot",label:"J.D."},{value:"none",label:"JD"},{value:"space",label:"J D"},{value:"dash",label:"J-D"}]} /></div>
+        <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", fontSize:13, color:C.text, marginTop:20 }}>
+          <input type="checkbox" checked={upper} onChange={e=>setUpper(e.target.checked)} /> Uppercase
+        </label>
+      </div>
+      <Grid2>
+        <div><Label>Names (one per line)</Label><Textarea value={text} onChange={setText} placeholder={"John Doe\nMary Jane Watson"} rows={8} /></div>
+        <div><Label>Initials</Label>{output && <div style={{ position:"relative" }}><Result>{output}</Result><div style={{ position:"absolute", top:8, right:8 }}><CopyBtn text={output} /></div></div>}</div>
+      </Grid2>
+    </VStack>
+  );
+}
+
+function CapitalizedWords() {
+  const [text, setText] = useState("");
+  const [unique, setUnique] = useState(true);
+  const words = useMemo(() => {
+    const matches = text.match(/\b[A-Z][a-zA-Z]*\b/g) || [];
+    if (!unique) return matches;
+    const seen = new Set(), out = [];
+    for (const m of matches) { if (!seen.has(m)) { seen.add(m); out.push(m); } }
+    return out;
+  }, [text, unique]);
+  return (
+    <VStack>
+      <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", fontSize:13, color:C.text }}>
+        <input type="checkbox" checked={unique} onChange={e=>setUnique(e.target.checked)} /> Unique only
+      </label>
+      <Textarea value={text} onChange={setText} placeholder="John met Mary in Paris and visited the Louvre with John." rows={6} />
+      {words.length > 0 ? (
+        <>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+            <Label>{words.length} capitalized {words.length===1?"word":"words"}</Label>
+            <CopyBtn text={words.join("\n")} />
+          </div>
+          <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
+            {words.map((w,i)=><Badge key={w+i}>{w}</Badge>)}
+          </div>
+        </>
+      ) : <div style={{ color:C.muted, textAlign:"center", padding:24, fontSize:13 }}>No capitalized words yet — type some text above</div>}
+    </VStack>
+  );
+}
+
 const TOOL_COMPONENTS = {
   "word-counter-pro": WordCounterPro,
   "character-counter": CharacterCounter,
@@ -2153,6 +2764,12 @@ const TOOL_COMPONENTS = {
   "unique-words": UniqueWords,
   "palindrome-checker": PalindromeChecker,
   "anagram-checker": AnagramChecker,
+  "count-occurrences": CountOccurrences,
+  "duplicate-word-finder": DuplicateWordFinder,
+  "strip-html-tags": StripHtmlTags,
+  "remove-numbers": RemoveNumbers,
+  "remove-line-breaks": RemoveLineBreaks,
+  "extract-column": ExtractColumn,
   "text-reverser": TextReverser,
   "text-sorter": TextSorter,
   "remove-duplicates": RemoveDuplicates,
@@ -2193,6 +2810,18 @@ const TOOL_COMPONENTS = {
   "text-diff": TextDiff,
   "number-to-words": NumberToWords,
   "words-to-number": WordsToNumber,
+  "letter-frequency": LetterFrequency,
+  "vowel-consonant-counter": VowelConsonantCounter,
+  "acronym-generator": AcronymGenerator,
+  "alphabetize-words": AlphabetizeWords,
+  "censor-words": CensorWords,
+  "space-between-letters": SpaceBetweenLetters,
+  "remove-specific-chars": RemoveSpecificChars,
+  "reverse-each-word": ReverseEachWord,
+  "remove-duplicate-words": RemoveDuplicateWords,
+  "add-prefix-suffix": AddPrefixSuffix,
+  "initials-extractor": InitialsExtractor,
+  "capitalized-words": CapitalizedWords,
 };
 
 // �"����� BREADCRUMB �����������������������������������������������������������������������������������������������������������������������������"�

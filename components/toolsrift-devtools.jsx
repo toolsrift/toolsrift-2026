@@ -172,6 +172,22 @@ const TOOLS = [
   { id: "grid-gen", cat: "generators2", name: "Grid Generator", icon: "🧱", desc: "Visual grid layout + CSS code." },
   { id: "animation-gen", cat: "generators2", name: "Animation Generator", icon: "🎬", desc: "Generate keyframes with preview." },
   { id: "meta-tags-adv", cat: "generators2", name: "Meta Tags Advanced", icon: "⚡", desc: "SEO + OG + Twitter meta generator." },
+
+  // batch W2 additions
+  { id: "slugify", cat: "text", name: "Slugify", icon: "🔗", desc: "Convert any text into a clean URL slug — strips accents, lowercases and joins words with a custom separator." },
+  { id: "dev-case-converter", cat: "text", name: "Case Converter (Dev)", icon: "🔠", desc: "Convert identifiers between camelCase, PascalCase, snake_case, kebab-case, CONSTANT_CASE, dot.case, Title and Sentence case." },
+  { id: "bytes-humanizer", cat: "text", name: "Bytes Humanizer", icon: "💾", desc: "Turn raw byte counts into human-readable sizes in KiB/MiB (binary) or KB/MB (decimal), and parse sizes back to bytes." },
+  { id: "number-formatter", cat: "text", name: "Number Formatter", icon: "🔢", desc: "Format numbers with locale-aware thousands separators and fixed decimals using the Intl API — US, EU, Indian and more." },
+  { id: "base64url-encoder", cat: "text", name: "Base64URL Encoder", icon: "🧬", desc: "Encode or decode UTF-8 text to URL-safe Base64 (base64url) with no padding — ideal for JWTs and query parameters." },
+  { id: "jwt-generator", cat: "text", name: "JWT Generator (HS256)", icon: "🔏", desc: "Sign a JSON Web Token with HMAC-SHA256 from your header, payload and secret — output verifiable against jwt.io." },
+  { id: "url-encoder", cat: "network", name: "URL Encoder / Decoder", icon: "🔗", desc: "Percent-encode or decode text for URLs using encodeURIComponent or encodeURI, in both full-string and component modes." },
+  { id: "json-to-query-string", cat: "network", name: "JSON to Query String", icon: "❓", desc: "Convert a JSON object into a URL query string with bracket notation for nested objects and arrays, fully percent-encoded." },
+  { id: "duration-humanizer", cat: "time", name: "Duration Humanizer", icon: "⏳", desc: "Convert milliseconds or seconds into a readable duration like 1d 2h 3m 4s, and break it down across every time unit." },
+  { id: "timestamp-diff", cat: "time", name: "Timestamp Diff", icon: "🕰️", desc: "Compute the difference between two dates or Unix timestamps in days, hours, minutes, seconds and a humanized string." },
+  { id: "uuid-v5-generator", cat: "generators2", name: "UUID v5 Generator", icon: "🆔", desc: "Generate deterministic RFC 4122 v5 UUIDs by SHA-1 hashing a name within a namespace (DNS, URL, OID, X.500 or custom)." },
+  { id: "hmac-generator", cat: "generators2", name: "HMAC Generator", icon: "🔐", desc: "Compute HMAC message authentication codes with SHA-1, SHA-256, SHA-384 or SHA-512 and a secret key, in hex or base64." },
+  { id: "color-contrast-checker", cat: "generators2", name: "Color Contrast Checker", icon: "🌗", desc: "Check WCAG 2.1 contrast ratio between a foreground and background color, with AA and AAA pass/fail for text sizes." },
+  { id: "css-clamp-generator", cat: "generators2", name: "CSS Clamp Generator", icon: "📐", desc: "Generate a fluid CSS clamp() for responsive typography or spacing that scales linearly between two viewport widths." },
 ];
 
 /* Placeholder map; real assignments come in later chunks */
@@ -1556,6 +1572,10 @@ function ChmodCalcTool() {
 }
 
 /* ---------- crontab-guru ---------- */
+const DOW_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MON_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const formatLocalDateTime = (d) => fmtDate(d);
+
 function CrontabGuruTool() {
   const [minute, setMinute] = useState("0");
   const [hour, setHour] = useState("9");
@@ -1564,7 +1584,7 @@ function CrontabGuruTool() {
   const [dow, setDow] = useState("1-5");
 
   const expr = `${minute} ${hour} ${dom} ${month} ${dow}`;
-  const nextRuns = useMemo(() => getNextCronRuns(expr, 10), [expr]);
+  const nextRuns = useMemo(() => nextCronRuns(expr, 10), [expr]);
 
   const readable = useMemo(() => {
     const dowTxt = dow === "*" ? "every day" :
@@ -3040,6 +3060,622 @@ Object.assign(TOOL_COMPONENTS, {
   "uuid-inspector": UuidInspectorTool,
   "basic-auth-generator": BasicAuthGeneratorTool,
   "string-escaper": StringEscaperTool,
+});
+
+/* =========================
+   Chunk 7 (W2): converters, generators & checkers
+   ========================= */
+
+/* ---------- slugify ---------- */
+function makeSlug(s, sep, lower) {
+  let x = String(s ?? "").normalize("NFKD").replace(/[̀-ͯ]/g, "");
+  if (lower) x = x.toLowerCase();
+  x = x.replace(/[^a-zA-Z0-9]+/g, sep || "-");
+  if (sep) {
+    const e = sep.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    x = x.replace(new RegExp(`^(?:${e})+|(?:${e})+$`, "g"), "");
+  }
+  return x;
+}
+function SlugifyTool() {
+  const [text, setText] = useState("Héllo, World! — Make me a Slug 2026");
+  const [sep, setSep] = useState("-");
+  const [lower, setLower] = useState("yes");
+  const output = useMemo(() => makeSlug(text, sep || "-", lower === "yes"), [text, sep, lower]);
+  return (
+    <VStack>
+      <SectionTitle icon="🔗" title="Slugify" subtitle="Convert text into a clean, URL-safe slug — accents stripped, words joined." />
+      <div><Label>Input Text</Label><Textarea value={text} onChange={setText} rows={4} /></div>
+      <Grid2>
+        <div><Label>Separator</Label><Input value={sep} onChange={setSep} placeholder="-" /></div>
+        <div><Label>Lowercase</Label><SelectInput value={lower} onChange={setLower} options={[{ value: "yes", label: "Yes" }, { value: "no", label: "No" }]} /></div>
+      </Grid2>
+      <div>
+        <Label>Slug</Label>
+        <CodeBox code={output || "(empty)"} />
+        <div style={{ display: "flex", gap: 8, marginTop: 8 }}><CopyBtn text={output} label="Copy Slug" /></div>
+      </div>
+    </VStack>
+  );
+}
+
+/* ---------- dev-case-converter ---------- */
+function splitWords(s) {
+  return String(s ?? "")
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2")
+    .replace(/[^a-zA-Z0-9]+/g, " ")
+    .trim().split(/\s+/).filter(Boolean);
+}
+function toCase(s, kind) {
+  const w = splitWords(s);
+  if (!w.length) return "";
+  const lw = w.map((x) => x.toLowerCase());
+  const cap = (x) => x.charAt(0).toUpperCase() + x.slice(1);
+  switch (kind) {
+    case "camel": return lw.map((x, i) => (i ? cap(x) : x)).join("");
+    case "pascal": return lw.map(cap).join("");
+    case "snake": return lw.join("_");
+    case "kebab": return lw.join("-");
+    case "constant": return lw.map((x) => x.toUpperCase()).join("_");
+    case "dot": return lw.join(".");
+    case "title": return lw.map(cap).join(" ");
+    case "sentence": return cap(lw.join(" "));
+    default: return String(s);
+  }
+}
+const CASE_KINDS = [
+  ["camel", "camelCase"], ["pascal", "PascalCase"], ["snake", "snake_case"],
+  ["kebab", "kebab-case"], ["constant", "CONSTANT_CASE"], ["dot", "dot.case"],
+  ["title", "Title Case"], ["sentence", "Sentence case"],
+];
+function DevCaseConverterTool() {
+  const [text, setText] = useState("getHTTPResponse_code");
+  const rows = useMemo(() => CASE_KINDS.map(([k, label]) => [label, toCase(text, k)]), [text]);
+  return (
+    <VStack>
+      <SectionTitle icon="🔠" title="Case Converter (Dev)" subtitle="Convert identifiers between all common programming naming conventions." />
+      <div><Label>Input</Label><Input value={text} onChange={setText} placeholder="hello world / helloWorld / hello_world" /></div>
+      <DataTable columns={["Case", "Result"]} rows={rows.map(([a, b]) => [a, <span>{b || "—"} </span>])} />
+      <Grid3>
+        {CASE_KINDS.slice(0, 6).map(([k, label]) => (
+          <CopyBtn key={k} text={toCase(text, k)} label={`Copy ${label}`} />
+        ))}
+      </Grid3>
+    </VStack>
+  );
+}
+
+/* ---------- bytes-humanizer ---------- */
+function humanBytes(bytes, binary, dp) {
+  const b = Number(bytes);
+  if (!Number.isFinite(b)) return "—";
+  const neg = b < 0; let x = Math.abs(b);
+  const base = binary ? 1024 : 1000;
+  const units = binary ? ["B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"] : ["B", "KB", "MB", "GB", "TB", "PB", "EB"];
+  let i = 0;
+  while (x >= base && i < units.length - 1) { x /= base; i++; }
+  const num = i === 0 ? String(x) : x.toFixed(dp);
+  return (neg ? "-" : "") + num + " " + units[i];
+}
+const SIZE_UNIT_MAP = { b: 1, kb: 1e3, mb: 1e6, gb: 1e9, tb: 1e12, pb: 1e15, kib: 1024, mib: 1024 ** 2, gib: 1024 ** 3, tib: 1024 ** 4, pib: 1024 ** 5, k: 1024, m: 1024 ** 2, g: 1024 ** 3 };
+function parseSize(s) {
+  const m = /^\s*([\d.]+)\s*([a-zA-Z]*)\s*$/.exec(String(s ?? ""));
+  if (!m) return null;
+  const val = parseFloat(m[1]);
+  if (!Number.isFinite(val)) return null;
+  const unit = (m[2] || "b").toLowerCase();
+  const mul = SIZE_UNIT_MAP[unit];
+  if (mul == null) return null;
+  return Math.round(val * mul);
+}
+function BytesHumanizerTool() {
+  const [bytes, setBytes] = useState("1536000");
+  const [parseInput, setParseInput] = useState("2.5 GiB");
+  const parsed = useMemo(() => parseSize(parseInput), [parseInput]);
+  return (
+    <VStack>
+      <SectionTitle icon="💾" title="Bytes Humanizer" subtitle="Format byte counts as readable sizes (binary & decimal), and parse sizes back to bytes." />
+      <div><Label>Bytes</Label><Input value={bytes} onChange={setBytes} type="text" /></div>
+      <DataTable columns={["System", "Human Readable"]} rows={[
+        ["Binary (1024)", humanBytes(bytes, true, 2)],
+        ["Decimal (1000)", humanBytes(bytes, false, 2)],
+      ]} />
+      <div><Label>Parse Size → Bytes</Label><Input value={parseInput} onChange={setParseInput} placeholder="e.g. 2.5 GiB, 500 MB, 1024" /></div>
+      <Card style={{ background: "rgba(59,130,246,.08)" }}>
+        <div style={{ fontSize: 12, color: "#93C5FD", marginBottom: 4 }}>Bytes</div>
+        <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 20, fontWeight: 700 }}>
+          {parsed == null ? "Invalid size" : parsed.toLocaleString("en-US")}
+        </div>
+      </Card>
+    </VStack>
+  );
+}
+
+/* ---------- number-formatter ---------- */
+const NUM_LOCALES = [
+  { value: "en-US", label: "en-US (1,234.56)" },
+  { value: "de-DE", label: "de-DE (1.234,56)" },
+  { value: "fr-FR", label: "fr-FR (1 234,56)" },
+  { value: "en-IN", label: "en-IN (12,34,567)" },
+  { value: "en-GB", label: "en-GB" },
+  { value: "es-ES", label: "es-ES" },
+  { value: "ja-JP", label: "ja-JP" },
+];
+function fmtNumber(v, locale, dp) {
+  const num = Number(v);
+  if (!Number.isFinite(num)) return "—";
+  const opt = {};
+  if (dp !== "" && dp != null) {
+    const d = Math.max(0, Math.min(20, parseInt(dp, 10) || 0));
+    opt.minimumFractionDigits = d; opt.maximumFractionDigits = d;
+  }
+  try { return new Intl.NumberFormat(locale, opt).format(num); } catch { return "—"; }
+}
+function NumberFormatterTool() {
+  const [value, setValue] = useState("1234567.891");
+  const [locale, setLocale] = useState("en-US");
+  const [dp, setDp] = useState("2");
+  const plain = fmtNumber(value, locale, dp);
+  const currency = useMemo(() => {
+    const num = Number(value);
+    if (!Number.isFinite(num)) return "—";
+    try { return new Intl.NumberFormat(locale, { style: "currency", currency: locale === "en-IN" ? "INR" : locale === "de-DE" || locale === "fr-FR" || locale === "es-ES" ? "EUR" : locale === "ja-JP" ? "JPY" : locale === "en-GB" ? "GBP" : "USD" }).format(num); } catch { return "—"; }
+  }, [value, locale]);
+  return (
+    <VStack>
+      <SectionTitle icon="🔢" title="Number Formatter" subtitle="Locale-aware thousands separators and fixed decimals via the Intl API." />
+      <Grid3>
+        <div><Label>Number</Label><Input value={value} onChange={setValue} /></div>
+        <div><Label>Locale</Label><SelectInput value={locale} onChange={setLocale} options={NUM_LOCALES} /></div>
+        <div><Label>Decimals</Label><Input value={dp} onChange={setDp} placeholder="blank = auto" /></div>
+      </Grid3>
+      <DataTable columns={["Style", "Formatted"]} rows={[["Decimal", plain], ["Currency", currency]]} />
+      <div style={{ display: "flex", gap: 8 }}><CopyBtn text={plain} label="Copy Number" /></div>
+    </VStack>
+  );
+}
+
+/* ---------- base64url-encoder ---------- */
+function b64urlEncodeText(str) {
+  const bytes = new TextEncoder().encode(String(str ?? ""));
+  let bin = ""; bytes.forEach((b) => (bin += String.fromCharCode(b)));
+  return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+function b64urlDecodeText(str) {
+  try {
+    let s = String(str ?? "").trim().replace(/-/g, "+").replace(/_/g, "/");
+    while (s.length % 4) s += "=";
+    const bin = atob(s);
+    const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
+    return new TextDecoder().decode(bytes);
+  } catch { return "Error: invalid base64url input"; }
+}
+function Base64UrlEncoderTool() {
+  const [mode, setMode] = useState("encode");
+  const [input, setInput] = useState("Hello, World! 世界");
+  const output = useMemo(() => (mode === "encode" ? b64urlEncodeText(input) : b64urlDecodeText(input)), [mode, input]);
+  return (
+    <VStack>
+      <SectionTitle icon="🧬" title="Base64URL Encoder / Decoder" subtitle="URL-safe Base64 (base64url) with no padding — UTF-8 aware." />
+      <div><Label>Mode</Label><SelectInput value={mode} onChange={setMode} options={[{ value: "encode", label: "Encode → Base64URL" }, { value: "decode", label: "Decode → Text" }]} /></div>
+      <div><Label>Input</Label><Textarea value={input} onChange={setInput} rows={5} /></div>
+      <div>
+        <Label>Output</Label>
+        <CodeBox code={output || "(empty)"} />
+        <div style={{ display: "flex", gap: 8, marginTop: 8 }}><CopyBtn text={output} label="Copy Output" /></div>
+      </div>
+    </VStack>
+  );
+}
+
+/* ---------- jwt-generator ---------- */
+function JwtGeneratorTool() {
+  const [payload, setPayload] = useState('{\n  "sub": "1234567890",\n  "name": "John Doe",\n  "iat": 1516239022\n}');
+  const [secret, setSecret] = useState("your-256-bit-secret");
+  const [token, setToken] = useState("");
+  const [err, setErr] = useState("");
+
+  useEffect(() => {
+    let live = true;
+    (async () => {
+      let obj;
+      try { obj = JSON.parse(payload); }
+      catch { if (live) { setErr("Payload is not valid JSON"); setToken(""); } return; }
+      try {
+        const header = { alg: "HS256", typ: "JWT" };
+        const h64 = b64urlEncodeText(JSON.stringify(header));
+        const p64 = b64urlEncodeText(JSON.stringify(obj));
+        const sig = await hmacSHA256(secret, `${h64}.${p64}`);
+        if (live) { setToken(`${h64}.${p64}.${sig}`); setErr(""); }
+      } catch { if (live) { setErr("Signing failed"); setToken(""); } }
+    })();
+    return () => { live = false; };
+  }, [payload, secret]);
+
+  return (
+    <VStack>
+      <SectionTitle icon="🔏" title="JWT Generator (HS256)" subtitle="Sign a JWT with HMAC-SHA256 — output matches jwt.io for the same secret." />
+      <div><Label>Payload (JSON)</Label><Textarea value={payload} onChange={setPayload} rows={7} /></div>
+      <div><Label>Secret</Label><Input value={secret} onChange={setSecret} /></div>
+      {err && <div style={{ fontSize: 12, color: "#F87171" }}>{err}</div>}
+      <div>
+        <Label>Signed Token</Label>
+        <CodeBox code={token || "(fix payload to generate)"} />
+        <div style={{ display: "flex", gap: 8, marginTop: 8 }}><CopyBtn text={token} label="Copy JWT" /></div>
+      </div>
+    </VStack>
+  );
+}
+
+/* ---------- url-encoder ---------- */
+function urlTransform(mode, scope, input) {
+  const s = String(input ?? "");
+  try {
+    if (mode === "encode") return scope === "component" ? encodeURIComponent(s) : encodeURI(s);
+    return scope === "component" ? decodeURIComponent(s) : decodeURI(s);
+  } catch (e) { return `Error: ${e.message}`; }
+}
+function UrlEncoderTool() {
+  const [mode, setMode] = useState("encode");
+  const [scope, setScope] = useState("component");
+  const [input, setInput] = useState("https://ex.com/search?q=a b&x=1+2");
+  const output = useMemo(() => urlTransform(mode, scope, input), [mode, scope, input]);
+  return (
+    <VStack>
+      <SectionTitle icon="🔗" title="URL Encoder / Decoder" subtitle="Percent-encode or decode text for URLs — component or full-URL mode." />
+      <Grid2>
+        <div><Label>Mode</Label><SelectInput value={mode} onChange={setMode} options={[{ value: "encode", label: "Encode" }, { value: "decode", label: "Decode" }]} /></div>
+        <div><Label>Scope</Label><SelectInput value={scope} onChange={setScope} options={[{ value: "component", label: "Component (encodeURIComponent)" }, { value: "full", label: "Full URL (encodeURI)" }]} /></div>
+      </Grid2>
+      <div><Label>Input</Label><Textarea value={input} onChange={setInput} rows={4} /></div>
+      <div>
+        <Label>Output</Label>
+        <CodeBox code={output || "(empty)"} />
+        <div style={{ display: "flex", gap: 8, marginTop: 8 }}><CopyBtn text={output} label="Copy Output" /></div>
+      </div>
+    </VStack>
+  );
+}
+
+/* ---------- json-to-query-string ---------- */
+function jsonToQuery(obj) {
+  const parts = [];
+  const enc = encodeURIComponent;
+  const walk = (val, key) => {
+    if (val === null || val === undefined) { parts.push(enc(key) + "="); return; }
+    if (Array.isArray(val)) { val.forEach((v, i) => walk(v, `${key}[${i}]`)); return; }
+    if (typeof val === "object") { Object.keys(val).forEach((k) => walk(val[k], key ? `${key}[${k}]` : k)); return; }
+    parts.push(enc(key) + "=" + enc(String(val)));
+  };
+  Object.keys(obj).forEach((k) => walk(obj[k], k));
+  return parts.join("&");
+}
+function JsonToQueryStringTool() {
+  const [input, setInput] = useState('{\n  "page": 2,\n  "sort": "name asc",\n  "filter": { "role": "admin", "active": true },\n  "tags": ["a", "b"]\n}');
+  const result = useMemo(() => {
+    let obj;
+    try { obj = JSON.parse(input); } catch { return { err: "Invalid JSON", q: "" }; }
+    if (obj === null || typeof obj !== "object" || Array.isArray(obj)) return { err: "Provide a JSON object", q: "" };
+    try { return { err: "", q: jsonToQuery(obj) }; } catch (e) { return { err: e.message, q: "" }; }
+  }, [input]);
+  return (
+    <VStack>
+      <SectionTitle icon="❓" title="JSON to Query String" subtitle="Serialize a JSON object into a URL query string with bracket notation." />
+      <div><Label>JSON Object</Label><Textarea value={input} onChange={setInput} rows={8} /></div>
+      {result.err && <div style={{ fontSize: 12, color: "#F87171" }}>{result.err}</div>}
+      <div>
+        <Label>Query String</Label>
+        <CodeBox code={result.q ? "?" + result.q : "(empty)"} />
+        <div style={{ display: "flex", gap: 8, marginTop: 8 }}><CopyBtn text={result.q ? "?" + result.q : ""} label="Copy Query String" /></div>
+      </div>
+    </VStack>
+  );
+}
+
+/* ---------- duration-humanizer ---------- */
+function humanDuration(ms) {
+  const raw = Number(ms);
+  if (!Number.isFinite(raw)) return "—";
+  let x = Math.floor(Math.abs(raw));
+  const neg = raw < 0;
+  const units = [["d", 86400000], ["h", 3600000], ["m", 60000], ["s", 1000], ["ms", 1]];
+  const out = [];
+  for (const [label, size] of units) {
+    if (x >= size) { const q = Math.floor(x / size); x -= q * size; out.push(q + label); }
+  }
+  return (neg ? "-" : "") + (out.length ? out.join(" ") : "0ms");
+}
+function DurationHumanizerTool() {
+  const [value, setValue] = useState("90061500");
+  const [unit, setUnit] = useState("ms");
+  const ms = useMemo(() => {
+    const v = Number(value);
+    if (!Number.isFinite(v)) return NaN;
+    return unit === "s" ? v * 1000 : unit === "m" ? v * 60000 : unit === "h" ? v * 3600000 : v;
+  }, [value, unit]);
+  const breakdown = useMemo(() => {
+    if (!Number.isFinite(ms)) return [];
+    return [
+      ["Days", (ms / 86400000).toFixed(4)],
+      ["Hours", (ms / 3600000).toFixed(4)],
+      ["Minutes", (ms / 60000).toFixed(4)],
+      ["Seconds", (ms / 1000).toFixed(3)],
+      ["Milliseconds", String(ms)],
+    ];
+  }, [ms]);
+  return (
+    <VStack>
+      <SectionTitle icon="⏳" title="Duration Humanizer" subtitle="Turn a raw time value into a readable duration and per-unit breakdown." />
+      <Grid2>
+        <div><Label>Value</Label><Input value={value} onChange={setValue} /></div>
+        <div><Label>Unit</Label><SelectInput value={unit} onChange={setUnit} options={[{ value: "ms", label: "Milliseconds" }, { value: "s", label: "Seconds" }, { value: "m", label: "Minutes" }, { value: "h", label: "Hours" }]} /></div>
+      </Grid2>
+      <Card style={{ background: "rgba(59,130,246,.08)" }}>
+        <div style={{ fontSize: 12, color: "#93C5FD", marginBottom: 4 }}>Humanized</div>
+        <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 22, fontWeight: 700 }}>{humanDuration(ms)}</div>
+      </Card>
+      <DataTable columns={["Unit", "Value"]} rows={breakdown} />
+    </VStack>
+  );
+}
+
+/* ---------- timestamp-diff ---------- */
+function toEpochMs(input) {
+  const s = String(input ?? "").trim();
+  if (!s) return null;
+  if (/^-?\d+$/.test(s)) {
+    const n10 = Number(s);
+    // 10-digit → seconds, 13-digit → ms (heuristic)
+    return s.replace("-", "").length <= 11 ? n10 * 1000 : n10;
+  }
+  const d = new Date(s);
+  return isNaN(d.getTime()) ? null : d.getTime();
+}
+function TimestampDiffTool() {
+  const [a, setA] = useState("2026-01-01T00:00:00");
+  const [b, setB] = useState("2026-07-13T12:30:45");
+  const res = useMemo(() => {
+    const ma = toEpochMs(a), mb = toEpochMs(b);
+    if (ma == null || mb == null) return null;
+    const d = Math.abs(mb - ma);
+    return { ma, mb, d, human: humanDuration(d) };
+  }, [a, b]);
+  return (
+    <VStack>
+      <SectionTitle icon="🕰️" title="Timestamp Diff" subtitle="Difference between two dates or Unix timestamps, in every unit." />
+      <Grid2>
+        <div><Label>From (date or unix)</Label><Input value={a} onChange={setA} /></div>
+        <div><Label>To (date or unix)</Label><Input value={b} onChange={setB} /></div>
+      </Grid2>
+      {!res ? <div style={{ fontSize: 12, color: "#F87171" }}>Enter two valid dates or Unix timestamps.</div> : (
+        <>
+          <Card style={{ background: "rgba(59,130,246,.08)" }}>
+            <div style={{ fontSize: 12, color: "#93C5FD", marginBottom: 4 }}>Duration</div>
+            <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 22, fontWeight: 700 }}>{res.human}</div>
+          </Card>
+          <DataTable columns={["Unit", "Value"]} rows={[
+            ["Days", (res.d / 86400000).toFixed(4)],
+            ["Hours", (res.d / 3600000).toFixed(4)],
+            ["Minutes", (res.d / 60000).toFixed(2)],
+            ["Seconds", String(Math.floor(res.d / 1000))],
+            ["Milliseconds", String(res.d)],
+          ]} />
+        </>
+      )}
+    </VStack>
+  );
+}
+
+/* ---------- uuid-v5-generator ---------- */
+const UUID_NAMESPACES = [
+  { value: "6ba7b810-9dad-11d1-80b4-00c04fd430c8", label: "DNS" },
+  { value: "6ba7b811-9dad-11d1-80b4-00c04fd430c8", label: "URL" },
+  { value: "6ba7b812-9dad-11d1-80b4-00c04fd430c8", label: "OID" },
+  { value: "6ba7b814-9dad-11d1-80b4-00c04fd430c8", label: "X.500" },
+];
+async function uuidV5(name, namespaceUuid) {
+  const nsHex = String(namespaceUuid).replace(/[^0-9a-fA-F]/g, "");
+  if (nsHex.length !== 32) return null;
+  const nsBytes = new Uint8Array(16);
+  for (let i = 0; i < 16; i++) nsBytes[i] = parseInt(nsHex.substr(i * 2, 2), 16);
+  const nameBytes = new TextEncoder().encode(String(name));
+  const data = new Uint8Array(nsBytes.length + nameBytes.length);
+  data.set(nsBytes, 0); data.set(nameBytes, nsBytes.length);
+  const hashBuf = await crypto.subtle.digest("SHA-1", data);
+  const h = new Uint8Array(hashBuf).slice(0, 16);
+  h[6] = (h[6] & 0x0f) | 0x50; // version 5
+  h[8] = (h[8] & 0x3f) | 0x80; // RFC 4122 variant
+  const hex = Array.from(h).map((x) => x.toString(16).padStart(2, "0")).join("");
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
+function UuidV5GeneratorTool() {
+  const [name, setName] = useState("www.example.com");
+  const [ns, setNs] = useState(UUID_NAMESPACES[0].value);
+  const [uuid, setUuid] = useState("");
+  useEffect(() => {
+    let live = true;
+    (async () => {
+      const u = await uuidV5(name, ns);
+      if (live) setUuid(u || "Invalid namespace UUID");
+    })();
+    return () => { live = false; };
+  }, [name, ns]);
+  return (
+    <VStack>
+      <SectionTitle icon="🆔" title="UUID v5 Generator" subtitle="Deterministic RFC 4122 v5 UUID from a name + namespace (SHA-1 based)." />
+      <Grid2>
+        <div><Label>Name</Label><Input value={name} onChange={setName} /></div>
+        <div><Label>Namespace</Label><SelectInput value={ns} onChange={setNs} options={UUID_NAMESPACES} /></div>
+      </Grid2>
+      <div><Label>Custom Namespace UUID (optional)</Label><Input value={ns} onChange={setNs} placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" /></div>
+      <Card style={{ background: "rgba(59,130,246,.08)" }}>
+        <div style={{ fontSize: 12, color: "#93C5FD", marginBottom: 4 }}>UUID v5</div>
+        <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 18, fontWeight: 700, wordBreak: "break-all" }}>{uuid}</div>
+      </Card>
+      <div style={{ display: "flex", gap: 8 }}><CopyBtn text={uuid} label="Copy UUID" /></div>
+    </VStack>
+  );
+}
+
+/* ---------- hmac-generator ---------- */
+async function hmacDigest(algo, key, msg, outFmt) {
+  const enc = new TextEncoder();
+  const ck = await crypto.subtle.importKey("raw", enc.encode(key), { name: "HMAC", hash: algo }, false, ["sign"]);
+  const sig = await crypto.subtle.sign("HMAC", ck, enc.encode(msg));
+  const u8 = new Uint8Array(sig);
+  if (outFmt === "base64") {
+    let bin = ""; u8.forEach((b) => (bin += String.fromCharCode(b)));
+    return btoa(bin);
+  }
+  return Array.from(u8).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+function HmacGeneratorTool() {
+  const [algo, setAlgo] = useState("SHA-256");
+  const [key, setKey] = useState("key");
+  const [msg, setMsg] = useState("The quick brown fox jumps over the lazy dog");
+  const [fmt, setFmt] = useState("hex");
+  const [out, setOut] = useState("");
+  useEffect(() => {
+    let live = true;
+    (async () => {
+      try { const d = await hmacDigest(algo, key, msg, fmt); if (live) setOut(d); }
+      catch { if (live) setOut("Error computing HMAC"); }
+    })();
+    return () => { live = false; };
+  }, [algo, key, msg, fmt]);
+  return (
+    <VStack>
+      <SectionTitle icon="🔐" title="HMAC Generator" subtitle="Keyed hash (HMAC) with SHA-1/256/384/512 — hex or base64 output." />
+      <Grid3>
+        <div><Label>Algorithm</Label><SelectInput value={algo} onChange={setAlgo} options={[{ value: "SHA-1", label: "HMAC-SHA1" }, { value: "SHA-256", label: "HMAC-SHA256" }, { value: "SHA-384", label: "HMAC-SHA384" }, { value: "SHA-512", label: "HMAC-SHA512" }]} /></div>
+        <div><Label>Secret Key</Label><Input value={key} onChange={setKey} /></div>
+        <div><Label>Output</Label><SelectInput value={fmt} onChange={setFmt} options={[{ value: "hex", label: "Hex" }, { value: "base64", label: "Base64" }]} /></div>
+      </Grid3>
+      <div><Label>Message</Label><Textarea value={msg} onChange={setMsg} rows={4} /></div>
+      <div>
+        <Label>HMAC</Label>
+        <CodeBox code={out || "(empty)"} />
+        <div style={{ display: "flex", gap: 8, marginTop: 8 }}><CopyBtn text={out} label="Copy HMAC" /></div>
+      </div>
+    </VStack>
+  );
+}
+
+/* ---------- color-contrast-checker ---------- */
+function hexToRgbStrict(hex) {
+  let h = String(hex ?? "").trim().replace(/^#/, "");
+  if (h.length === 3) h = h.split("").map((c) => c + c).join("");
+  if (!/^[0-9a-fA-F]{6}$/.test(h)) return null;
+  return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+}
+function relLum(rgb) {
+  const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+  return 0.2126 * f(rgb[0]) + 0.7152 * f(rgb[1]) + 0.0722 * f(rgb[2]);
+}
+function contrastRatio(fg, bg) {
+  const a = hexToRgbStrict(fg), b = hexToRgbStrict(bg);
+  if (!a || !b) return null;
+  const L1 = relLum(a), L2 = relLum(b);
+  return (Math.max(L1, L2) + 0.05) / (Math.min(L1, L2) + 0.05);
+}
+function ColorContrastCheckerTool() {
+  const [fg, setFg] = useState("#777777");
+  const [bg, setBg] = useState("#ffffff");
+  const ratio = useMemo(() => contrastRatio(fg, bg), [fg, bg]);
+  const badge = (pass) => <span style={{ color: pass ? "#34D399" : "#F87171", fontWeight: 700 }}>{pass ? "✓ Pass" : "✗ Fail"}</span>;
+  const r = ratio || 0;
+  return (
+    <VStack>
+      <SectionTitle icon="🌗" title="Color Contrast Checker" subtitle="WCAG 2.1 contrast ratio with AA/AAA pass/fail for normal and large text." />
+      <Grid2>
+        <div><Label>Foreground (text)</Label><Input value={fg} onChange={setFg} placeholder="#777777" /></div>
+        <div><Label>Background</Label><Input value={bg} onChange={setBg} placeholder="#ffffff" /></div>
+      </Grid2>
+      {ratio == null ? <div style={{ fontSize: 12, color: "#F87171" }}>Enter two valid hex colors (e.g. #1a2b3c or #abc).</div> : (
+        <>
+          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+            <div style={{ flex: 1, borderRadius: 10, border: `1px solid ${C.border}`, background: bg, color: fg, padding: 20, textAlign: "center", fontSize: 18, fontWeight: 700 }}>Aa Sample Text</div>
+            <Card style={{ background: "rgba(59,130,246,.08)", minWidth: 130, textAlign: "center" }}>
+              <div style={{ fontSize: 12, color: "#93C5FD" }}>Ratio</div>
+              <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 24, fontWeight: 700 }}>{r.toFixed(2)}:1</div>
+            </Card>
+          </div>
+          <DataTable columns={["Level", "Requirement", "Result"]} rows={[
+            ["AA — Normal text", "≥ 4.5", badge(r >= 4.5)],
+            ["AA — Large text", "≥ 3.0", badge(r >= 3)],
+            ["AAA — Normal text", "≥ 7.0", badge(r >= 7)],
+            ["AAA — Large text", "≥ 4.5", badge(r >= 4.5)],
+          ]} />
+        </>
+      )}
+    </VStack>
+  );
+}
+
+/* ---------- css-clamp-generator ---------- */
+function buildClamp(minPx, maxPx, minVw, maxVw, root) {
+  const a = Number(minPx), b = Number(maxPx), lo = Number(minVw), hi = Number(maxVw), rp = Number(root) || 16;
+  if (![a, b, lo, hi].every(Number.isFinite) || hi === lo) return null;
+  const slope = (b - a) / (hi - lo);
+  const interceptPx = a - slope * lo;
+  const slopeVw = +(slope * 100).toFixed(4);
+  const interceptRem = +(interceptPx / rp).toFixed(4);
+  const minRem = +(Math.min(a, b) / rp).toFixed(4);
+  const maxRem = +(Math.max(a, b) / rp).toFixed(4);
+  const pref = `${interceptRem}rem + ${slopeVw}vw`;
+  return `clamp(${minRem}rem, ${pref}, ${maxRem}rem)`;
+}
+function CssClampGeneratorTool() {
+  const [minPx, setMinPx] = useState("16");
+  const [maxPx, setMaxPx] = useState("24");
+  const [minVw, setMinVw] = useState("320");
+  const [maxVw, setMaxVw] = useState("1280");
+  const [root, setRoot] = useState("16");
+  const clamp = useMemo(() => buildClamp(minPx, maxPx, minVw, maxVw, root), [minPx, maxPx, minVw, maxVw, root]);
+  const css = clamp ? `font-size: ${clamp};` : "";
+  return (
+    <VStack>
+      <SectionTitle icon="📐" title="CSS Clamp Generator" subtitle="Fluid clamp() that scales linearly between two viewport widths." />
+      <Grid3>
+        <div><Label>Min size (px)</Label><Input value={minPx} onChange={setMinPx} /></div>
+        <div><Label>Max size (px)</Label><Input value={maxPx} onChange={setMaxPx} /></div>
+        <div><Label>Root font (px)</Label><Input value={root} onChange={setRoot} /></div>
+      </Grid3>
+      <Grid2>
+        <div><Label>Min viewport (px)</Label><Input value={minVw} onChange={setMinVw} /></div>
+        <div><Label>Max viewport (px)</Label><Input value={maxVw} onChange={setMaxVw} /></div>
+      </Grid2>
+      {!clamp ? <div style={{ fontSize: 12, color: "#F87171" }}>Enter valid numbers (min and max viewport must differ).</div> : (
+        <div>
+          <Label>CSS</Label>
+          <CodeBox code={css} />
+          <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+            <CopyBtn text={clamp} label="Copy clamp()" />
+            <CopyBtn text={css} label="Copy Declaration" />
+          </div>
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+/* ---------- register Chunk 7 (W2) tools ---------- */
+Object.assign(TOOL_COMPONENTS, {
+  "slugify": SlugifyTool,
+  "dev-case-converter": DevCaseConverterTool,
+  "bytes-humanizer": BytesHumanizerTool,
+  "number-formatter": NumberFormatterTool,
+  "base64url-encoder": Base64UrlEncoderTool,
+  "jwt-generator": JwtGeneratorTool,
+  "url-encoder": UrlEncoderTool,
+  "json-to-query-string": JsonToQueryStringTool,
+  "duration-humanizer": DurationHumanizerTool,
+  "timestamp-diff": TimestampDiffTool,
+  "uuid-v5-generator": UuidV5GeneratorTool,
+  "hmac-generator": HmacGeneratorTool,
+  "color-contrast-checker": ColorContrastCheckerTool,
+  "css-clamp-generator": CssClampGeneratorTool,
 });
 
 /* ---------- final export ---------- */

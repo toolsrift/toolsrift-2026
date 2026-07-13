@@ -203,6 +203,20 @@ const TOOLS = [
   {id:"css-specificity-calculator",cat:"components",  name:"CSS Specificity Calculator",   desc:"Score any CSS selector's specificity as an (a, b, c) triple",   icon:"🧮", free:true},
   {id:"css-pattern-generator",     cat:"backgrounds", name:"CSS Pattern Generator",        desc:"Create pure-CSS background patterns from gradients, no images", icon:"🔳", free:true},
   {id:"cubic-bezier-editor",       cat:"effects",     name:"Cubic Bezier Editor",          desc:"Build cubic-bezier easing curves with a live animated preview", icon:"📈", free:true},
+  {id:"css-text-stroke",     cat:"effects",     name:"CSS Text Stroke Generator",   desc:"Add outlined text with -webkit-text-stroke and live preview",   icon:"🅾️", free:true},
+  {id:"css-outline",         cat:"effects",     name:"CSS Outline Generator",       desc:"Generate outline width, style, color and offset with preview",  icon:"🔲", free:true},
+  {id:"css-backdrop-filter", cat:"effects",     name:"CSS Backdrop Filter Generator",desc:"Build backdrop-filter blur, brightness and saturation effects", icon:"🌫️", free:true},
+  {id:"css-blend-mode",      cat:"effects",     name:"CSS Blend Mode Generator",    desc:"Preview all mix-blend-mode values on overlapping shapes",       icon:"🎭", free:true},
+  {id:"css-mask-fade",       cat:"effects",     name:"CSS Mask Fade Generator",     desc:"Fade element edges with mask-image linear gradients",           icon:"🌗", free:true},
+  {id:"css-perspective",     cat:"effects",     name:"CSS 3D Perspective Generator",desc:"Rotate elements in 3D space with perspective and live preview",  icon:"🧊", free:true},
+  {id:"css-aspect-ratio",    cat:"layout",      name:"CSS Aspect Ratio Generator",  desc:"Get aspect-ratio plus the padding-hack fallback for any ratio",  icon:"📐", free:true},
+  {id:"css-columns",         cat:"layout",      name:"CSS Multi-Column Generator",  desc:"Build newspaper-style column-count layouts with column rules",   icon:"🗞️", free:true},
+  {id:"css-object-fit",      cat:"layout",      name:"CSS Object Fit Generator",    desc:"Preview object-fit and object-position on images live",         icon:"🖼️", free:true},
+  {id:"css-line-clamp",      cat:"components",  name:"CSS Line Clamp Generator",    desc:"Truncate multi-line text with -webkit-line-clamp ellipsis",     icon:"✂️", free:true},
+  {id:"css-writing-mode",    cat:"components",  name:"CSS Writing Mode Generator",  desc:"Set vertical and horizontal writing-mode with text-orientation", icon:"↕️", free:true},
+  {id:"css-image-rendering", cat:"components",  name:"CSS Image Rendering Generator",desc:"Control pixelated vs smooth image-rendering with live preview",  icon:"🔍", free:true},
+  {id:"css-type-scale",      cat:"components",  name:"CSS Type Scale Generator",    desc:"Generate a modular type scale as CSS custom properties",        icon:"🔠", free:true},
+  {id:"css-hex-to-rgba",     cat:"backgrounds", name:"CSS Hex to RGBA Converter",   desc:"Convert hex colors to rgba() with an adjustable alpha channel",  icon:"🎚️", free:true},
 ];
 
 const CATEGORIES = [
@@ -223,6 +237,20 @@ const TOOL_META = {
   "css-specificity-calculator":{title:"CSS Specificity Calculator – Score Selectors Online",    desc:"Calculate the specificity of any CSS selector as an (a, b, c) triple with a plain-English breakdown of what matched.", faq:[["What is CSS specificity?","A weight the browser assigns to a selector to decide which rule wins. It is expressed as three numbers: IDs, classes/attributes/pseudo-classes, and elements/pseudo-elements."],["Does the universal selector add specificity?","No — the universal selector * has zero specificity and is ignored."],["How is :not() scored?","The :not() and :is() pseudo-classes take the specificity of their most specific argument, while :where() always contributes zero."]]},
   "css-pattern-generator":     {title:"CSS Pattern Generator – Gradient Background Patterns",   desc:"Generate pure-CSS background patterns — stripes, dots, checkerboard, grid and zigzag — using only gradients. Live preview and copyable CSS.", faq:[["Are these patterns real images?","No — every pattern is built from CSS gradients, so there are no image files to load and the output stays crisp at any scale."],["Can I change the pattern colors?","Yes — pick any two colors and adjust the pattern size to fine-tune the look."],["How do I use the generated CSS?","Copy the background-image and background-size rules onto any element to apply the pattern."]]},
   "cubic-bezier-editor":       {title:"Cubic Bezier Editor – Custom Easing Curve Generator",    desc:"Design cubic-bezier easing curves with numeric inputs, presets and a live animated preview. Copy the cubic-bezier() string and a ready transition.", faq:[["What is a cubic-bezier easing curve?","A timing function defined by two control points that shapes how an animation accelerates and decelerates over time."],["What range can the values use?","The x values are clamped between 0 and 1, while the y values can go slightly beyond for overshoot and bounce effects."],["How do I preview the easing?","The editor animates a dot along the curve so you can feel the timing before copying the CSS."]]},
+  "css-text-stroke":     {title:"CSS Text Stroke Generator – Outlined Text Online | ToolsRift", desc:"Create outlined text with -webkit-text-stroke. Adjust stroke width, color and fill for hollow or bordered headings, with a live preview and copyable CSS.", faq:[["What is -webkit-text-stroke?","A property that draws an outline around each glyph. Set the fill color to transparent for fully hollow text."],["Is text-stroke supported everywhere?","-webkit-text-stroke works in all modern browsers. The un-prefixed text-stroke is included for forward compatibility."],["How do I make hollow outlined text?","Set a stroke width and color, then set the text color (fill) to transparent."]]},
+  "css-outline":         {title:"CSS Outline Generator – Width, Style & Offset | ToolsRift", desc:"Generate CSS outline rules with adjustable width, style, color and outline-offset. Great for focus rings and debugging, with live preview and copy button.", faq:[["How is outline different from border?","Outline is drawn outside the border and does not affect layout or take up space, unlike border."],["What does outline-offset do?","It pushes the outline away from the element edge by the given distance, creating a gap."],["Why use outline for focus states?","Outlines clearly indicate keyboard focus for accessibility without shifting surrounding content."]]},
+  "css-backdrop-filter": {title:"CSS Backdrop Filter Generator – Frosted Blur | ToolsRift", desc:"Build backdrop-filter effects with blur, brightness, contrast and saturation. Create frosted glass overlays with a live preview and prefixed, copyable CSS.", faq:[["What does backdrop-filter do?","It applies graphical effects like blur to the area behind an element, not the element itself."],["Why is the -webkit- prefix included?","Some browsers still require -webkit-backdrop-filter, so both are output for maximum support."],["Why can't I see the blur?","backdrop-filter only affects content behind the element, so it needs a colorful background to show."]]},
+  "css-blend-mode":      {title:"CSS Blend Mode Generator – mix-blend-mode Preview | ToolsRift", desc:"Preview every CSS mix-blend-mode value on overlapping colored shapes. Pick multiply, screen, overlay and more, then copy the ready-to-use CSS instantly.", faq:[["What is mix-blend-mode?","It defines how an element's content blends with the content and background behind it."],["What is the difference from background-blend-mode?","mix-blend-mode blends an element with what is behind it; background-blend-mode blends an element's own background layers."],["Which blend modes are most useful?","multiply, screen and overlay are the most common for tinting, lightening and contrast effects."]]},
+  "css-mask-fade":       {title:"CSS Mask Fade Generator – Gradient Edge Fade | ToolsRift", desc:"Fade any element's edge to transparent using mask-image linear gradients. Choose direction and fade stops, preview live, and copy prefixed CSS in one click.", faq:[["How does a CSS mask fade work?","A linear-gradient mask makes parts of an element transparent based on the gradient's black-to-transparent stops."],["Do I need the -webkit- prefix?","Yes for older WebKit browsers, so both mask-image and -webkit-mask-image are generated."],["Can I fade multiple edges?","This tool fades one direction at a time; combine masks manually for multi-edge fades."]]},
+  "css-perspective":     {title:"CSS 3D Perspective Generator – rotateX rotateY | ToolsRift", desc:"Tilt elements in 3D with perspective, rotateX and rotateY. Adjust the depth and angles, watch a live 3D preview, and copy the transform CSS instantly.", faq:[["What does the perspective value control?","It sets how far the viewer is from the z=0 plane; smaller values create a stronger, more dramatic 3D effect."],["What is the difference between the perspective property and function?","The property is set on a parent for shared depth; perspective() inside transform applies depth to a single element."],["Why does my element look flat?","Very large perspective values reduce the 3D effect; lower the value or increase the rotation angles."]]},
+  "css-aspect-ratio":    {title:"CSS Aspect Ratio Generator – Ratio & Padding Hack | ToolsRift", desc:"Generate the modern aspect-ratio property plus the classic padding-top percentage fallback for any width-to-height ratio, with a live preview and copyable CSS.", faq:[["How is the padding-hack percentage calculated?","Divide height by width and multiply by 100; a 16:9 ratio becomes 56.25% top padding."],["Should I use aspect-ratio or the padding hack?","Use the aspect-ratio property in modern browsers; the padding hack is a fallback for very old browsers."],["Does aspect-ratio work on any element?","Yes, aspect-ratio applies to most elements when a width or height is otherwise unconstrained."]]},
+  "css-columns":         {title:"CSS Multi-Column Generator – column-count Layout | ToolsRift", desc:"Build newspaper-style multi-column text layouts with column-count, column-gap and column-rule. Preview the flow live and copy the responsive CSS in one click.", faq:[["What does column-count do?","It splits an element's content into the specified number of equal-width columns automatically."],["What is column-rule?","A divider line drawn between columns, styled like a border with width, style and color."],["Can I control the space between columns?","Yes, column-gap sets the horizontal spacing between each column."]]},
+  "css-object-fit":      {title:"CSS Object Fit Generator – Fit & Position Preview | ToolsRift", desc:"Preview object-fit values like cover, contain and fill along with object-position on a real image. Fine-tune how media fills its box and copy the CSS instantly.", faq:[["What does object-fit: cover do?","It scales the image to fill the box while preserving aspect ratio, cropping any overflow."],["What is object-position for?","It sets which part of the image stays visible when the image is cropped by object-fit."],["Which elements does object-fit apply to?","It applies to replaced elements such as img and video."]]},
+  "css-line-clamp":      {title:"CSS Line Clamp Generator – Truncate Multi-line Text | ToolsRift", desc:"Truncate text to a set number of lines with an ellipsis using -webkit-line-clamp. Choose the line count, preview real clamped text, and copy the CSS instantly.", faq:[["How does -webkit-line-clamp work?","Combined with display:-webkit-box and box-orient:vertical, it limits text to a number of lines and adds an ellipsis."],["Is line-clamp widely supported?","The -webkit-line-clamp approach works across all modern browsers, including Chrome, Safari and Firefox."],["Can I clamp to a single line?","Yes, set the line count to 1, though single-line truncation can also use text-overflow:ellipsis."]]},
+  "css-writing-mode":    {title:"CSS Writing Mode Generator – Vertical Text | ToolsRift", desc:"Set horizontal or vertical writing-mode with text-orientation for rotated and CJK-style text. Preview the flow direction live and copy the CSS in one click.", faq:[["What does writing-mode do?","It sets whether text flows horizontally or vertically and the block direction of the content."],["When is vertical-rl useful?","It is common for East Asian typography and for rotated sidebar labels or captions."],["What does text-orientation control?","It sets how individual characters are oriented within a vertical writing mode, such as upright or mixed."]]},
+  "css-image-rendering": {title:"CSS Image Rendering Generator – Pixelated vs Smooth | ToolsRift", desc:"Control how scaled images are interpolated with image-rendering. Compare pixelated, crisp-edges and smooth on an upscaled preview and copy the CSS instantly.", faq:[["What does image-rendering: pixelated do?","It disables smoothing so upscaled images show crisp, blocky pixels, ideal for pixel art."],["When should I use crisp-edges?","Use it to preserve sharp edges and contrast when scaling images without blurring."],["Does image-rendering affect downscaling?","It mainly changes how browsers interpolate upscaled images; downscaling behavior varies by browser."]]},
+  "css-type-scale":      {title:"CSS Type Scale Generator – Modular Font Sizes | ToolsRift", desc:"Generate a harmonious modular type scale from a base size and ratio. Get font sizes as CSS custom properties with a live preview and copyable code.", faq:[["What is a modular type scale?","A set of font sizes derived by repeatedly multiplying a base size by a fixed ratio for visual harmony."],["What ratio should I use?","Common ratios include 1.25 (major third) and 1.618 (golden ratio); larger ratios create more contrast."],["How are the sizes calculated?","Each step multiplies the base size by the ratio raised to the step number, so base 16 at ratio 1.25 gives 20 at step one."]]},
+  "css-hex-to-rgba":     {title:"CSS Hex to RGBA Converter – Add Alpha to Colors | ToolsRift", desc:"Convert any 3, 6 or 8-digit hex color to an rgba() value with an adjustable alpha channel. See the swatch, the RGB breakdown and copy the CSS instantly.", faq:[["How do I convert hex to rgba?","Split the hex into red, green and blue byte pairs, convert each to decimal, then append your alpha value."],["Does it support shorthand hex like #fff?","Yes, 3-digit shorthand and 8-digit hex with alpha are both accepted and normalized."],["What alpha range is valid?","Alpha runs from 0 (fully transparent) to 1 (fully opaque); values outside this range are clamped."]]},
 };
 
 // ─── TOOL COMPONENTS ─────────────────────────────────────────────────────────
@@ -1501,6 +1529,444 @@ function CubicBezier() {
   );
 }
 
+// ── 25. CSS TEXT STROKE ───────────────────────────────────────────────────────
+function CssTextStroke() {
+  const [text,setText]=useState("OUTLINE");
+  const [width,setWidth]=useState(2);
+  const [strokeColor,setStrokeColor]=useState("#06B6D4");
+  const [hollow,setHollow]=useState(true);
+  const [fillColor,setFillColor]=useState("#0D1117");
+  const [fontSize,setFontSize]=useState(64);
+  const [bg,setBg]=useState("#0D1117");
+
+  const fill=hollow?"transparent":fillColor;
+  const css=`-webkit-text-stroke: ${width}px ${strokeColor};\ntext-stroke: ${width}px ${strokeColor};\ncolor: ${fill};`;
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Preview Text</Label><Input value={text} onChange={setText} placeholder="Your Text"/></div>
+        <Slider label="Stroke Width" value={width} onChange={setWidth} min={0} max={12} unit="px"/>
+      </Grid2>
+      <Grid2>
+        <ColorPicker label="Stroke Color" value={strokeColor} onChange={setStrokeColor}/>
+        <Slider label="Font Size" value={fontSize} onChange={setFontSize} min={24} max={140} unit="px"/>
+      </Grid2>
+      <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:13,color:C.text}}>
+        <input type="checkbox" checked={hollow} onChange={e=>setHollow(e.target.checked)}/> Hollow text (transparent fill)
+      </label>
+      {!hollow&&<Grid2><ColorPicker label="Fill Color" value={fillColor} onChange={setFillColor}/><ColorPicker label="Background" value={bg} onChange={setBg}/></Grid2>}
+      {hollow&&<ColorPicker label="Background" value={bg} onChange={setBg}/>}
+      <PreviewBox height={160}>
+        <div style={{width:"100%",height:"100%",background:bg,display:"flex",alignItems:"center",justifyContent:"center"}}>
+          <span style={{fontSize,fontWeight:800,fontFamily:"'Sora',sans-serif",color:fill,WebkitTextStroke:`${width}px ${strokeColor}`}}>{text||"OUTLINE"}</span>
+        </div>
+      </PreviewBox>
+      <CSSOutput css={css}/>
+    </VStack>
+  );
+}
+
+// ── 26. CSS OUTLINE ───────────────────────────────────────────────────────────
+function CssOutline() {
+  const [width,setWidth]=useState(3);
+  const [style,setStyle]=useState("solid");
+  const [color,setColor]=useState("#EC4899");
+  const [offset,setOffset]=useState(4);
+  const [elemColor,setElemColor]=useState("#0D1117");
+
+  const css=`outline: ${width}px ${style} ${color};\noutline-offset: ${offset}px;`;
+
+  return (
+    <VStack>
+      <Grid2>
+        <Slider label="Outline Width" value={width} onChange={setWidth} min={0} max={20} unit="px"/>
+        <Slider label="Outline Offset" value={offset} onChange={setOffset} min={-10} max={30} unit="px"/>
+      </Grid2>
+      <div><Label>Outline Style</Label>
+        <SelectInput value={style} onChange={setStyle} options={["solid","dashed","dotted","double","groove","ridge","inset","outset"].map(v=>({value:v,label:v}))}/>
+      </div>
+      <Grid2>
+        <ColorPicker label="Outline Color" value={color} onChange={setColor}/>
+        <ColorPicker label="Element Color" value={elemColor} onChange={setElemColor}/>
+      </Grid2>
+      <PreviewBox height={180}>
+        <div style={{width:130,height:80,borderRadius:10,background:elemColor,outline:`${width}px ${style} ${color}`,outlineOffset:offset,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,color:C.muted}}>box</div>
+      </PreviewBox>
+      <CSSOutput css={css}/>
+    </VStack>
+  );
+}
+
+// ── 27. CSS BACKDROP FILTER ───────────────────────────────────────────────────
+function CssBackdropFilter() {
+  const [blur,setBlur]=useState(8);
+  const [brightness,setBrightness]=useState(110);
+  const [contrast,setContrast]=useState(100);
+  const [saturate,setSaturate]=useState(120);
+  const [tint,setTint]=useState("#ffffff22");
+
+  const parts=[];
+  if(blur>0) parts.push(`blur(${blur}px)`);
+  if(brightness!==100) parts.push(`brightness(${brightness}%)`);
+  if(contrast!==100) parts.push(`contrast(${contrast}%)`);
+  if(saturate!==100) parts.push(`saturate(${saturate}%)`);
+  const val=parts.length?parts.join(" "):"none";
+  const css=`background: ${tint};\nbackdrop-filter: ${val};\n-webkit-backdrop-filter: ${val};`;
+
+  return (
+    <VStack>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+        <Slider label="Blur" value={blur} onChange={setBlur} min={0} max={30} unit="px"/>
+        <Slider label="Brightness" value={brightness} onChange={setBrightness} min={0} max={200} unit="%"/>
+        <Slider label="Contrast" value={contrast} onChange={setContrast} min={0} max={200} unit="%"/>
+        <Slider label="Saturate" value={saturate} onChange={setSaturate} min={0} max={300} unit="%"/>
+      </div>
+      <ColorPicker label="Glass Tint (rgba/hex)" value={tint} onChange={setTint}/>
+      <PreviewBox height={200}>
+        <div style={{position:"absolute",inset:0,background:"linear-gradient(135deg,#8B5CF6,#EC4899 50%,#F59E0B)"}}/>
+        <div style={{position:"relative",width:180,height:110,borderRadius:14,border:`1px solid ${C.border}`,background:tint,backdropFilter:val,WebkitBackdropFilter:val,display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:13,fontWeight:700}}>Glass Panel</div>
+      </PreviewBox>
+      <CSSOutput css={css}/>
+    </VStack>
+  );
+}
+
+// ── 28. CSS BLEND MODE ────────────────────────────────────────────────────────
+function CssBlendMode() {
+  const [mode,setMode]=useState("multiply");
+  const [c1,setC1]=useState("#06B6D4");
+  const [c2,setC2]=useState("#EC4899");
+  const modes=["normal","multiply","screen","overlay","darken","lighten","color-dodge","color-burn","hard-light","soft-light","difference","exclusion","hue","saturation","color","luminosity"];
+  const css=`mix-blend-mode: ${mode};`;
+
+  return (
+    <VStack>
+      <div><Label>Blend Mode</Label>
+        <SelectInput value={mode} onChange={setMode} options={modes.map(v=>({value:v,label:v}))}/>
+      </div>
+      <Grid2>
+        <ColorPicker label="Shape 1 Color" value={c1} onChange={setC1}/>
+        <ColorPicker label="Shape 2 Color" value={c2} onChange={setC2}/>
+      </Grid2>
+      <PreviewBox height={200}>
+        <div style={{width:"100%",height:"100%",background:"#0D1117",display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}}>
+          <div style={{width:100,height:100,borderRadius:"50%",background:c1,position:"absolute",transform:"translateX(-28px)"}}/>
+          <div style={{width:100,height:100,borderRadius:"50%",background:c2,position:"absolute",transform:"translateX(28px)",mixBlendMode:mode}}/>
+        </div>
+      </PreviewBox>
+      <CSSOutput css={css}/>
+    </VStack>
+  );
+}
+
+// ── 29. CSS MASK FADE ─────────────────────────────────────────────────────────
+function CssMaskFade() {
+  const [dir,setDir]=useState("to bottom");
+  const [start,setStart]=useState(50);
+  const [end,setEnd]=useState(100);
+  const dirs=[["to bottom","Fade bottom"],["to top","Fade top"],["to right","Fade right"],["to left","Fade left"],["to bottom right","Fade corner"]];
+  const grad=`linear-gradient(${dir}, black ${start}%, transparent ${end}%)`;
+  const css=`mask-image: ${grad};\n-webkit-mask-image: ${grad};`;
+
+  return (
+    <VStack>
+      <div><Label>Fade Direction</Label>
+        <SelectInput value={dir} onChange={setDir} options={dirs.map(([v,l])=>({value:v,label:l}))}/>
+      </div>
+      <Grid2>
+        <Slider label="Solid Until" value={start} onChange={v=>setStart(Math.min(v,end))} min={0} max={100} unit="%"/>
+        <Slider label="Transparent At" value={end} onChange={v=>setEnd(Math.max(v,start))} min={0} max={100} unit="%"/>
+      </Grid2>
+      <PreviewBox height={200}>
+        <div style={{position:"absolute",inset:0,background:"repeating-conic-gradient(#1a1a2e 0% 25%, #0d1117 0% 50%) 50%/22px 22px"}}/>
+        <div style={{position:"relative",width:180,height:160,borderRadius:10,background:"linear-gradient(135deg,#06B6D4,#8B5CF6)",maskImage:grad,WebkitMaskImage:grad}}/>
+      </PreviewBox>
+      <CSSOutput css={css}/>
+    </VStack>
+  );
+}
+
+// ── 30. CSS 3D PERSPECTIVE ─────────────────────────────────────────────────────
+function CssPerspective() {
+  const [persp,setPersp]=useState(600);
+  const [rotateX,setRotateX]=useState(15);
+  const [rotateY,setRotateY]=useState(-25);
+  const [color,setColor]=useState("#06B6D4");
+
+  const transform=`perspective(${persp}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+  const css=`transform: ${transform};\ntransform-style: preserve-3d;`;
+
+  return (
+    <VStack>
+      <Slider label="Perspective (depth)" value={persp} onChange={setPersp} min={100} max={2000} step={10} unit="px"/>
+      <Grid2>
+        <Slider label="Rotate X" value={rotateX} onChange={setRotateX} min={-90} max={90} unit="°"/>
+        <Slider label="Rotate Y" value={rotateY} onChange={setRotateY} min={-90} max={90} unit="°"/>
+      </Grid2>
+      <ColorPicker label="Element Color" value={color} onChange={setColor}/>
+      <PreviewBox height={220}>
+        <div style={{width:140,height:90,borderRadius:12,background:color,transform,transition:"transform .1s",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:700,color:"#000",boxShadow:"0 20px 40px rgba(0,0,0,0.4)"}}>3D</div>
+      </PreviewBox>
+      <CSSOutput css={css}/>
+    </VStack>
+  );
+}
+
+// ── 31. CSS ASPECT RATIO ──────────────────────────────────────────────────────
+function CssAspectRatio() {
+  const presets=[[16,9],[4,3],[1,1],[3,2],[21,9],[9,16]];
+  const [w,setW]=useState(16);
+  const [h,setH]=useState(9);
+  const safeW=w>0?w:1, safeH=h>0?h:1;
+  const pct=(+((safeH/safeW*100)).toFixed(4)).toString();
+  const modern=`aspect-ratio: ${safeW} / ${safeH};\nwidth: 100%;`;
+  const fallback=`/* padding-hack fallback for old browsers */\n.wrap {\n  position: relative;\n  width: 100%;\n  padding-top: ${pct}%;\n}\n.wrap > * {\n  position: absolute;\n  inset: 0;\n}`;
+  const css=`${modern}\n\n${fallback}`;
+
+  return (
+    <VStack>
+      <div><Label>Common Ratios</Label>
+        <div style={{display:"flex",flexWrap:"wrap",gap:6,marginTop:6}}>
+          {presets.map(([pw,ph])=><Btn key={pw+":"+ph} size="sm" variant={w===pw&&h===ph?"primary":"secondary"} onClick={()=>{setW(pw);setH(ph);}}>{pw}:{ph}</Btn>)}
+        </div>
+      </div>
+      <Grid2>
+        <div><Label>Width Ratio</Label><Input type="number" value={w} onChange={v=>setW(Math.max(0,parseInt(v)||0))} mono/></div>
+        <div><Label>Height Ratio</Label><Input type="number" value={h} onChange={v=>setH(Math.max(0,parseInt(v)||0))} mono/></div>
+      </Grid2>
+      <div style={{display:"flex",alignItems:"center",gap:10,fontSize:13,color:C.muted}}>
+        Padding-top fallback: <Badge color="cyan">{pct}%</Badge>
+      </div>
+      <PreviewBox height={200}>
+        <div style={{width:"70%",aspectRatio:`${safeW} / ${safeH}`,maxHeight:"85%",background:"linear-gradient(135deg,#06B6D4,#8B5CF6)",borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:13,fontWeight:700}}>{safeW} : {safeH}</div>
+      </PreviewBox>
+      <CSSOutput css={css}/>
+    </VStack>
+  );
+}
+
+// ── 32. CSS MULTI-COLUMN ──────────────────────────────────────────────────────
+function CssColumns() {
+  const [count,setCount]=useState(3);
+  const [gap,setGap]=useState(24);
+  const [ruleWidth,setRuleWidth]=useState(1);
+  const [ruleStyle,setRuleStyle]=useState("solid");
+  const [ruleColor,setRuleColor]=useState("#334155");
+
+  let css=`column-count: ${count};\ncolumn-gap: ${gap}px;`;
+  if(ruleWidth>0) css+=`\ncolumn-rule: ${ruleWidth}px ${ruleStyle} ${ruleColor};`;
+  const sample="ToolsRift bundles hundreds of privacy-friendly browser tools. Multi-column layout flows text automatically across the columns you define, balancing content like a newspaper without any JavaScript.";
+
+  return (
+    <VStack>
+      <Grid2>
+        <Slider label="Column Count" value={count} onChange={setCount} min={1} max={6} step={1} unit=""/>
+        <Slider label="Column Gap" value={gap} onChange={setGap} min={0} max={60} unit="px"/>
+      </Grid2>
+      <Grid2>
+        <Slider label="Rule Width" value={ruleWidth} onChange={setRuleWidth} min={0} max={8} unit="px"/>
+        <div><Label>Rule Style</Label><SelectInput value={ruleStyle} onChange={setRuleStyle} options={["solid","dashed","dotted","double"].map(v=>({value:v,label:v}))}/></div>
+      </Grid2>
+      <ColorPicker label="Rule Color" value={ruleColor} onChange={setRuleColor}/>
+      <PreviewBox height={180} label="Preview">
+        <div style={{width:"100%",height:"100%",overflow:"auto",padding:14,columnCount:count,columnGap:gap,columnRule:ruleWidth>0?`${ruleWidth}px ${ruleStyle} ${ruleColor}`:"none",fontSize:12,color:C.text,lineHeight:1.6,textAlign:"justify"}}>{sample}</div>
+      </PreviewBox>
+      <CSSOutput css={css}/>
+    </VStack>
+  );
+}
+
+// ── 33. CSS OBJECT FIT ────────────────────────────────────────────────────────
+function CssObjectFit() {
+  const [fit,setFit]=useState("cover");
+  const [posX,setPosX]=useState(50);
+  const [posY,setPosY]=useState(50);
+  const [imgUrl,setImgUrl]=useState("https://picsum.photos/seed/objectfit/600/300");
+  const css=`object-fit: ${fit};\nobject-position: ${posX}% ${posY}%;`;
+
+  return (
+    <VStack>
+      <div><Label>object-fit</Label>
+        <div style={{display:"flex",flexWrap:"wrap",gap:6,marginTop:6}}>
+          {["fill","contain","cover","none","scale-down"].map(v=><Btn key={v} size="sm" variant={fit===v?"primary":"secondary"} onClick={()=>setFit(v)}>{v}</Btn>)}
+        </div>
+      </div>
+      <Grid2>
+        <Slider label="Position X" value={posX} onChange={setPosX} min={0} max={100} unit="%"/>
+        <Slider label="Position Y" value={posY} onChange={setPosY} min={0} max={100} unit="%"/>
+      </Grid2>
+      <div><Label>Sample Image URL</Label><Input value={imgUrl} onChange={setImgUrl} placeholder="https://…"/></div>
+      <PreviewBox height={200}>
+        <div style={{width:200,height:130,borderRadius:8,overflow:"hidden",border:`1px solid ${C.border}`,background:"#0D1117"}}>
+          <img src={imgUrl} alt="object-fit preview" style={{width:"100%",height:"100%",objectFit:fit,objectPosition:`${posX}% ${posY}%`}} onError={e=>e.target.style.display="none"}/>
+        </div>
+      </PreviewBox>
+      <CSSOutput css={css}/>
+    </VStack>
+  );
+}
+
+// ── 34. CSS LINE CLAMP ────────────────────────────────────────────────────────
+function CssLineClamp() {
+  const [lines,setLines]=useState(3);
+  const [text,setText]=useState("ToolsRift is a large, privacy-first collection of free online tools. Line clamping truncates long text to a fixed number of lines and appends an ellipsis so cards and previews stay tidy no matter how long the content is.");
+  const css=`display: -webkit-box;\n-webkit-line-clamp: ${lines};\n-webkit-box-orient: vertical;\noverflow: hidden;`;
+
+  return (
+    <VStack>
+      <Slider label="Max Lines" value={lines} onChange={setLines} min={1} max={8} step={1} unit=""/>
+      <div><Label>Sample Text</Label><Input value={text} onChange={setText}/></div>
+      <PreviewBox height={140} label="Preview">
+        <div style={{width:"80%"}}>
+          <div style={{display:"-webkit-box",WebkitLineClamp:lines,WebkitBoxOrient:"vertical",overflow:"hidden",fontSize:14,color:C.text,lineHeight:1.6}}>{text}</div>
+        </div>
+      </PreviewBox>
+      <CSSOutput css={css}/>
+    </VStack>
+  );
+}
+
+// ── 35. CSS WRITING MODE ──────────────────────────────────────────────────────
+function CssWritingMode() {
+  const [mode,setMode]=useState("vertical-rl");
+  const [orient,setOrient]=useState("mixed");
+  const [text,setText]=useState("ToolsRift Vertical");
+  let css=`writing-mode: ${mode};`;
+  if(mode!=="horizontal-tb") css+=`\ntext-orientation: ${orient};`;
+
+  return (
+    <VStack>
+      <div><Label>writing-mode</Label>
+        <SelectInput value={mode} onChange={setMode} options={["horizontal-tb","vertical-rl","vertical-lr","sideways-rl","sideways-lr"].map(v=>({value:v,label:v}))}/>
+      </div>
+      {mode!=="horizontal-tb"&&(
+        <div><Label>text-orientation</Label>
+          <SelectInput value={orient} onChange={setOrient} options={["mixed","upright","sideways"].map(v=>({value:v,label:v}))}/>
+        </div>
+      )}
+      <div><Label>Sample Text</Label><Input value={text} onChange={setText}/></div>
+      <PreviewBox height={200}>
+        <span style={{writingMode:mode,textOrientation:orient,fontSize:24,fontWeight:700,fontFamily:"'Sora',sans-serif",color:C.cyan}}>{text||"Sample"}</span>
+      </PreviewBox>
+      <CSSOutput css={css}/>
+    </VStack>
+  );
+}
+
+// ── 36. CSS IMAGE RENDERING ───────────────────────────────────────────────────
+function CssImageRendering() {
+  const [mode,setMode]=useState("pixelated");
+  const [scale,setScale]=useState(8);
+  const css=`image-rendering: ${mode};`;
+  // tiny SVG data URI (8x8 checker) to upscale
+  const tiny="data:image/svg+xml;utf8,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" shape-rendering="crispEdges"><rect width="8" height="8" fill="#0D1117"/><rect width="4" height="4" fill="#06B6D4"/><rect x="4" y="4" width="4" height="4" fill="#EC4899"/><rect x="4" width="4" height="4" fill="#8B5CF6"/><rect y="4" width="4" height="4" fill="#F59E0B"/></svg>');
+
+  return (
+    <VStack>
+      <div><Label>image-rendering</Label>
+        <div style={{display:"flex",flexWrap:"wrap",gap:6,marginTop:6}}>
+          {["auto","smooth","high-quality","crisp-edges","pixelated"].map(v=><Btn key={v} size="sm" variant={mode===v?"primary":"secondary"} onClick={()=>setMode(v)}>{v}</Btn>)}
+        </div>
+      </div>
+      <Slider label="Preview Zoom" value={scale} onChange={setScale} min={2} max={16} step={1} unit="×"/>
+      <PreviewBox height={200}>
+        <img src={tiny} alt="rendering preview" style={{width:8*scale,height:8*scale,imageRendering:mode}}/>
+      </PreviewBox>
+      <CSSOutput css={css}/>
+    </VStack>
+  );
+}
+
+// ── 37. CSS TYPE SCALE ────────────────────────────────────────────────────────
+function CssTypeScale() {
+  const ratios=[["1.067","Minor Second"],["1.125","Major Second"],["1.2","Minor Third"],["1.25","Major Third"],["1.333","Perfect Fourth"],["1.414","Augmented Fourth"],["1.5","Perfect Fifth"],["1.618","Golden Ratio"]];
+  const [base,setBase]=useState(16);
+  const [ratio,setRatio]=useState(1.25);
+  const [up,setUp]=useState(5);
+  const [down,setDown]=useState(2);
+  const names=["xs","sm","base","md","lg","xl","2xl","3xl","4xl","5xl","6xl"];
+
+  const steps=useMemo(()=>{
+    const arr=[];
+    for(let n=down;n>=1;n--) arr.push({step:-n});
+    arr.push({step:0});
+    for(let n=1;n<=up;n++) arr.push({step:n});
+    return arr.map((s,i)=>({...s,size:+(base*Math.pow(ratio,s.step)).toFixed(2),name:names[i]||`step-${i}`}));
+  },[base,ratio,up,down]);
+
+  const css=":root {\n"+steps.map(s=>`  --fs-${s.name}: ${s.size}px;`).join("\n")+"\n}";
+
+  return (
+    <VStack>
+      <Grid2>
+        <Slider label="Base Size" value={base} onChange={setBase} min={10} max={24} unit="px"/>
+        <div><Label>Scale Ratio</Label>
+          <SelectInput value={String(ratio)} onChange={v=>setRatio(parseFloat(v))} options={ratios.map(([v,l])=>({value:v,label:`${l} (${v})`}))}/>
+        </div>
+      </Grid2>
+      <Grid2>
+        <Slider label="Steps Up" value={up} onChange={setUp} min={1} max={8} step={1} unit=""/>
+        <Slider label="Steps Down" value={down} onChange={setDown} min={0} max={4} step={1} unit=""/>
+      </Grid2>
+      <PreviewBox height={220} label="Preview">
+        <div style={{width:"100%",height:"100%",overflow:"auto",padding:14,display:"flex",flexDirection:"column",gap:2,alignItems:"flex-start"}}>
+          {steps.map(s=>(
+            <div key={s.name} style={{display:"flex",alignItems:"baseline",gap:10,maxWidth:"100%"}}>
+              <span style={{fontSize:Math.min(s.size,44),fontWeight:600,color:C.text,fontFamily:"'Sora',sans-serif",whiteSpace:"nowrap"}}>Aa</span>
+              <span style={{fontSize:11,color:C.muted,fontFamily:"'JetBrains Mono',monospace"}}>--fs-{s.name}: {s.size}px</span>
+            </div>
+          ))}
+        </div>
+      </PreviewBox>
+      <CSSOutput css={css}/>
+    </VStack>
+  );
+}
+
+// ── 38. CSS HEX TO RGBA ───────────────────────────────────────────────────────
+function hexToRgbParts(hex){
+  let h=(hex||"").trim().replace(/^#/,"");
+  if(/^[0-9a-fA-F]{3}$/.test(h)) h=h.split("").map(c=>c+c).join("");
+  if(/^[0-9a-fA-F]{8}$/.test(h)) h=h.slice(0,6);
+  if(!/^[0-9a-fA-F]{6}$/.test(h)) return null;
+  return {r:parseInt(h.slice(0,2),16),g:parseInt(h.slice(2,4),16),b:parseInt(h.slice(4,6),16)};
+}
+function CssHexToRgba() {
+  const [hex,setHex]=useState("#06B6D4");
+  const [alpha,setAlpha]=useState(100);
+  const parts=hexToRgbParts(hex);
+  const a=+(Math.max(0,Math.min(100,alpha))/100).toFixed(2);
+  const valid=!!parts;
+  const rgba=valid?`rgba(${parts.r}, ${parts.g}, ${parts.b}, ${a})`:null;
+  const rgb=valid?`rgb(${parts.r}, ${parts.g}, ${parts.b})`:null;
+  const css=valid?`color: ${rgba};`:"/* Enter a valid 3, 6 or 8-digit hex color */";
+
+  return (
+    <VStack>
+      <Grid2>
+        <ColorPicker label="Hex Color" value={/^#?[0-9a-fA-F]{6}$/.test(hex)?(hex[0]==="#"?hex:"#"+hex):"#06B6D4"} onChange={setHex}/>
+        <Slider label="Alpha (opacity)" value={alpha} onChange={setAlpha} min={0} max={100} unit="%"/>
+      </Grid2>
+      <div><Label>Hex Input (3, 6 or 8 digits)</Label><Input value={hex} onChange={setHex} mono placeholder="#06B6D4"/></div>
+      {!valid&&<div style={{fontSize:13,color:C.amber}}>Enter a valid hex color like #06B6D4, #fff or #06B6D480.</div>}
+      {valid&&(
+        <>
+          <PreviewBox height={120}>
+            <div style={{position:"absolute",inset:0,background:"repeating-conic-gradient(#1a1a2e 0% 25%, #0d1117 0% 50%) 50%/22px 22px"}}/>
+            <div style={{position:"relative",width:"70%",height:"70%",borderRadius:10,background:rgba,border:`1px solid ${C.border}`,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'JetBrains Mono',monospace",fontSize:13,color:"#fff",textShadow:"0 1px 2px rgba(0,0,0,0.5)"}}>{rgba}</div>
+          </PreviewBox>
+          <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
+            <Badge color="cyan">R {parts.r}</Badge><Badge color="green">G {parts.g}</Badge><Badge color="blue">B {parts.b}</Badge><Badge color="purple">A {a}</Badge>
+          </div>
+          <div style={{fontSize:12,color:C.muted,fontFamily:"'JetBrains Mono',monospace"}}>{rgb}</div>
+        </>
+      )}
+      <CSSOutput css={css}/>
+    </VStack>
+  );
+}
+
 // ─── COMPONENT MAP ────────────────────────────────────────────────────────────
 const TOOL_COMPONENTS = {
   "css-gradient":      CssGradient,
@@ -1527,6 +1993,20 @@ const TOOL_COMPONENTS = {
   "css-specificity-calculator": CssSpecificity,
   "css-pattern-generator":      CssPattern,
   "cubic-bezier-editor":        CubicBezier,
+  "css-text-stroke":            CssTextStroke,
+  "css-outline":                CssOutline,
+  "css-backdrop-filter":        CssBackdropFilter,
+  "css-blend-mode":             CssBlendMode,
+  "css-mask-fade":              CssMaskFade,
+  "css-perspective":            CssPerspective,
+  "css-aspect-ratio":           CssAspectRatio,
+  "css-columns":                CssColumns,
+  "css-object-fit":             CssObjectFit,
+  "css-line-clamp":             CssLineClamp,
+  "css-writing-mode":           CssWritingMode,
+  "css-image-rendering":        CssImageRendering,
+  "css-type-scale":             CssTypeScale,
+  "css-hex-to-rgba":            CssHexToRgba,
 };
 
 // ─── PAGE SHELLS ──────────────────────────────────────────────────────────────

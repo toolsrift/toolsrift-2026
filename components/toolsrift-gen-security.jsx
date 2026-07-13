@@ -1037,6 +1037,22 @@ const TOOLS = [
 { id:"rsa-key-pair-gen", cat:"security", name:"RSA Key Pair Generator", desc:"Generate an RSA public/private key pair in PEM format entirely in your browser using the native WebCrypto API.", icon:"🔏", free:true },
 { id:"ulid-gen", cat:"ids", name:"ULID Generator", desc:"Generate ULIDs online — lexicographically sortable, timestamp-prefixed identifiers in Crockford Base32.", icon:"🆔", free:true },
 { id:"objectid-gen", cat:"ids", name:"MongoDB ObjectId Generator", desc:"Generate valid MongoDB ObjectId values online with a real timestamp prefix and random tail for testing and seeds.", icon:"🍃", free:true },
+
+{ id:"credit-card-test-gen", cat:"fakedata", name:"Test Credit Card Number Generator", desc:"Generate Luhn-valid test credit card numbers online for Visa, Mastercard, Amex, and Discover for payment sandbox and QA testing.", icon:"💳", free:true },
+{ id:"imei-generator", cat:"fakedata", name:"IMEI Number Generator", desc:"Generate valid 15-digit IMEI numbers online with a correct Luhn check digit for device testing, forms, and mock datasets.", icon:"📱", free:true },
+{ id:"iban-generator", cat:"fakedata", name:"IBAN Generator", desc:"Generate structurally valid fake IBANs online with correct ISO 13616 mod-97 check digits for banking form testing and demos.", icon:"🏦", free:true },
+{ id:"vin-generator", cat:"fakedata", name:"VIN Generator", desc:"Generate valid 17-character Vehicle Identification Numbers online with a correct ISO 3779 check digit for automotive test data.", icon:"🚗", free:true },
+{ id:"license-plate-gen", cat:"fakedata", name:"License Plate Generator", desc:"Generate random license plate numbers online in US, UK, German, and Indian formats for mock data, games, and prototypes.", icon:"🚙", free:true },
+
+{ id:"ean13-generator", cat:"ids", name:"EAN-13 Barcode Number Generator", desc:"Generate valid EAN-13 barcode numbers online with correct GS1 mod-10 checksums for retail product testing and catalog seeds.", icon:"📶", free:true },
+{ id:"ean8-generator", cat:"ids", name:"EAN-8 Barcode Number Generator", desc:"Generate valid 8-digit EAN-8 barcode numbers online with a correct mod-10 check digit for small-package and retail testing.", icon:"🔖", free:true },
+{ id:"upc-a-generator", cat:"ids", name:"UPC-A Barcode Number Generator", desc:"Generate valid 12-digit UPC-A barcode numbers online with correct mod-10 checksums for North American retail product testing.", icon:"🏪", free:true },
+{ id:"isbn13-generator", cat:"ids", name:"ISBN-13 Generator", desc:"Generate valid ISBN-13 book numbers online with 978/979 prefixes and correct check digits for publishing tests and mock data.", icon:"📚", free:true },
+{ id:"isbn10-generator", cat:"ids", name:"ISBN-10 Generator", desc:"Generate valid ISBN-10 book identifiers online with a correct mod-11 check digit (including X) for legacy publishing test data.", icon:"📖", free:true },
+{ id:"isin-generator", cat:"ids", name:"ISIN Generator", desc:"Generate valid ISIN securities identifiers online with a correct Luhn check digit for finance app testing and sample datasets.", icon:"📈", free:true },
+{ id:"coupon-code-gen", cat:"ids", name:"Coupon Code Generator", desc:"Generate bulk coupon and promo codes online with custom prefix, segment count, and length for campaigns and mock storefronts.", icon:"🎟️", free:true },
+{ id:"order-number-gen", cat:"ids", name:"Order Number Generator", desc:"Generate order and reference numbers online with prefix, date, and sequence patterns for e-commerce testing and seed data.", icon:"🧾", free:true },
+{ id:"invoice-number-gen", cat:"ids", name:"Invoice Number Generator", desc:"Generate sequential invoice numbers online with prefix, year, and zero-padded counters for accounting tests and mock billing.", icon:"💼", free:true },
 ];
 
 const CATEGORIES = [
@@ -1210,11 +1226,404 @@ function RsaKeyPairGen() {
   );
 }
 
+// ─── Checksum helpers (all verified against published test vectors) ───
+const randDigit = () => safeCryptoBytes(1)[0] % 10;
+function luhnCheckDigit(payload) {
+  let sum = 0;
+  for (let i = payload.length - 1, dbl = true; i >= 0; i--, dbl = !dbl) {
+    let d = +payload[i];
+    if (dbl) { d *= 2; if (d > 9) d -= 9; }
+    sum += d;
+  }
+  return (10 - (sum % 10)) % 10;
+}
+const luhnAppend = payload => payload + luhnCheckDigit(payload);
+// EAN/ISBN-13/UPC style mod-10 with alternating weights; startWeight is weight of leftmost digit
+function mod10Check(digits, startWeight) {
+  let sum = 0;
+  for (let i = 0; i < digits.length; i++) sum += (+digits[i]) * (i % 2 === 0 ? startWeight : (startWeight === 1 ? 3 : 1));
+  return (10 - (sum % 10)) % 10;
+}
+function isbn10Check(d9) {
+  let sum = 0;
+  for (let i = 0; i < 9; i++) sum += (+d9[i]) * (10 - i);
+  const c = (11 - (sum % 11)) % 11;
+  return c === 10 ? "X" : String(c);
+}
+function ibanMod97(iban) {
+  const rearr = iban.slice(4) + iban.slice(0, 4);
+  let rem = 0;
+  for (const ch of rearr) {
+    const part = (ch >= "A" && ch <= "Z") ? String(ch.charCodeAt(0) - 55) : ch;
+    for (const d of part) rem = (rem * 10 + (+d)) % 97;
+  }
+  return rem;
+}
+function isinCheckDigit(body11) {
+  let digits = "";
+  for (const ch of body11) digits += (ch >= "A" && ch <= "Z") ? (ch.charCodeAt(0) - 55) : ch;
+  return luhnCheckDigit(digits);
+}
+const VIN_TRANS = { A:1,B:2,C:3,D:4,E:5,F:6,G:7,H:8,J:1,K:2,L:3,M:4,N:5,P:7,R:9,S:2,T:3,U:4,V:5,W:6,X:7,Y:8,Z:9 };
+const VIN_WEIGHTS = [8,7,6,5,4,3,2,10,0,9,8,7,6,5,4,3,2];
+function vinCheckDigit(vin17) {
+  let sum = 0;
+  for (let i = 0; i < 17; i++) {
+    const ch = vin17[i];
+    const v = /[0-9]/.test(ch) ? +ch : (VIN_TRANS[ch] || 0);
+    sum += v * VIN_WEIGHTS[i];
+  }
+  const r = sum % 11;
+  return r === 10 ? "X" : String(r);
+}
+
+function CreditCardTestGen() {
+  const BRANDS = {
+    visa: { label:"Visa", prefixes:["4"], length:16 },
+    mastercard: { label:"Mastercard", prefixes:["51","52","53","54","55"], length:16 },
+    amex: { label:"American Express", prefixes:["34","37"], length:15 },
+    discover: { label:"Discover", prefixes:["6011","65"], length:16 },
+  };
+  const [brand, setBrand] = useState("visa");
+  const [count, setCount] = useState(5);
+  const [grouped, setGrouped] = useState(true);
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const b = BRANDS[brand] || BRANDS.visa;
+    const n = Math.max(1, Math.min(500, Number(count) || 5));
+    setOut(Array.from({ length: n }, () => {
+      let body = randPick(b.prefixes);
+      while (body.length < b.length - 1) body += randDigit();
+      body = body.slice(0, b.length - 1);
+      const num = luhnAppend(body);
+      if (!grouped) return num;
+      return brand === "amex" ? num.replace(/(\d{4})(\d{6})(\d{5})/, "$1 $2 $3") : num.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
+    }).join("\n"));
+  }, [brand, count, grouped]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Card brand</Label><SelectInput value={brand} onChange={setBrand} options={Object.keys(BRANDS).map(k => ({ value:k, label:BRANDS[k].label }))} style={{ width:"100%" }} /></div>
+        <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={500} /></div>
+      </Grid2>
+      <Check label="Group digits with spaces" checked={grouped} onChange={setGrouped} />
+      <OutputBox text={out} onRegen={gen} download filename="test-cards.txt" />
+      <div style={{ fontSize:11, color:C.warn }}>⚠ Luhn-valid TEST numbers only — not real accounts. For sandbox/QA use.</div>
+    </VStack>
+  );
+}
+
+function ImeiGen() {
+  const [count, setCount] = useState(5);
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const n = Math.max(1, Math.min(500, Number(count) || 5));
+    setOut(Array.from({ length: n }, () => {
+      let body = "";
+      for (let i = 0; i < 14; i++) body += randDigit();
+      return luhnAppend(body);
+    }).join("\n"));
+  }, [count]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={500} /></div>
+      <OutputBox text={out} onRegen={gen} download filename="imei.txt" />
+      <div style={{ fontSize:11, color:C.muted }}>15 digits with a valid Luhn check digit. For testing only — not tied to any real device.</div>
+    </VStack>
+  );
+}
+
+function IbanGen() {
+  const SPEC = {
+    DE: { name:"Germany", bban:18, letters:0 },
+    GB: { name:"United Kingdom", bban:18, letters:4 },
+    FR: { name:"France", bban:23, letters:0 },
+    ES: { name:"Spain", bban:20, letters:0 },
+    NL: { name:"Netherlands", bban:14, letters:4 },
+  };
+  const [cc, setCc] = useState("DE");
+  const [count, setCount] = useState(3);
+  const [grouped, setGrouped] = useState(true);
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const s = SPEC[cc] || SPEC.DE;
+    const n = Math.max(1, Math.min(200, Number(count) || 3));
+    const L = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    setOut(Array.from({ length: n }, () => {
+      let bban = "";
+      for (let i = 0; i < s.letters; i++) bban += L[safeCryptoBytes(1)[0] % 26];
+      while (bban.length < s.bban) bban += randDigit();
+      bban = bban.slice(0, s.bban);
+      const check = String(98 - ibanMod97(cc + "00" + bban)).padStart(2, "0");
+      const iban = cc + check + bban;
+      return grouped ? iban.replace(/(.{4})/g, "$1 ").trim() : iban;
+    }).join("\n"));
+  }, [cc, count, grouped]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Country</Label><SelectInput value={cc} onChange={setCc} options={Object.keys(SPEC).map(k => ({ value:k, label:`${SPEC[k].name} (${k})` }))} style={{ width:"100%" }} /></div>
+        <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={200} /></div>
+      </Grid2>
+      <Check label="Group in blocks of 4" checked={grouped} onChange={setGrouped} />
+      <OutputBox text={out} onRegen={gen} download filename="ibans.txt" />
+      <div style={{ fontSize:11, color:C.muted }}>Structurally valid: passes the ISO 13616 mod-97 check. Bank/account parts are random test data.</div>
+    </VStack>
+  );
+}
+
+function VinGen() {
+  const [count, setCount] = useState(5);
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const CHARS = "ABCDEFGHJKLMNPRSTUVWXYZ0123456789"; // excludes I, O, Q per spec
+    const n = Math.max(1, Math.min(500, Number(count) || 5));
+    setOut(Array.from({ length: n }, () => {
+      let vin = "";
+      for (let i = 0; i < 17; i++) vin += CHARS[safeCryptoBytes(1)[0] % CHARS.length];
+      return vin.slice(0, 8) + vinCheckDigit(vin) + vin.slice(9);
+    }).join("\n"));
+  }, [count]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={500} /></div>
+      <OutputBox text={out} onRegen={gen} download filename="vins.txt" />
+      <div style={{ fontSize:11, color:C.muted }}>17 characters (no I/O/Q) with a valid position-9 check digit per the ISO 3779 transliteration.</div>
+    </VStack>
+  );
+}
+
+function LicensePlateGen() {
+  const A = "ABCDEFGHJKLMNPRSTUVWXYZ";
+  const L = () => A[safeCryptoBytes(1)[0] % A.length];
+  const D = () => randDigit();
+  const FORMATS = {
+    US: { name:"US (ABC-1234)", make:() => `${L()}${L()}${L()}-${D()}${D()}${D()}${D()}` },
+    UK: { name:"UK (AB12 CDE)", make:() => `${L()}${L()}${D()}${D()} ${L()}${L()}${L()}` },
+    DE: { name:"Germany (BA-CD 1234)", make:() => `${L()}${L()}-${L()}${L()} ${D()}${D()}${D()}${D()}` },
+    IN: { name:"India (MH12 AB 1234)", make:() => `${L()}${L()}${D()}${D()} ${L()}${L()} ${D()}${D()}${D()}${D()}` },
+  };
+  const [fmt, setFmt] = useState("US");
+  const [count, setCount] = useState(6);
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const f = FORMATS[fmt] || FORMATS.US;
+    const n = Math.max(1, Math.min(500, Number(count) || 6));
+    setOut(Array.from({ length: n }, () => f.make()).join("\n"));
+  }, [fmt, count]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Format</Label><SelectInput value={fmt} onChange={setFmt} options={Object.keys(FORMATS).map(k => ({ value:k, label:FORMATS[k].name }))} style={{ width:"100%" }} /></div>
+        <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={500} /></div>
+      </Grid2>
+      <OutputBox text={out} onRegen={gen} download filename="plates.txt" />
+    </VStack>
+  );
+}
+
+// generic mod-10 barcode generator component factory config
+function BarcodeGen({ digitsBeforeCheck, startWeight, forcedPrefix, prefixLabel, prefixOptions, filename, note }) {
+  const [prefix, setPrefix] = useState(prefixOptions ? prefixOptions[0].value : "");
+  const [count, setCount] = useState(5);
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const n = Math.max(1, Math.min(500, Number(count) || 5));
+    const pfx = prefixOptions ? prefix : (forcedPrefix || "");
+    setOut(Array.from({ length: n }, () => {
+      let body = pfx;
+      while (body.length < digitsBeforeCheck) body += randDigit();
+      body = body.slice(0, digitsBeforeCheck);
+      return body + mod10Check(body, startWeight);
+    }).join("\n"));
+  }, [count, prefix]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <Grid2>
+        {prefixOptions
+          ? <div><Label>{prefixLabel}</Label><SelectInput value={prefix} onChange={setPrefix} options={prefixOptions} style={{ width:"100%" }} /></div>
+          : <div><Label>Count</Label><NumberField value={count} onChange={setCount} min={1} max={500} /></div>}
+        {prefixOptions && <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={500} /></div>}
+      </Grid2>
+      <OutputBox text={out} onRegen={gen} download filename={filename} />
+      {note && <div style={{ fontSize:11, color:C.muted }}>{note}</div>}
+    </VStack>
+  );
+}
+const Ean13Gen = () => <BarcodeGen digitsBeforeCheck={12} startWeight={1} filename="ean13.txt" note="13 digits with a valid GS1 mod-10 check digit." />;
+const Ean8Gen = () => <BarcodeGen digitsBeforeCheck={7} startWeight={3} filename="ean8.txt" note="8 digits with a valid mod-10 check digit." />;
+const UpcaGen = () => <BarcodeGen digitsBeforeCheck={11} startWeight={3} filename="upca.txt" note="12 digits with a valid UPC-A mod-10 check digit." />;
+const Isbn13Gen = () => <BarcodeGen digitsBeforeCheck={12} startWeight={1} filename="isbn13.txt" prefixLabel="Prefix" prefixOptions={[{value:"978",label:"978"},{value:"979",label:"979"}]} note="Valid ISBN-13 with a correct EAN check digit." />;
+
+function Isbn10Gen() {
+  const [count, setCount] = useState(5);
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const n = Math.max(1, Math.min(500, Number(count) || 5));
+    setOut(Array.from({ length: n }, () => {
+      let body = "";
+      for (let i = 0; i < 9; i++) body += randDigit();
+      return body + isbn10Check(body);
+    }).join("\n"));
+  }, [count]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={500} /></div>
+      <OutputBox text={out} onRegen={gen} download filename="isbn10.txt" />
+      <div style={{ fontSize:11, color:C.muted }}>10 characters with a valid mod-11 check digit (may end in X).</div>
+    </VStack>
+  );
+}
+
+function IsinGen() {
+  const COUNTRIES2 = ["US","GB","DE","FR","JP","CH","CA","AU","NL","HK"];
+  const [cc, setCc] = useState("US");
+  const [count, setCount] = useState(5);
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const AN = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const n = Math.max(1, Math.min(500, Number(count) || 5));
+    setOut(Array.from({ length: n }, () => {
+      let body = cc;
+      while (body.length < 11) body += AN[safeCryptoBytes(1)[0] % AN.length];
+      body = body.slice(0, 11);
+      return body + isinCheckDigit(body);
+    }).join("\n"));
+  }, [cc, count]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Country prefix</Label><SelectInput value={cc} onChange={setCc} options={COUNTRIES2.map(c => ({ value:c, label:c }))} style={{ width:"100%" }} /></div>
+        <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={500} /></div>
+      </Grid2>
+      <OutputBox text={out} onRegen={gen} download filename="isins.txt" />
+      <div style={{ fontSize:11, color:C.muted }}>12 characters with a valid Luhn check digit. Identifiers are random test data.</div>
+    </VStack>
+  );
+}
+
+function CouponCodeGen() {
+  const [prefix, setPrefix] = useState("SAVE");
+  const [segments, setSegments] = useState(2);
+  const [segLen, setSegLen] = useState(4);
+  const [count, setCount] = useState(10);
+  const [out, setOut] = useState("");
+  const cs = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no ambiguous chars
+  const gen = useCallback(() => {
+    const segN = Math.max(1, Math.min(8, Number(segments) || 2));
+    const segL = Math.max(2, Math.min(12, Number(segLen) || 4));
+    const n = Math.max(1, Math.min(1000, Number(count) || 10));
+    setOut(Array.from({ length: n }, () => {
+      const parts = Array.from({ length: segN }, () => pickFromCharset(segL, cs));
+      return `${prefix ? prefix + "-" : ""}${parts.join("-")}`;
+    }).join("\n"));
+  }, [prefix, segments, segLen, count]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Prefix</Label><Input value={prefix} onChange={setPrefix} placeholder="SAVE" /></div>
+        <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={1000} /></div>
+      </Grid2>
+      <Grid2>
+        <div><Label>Segments</Label><NumberField value={segments} onChange={setSegments} min={1} max={8} /></div>
+        <div><Label>Chars per segment</Label><NumberField value={segLen} onChange={setSegLen} min={2} max={12} /></div>
+      </Grid2>
+      <OutputBox text={out} onRegen={gen} download filename="coupons.txt" />
+    </VStack>
+  );
+}
+
+function OrderNumberGen() {
+  const [prefix, setPrefix] = useState("ORD");
+  const [useDate, setUseDate] = useState(true);
+  const [start, setStart] = useState(1001);
+  const [pad, setPad] = useState(5);
+  const [count, setCount] = useState(10);
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const n = Math.max(1, Math.min(1000, Number(count) || 10));
+    const s = Math.max(0, Number(start) || 0);
+    const p = Math.max(0, Math.min(12, Number(pad) || 0));
+    const d = new Date();
+    const datePart = useDate ? `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,"0")}${String(d.getDate()).padStart(2,"0")}-` : "";
+    setOut(Array.from({ length: n }, (_, i) => `${prefix ? prefix + "-" : ""}${datePart}${String(s + i).padStart(p, "0")}`).join("\n"));
+  }, [prefix, useDate, start, pad, count]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Prefix</Label><Input value={prefix} onChange={setPrefix} placeholder="ORD" /></div>
+        <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={1000} /></div>
+      </Grid2>
+      <Grid2>
+        <div><Label>Start number</Label><NumberField value={start} onChange={setStart} min={0} /></div>
+        <div><Label>Zero-pad width</Label><NumberField value={pad} onChange={setPad} min={0} max={12} /></div>
+      </Grid2>
+      <Check label="Include today's date" checked={useDate} onChange={setUseDate} />
+      <OutputBox text={out} onRegen={gen} download filename="orders.txt" />
+    </VStack>
+  );
+}
+
+function InvoiceNumberGen() {
+  const [prefix, setPrefix] = useState("INV");
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [start, setStart] = useState(1);
+  const [pad, setPad] = useState(4);
+  const [count, setCount] = useState(12);
+  const [out, setOut] = useState("");
+  const gen = useCallback(() => {
+    const n = Math.max(1, Math.min(1000, Number(count) || 12));
+    const s = Math.max(0, Number(start) || 0);
+    const p = Math.max(0, Math.min(12, Number(pad) || 0));
+    const y = Number(year) || new Date().getFullYear();
+    setOut(Array.from({ length: n }, (_, i) => `${prefix ? prefix + "-" : ""}${y}-${String(s + i).padStart(p, "0")}`).join("\n"));
+  }, [prefix, year, start, pad, count]);
+  useEffect(() => { gen(); }, [gen]);
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Prefix</Label><Input value={prefix} onChange={setPrefix} placeholder="INV" /></div>
+        <div><Label>Year</Label><NumberField value={year} onChange={setYear} min={1900} max={2999} /></div>
+      </Grid2>
+      <Grid3>
+        <div><Label>Start</Label><NumberField value={start} onChange={setStart} min={0} /></div>
+        <div><Label>Pad width</Label><NumberField value={pad} onChange={setPad} min={0} max={12} /></div>
+        <div><Label>How many</Label><NumberField value={count} onChange={setCount} min={1} max={1000} /></div>
+      </Grid3>
+      <OutputBox text={out} onRegen={gen} download filename="invoices.txt" />
+    </VStack>
+  );
+}
+
 const TOOL_COMPONENTS = {
 "totp-secret-gen": TotpSecretGen,
 "rsa-key-pair-gen": RsaKeyPairGen,
 "ulid-gen": UlidGen,
 "objectid-gen": ObjectIdGen,
+"credit-card-test-gen": CreditCardTestGen,
+"imei-generator": ImeiGen,
+"iban-generator": IbanGen,
+"vin-generator": VinGen,
+"license-plate-gen": LicensePlateGen,
+"ean13-generator": Ean13Gen,
+"ean8-generator": Ean8Gen,
+"upc-a-generator": UpcaGen,
+"isbn13-generator": Isbn13Gen,
+"isbn10-generator": Isbn10Gen,
+"isin-generator": IsinGen,
+"coupon-code-gen": CouponCodeGen,
+"order-number-gen": OrderNumberGen,
+"invoice-number-gen": InvoiceNumberGen,
 "strong-password-gen": StrongPasswordGen,
 "passphrase-gen": PassphraseGen,
 "pin-gen": PinGen,

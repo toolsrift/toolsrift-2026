@@ -178,7 +178,7 @@ function useAppRouter() {
 // SHA-1
 function sha1(msg) {
   function rotl(n,s){return(n<<s)|(n>>>(32-s));}
-  const bytes=[...msg].flatMap(c=>{const cp=c.codePointAt(0);return cp<0x80?[cp]:cp<0x800?[0xC0|(cp>>6),0x80|(cp&0x3F)]:cp<0x10000?[0xE0|(cp>>12),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)]:[0xF0|(cp>>18),0x80|((cp>>12)&0x3F),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)];});
+  const bytes=Array.isArray(msg)?msg.slice():[...msg].flatMap(c=>{const cp=c.codePointAt(0);return cp<0x80?[cp]:cp<0x800?[0xC0|(cp>>6),0x80|(cp&0x3F)]:cp<0x10000?[0xE0|(cp>>12),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)]:[0xF0|(cp>>18),0x80|((cp>>12)&0x3F),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)];});
   const ml=bytes.length*8;
   bytes.push(0x80);
   while(bytes.length%64!==56) bytes.push(0);
@@ -207,7 +207,7 @@ function sha1(msg) {
 function sha256(msg) {
   const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
   function rotr(n,s){return(n>>>s)|(n<<(32-s));}
-  const bytes=[...msg].flatMap(c=>{const cp=c.codePointAt(0);return cp<0x80?[cp]:cp<0x800?[0xC0|(cp>>6),0x80|(cp&0x3F)]:cp<0x10000?[0xE0|(cp>>12),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)]:[0xF0|(cp>>18),0x80|((cp>>12)&0x3F),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)];});
+  const bytes=Array.isArray(msg)?msg.slice():[...msg].flatMap(c=>{const cp=c.codePointAt(0);return cp<0x80?[cp]:cp<0x800?[0xC0|(cp>>6),0x80|(cp&0x3F)]:cp<0x10000?[0xE0|(cp>>12),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)]:[0xF0|(cp>>18),0x80|((cp>>12)&0x3F),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)];});
   const ml=bytes.length*8; bytes.push(0x80);
   while(bytes.length%64!==56) bytes.push(0);
   for(let i=7;i>=0;i--) bytes.push((ml/(2**(i*8)))&0xFF);
@@ -232,7 +232,7 @@ function md5(str) {
   function md5gg(a,b,c,d,x,s,t){return md5cmn(b&d|c&~d,a,b,x,s,t);}
   function md5hh(a,b,c,d,x,s,t){return md5cmn(b^c^d,a,b,x,s,t);}
   function md5ii(a,b,c,d,x,s,t){return md5cmn(c^(b|~d),a,b,x,s,t);}
-  const bytes=[...str].flatMap(c=>{const cp=c.codePointAt(0);return cp<0x80?[cp]:cp<0x800?[0xC0|(cp>>6),0x80|(cp&0x3F)]:cp<0x10000?[0xE0|(cp>>12),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)]:[0xF0|(cp>>18),0x80|((cp>>12)&0x3F),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)];});
+  const bytes=Array.isArray(str)?str.slice():[...str].flatMap(c=>{const cp=c.codePointAt(0);return cp<0x80?[cp]:cp<0x800?[0xC0|(cp>>6),0x80|(cp&0x3F)]:cp<0x10000?[0xE0|(cp>>12),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)]:[0xF0|(cp>>18),0x80|((cp>>12)&0x3F),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)];});
   const ml=bytes.length*8; bytes.push(0x80);
   while(bytes.length%64!==56) bytes.push(0);
   bytes.push(ml&0xFF,(ml>>8)&0xFF,(ml>>16)&0xFF,(ml>>24)&0xFF,0,0,0,0);
@@ -285,7 +285,7 @@ function adler32(str) {
 function fnv1a32(str) {
   let hash=0x811c9dc5;
   const bytes=[...str].flatMap(c=>{const cp=c.codePointAt(0);return cp<0x80?[cp]:[0xC0|(cp>>6),0x80|(cp&0x3F)];});
-  for(const b of bytes){hash^=b;hash=(hash*0x01000193)>>>0;}
+  for(const b of bytes){hash^=b;hash=Math.imul(hash,0x01000193)>>>0;}
   return hash.toString(16).toUpperCase().padStart(8,"0");
 }
 
@@ -299,7 +299,8 @@ function djb2(str) {
 // HMAC-SHA256 (pure JS)
 function hmacSha256(key, msg) {
   const blockSize=64;
-  let keyBytes=[...key].flatMap(c=>{const cp=c.codePointAt(0);return cp<0x80?[cp]:[0xC0|(cp>>6),0x80|(cp&0x3F)];});
+  const utf8=s=>[...s].flatMap(c=>{const cp=c.codePointAt(0);return cp<0x80?[cp]:cp<0x800?[0xC0|(cp>>6),0x80|(cp&0x3F)]:cp<0x10000?[0xE0|(cp>>12),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)]:[0xF0|(cp>>18),0x80|((cp>>12)&0x3F),0x80|((cp>>6)&0x3F),0x80|(cp&0x3F)];});
+  let keyBytes=utf8(key);
   if(keyBytes.length>blockSize){
     const h=sha256(key);
     keyBytes=[];for(let i=0;i<h.length;i+=2) keyBytes.push(parseInt(h.slice(i,i+2),16));
@@ -307,10 +308,10 @@ function hmacSha256(key, msg) {
   while(keyBytes.length<blockSize) keyBytes.push(0);
   const opad=keyBytes.map(b=>b^0x5C);
   const ipad=keyBytes.map(b=>b^0x36);
-  const toStr=bytes=>bytes.map(b=>String.fromCharCode(b)).join("");
-  const inner=sha256(toStr(ipad)+msg);
+  // Hash raw bytes (not UTF-8 re-encoded) so inner-digest bytes >=0x80 are preserved
+  const inner=sha256(ipad.concat(utf8(msg)));
   const innerBytes=[];for(let i=0;i<inner.length;i+=2) innerBytes.push(parseInt(inner.slice(i,i+2),16));
-  return sha256(toStr(opad)+toStr(innerBytes));
+  return sha256(opad.concat(innerBytes));
 }
 
 // Web Crypto wrapper for SHA-384, SHA-512
@@ -335,6 +336,9 @@ const TOOLS = [
   {id:"adler32",         cat:"checksum", name:"Adler-32 Checksum",        desc:"Compute Adler-32 checksums for data verification",      icon:"✅",  free:true},
   {id:"fnv-hash",        cat:"checksum", name:"FNV Hash",                 desc:"Generate FNV-1a 32-bit non-cryptographic hash values",  icon:"⚡",  free:true},
   {id:"djb2-hash",       cat:"checksum", name:"DJB2 Hash",                desc:"Compute the classic DJB2 string hash algorithm",        icon:"🧮",  free:true},
+  {id:"crc16",           cat:"checksum", name:"CRC-16 Checksum",          desc:"Calculate CRC-16/ARC (IBM) cyclic redundancy check values",  icon:"⚡",  free:true},
+  {id:"luhn-validator",  cat:"checksum", name:"Luhn Validator & Check Digit", desc:"Validate credit card / IMEI numbers with the Luhn algorithm and compute the check digit", icon:"💳", free:true},
+  {id:"isbn-validator",  cat:"checksum", name:"ISBN Validator & Check Digit", desc:"Validate ISBN-10 and ISBN-13 book numbers and compute their check digits", icon:"📚", free:true},
   {id:"password-generator", cat:"crypto", name:"Password Generator",     desc:"Generate strong random passwords with custom rules",    icon:"🔑",  free:true},
   {id:"passphrase-gen",  cat:"crypto",   name:"Passphrase Generator",     desc:"Generate memorable diceware-style passphrases",         icon:"⚡",  free:true},
   {id:"password-strength",cat:"crypto",  name:"Password Strength Tester", desc:"Analyse password strength and crack time estimate",     icon:"🔑",  free:true},
@@ -366,6 +370,9 @@ const TOOL_META = {
   "password-generator":{title:"Strong Password Generator — Free Online Tool",   desc:"Generate strong, random passwords with custom length and character sets. Cryptographically secure random generation.", faq:[["How long should my password be?","At least 16 characters. 20+ characters significantly increases security."],["What characters should I include?","Use uppercase, lowercase, numbers, and symbols for maximum entropy."],["Is this generator truly random?","Yes — it uses window.crypto.getRandomValues() which is cryptographically secure."]]},
   "uuid-generator": {title:"UUID / GUID Generator — Free Online UUID v4 Tool",  desc:"Generate RFC 4122 compliant UUID v4 random identifiers. Generate one or multiple UUIDs at once.", faq:[["What is a UUID?","A Universally Unique Identifier — a 128-bit label guaranteed to be unique across space and time."],["What is UUID v4?","Version 4 UUIDs are randomly generated. Version 1 uses timestamp+MAC address."],["What is the collision probability?","For v4 UUIDs, the probability of collision is astronomically low — 1 in 5.3×10³⁶."]]},
   "hmac-generator": {title:"HMAC-SHA256 Generator — Online HMAC Tool",          desc:"Generate HMAC-SHA256 message authentication codes with a secret key. Used for API authentication.", faq:[["What is HMAC?","Hash-based Message Authentication Code — combines a cryptographic hash with a secret key to authenticate messages."],["How is HMAC different from a hash?","HMAC requires a secret key. Without the key, you cannot reproduce the MAC, unlike a plain hash."],["Where is HMAC used?","API authentication (AWS Signature, Stripe webhooks), JWT signing, and cookie signing."]]},
+  "crc16":          {title:"CRC-16 Checksum Calculator — CRC-16/ARC Online",     desc:"Calculate CRC-16/ARC (IBM) cyclic redundancy check values from text. Used in Modbus, USB, and legacy data-link protocols.", faq:[["Which CRC-16 variant is this?","CRC-16/ARC (also called CRC-16/IBM): polynomial 0x8005 reflected (0xA001), initial value 0x0000, no final XOR. The check value of '123456789' is 0xBB3D."],["What is a CRC used for?","Detecting accidental changes to data during storage or transmission. It is an error-detection code, not a cryptographic hash."],["Is CRC-16 secure?","No — CRCs are trivial to forge. Use them only for integrity checks against random corruption, never for security."]]},
+  "luhn-validator": {title:"Luhn Algorithm Validator — Credit Card & IMEI Check", desc:"Validate credit card, IMEI, and other numbers with the Luhn (mod 10) algorithm, and compute the check digit for a partial number.", faq:[["What is the Luhn algorithm?","A simple checksum (mod 10) formula that validates identification numbers such as credit cards, IMEI numbers, and some national IDs. It catches most single-digit typos and adjacent transpositions."],["Does a valid Luhn mean a real card?","No — Luhn only verifies the check digit is consistent. It does not mean the card exists or is active. No data is sent anywhere; validation runs entirely in your browser."],["How is the check digit calculated?","Enter the number without its last digit and the tool appends the digit that makes the full number pass the Luhn check."]]},
+  "isbn-validator": {title:"ISBN Validator — ISBN-10 & ISBN-13 Check Digit",     desc:"Validate ISBN-10 and ISBN-13 book identifiers and compute their check digits. Handles hyphens, spaces, and the ISBN-10 'X' digit.", faq:[["What is an ISBN check digit?","The last digit of an ISBN is a checksum. ISBN-10 uses a weighted mod-11 sum (with 'X' meaning 10); ISBN-13 uses an alternating 1/3 weighted mod-10 sum."],["Can this convert ISBN-10 to ISBN-13?","This tool validates and computes check digits. An ISBN-10 becomes ISBN-13 by prefixing '978' and recomputing the final check digit, which the ISBN-13 mode will do for you."],["Are hyphens required?","No — hyphens and spaces are ignored. Only the digits (and a trailing X for ISBN-10) are used in the calculation."]]},
 };
 
 // �"����� WORD LIST for passphrases �����������������������������������������������������������������������������������������������"�
@@ -664,6 +671,138 @@ function Djb2Hash() {
     <VStack>
       <Textarea value={input} onChange={setInput} placeholder="Enter text…" mono={false} rows={5} />
       <HashOutput label="DJB2 Hash" value={result} accent="#FB923C" />
+    </VStack>
+  );
+}
+
+// CRC-16/ARC (IBM): reflected poly 0xA001, init 0x0000, no final XOR
+function crc16arc(str) {
+  const bytes = new TextEncoder().encode(str);
+  let crc = 0x0000;
+  for (const b of bytes) {
+    crc ^= b;
+    for (let i = 0; i < 8; i++) crc = (crc & 1) ? ((crc >>> 1) ^ 0xA001) : (crc >>> 1);
+  }
+  return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, "0");
+}
+function Crc16Tool() {
+  const [input, setInput] = useState("");
+  const result = input ? crc16arc(input) : "";
+  return (
+    <VStack>
+      <Textarea value={input} onChange={setInput} placeholder="Enter text to compute CRC-16…" mono={false} rows={5} />
+      <HashOutput label="CRC-16/ARC Checksum" value={result} accent={C.teal} />
+      {result && <Grid3><StatBox value="16" label="Bits" accent={C.teal}/><StatBox value="4" label="Hex Chars" accent={C.teal}/><StatBox value={`0x${result}`} label="Hex Value" accent={C.teal}/></Grid3>}
+      <Card><div style={{fontSize:12,color:C.muted,lineHeight:1.8}}><strong style={{color:C.text}}>CRC-16/ARC</strong> (poly 0x8005, init 0x0000) is a 16-bit cyclic redundancy check used in Modbus, USB, and many legacy protocols. The standard check value of "123456789" is <strong style={{color:C.text}}>0xBB3D</strong>. Not for cryptographic use.</div></Card>
+    </VStack>
+  );
+}
+
+// Luhn (mod 10)
+function luhnIsValid(num) {
+  const d = num.replace(/\D/g, "");
+  if (d.length < 2) return false;
+  let sum = 0, alt = false;
+  for (let i = d.length - 1; i >= 0; i--) {
+    let n = +d[i];
+    if (alt) { n *= 2; if (n > 9) n -= 9; }
+    sum += n; alt = !alt;
+  }
+  return sum % 10 === 0;
+}
+function luhnCheckDigit(partial) {
+  const d = partial.replace(/\D/g, "");
+  let sum = 0, alt = true;
+  for (let i = d.length - 1; i >= 0; i--) {
+    let n = +d[i];
+    if (alt) { n *= 2; if (n > 9) n -= 9; }
+    sum += n; alt = !alt;
+  }
+  return (10 - (sum % 10)) % 10;
+}
+function LuhnValidator() {
+  const [input, setInput] = useState("");
+  const digits = input.replace(/\D/g, "");
+  const has = digits.length >= 2;
+  const valid = has && luhnIsValid(digits);
+  const checkDigit = digits.length >= 1 ? luhnCheckDigit(digits) : null;
+  return (
+    <VStack>
+      <div><Label>Number (spaces / dashes ignored)</Label><Input value={input} onChange={setInput} placeholder="4532 0151 1283 0366" mono /></div>
+      {has && (
+        <div className="fade-in" style={{textAlign:"center",padding:"22px",background:valid?"rgba(16,185,129,0.08)":"rgba(239,68,68,0.06)",border:`1px solid ${valid?"rgba(16,185,129,0.3)":"rgba(239,68,68,0.2)"}`,borderRadius:12}}>
+          <div style={{fontSize:38,marginBottom:6}}>{valid?"✅":"❌"}</div>
+          <div style={{fontFamily:"'Sora',sans-serif",fontSize:19,fontWeight:700,color:valid?C.green:C.danger}}>{valid?"Passes the Luhn check":"Fails the Luhn check"}</div>
+          <div style={{fontSize:12,color:C.muted,marginTop:6}}>{digits.length} digits</div>
+        </div>
+      )}
+      {checkDigit !== null && (
+        <Card>
+          <div style={{fontSize:12,color:C.muted,lineHeight:1.8}}>
+            <strong style={{color:C.text}}>Treating your input as a body without a check digit</strong>, the digit that would make it valid is:
+            <span style={{display:"inline-block",marginLeft:8,padding:"2px 12px",borderRadius:6,background:"rgba(20,184,166,0.15)",color:C.teal,fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:15}}>{checkDigit}</span>
+            <span style={{marginLeft:8}}>→ full number <strong style={{color:C.text,fontFamily:"'JetBrains Mono',monospace"}}>{digits}{checkDigit}</strong></span>
+          </div>
+        </Card>
+      )}
+      <Card><div style={{fontSize:12,color:C.muted,lineHeight:1.8}}>The <strong style={{color:C.text}}>Luhn algorithm</strong> validates credit cards, IMEI numbers and more. It only checks the checksum digit — it does not confirm a number is real or active. Everything runs locally in your browser.</div></Card>
+    </VStack>
+  );
+}
+
+// ISBN
+function isbn10Valid(s) {
+  const d = s.replace(/[^0-9Xx]/g, "").toUpperCase();
+  if (d.length !== 10) return false;
+  let sum = 0;
+  for (let i = 0; i < 10; i++) { const c = d[i]; const v = c === "X" ? 10 : +c; if (c !== "X" && isNaN(v)) return false; if (c === "X" && i !== 9) return false; sum += (10 - i) * v; }
+  return sum % 11 === 0;
+}
+function isbn13Valid(s) {
+  const d = s.replace(/\D/g, "");
+  if (d.length !== 13) return false;
+  let sum = 0;
+  for (let i = 0; i < 13; i++) sum += (+d[i]) * (i % 2 === 0 ? 1 : 3);
+  return sum % 10 === 0;
+}
+function isbn10CheckDigit(first9) {
+  const d = first9.replace(/[^0-9]/g, "").slice(0, 9);
+  let sum = 0; for (let i = 0; i < d.length; i++) sum += (10 - i) * (+d[i]);
+  const r = (11 - (sum % 11)) % 11; return r === 10 ? "X" : String(r);
+}
+function isbn13CheckDigit(first12) {
+  const d = first12.replace(/\D/g, "").slice(0, 12);
+  let sum = 0; for (let i = 0; i < d.length; i++) sum += (+d[i]) * (i % 2 === 0 ? 1 : 3);
+  return String((10 - (sum % 10)) % 10);
+}
+function IsbnValidator() {
+  const [input, setInput] = useState("");
+  const clean = input.replace(/[^0-9Xx]/g, "").toUpperCase();
+  const kind = clean.length === 13 ? 13 : clean.length === 10 ? 10 : 0;
+  const valid = kind === 13 ? isbn13Valid(clean) : kind === 10 ? isbn10Valid(clean) : false;
+  const bodyLen = clean.replace(/[^0-9]/g, "").length;
+  let computed = null;
+  if (bodyLen === 12) computed = { type: "ISBN-13", digit: isbn13CheckDigit(clean) };
+  else if (bodyLen === 9) computed = { type: "ISBN-10", digit: isbn10CheckDigit(clean) };
+  return (
+    <VStack>
+      <div><Label>ISBN (hyphens / spaces ignored)</Label><Input value={input} onChange={setInput} placeholder="978-0-306-40615-7" mono /></div>
+      {kind > 0 && (
+        <div className="fade-in" style={{textAlign:"center",padding:"22px",background:valid?"rgba(16,185,129,0.08)":"rgba(239,68,68,0.06)",border:`1px solid ${valid?"rgba(16,185,129,0.3)":"rgba(239,68,68,0.2)"}`,borderRadius:12}}>
+          <div style={{fontSize:38,marginBottom:6}}>{valid?"✅":"❌"}</div>
+          <div style={{fontFamily:"'Sora',sans-serif",fontSize:19,fontWeight:700,color:valid?C.green:C.danger}}>{valid?`Valid ISBN-${kind}`:`Invalid ISBN-${kind} check digit`}</div>
+        </div>
+      )}
+      {kind === 0 && clean.length > 0 && <div style={{fontSize:12,color:C.warn}}>An ISBN must have 10 or 13 digits — you entered {clean.length}.</div>}
+      {computed && (
+        <Card>
+          <div style={{fontSize:12,color:C.muted,lineHeight:1.8}}>
+            <strong style={{color:C.text}}>As an {computed.type} body</strong>, the correct check digit is:
+            <span style={{display:"inline-block",marginLeft:8,padding:"2px 12px",borderRadius:6,background:"rgba(20,184,166,0.15)",color:C.teal,fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:15}}>{computed.digit}</span>
+          </div>
+        </Card>
+      )}
+      <Card><div style={{fontSize:12,color:C.muted,lineHeight:1.8}}><strong style={{color:C.text}}>ISBN-10</strong> uses a weighted mod-11 checksum (with X = 10); <strong style={{color:C.text}}>ISBN-13</strong> uses an alternating 1/3 weighted mod-10 checksum shared with EAN-13 barcodes.</div></Card>
     </VStack>
   );
 }
@@ -975,10 +1114,11 @@ function FileHash() {
     if(!file) return;
     setFileName(file.name); setFileSize(file.size); setLoading(true); setHashes(null); setProgress(10);
     const buffer = await file.arrayBuffer();
+    const byteArr = Array.from(new Uint8Array(buffer));
     setProgress(40);
     const [md5v, sha1v, sha256v, sha512v] = await Promise.all([
-      Promise.resolve(md5(new TextDecoder("latin1").decode(buffer))),
-      Promise.resolve(sha1(new TextDecoder("latin1").decode(buffer))),
+      Promise.resolve(md5(byteArr)),
+      Promise.resolve(sha1(byteArr)),
       crypto.subtle.digest("SHA-256",buffer).then(b=>Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("")),
       crypto.subtle.digest("SHA-512",buffer).then(b=>Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("")),
     ]);
@@ -1185,16 +1325,23 @@ function XorCipher() {
   const [text, setText] = useState("");
   const [key, setKey] = useState("");
   const [mode, setMode] = useState("encrypt");
-  const xor = (t, k) => {
-    if(!k) return t;
-    return [...t].map((c,i)=>String.fromCharCode(c.charCodeAt(0)^k.charCodeAt(i%k.length))).join("");
+  const xorBytes = (bytes, keyBytes) => {
+    if(!keyBytes.length) return bytes;
+    return bytes.map((b,i)=>b^keyBytes[i%keyBytes.length]);
   };
+  const bytesToB64 = bytes => { let s=""; for(const b of bytes) s+=String.fromCharCode(b); return btoa(s); };
+  const b64ToBytes = b64 => { const s=atob(b64); const out=[]; for(let i=0;i<s.length;i++) out.push(s.charCodeAt(i)); return out; };
   const encrypt = () => {
-    const r = xor(text,key);
-    return btoa(r.split("").map(c=>c.charCodeAt(0)<256?String.fromCharCode(c.charCodeAt(0)):c).join(""));
+    const data=[...new TextEncoder().encode(text)];
+    const kb=[...new TextEncoder().encode(key)];
+    return bytesToB64(xorBytes(data,kb));
   };
   const decrypt = () => {
-    try{ const decoded=atob(text); return xor(decoded,key); } catch{ return "Invalid Base64 input for decryption"; }
+    try{
+      const kb=[...new TextEncoder().encode(key)];
+      const decoded=xorBytes(b64ToBytes(text),kb);
+      return new TextDecoder().decode(new Uint8Array(decoded));
+    } catch{ return "Invalid Base64 input for decryption"; }
   };
   const output = text&&key ? (mode==="encrypt"?encrypt():decrypt()) : "";
   return (
@@ -1488,6 +1635,9 @@ const TOOL_COMPONENTS = {
   "adler32":           Adler32Tool,
   "fnv-hash":          FnvHash,
   "djb2-hash":         Djb2Hash,
+  "crc16":             Crc16Tool,
+  "luhn-validator":    LuhnValidator,
+  "isbn-validator":    IsbnValidator,
   "password-generator":PasswordGenerator,
   "passphrase-gen":    PassphraseGen,
   "password-strength": PasswordStrength,

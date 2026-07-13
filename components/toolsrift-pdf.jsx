@@ -340,6 +340,20 @@ const TOOLS = [
   { id:"pdf-to-json", cat:"data", name:"PDF to JSON", desc:"Extract PDF text as structured JSON with page, position and font data", icon:"🧾", free:true },
   { id:"pdf-table-extractor", cat:"data", name:"PDF Table Extractor", desc:"Detect tables in a PDF and export them as CSV spreadsheets", icon:"📊", free:true },
   { id:"pdf-chunker", cat:"data", name:"PDF Chunker for RAG", desc:"Split PDF text into overlapping token-sized chunks for embeddings and RAG", icon:"🧩", free:true },
+
+  // Edit & Modify (added)
+  { id:"pdf-add-blank-page", cat:"edit", name:"PDF Blank Page Inserter", desc:"Insert one or more blank pages into a PDF at any position, sized to match or A4/Letter", icon:"📄", free:true },
+  { id:"pdf-reverse-pages", cat:"edit", name:"PDF Page Reverser", desc:"Reverse the order of all pages in a PDF so the last page becomes the first", icon:"🔀", free:true },
+  { id:"pdf-duplicate-pages", cat:"edit", name:"PDF Page Duplicator", desc:"Duplicate a chosen PDF page one or more times, inserting the copies right after it", icon:"📑", free:true },
+  { id:"pdf-rotate-range", cat:"edit", name:"PDF Rotate Page Range", desc:"Rotate only specific pages of a PDF by page number or range, leaving the rest untouched", icon:"🔄", free:true },
+
+  // Tools (added)
+  { id:"pdf-nup-2up", cat:"tools", name:"PDF 2-Up (2 Pages Per Sheet)", desc:"Place two PDF pages side by side on each sheet to save paper when printing", icon:"📰", free:true },
+  { id:"pdf-nup-4up", cat:"tools", name:"PDF 4-Up (4 Pages Per Sheet)", desc:"Arrange four PDF pages in a 2x2 grid on each sheet for compact handouts", icon:"🗂️", free:true },
+  { id:"pdf-resize-pages", cat:"tools", name:"PDF Page Resizer", desc:"Resize every PDF page to a standard A4 or Letter size, scaling content to fit", icon:"📐", free:true },
+
+  // Optimize (added)
+  { id:"pdf-remove-metadata", cat:"optimize", name:"PDF Metadata Remover", desc:"Strip title, author, subject, keywords and producer metadata from a PDF for privacy", icon:"🧹", free:true },
 ];
 
 const CATEGORIES = [
@@ -657,6 +671,94 @@ const TOOL_META = {
       ["How are tokens counted?", "Using the standard rough estimate of about four characters per token for English prose. It is an approximation — verify against your model's own tokenizer if you are close to a hard limit."],
       ["What chunk size should I use?", "512 tokens with 50 tokens of overlap is a solid default for most embedding models. Use smaller chunks for precise fact retrieval and larger ones when answers need more surrounding context."],
       ["What is the difference between JSON and JSONL?", "JSON gives one array of chunk objects. JSONL puts one chunk per line, which streams better and is what most vector-database loaders expect."]
+    ]
+  },
+
+  "pdf-add-blank-page": {
+    title: "Free PDF Blank Page Inserter — Add Blank Pages to PDF | ToolsRift",
+    desc: "Insert one or more blank pages into a PDF at any position. Choose to match the existing page size or use A4/Letter. Free and fully in your browser.",
+    howTo: "Upload a PDF, choose where to insert (before a page number or at the end), how many blank pages to add, and their size. Download the new PDF with the blank pages inserted.",
+    faq: [
+      ["Why insert blank pages?", "Blank pages are handy for double-sided printing, adding note space, or separating sections of a document before printing or binding."],
+      ["What size are the blank pages?", "You can match the size of the first existing page, or force standard A4 or US Letter dimensions regardless of the original pages."],
+      ["Is my original PDF changed?", "No. The tool builds a new PDF with the blank pages inserted and downloads it. Your original file is never modified."]
+    ]
+  },
+
+  "pdf-reverse-pages": {
+    title: "Free PDF Page Reverser — Reverse PDF Page Order Online | ToolsRift",
+    desc: "Reverse the order of every page in a PDF so the last page becomes the first. One click, no uploads, fully in your browser.",
+    howTo: "Upload a PDF and click reverse. The tool rebuilds the document with the page order flipped and downloads the result.",
+    faq: [
+      ["When is reversing pages useful?", "Documents scanned back-to-front, or booklets and receipts that came out in the wrong order, can be fixed instantly by reversing the page order."],
+      ["Does reversing lose any quality?", "No. Pages are copied without re-rendering, so all text, fonts and images stay identical — only their order changes."],
+      ["Can I reverse just part of the document?", "This tool reverses the whole document. To reorder a subset, use the PDF Page Reorder tool and type the exact order you want."]
+    ]
+  },
+
+  "pdf-duplicate-pages": {
+    title: "Free PDF Page Duplicator — Copy a PDF Page Online | ToolsRift",
+    desc: "Duplicate any page of a PDF one or more times. Copies are inserted directly after the original. Free, private and fully in-browser.",
+    howTo: "Upload a PDF, enter the page number to duplicate and how many copies you want, then download the new PDF with the duplicated pages inserted.",
+    faq: [
+      ["Where are the duplicated pages placed?", "Each copy is inserted immediately after the original page, so a document of 1-2-3 with page 2 duplicated once becomes 1-2-2-3."],
+      ["Can I duplicate several pages at once?", "This tool duplicates one chosen page per run. Run it again for another page, or use the PDF Page Reorder tool to build any custom sequence."],
+      ["Is the copy a true duplicate?", "Yes. The page is copied at the document level, so the duplicate is identical to the original including all its content."]
+    ]
+  },
+
+  "pdf-rotate-range": {
+    title: "Free PDF Rotate Page Range — Rotate Specific PDF Pages | ToolsRift",
+    desc: "Rotate only the pages you choose in a PDF by page number or range. Fix sideways scans without touching the rest of the document. Free and in-browser.",
+    howTo: "Upload a PDF, type the pages to rotate (for example 1-3, 5, 8), pick the rotation angle, then download. Only the listed pages are rotated.",
+    faq: [
+      ["How do I choose which pages to rotate?", "Enter individual pages and ranges separated by commas, like '1-3, 5, 8'. Out-of-range numbers are ignored automatically."],
+      ["How is this different from the PDF Rotator?", "The PDF Rotator rotates all, odd or even pages. This tool rotates an exact list of pages you specify, which is better for one or two sideways scans."],
+      ["Is rotation lossless?", "Yes. Rotation is stored at the page level and does not re-render content, so there is no quality loss."]
+    ]
+  },
+
+  "pdf-nup-2up": {
+    title: "Free PDF 2-Up Tool — Print 2 PDF Pages Per Sheet | ToolsRift",
+    desc: "Place two PDF pages side by side on each sheet to halve your paper use when printing. Choose A4 or Letter output. Free and fully in-browser.",
+    howTo: "Upload a PDF and pick the output sheet size. The tool lays two consecutive pages onto each landscape sheet, scaling each to fit, and downloads the combined PDF.",
+    faq: [
+      ["What does 2-up mean?", "2-up means two document pages are printed on a single physical sheet, side by side. It is a common way to save paper for drafts and handouts."],
+      ["Are the original pages scaled?", "Yes. Each page is shrunk to fit its half of the sheet while keeping its aspect ratio, so nothing is stretched or cut off."],
+      ["What if my PDF has an odd number of pages?", "The final sheet simply holds one page on the left and leaves the right half blank."]
+    ]
+  },
+
+  "pdf-nup-4up": {
+    title: "Free PDF 4-Up Tool — Print 4 PDF Pages Per Sheet | ToolsRift",
+    desc: "Arrange four PDF pages in a 2x2 grid on each sheet for compact handouts and thumbnails. Choose A4 or Letter output. Free and in-browser.",
+    howTo: "Upload a PDF and pick the output sheet size. The tool places four consecutive pages in a 2x2 grid on each portrait sheet, scaling each to fit, and downloads the result.",
+    faq: [
+      ["What is 4-up printing?", "4-up puts four document pages on one physical sheet in a two-by-two grid — ideal for overviews, thumbnails and saving paper."],
+      ["In what order are the pages placed?", "Reading order: top-left, top-right, bottom-left, then bottom-right, filling each sheet before starting the next."],
+      ["What if the page count is not a multiple of four?", "The last sheet is filled with as many pages as remain; the empty grid cells are simply left blank."]
+    ]
+  },
+
+  "pdf-resize-pages": {
+    title: "Free PDF Page Resizer — Resize PDF to A4 or Letter | ToolsRift",
+    desc: "Resize every page of a PDF to a standard A4 or US Letter size, scaling the content to fit with a clean margin. Free, private and fully in-browser.",
+    howTo: "Upload a PDF, choose the target page size and margin, then download. Each original page is scaled to fit and centred on a fresh standard-size page.",
+    faq: [
+      ["Why resize PDF pages?", "Mixed or unusual page sizes can print or combine badly. Normalising every page to A4 or Letter makes a document consistent and print-ready."],
+      ["Is my content stretched?", "No. Each page is scaled uniformly to fit the target size while keeping its aspect ratio, then centred, so nothing is distorted."],
+      ["Does it change orientation?", "The target page keeps the size you choose. Landscape source pages are scaled to fit within it and centred, leaving even white space above and below."]
+    ]
+  },
+
+  "pdf-remove-metadata": {
+    title: "Free PDF Metadata Remover — Strip PDF Properties Online | ToolsRift",
+    desc: "Remove title, author, subject, keywords, creator and producer metadata from a PDF for privacy before sharing. Free and fully in your browser.",
+    howTo: "Upload a PDF and click remove. The tool clears the document information fields and downloads a cleaned copy. Nothing is uploaded to a server.",
+    faq: [
+      ["Which metadata is removed?", "The document information fields: title, author, subject, keywords, creator and producer, plus the creation and modification dates are reset."],
+      ["Does this remove hidden text or redact content?", "No. It only clears document properties. To black out visible content permanently, use the PDF Redaction tool instead."],
+      ["Is my file uploaded anywhere?", "No. The PDF is read and rewritten entirely in your browser, so your document and its metadata never leave your device."]
     ]
   }
 };
@@ -3215,6 +3317,602 @@ function PdfChunker() {
   );
 }
 
+// ─── Shared helpers for the added pdf-lib tools ───
+// Standard page sizes in PDF points (72 pt = 1 inch).
+const PAGE_SIZES = {
+  a4:     { w: 595.28, h: 841.89, label: "A4" },
+  letter: { w: 612,    h: 792,    label: "US Letter" },
+};
+
+// Parse "1-3, 5, 7-9" into a sorted, de-duplicated list of 0-based page indices,
+// clamped to a document of `n` pages. Tolerant of reversed ranges and junk.
+function parsePageRanges(str, n) {
+  const set = new Set();
+  for (const part of String(str).split(',')) {
+    const t = part.trim();
+    if (!t) continue;
+    if (t.includes('-')) {
+      let [a, b] = t.split('-').map(x => parseInt(x.trim(), 10));
+      if (Number.isNaN(a) || Number.isNaN(b)) continue;
+      if (a > b) { const tmp = a; a = b; b = tmp; }
+      for (let p = a; p <= b; p++) if (p >= 1 && p <= n) set.add(p - 1);
+    } else {
+      const p = parseInt(t, 10);
+      if (!Number.isNaN(p) && p >= 1 && p <= n) set.add(p - 1);
+    }
+  }
+  return [...set].sort((a, b) => a - b);
+}
+
+// Fit source (sw,sh) into a grid slot, aspect-preserved and centred.
+// slotIndex fills left-to-right, top-to-bottom. Returns bottom-left origin (x,y)
+// and scaled draw size — pdf-lib's coordinate system starts at the bottom-left.
+function nupPlacement(sheetW, sheetH, cols, rows, gutter, sw, sh, slotIndex) {
+  const cellW = sheetW / cols, cellH = sheetH / rows;
+  const c = slotIndex % cols;
+  const r = Math.floor(slotIndex / cols);
+  const innerW = cellW - gutter * 2, innerH = cellH - gutter * 2;
+  const scale = Math.min(innerW / sw, innerH / sh);
+  const dw = sw * scale, dh = sh * scale;
+  const cellX = c * cellW;
+  const cellY = sheetH - (r + 1) * cellH; // row 0 = top visual row
+  return { x: cellX + (cellW - dw) / 2, y: cellY + (cellH - dh) / 2, w: dw, h: dh };
+}
+
+function usescriptPdfLib() {
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js';
+    script.async = true;
+    document.body.appendChild(script);
+    return () => { try { document.body.removeChild(script); } catch (_) {} };
+  }, []);
+}
+
+function DoneNote({ children }) {
+  return (
+    <div style={{ padding:14, background:"rgba(16,185,129,0.1)", border:`1px solid rgba(16,185,129,0.3)`, borderRadius:8, fontSize:13, color:C.text }}>
+      {children}
+    </div>
+  );
+}
+
+// PDF Blank Page Inserter
+function PdfAddBlankPage() {
+  const [file, setFile] = useState(null);
+  const [numPages, setNumPages] = useState(0);
+  const [pos, setPos] = useState('end');
+  const [count, setCount] = useState('1');
+  const [size, setSize] = useState('match');
+  const [processing, setProcessing] = useState(false);
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState('');
+  usescriptPdfLib();
+
+  const handleFile = async (e) => {
+    const f = e.target.files[0]; setDone(false); setError('');
+    if (!f) return; setFile(f);
+    try {
+      const doc = await window.PDFLib.PDFDocument.load(await f.arrayBuffer());
+      setNumPages(doc.getPageCount());
+    } catch (err) { setError('Could not read this PDF: ' + err.message); }
+  };
+
+  const run = async () => {
+    if (!file) return;
+    if (!window.PDFLib) { setError('The PDF engine is still loading — please try again in a moment.'); return; }
+    setProcessing(true); setError(''); setDone(false);
+    try {
+      const doc = await window.PDFLib.PDFDocument.load(await file.arrayBuffer());
+      const n = doc.getPageCount();
+      // Resolve insertion index (0-based, before that page).
+      let idx;
+      if (pos === 'end') idx = n;
+      else if (pos === 'start') idx = 0;
+      else {
+        idx = parseInt(pos, 10);
+        if (Number.isNaN(idx) || idx < 1) idx = 1;
+        if (idx > n) idx = n;
+        idx = idx - 1;
+      }
+      // Determine blank page dimensions.
+      let dims;
+      if (size === 'match') {
+        const refIdx = Math.min(Math.max(idx, 0), n - 1); // n >= 1, so always a real page
+        const s = doc.getPage(refIdx).getSize();
+        dims = [s.width, s.height];
+      } else {
+        dims = [PAGE_SIZES[size].w, PAGE_SIZES[size].h];
+      }
+      const k = Math.max(1, Math.min(50, parseInt(count, 10) || 1));
+      // Insert from the same index so the k blanks stay contiguous in order.
+      for (let i = 0; i < k; i++) doc.insertPage(idx, dims);
+      const bytes = await doc.save();
+      downloadBlob(bytes, 'with-blank-pages.pdf', 'application/pdf');
+      setDone(true);
+    } catch (err) { setError('Could not add blank pages: ' + err.message); }
+    setProcessing(false);
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>Upload PDF File</Label>
+        <input type="file" accept=".pdf" onChange={handleFile} style={{ display:"block", color:C.text, fontSize:13 }} />
+        {numPages > 0 && <div style={{ fontSize:12, color:C.muted, marginTop:4 }}>Total pages: {numPages}</div>}
+      </div>
+      <Grid2>
+        <div>
+          <Label>Insert Position</Label>
+          <SelectInput value={pos === 'end' || pos === 'start' ? pos : 'before'} onChange={v => setPos(v === 'before' ? '1' : v)} options={[
+            { value:'start', label:'At the start' },
+            { value:'end', label:'At the end' },
+            { value:'before', label:'Before a page number' }
+          ]} />
+        </div>
+        {pos !== 'end' && pos !== 'start' && (
+          <div>
+            <Label>Before Page #</Label>
+            <Input value={pos} onChange={setPos} placeholder="1" />
+          </div>
+        )}
+      </Grid2>
+      <Grid2>
+        <div><Label>How Many Blank Pages</Label><Input value={count} onChange={setCount} placeholder="1" /></div>
+        <div>
+          <Label>Blank Page Size</Label>
+          <SelectInput value={size} onChange={setSize} options={[
+            { value:'match', label:'Match existing pages' },
+            { value:'a4', label:'A4' },
+            { value:'letter', label:'US Letter' }
+          ]} />
+        </div>
+      </Grid2>
+      <Btn onClick={run} disabled={!file || processing}>{processing ? 'Working...' : 'Insert Blank Pages & Download'}</Btn>
+      {done && <DoneNote><strong>Done.</strong> Your PDF with the inserted blank pages has been downloaded.</DoneNote>}
+      {error && <ErrorNote>{error}</ErrorNote>}
+    </VStack>
+  );
+}
+
+// PDF Page Reverser
+function PdfReversePages() {
+  const [file, setFile] = useState(null);
+  const [processing, setProcessing] = useState(false);
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState('');
+  usescriptPdfLib();
+
+  const handleFile = (e) => { setFile(e.target.files[0]); setDone(false); setError(''); };
+
+  const run = async () => {
+    if (!file) return;
+    if (!window.PDFLib) { setError('The PDF engine is still loading — please try again in a moment.'); return; }
+    setProcessing(true); setError(''); setDone(false);
+    try {
+      const src = await window.PDFLib.PDFDocument.load(await file.arrayBuffer());
+      const out = await window.PDFLib.PDFDocument.create();
+      const n = src.getPageCount();
+      const order = Array.from({ length: n }, (_, i) => n - 1 - i);
+      const pages = await out.copyPages(src, order);
+      pages.forEach(p => out.addPage(p));
+      const bytes = await out.save();
+      downloadBlob(bytes, 'reversed.pdf', 'application/pdf');
+      setDone(true);
+    } catch (err) { setError('Could not reverse this PDF: ' + err.message); }
+    setProcessing(false);
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>Upload PDF File</Label>
+        <input type="file" accept=".pdf" onChange={handleFile} style={{ display:"block", color:C.text, fontSize:13 }} />
+      </div>
+      <InfoNote>Every page is copied into reverse order — the last page becomes the first. No quality is lost.</InfoNote>
+      <Btn onClick={run} disabled={!file || processing}>{processing ? 'Reversing...' : 'Reverse Pages & Download'}</Btn>
+      {done && <DoneNote><strong>Done.</strong> Your reversed PDF has been downloaded.</DoneNote>}
+      {error && <ErrorNote>{error}</ErrorNote>}
+    </VStack>
+  );
+}
+
+// PDF Page Duplicator
+function PdfDuplicatePages() {
+  const [file, setFile] = useState(null);
+  const [numPages, setNumPages] = useState(0);
+  const [page, setPage] = useState('1');
+  const [times, setTimes] = useState('1');
+  const [processing, setProcessing] = useState(false);
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState('');
+  usescriptPdfLib();
+
+  const handleFile = async (e) => {
+    const f = e.target.files[0]; setDone(false); setError('');
+    if (!f) return; setFile(f);
+    try {
+      const doc = await window.PDFLib.PDFDocument.load(await f.arrayBuffer());
+      setNumPages(doc.getPageCount());
+    } catch (err) { setError('Could not read this PDF: ' + err.message); }
+  };
+
+  const run = async () => {
+    if (!file) return;
+    if (!window.PDFLib) { setError('The PDF engine is still loading — please try again in a moment.'); return; }
+    setProcessing(true); setError(''); setDone(false);
+    try {
+      const src = await window.PDFLib.PDFDocument.load(await file.arrayBuffer());
+      const n = src.getPageCount();
+      const p = parseInt(page, 10);
+      if (Number.isNaN(p) || p < 1 || p > n) { setError(`Enter a page number between 1 and ${n}.`); setProcessing(false); return; }
+      const k = Math.max(1, Math.min(50, parseInt(times, 10) || 1));
+      const out = await window.PDFLib.PDFDocument.create();
+      // Build an ordered index list: each source page, with page p repeated k extra times after it.
+      const order = [];
+      for (let i = 0; i < n; i++) { order.push(i); if (i === p - 1) for (let c = 0; c < k; c++) order.push(i); }
+      const pages = await out.copyPages(src, order);
+      pages.forEach(pg => out.addPage(pg));
+      const bytes = await out.save();
+      downloadBlob(bytes, 'duplicated.pdf', 'application/pdf');
+      setDone(true);
+    } catch (err) { setError('Could not duplicate the page: ' + err.message); }
+    setProcessing(false);
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>Upload PDF File</Label>
+        <input type="file" accept=".pdf" onChange={handleFile} style={{ display:"block", color:C.text, fontSize:13 }} />
+        {numPages > 0 && <div style={{ fontSize:12, color:C.muted, marginTop:4 }}>Total pages: {numPages}</div>}
+      </div>
+      <Grid2>
+        <div><Label>Page to Duplicate</Label><Input value={page} onChange={setPage} placeholder="1" /></div>
+        <div><Label>Number of Copies</Label><Input value={times} onChange={setTimes} placeholder="1" /></div>
+      </Grid2>
+      <div style={{ fontSize:11, color:C.muted }}>Copies are inserted directly after the chosen page.</div>
+      <Btn onClick={run} disabled={!file || processing}>{processing ? 'Working...' : 'Duplicate Page & Download'}</Btn>
+      {done && <DoneNote><strong>Done.</strong> Your PDF with the duplicated page has been downloaded.</DoneNote>}
+      {error && <ErrorNote>{error}</ErrorNote>}
+    </VStack>
+  );
+}
+
+// PDF Rotate Page Range
+function PdfRotateRange() {
+  const [file, setFile] = useState(null);
+  const [numPages, setNumPages] = useState(0);
+  const [range, setRange] = useState('');
+  const [rotation, setRotation] = useState('90');
+  const [processing, setProcessing] = useState(false);
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState('');
+  usescriptPdfLib();
+
+  const handleFile = async (e) => {
+    const f = e.target.files[0]; setDone(false); setError('');
+    if (!f) return; setFile(f);
+    try {
+      const doc = await window.PDFLib.PDFDocument.load(await f.arrayBuffer());
+      setNumPages(doc.getPageCount());
+    } catch (err) { setError('Could not read this PDF: ' + err.message); }
+  };
+
+  const run = async () => {
+    if (!file) return;
+    if (!window.PDFLib) { setError('The PDF engine is still loading — please try again in a moment.'); return; }
+    setProcessing(true); setError(''); setDone(false);
+    try {
+      const doc = await window.PDFLib.PDFDocument.load(await file.arrayBuffer());
+      const n = doc.getPageCount();
+      const targets = parsePageRanges(range, n);
+      if (!targets.length) { setError('No valid pages in that range. Try something like 1-3, 5.'); setProcessing(false); return; }
+      const deg = parseInt(rotation, 10);
+      const pages = doc.getPages();
+      const targetSet = new Set(targets);
+      pages.forEach((page, i) => {
+        if (targetSet.has(i)) {
+          const cur = page.getRotation().angle;
+          page.setRotation(window.PDFLib.degrees((cur + deg) % 360));
+        }
+      });
+      const bytes = await doc.save();
+      downloadBlob(bytes, 'rotated-range.pdf', 'application/pdf');
+      setDone(true);
+    } catch (err) { setError('Could not rotate the pages: ' + err.message); }
+    setProcessing(false);
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>Upload PDF File</Label>
+        <input type="file" accept=".pdf" onChange={handleFile} style={{ display:"block", color:C.text, fontSize:13 }} />
+        {numPages > 0 && <div style={{ fontSize:12, color:C.muted, marginTop:4 }}>Total pages: {numPages}</div>}
+      </div>
+      <div>
+        <Label>Pages to Rotate (e.g., 1-3, 5, 8)</Label>
+        <Input value={range} onChange={setRange} placeholder="1-3, 5, 8" />
+        <div style={{ fontSize:11, color:C.muted, marginTop:4 }}>Only the listed pages are rotated. Out-of-range numbers are ignored.</div>
+      </div>
+      <div>
+        <Label>Rotation Angle</Label>
+        <SelectInput value={rotation} onChange={setRotation} options={[
+          { value:'90', label:'90° Clockwise' },
+          { value:'180', label:'180°' },
+          { value:'270', label:'270° Clockwise (90° Counter)' }
+        ]} />
+      </div>
+      <Btn onClick={run} disabled={!file || processing}>{processing ? 'Rotating...' : 'Rotate Pages & Download'}</Btn>
+      {done && <DoneNote><strong>Done.</strong> Your rotated PDF has been downloaded.</DoneNote>}
+      {error && <ErrorNote>{error}</ErrorNote>}
+    </VStack>
+  );
+}
+
+// Shared N-up builder used by 2-up and 4-up.
+async function buildNup(file, cols, rows, sheetKey) {
+  const src = await window.PDFLib.PDFDocument.load(await file.arrayBuffer());
+  const out = await window.PDFLib.PDFDocument.create();
+  const n = src.getPageCount();
+  const per = cols * rows;
+  const size = PAGE_SIZES[sheetKey] || PAGE_SIZES.a4;
+  // 2-up reads best on a landscape sheet; 4-up on portrait.
+  const landscape = per === 2;
+  const sheetW = landscape ? size.h : size.w;
+  const sheetH = landscape ? size.w : size.h;
+  const gutter = 8;
+  for (let start = 0; start < n; start += per) {
+    const sheet = out.addPage([sheetW, sheetH]);
+    for (let s = 0; s < per; s++) {
+      const srcIdx = start + s;
+      if (srcIdx >= n) break;
+      const srcPage = src.getPage(srcIdx);
+      const { width, height } = srcPage.getSize();
+      const embedded = await out.embedPage(srcPage);
+      const pl = nupPlacement(sheetW, sheetH, cols, rows, gutter, width, height, s);
+      sheet.drawPage(embedded, { x: pl.x, y: pl.y, width: pl.w, height: pl.h });
+    }
+  }
+  return await out.save();
+}
+
+// PDF 2-Up
+function PdfNup2Up() {
+  const [file, setFile] = useState(null);
+  const [sheet, setSheet] = useState('a4');
+  const [processing, setProcessing] = useState(false);
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState('');
+  usescriptPdfLib();
+
+  const handleFile = (e) => { setFile(e.target.files[0]); setDone(false); setError(''); };
+
+  const run = async () => {
+    if (!file) return;
+    if (!window.PDFLib) { setError('The PDF engine is still loading — please try again in a moment.'); return; }
+    setProcessing(true); setError(''); setDone(false);
+    try {
+      const bytes = await buildNup(file, 2, 1, sheet);
+      downloadBlob(bytes, '2-up.pdf', 'application/pdf');
+      setDone(true);
+    } catch (err) { setError('Could not create the 2-up PDF: ' + err.message); }
+    setProcessing(false);
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>Upload PDF File</Label>
+        <input type="file" accept=".pdf" onChange={handleFile} style={{ display:"block", color:C.text, fontSize:13 }} />
+      </div>
+      <div>
+        <Label>Output Sheet Size</Label>
+        <SelectInput value={sheet} onChange={setSheet} options={[
+          { value:'a4', label:'A4 (landscape)' },
+          { value:'letter', label:'US Letter (landscape)' }
+        ]} />
+      </div>
+      <InfoNote>Two consecutive pages are placed side by side on each sheet and scaled to fit.</InfoNote>
+      <Btn onClick={run} disabled={!file || processing}>{processing ? 'Building...' : 'Create 2-Up PDF & Download'}</Btn>
+      {done && <DoneNote><strong>Done.</strong> Your 2-up PDF has been downloaded.</DoneNote>}
+      {error && <ErrorNote>{error}</ErrorNote>}
+    </VStack>
+  );
+}
+
+// PDF 4-Up
+function PdfNup4Up() {
+  const [file, setFile] = useState(null);
+  const [sheet, setSheet] = useState('a4');
+  const [processing, setProcessing] = useState(false);
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState('');
+  usescriptPdfLib();
+
+  const handleFile = (e) => { setFile(e.target.files[0]); setDone(false); setError(''); };
+
+  const run = async () => {
+    if (!file) return;
+    if (!window.PDFLib) { setError('The PDF engine is still loading — please try again in a moment.'); return; }
+    setProcessing(true); setError(''); setDone(false);
+    try {
+      const bytes = await buildNup(file, 2, 2, sheet);
+      downloadBlob(bytes, '4-up.pdf', 'application/pdf');
+      setDone(true);
+    } catch (err) { setError('Could not create the 4-up PDF: ' + err.message); }
+    setProcessing(false);
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>Upload PDF File</Label>
+        <input type="file" accept=".pdf" onChange={handleFile} style={{ display:"block", color:C.text, fontSize:13 }} />
+      </div>
+      <div>
+        <Label>Output Sheet Size</Label>
+        <SelectInput value={sheet} onChange={setSheet} options={[
+          { value:'a4', label:'A4 (portrait)' },
+          { value:'letter', label:'US Letter (portrait)' }
+        ]} />
+      </div>
+      <InfoNote>Four consecutive pages are placed in a 2x2 grid — top-left, top-right, bottom-left, bottom-right.</InfoNote>
+      <Btn onClick={run} disabled={!file || processing}>{processing ? 'Building...' : 'Create 4-Up PDF & Download'}</Btn>
+      {done && <DoneNote><strong>Done.</strong> Your 4-up PDF has been downloaded.</DoneNote>}
+      {error && <ErrorNote>{error}</ErrorNote>}
+    </VStack>
+  );
+}
+
+// PDF Page Resizer
+function PdfResizePages() {
+  const [file, setFile] = useState(null);
+  const [target, setTarget] = useState('a4');
+  const [orientation, setOrientation] = useState('portrait');
+  const [margin, setMargin] = useState('0');
+  const [processing, setProcessing] = useState(false);
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState('');
+  usescriptPdfLib();
+
+  const handleFile = (e) => { setFile(e.target.files[0]); setDone(false); setError(''); };
+
+  const run = async () => {
+    if (!file) return;
+    if (!window.PDFLib) { setError('The PDF engine is still loading — please try again in a moment.'); return; }
+    setProcessing(true); setError(''); setDone(false);
+    try {
+      const src = await window.PDFLib.PDFDocument.load(await file.arrayBuffer());
+      const out = await window.PDFLib.PDFDocument.create();
+      const size = PAGE_SIZES[target] || PAGE_SIZES.a4;
+      const tw = orientation === 'landscape' ? size.h : size.w;
+      const th = orientation === 'landscape' ? size.w : size.h;
+      const m = Math.max(0, parseFloat(margin) || 0);
+      const n = src.getPageCount();
+      for (let i = 0; i < n; i++) {
+        const srcPage = src.getPage(i);
+        const { width, height } = srcPage.getSize();
+        const embedded = await out.embedPage(srcPage);
+        const iw = Math.max(1, tw - m * 2), ih = Math.max(1, th - m * 2);
+        const scale = Math.min(iw / width, ih / height);
+        const dw = width * scale, dh = height * scale;
+        const page = out.addPage([tw, th]);
+        page.drawPage(embedded, { x: (tw - dw) / 2, y: (th - dh) / 2, width: dw, height: dh });
+      }
+      const bytes = await out.save();
+      downloadBlob(bytes, 'resized.pdf', 'application/pdf');
+      setDone(true);
+    } catch (err) { setError('Could not resize this PDF: ' + err.message); }
+    setProcessing(false);
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>Upload PDF File</Label>
+        <input type="file" accept=".pdf" onChange={handleFile} style={{ display:"block", color:C.text, fontSize:13 }} />
+      </div>
+      <Grid2>
+        <div>
+          <Label>Target Size</Label>
+          <SelectInput value={target} onChange={setTarget} options={[
+            { value:'a4', label:'A4' },
+            { value:'letter', label:'US Letter' }
+          ]} />
+        </div>
+        <div>
+          <Label>Orientation</Label>
+          <SelectInput value={orientation} onChange={setOrientation} options={[
+            { value:'portrait', label:'Portrait' },
+            { value:'landscape', label:'Landscape' }
+          ]} />
+        </div>
+      </Grid2>
+      <div>
+        <Label>Margin (points)</Label>
+        <Input value={margin} onChange={setMargin} placeholder="0" />
+        <div style={{ fontSize:11, color:C.muted, marginTop:4 }}>72 points = 1 inch. Each page is scaled to fit and centred inside the margin.</div>
+      </div>
+      <Btn onClick={run} disabled={!file || processing}>{processing ? 'Resizing...' : 'Resize Pages & Download'}</Btn>
+      {done && <DoneNote><strong>Done.</strong> Your resized PDF has been downloaded.</DoneNote>}
+      {error && <ErrorNote>{error}</ErrorNote>}
+    </VStack>
+  );
+}
+
+// PDF Metadata Remover
+function PdfRemoveMetadata() {
+  const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [processing, setProcessing] = useState(false);
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState('');
+  usescriptPdfLib();
+
+  const handleFile = async (e) => {
+    const f = e.target.files[0]; setDone(false); setError(''); setPreview(null);
+    if (!f) return; setFile(f);
+    try {
+      const doc = await window.PDFLib.PDFDocument.load(await f.arrayBuffer());
+      setPreview({
+        title: doc.getTitle() || '—',
+        author: doc.getAuthor() || '—',
+        subject: doc.getSubject() || '—',
+        keywords: doc.getKeywords() || '—',
+        producer: doc.getProducer() || '—',
+        creator: doc.getCreator() || '—',
+      });
+    } catch (err) { setError('Could not read this PDF: ' + err.message); }
+  };
+
+  const run = async () => {
+    if (!file) return;
+    if (!window.PDFLib) { setError('The PDF engine is still loading — please try again in a moment.'); return; }
+    setProcessing(true); setError(''); setDone(false);
+    try {
+      const doc = await window.PDFLib.PDFDocument.load(await file.arrayBuffer());
+      doc.setTitle('');
+      doc.setAuthor('');
+      doc.setSubject('');
+      doc.setKeywords([]);
+      doc.setProducer('');
+      doc.setCreator('');
+      const bytes = await doc.save();
+      downloadBlob(bytes, 'metadata-removed.pdf', 'application/pdf');
+      setDone(true);
+    } catch (err) { setError('Could not remove metadata: ' + err.message); }
+    setProcessing(false);
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>Upload PDF File</Label>
+        <input type="file" accept=".pdf" onChange={handleFile} style={{ display:"block", color:C.text, fontSize:13 }} />
+      </div>
+      {preview && (
+        <div>
+          <Label>Current Metadata</Label>
+          <Result mono={false}>
+            <div>Title: {preview.title}</div>
+            <div>Author: {preview.author}</div>
+            <div>Subject: {preview.subject}</div>
+            <div>Keywords: {preview.keywords}</div>
+            <div>Producer: {preview.producer}</div>
+            <div>Creator: {preview.creator}</div>
+          </Result>
+        </div>
+      )}
+      <InfoNote>This clears the document information fields only. Visible page content is not changed — use the PDF Redaction tool to remove visible text.</InfoNote>
+      <Btn onClick={run} disabled={!file || processing}>{processing ? 'Cleaning...' : 'Remove Metadata & Download'}</Btn>
+      {done && <DoneNote><strong>Done.</strong> A cleaned PDF with the metadata removed has been downloaded.</DoneNote>}
+      {error && <ErrorNote>{error}</ErrorNote>}
+    </VStack>
+  );
+}
+
 const TOOL_COMPONENTS = {
   "pdf-viewer": PdfViewer,
   "pdf-page-count": PdfPageCount,
@@ -3248,6 +3946,14 @@ const TOOL_COMPONENTS = {
   "pdf-to-json": PdfToJson,
   "pdf-table-extractor": PdfTableExtractor,
   "pdf-chunker": PdfChunker,
+  "pdf-add-blank-page": PdfAddBlankPage,
+  "pdf-reverse-pages": PdfReversePages,
+  "pdf-duplicate-pages": PdfDuplicatePages,
+  "pdf-rotate-range": PdfRotateRange,
+  "pdf-nup-2up": PdfNup2Up,
+  "pdf-nup-4up": PdfNup4Up,
+  "pdf-resize-pages": PdfResizePages,
+  "pdf-remove-metadata": PdfRemoveMetadata,
 };
 
 function Breadcrumb({ tool, cat }) {

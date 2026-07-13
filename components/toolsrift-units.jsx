@@ -392,7 +392,7 @@ const UNITS = {
     {id:"mpgUK", label:"Miles per Gallon (mpg UK)",  toBase:v=>v*1.20095,    fromBase:b=>b/1.20095},
     {id:"kml",   label:"Kilometers per Liter (km/L)",toBase:v=>v*2.35215,    fromBase:b=>b/2.35215},
     {id:"l100",  label:"L/100km (EU standard)",      toBase:v=>235.215/v,    fromBase:b=>235.215/b},
-    {id:"mpl",   label:"Miles per Liter (mpl)",      toBase:v=>v*2.35215*0.621371, fromBase:b=>b/(2.35215*0.621371)},
+    {id:"mpl",   label:"Miles per Liter (mpl)",      toBase:v=>v*3.78541,    fromBase:b=>b/3.78541},
   ],
 
   torque:[
@@ -513,6 +513,125 @@ const UNITS = {
     {id:"stv",   label:"Statvolt",              toBase:v=>v*299.792,      fromBase:b=>b/299.792},
   ],
 
+  pace:[
+    {id:"minkm",  label:"Minutes per km (min/km)",   toBase:v=>1000/(60*v),     fromBase:b=>1000/(60*b)},
+    {id:"minmi",  label:"Minutes per mile (min/mi)", toBase:v=>1609.344/(60*v), fromBase:b=>1609.344/(60*b)},
+    {id:"min100m",label:"Min per 100m (swim pace)",  toBase:v=>100/(60*v),      fromBase:b=>100/(60*b)},
+    {id:"min500m",label:"Min per 500m (row pace)",   toBase:v=>500/(60*v),      fromBase:b=>500/(60*b)},
+    {id:"kmh",    label:"Kilometers/hour (km/h)",    toBase:v=>v/3.6,           fromBase:b=>b*3.6},
+    {id:"mph",    label:"Miles/hour (mph)",          toBase:v=>v*0.44704,       fromBase:b=>b/0.44704},
+    {id:"mps",    label:"Meters/second (m/s)",       toBase:v=>v,               fromBase:b=>b},
+  ],
+
+  datarate:[
+    {id:"bps",   label:"Bits/second (bit/s)",     toBase:v=>v,           fromBase:b=>b},
+    {id:"kbps",  label:"Kilobits/second (kbit/s)",toBase:v=>v*1e3,       fromBase:b=>b/1e3},
+    {id:"mbps",  label:"Megabits/second (Mbit/s)",toBase:v=>v*1e6,       fromBase:b=>b/1e6},
+    {id:"gbps",  label:"Gigabits/second (Gbit/s)",toBase:v=>v*1e9,       fromBase:b=>b/1e9},
+    {id:"tbps",  label:"Terabits/second (Tbit/s)",toBase:v=>v*1e12,      fromBase:b=>b/1e12},
+    {id:"Bps",   label:"Bytes/second (B/s)",      toBase:v=>v*8,         fromBase:b=>b/8},
+    {id:"KBps",  label:"Kilobytes/second (KB/s)", toBase:v=>v*8e3,       fromBase:b=>b/8e3},
+    {id:"MBps",  label:"Megabytes/second (MB/s)", toBase:v=>v*8e6,       fromBase:b=>b/8e6},
+    {id:"GBps",  label:"Gigabytes/second (GB/s)", toBase:v=>v*8e9,       fromBase:b=>b/8e9},
+    {id:"KiBps", label:"Kibibytes/second (KiB/s)",toBase:v=>v*8*1024,    fromBase:b=>b/(8*1024)},
+    {id:"MiBps", label:"Mebibytes/second (MiB/s)",toBase:v=>v*8*1048576, fromBase:b=>b/(8*1048576)},
+  ],
+
+  current:[
+    {id:"A",     label:"Ampere (A)",           toBase:v=>v,                 fromBase:b=>b},
+    {id:"mA",    label:"Milliampere (mA)",     toBase:v=>v/1e3,             fromBase:b=>b*1e3},
+    {id:"uA",    label:"Microampere (μA)",     toBase:v=>v/1e6,             fromBase:b=>b*1e6},
+    {id:"nA",    label:"Nanoampere (nA)",      toBase:v=>v/1e9,             fromBase:b=>b*1e9},
+    {id:"kA",    label:"Kiloampere (kA)",      toBase:v=>v*1e3,             fromBase:b=>b/1e3},
+    {id:"MA",    label:"Megaampere (MA)",      toBase:v=>v*1e6,             fromBase:b=>b/1e6},
+    {id:"abA",   label:"Abampere / Biot (aA)", toBase:v=>v*10,              fromBase:b=>b/10},
+    {id:"statA", label:"Statampere (statA)",   toBase:v=>v*3.335641e-10,    fromBase:b=>b/3.335641e-10},
+  ],
+
+  charge:[
+    {id:"C",     label:"Coulomb (C)",           toBase:v=>v,               fromBase:b=>b},
+    {id:"mC",    label:"Millicoulomb (mC)",     toBase:v=>v/1e3,           fromBase:b=>b*1e3},
+    {id:"uC",    label:"Microcoulomb (μC)",     toBase:v=>v/1e6,           fromBase:b=>b*1e6},
+    {id:"nC",    label:"Nanocoulomb (nC)",      toBase:v=>v/1e9,           fromBase:b=>b*1e9},
+    {id:"kC",    label:"Kilocoulomb (kC)",      toBase:v=>v*1e3,           fromBase:b=>b/1e3},
+    {id:"Ah",    label:"Ampere-hour (Ah)",      toBase:v=>v*3600,          fromBase:b=>b/3600},
+    {id:"mAh",   label:"Milliamp-hour (mAh)",   toBase:v=>v*3.6,           fromBase:b=>b/3.6},
+    {id:"Fd",    label:"Faraday (F)",           toBase:v=>v*96485.332,     fromBase:b=>b/96485.332},
+    {id:"abC",   label:"Abcoulomb (abC)",       toBase:v=>v*10,            fromBase:b=>b/10},
+    {id:"statC", label:"Statcoulomb (statC)",   toBase:v=>v*3.335641e-10,  fromBase:b=>b/3.335641e-10},
+  ],
+
+  resistance:[
+    {id:"ohm",   label:"Ohm (Ω)",              toBase:v=>v,       fromBase:b=>b},
+    {id:"mohm",  label:"Milliohm (mΩ)",        toBase:v=>v/1e3,   fromBase:b=>b*1e3},
+    {id:"uohm",  label:"Microhm (μΩ)",         toBase:v=>v/1e6,   fromBase:b=>b*1e6},
+    {id:"kohm",  label:"Kilohm (kΩ)",          toBase:v=>v*1e3,   fromBase:b=>b/1e3},
+    {id:"Mohm",  label:"Megohm (MΩ)",          toBase:v=>v*1e6,   fromBase:b=>b/1e6},
+    {id:"Gohm",  label:"Gigohm (GΩ)",          toBase:v=>v*1e9,   fromBase:b=>b/1e9},
+  ],
+
+  capacitance:[
+    {id:"F",     label:"Farad (F)",            toBase:v=>v,        fromBase:b=>b},
+    {id:"mF",    label:"Millifarad (mF)",      toBase:v=>v/1e3,    fromBase:b=>b*1e3},
+    {id:"uF",    label:"Microfarad (μF)",      toBase:v=>v/1e6,    fromBase:b=>b*1e6},
+    {id:"nF",    label:"Nanofarad (nF)",       toBase:v=>v/1e9,    fromBase:b=>b*1e9},
+    {id:"pF",    label:"Picofarad (pF)",       toBase:v=>v/1e12,   fromBase:b=>b*1e12},
+    {id:"kF",    label:"Kilofarad (kF)",       toBase:v=>v*1e3,    fromBase:b=>b/1e3},
+  ],
+
+  inductance:[
+    {id:"H",     label:"Henry (H)",            toBase:v=>v,        fromBase:b=>b},
+    {id:"mH",    label:"Millihenry (mH)",      toBase:v=>v/1e3,    fromBase:b=>b*1e3},
+    {id:"uH",    label:"Microhenry (μH)",      toBase:v=>v/1e6,    fromBase:b=>b*1e6},
+    {id:"nH",    label:"Nanohenry (nH)",       toBase:v=>v/1e9,    fromBase:b=>b*1e9},
+    {id:"kH",    label:"Kilohenry (kH)",       toBase:v=>v*1e3,    fromBase:b=>b/1e3},
+  ],
+
+  magfield:[
+    {id:"T",     label:"Tesla (T)",            toBase:v=>v,        fromBase:b=>b},
+    {id:"mT",    label:"Millitesla (mT)",      toBase:v=>v/1e3,    fromBase:b=>b*1e3},
+    {id:"uT",    label:"Microtesla (μT)",      toBase:v=>v/1e6,    fromBase:b=>b*1e6},
+    {id:"nT",    label:"Nanotesla (nT)",       toBase:v=>v/1e9,    fromBase:b=>b*1e9},
+    {id:"G",     label:"Gauss (G)",            toBase:v=>v*1e-4,   fromBase:b=>b*1e4},
+    {id:"mG",    label:"Milligauss (mG)",      toBase:v=>v*1e-7,   fromBase:b=>b*1e7},
+    {id:"kG",    label:"Kilogauss (kG)",       toBase:v=>v*0.1,    fromBase:b=>b*10},
+  ],
+
+  magflux:[
+    {id:"Wb",    label:"Weber (Wb)",           toBase:v=>v,        fromBase:b=>b},
+    {id:"mWb",   label:"Milliweber (mWb)",     toBase:v=>v/1e3,    fromBase:b=>b*1e3},
+    {id:"uWb",   label:"Microweber (μWb)",     toBase:v=>v/1e6,    fromBase:b=>b*1e6},
+    {id:"nWb",   label:"Nanoweber (nWb)",      toBase:v=>v/1e9,    fromBase:b=>b*1e9},
+    {id:"Mx",    label:"Maxwell (Mx)",         toBase:v=>v*1e-8,   fromBase:b=>b*1e8},
+    {id:"kWb",   label:"Kiloweber (kWb)",      toBase:v=>v*1e3,    fromBase:b=>b/1e3},
+  ],
+
+  dynvisc:[
+    {id:"pas",     label:"Pascal-second (Pa·s)",     toBase:v=>v,             fromBase:b=>b},
+    {id:"mpas",    label:"Millipascal-sec (mPa·s)",  toBase:v=>v/1e3,         fromBase:b=>b*1e3},
+    {id:"P",       label:"Poise (P)",                toBase:v=>v*0.1,         fromBase:b=>b*10},
+    {id:"cP",      label:"Centipoise (cP)",          toBase:v=>v*1e-3,        fromBase:b=>b*1e3},
+    {id:"uP",      label:"Micropoise (μP)",          toBase:v=>v*1e-7,        fromBase:b=>b*1e7},
+    {id:"lbfsft2", label:"lbf·s/ft² (reyn-like)",    toBase:v=>v*47.880259,   fromBase:b=>b/47.880259},
+  ],
+
+  kinvisc:[
+    {id:"m2s",   label:"Square meter/sec (m²/s)",  toBase:v=>v,              fromBase:b=>b},
+    {id:"mm2s",  label:"Square mm/sec (mm²/s)",    toBase:v=>v/1e6,          fromBase:b=>b*1e6},
+    {id:"cm2s",  label:"Square cm/sec (cm²/s)",    toBase:v=>v/1e4,          fromBase:b=>b*1e4},
+    {id:"St",    label:"Stokes (St)",             toBase:v=>v*1e-4,         fromBase:b=>b*1e4},
+    {id:"cSt",   label:"Centistokes (cSt)",       toBase:v=>v*1e-6,         fromBase:b=>b*1e6},
+    {id:"ft2s",  label:"Square foot/sec (ft²/s)", toBase:v=>v*0.09290304,   fromBase:b=>b/0.09290304},
+  ],
+
+  bloodsugar:[
+    {id:"mmolL", label:"mmol/L (SI)",          toBase:v=>v,               fromBase:b=>b},
+    {id:"mgdL",  label:"mg/dL (US)",           toBase:v=>v/18.0182,       fromBase:b=>b*18.0182},
+    {id:"gL",    label:"g/L",                  toBase:v=>v*100/18.0182,   fromBase:b=>b*18.0182/100},
+    {id:"mgL",   label:"mg/L",                 toBase:v=>v/10/18.0182,    fromBase:b=>b*18.0182*10},
+    {id:"umolL", label:"μmol/L",               toBase:v=>v/1000,          fromBase:b=>b*1000},
+  ],
+
 };
 
 // ─── TOOL REGISTRY ────────────────────────────────────────────────────────────
@@ -542,6 +661,18 @@ const TOOLS = [
   {id:"acceleration-converter", cat:"physics",   name:"Acceleration Converter",   desc:"Convert m/s², ft/s², g-force, Gal and other acceleration units", icon:"🏎️", units:"acceleration",  df:"ms2",dt:"g"},
   {id:"radiation-converter",    cat:"physics",   name:"Radiation Converter",      desc:"Convert Sievert, Gray, rem, rad, Becquerel, Curie and more",    icon:"☢️", units:"radiation",     df:"sv",  dt:"msv"},
   {id:"voltage-converter",      cat:"physics",   name:"Voltage Converter",        desc:"Convert Volts, millivolts, kilovolts, megavolts and microvolts", icon:"🔋", units:"voltage",       df:"v",  dt:"mv"},
+  {id:"running-pace-converter", cat:"everyday",  name:"Running Pace Converter",   desc:"Convert running pace between min/km, min/mi, km/h, mph and swim/row pace", icon:"🏃", units:"pace",          df:"minkm", dt:"minmi"},
+  {id:"data-rate-converter",    cat:"digital",   name:"Data Transfer Rate Converter", desc:"Convert bits/s, Mbps, Gbps, bytes/s, MB/s and GB/s bandwidth units", icon:"📶", units:"datarate",      df:"mbps", dt:"MBps"},
+  {id:"current-converter",      cat:"physics",   name:"Electric Current Converter",desc:"Convert amperes, milliamps, microamps, kiloamps, abampere and statampere", icon:"⚡", units:"current",       df:"A",  dt:"mA"},
+  {id:"charge-converter",       cat:"physics",   name:"Electric Charge Converter", desc:"Convert coulombs, ampere-hours, mAh, faraday, abcoulomb and statcoulomb", icon:"🔋", units:"charge",        df:"mAh",dt:"C"},
+  {id:"resistance-converter",   cat:"physics",   name:"Resistance Converter",     desc:"Convert ohms, milliohms, kilohms, megohms and gigohms of resistance", icon:"🛑", units:"resistance",    df:"kohm",dt:"ohm"},
+  {id:"capacitance-converter",  cat:"physics",   name:"Capacitance Converter",    desc:"Convert farads, millifarads, microfarads, nanofarads and picofarads", icon:"🔌", units:"capacitance",   df:"uF", dt:"nF"},
+  {id:"inductance-converter",   cat:"physics",   name:"Inductance Converter",     desc:"Convert henries, millihenries, microhenries, nanohenries and kilohenries", icon:"🧲", units:"inductance",    df:"mH", dt:"uH"},
+  {id:"magnetic-field-converter",cat:"physics",  name:"Magnetic Field Converter", desc:"Convert tesla, millitesla, microtesla, gauss, milligauss and kilogauss", icon:"🧭", units:"magfield",      df:"T",  dt:"G"},
+  {id:"magnetic-flux-converter",cat:"physics",   name:"Magnetic Flux Converter",  desc:"Convert weber, milliweber, microweber, maxwell and kiloweber flux units", icon:"🌀", units:"magflux",       df:"Wb", dt:"Mx"},
+  {id:"dynamic-viscosity-converter",cat:"physics",name:"Dynamic Viscosity Converter",desc:"Convert pascal-second, poise, centipoise, micropoise and lbf·s/ft²", icon:"🫗", units:"dynvisc",       df:"pas",dt:"cP"},
+  {id:"kinematic-viscosity-converter",cat:"physics",name:"Kinematic Viscosity Converter",desc:"Convert m²/s, mm²/s, cm²/s, stokes, centistokes and ft²/s", icon:"💧", units:"kinvisc",       df:"cSt",dt:"mm2s"},
+  {id:"blood-sugar-converter",  cat:"everyday",  name:"Blood Sugar Converter",    desc:"Convert blood glucose between mg/dL and mmol/L, plus g/L and µmol/L", icon:"🩸", units:"bloodsugar",    df:"mgdL",dt:"mmolL"},
 ];
 
 const CATEGORIES = [
@@ -558,6 +689,18 @@ const TOOL_META = {
   "digital-converter":     {title:"Data Storage Converter – Bits, Bytes, KB, MB, GB, TB",     desc:"Convert between bits, bytes, kilobytes, megabytes, gigabytes, terabytes and binary (KiB, MiB, GiB) units.", faq:[["What is the difference between MB and MiB?","MB (megabyte) = 1,000,000 bytes. MiB (mebibyte) = 1,048,576 bytes (2²⁰)."],["How many bytes in a gigabyte?","1 GB = 1,000,000,000 bytes. 1 GiB = 1,073,741,824 bytes."],["What is Mbps?","Megabits per second — a data transfer rate. 1 Mbps = 1,000,000 bits per second."]]},
   "cooking-converter":     {title:"Cooking Measurement Converter – Cups, Tbsp, mL, Oz",       desc:"Convert cups, tablespoons, teaspoons, fluid ounces, pints, quarts, milliliters and liters for cooking.", faq:[["How many tablespoons in a cup?","16 tablespoons = 1 US cup."],["How many ml in a teaspoon?","1 US teaspoon = 4.929 mL."],["How many cups in a liter?","1 liter = 4.2268 US cups."]]},
   "numbase-converter":     {title:"Number Base Converter – Binary, Octal, Decimal, Hex",      desc:"Convert numbers between binary (base 2), octal (base 8), decimal (base 10), hexadecimal (base 16) and more.", faq:[["How to convert decimal to binary?","Repeatedly divide by 2 and record remainders. E.g. 10 = 1010 in binary."],["What is hexadecimal?","Base 16, using digits 0–9 and letters A–F. Used in colors (#FF5733) and memory addresses."],["What is octal?","Base 8, using digits 0–7. Used in Unix file permissions (chmod 755)."]]},
+  "running-pace-converter": {title:"Running Pace Converter – min/km, min/mile, km/h, mph", desc:"Convert running and racing pace between minutes per km, minutes per mile, km/h, mph, plus swim (min/100m) and row (min/500m) pace.", faq:[["What is 5:00/km in min/mile?","A pace of 5:00 per kilometer is about 8:03 per mile (≈12 km/h or 7.46 mph)."],["How do I convert pace to speed?","Speed and pace are inverses: speed (km/h) = 60 ÷ pace (min/km). A 6:00/km pace equals 10 km/h."],["What pace is a sub-4-hour marathon?","A 42.195 km marathon under 4 hours needs about 5:41 per km (9:09 per mile)."]]},
+  "data-rate-converter":    {title:"Data Transfer Rate Converter – Mbps, MB/s, Gbps", desc:"Convert data transfer rates between bits per second (Mbps, Gbps) and bytes per second (MB/s, GB/s, MiB/s). Great for bandwidth and download speed math.", faq:[["Why is 100 Mbps only 12.5 MB/s?","There are 8 bits in a byte, so divide the bit rate by 8: 100 Mbps ÷ 8 = 12.5 MB/s."],["What is the difference between Mbps and MBps?","Mbps is megabits per second (network speed); MBps or MB/s is megabytes per second (file transfer). 1 MB/s = 8 Mbps."],["How long to download 1 GB at 100 Mbps?","At 100 Mbps (12.5 MB/s), 1 GB takes about 80 seconds ignoring overhead."]]},
+  "current-converter":      {title:"Electric Current Converter – Amps, mA, µA, kA", desc:"Convert electric current between amperes, milliamperes, microamperes, kiloamperes, abampere (biot) and statampere.", faq:[["How many milliamps in an amp?","1 ampere = 1,000 milliamperes (mA)."],["What is an abampere?","The abampere (biot) is a CGS unit equal to 10 amperes."],["What is a microampere used for?","Microamperes (µA, one millionth of an amp) measure tiny currents in sensors and low-power electronics."]]},
+  "charge-converter":       {title:"Electric Charge Converter – Coulomb, Ah, mAh", desc:"Convert electric charge between coulombs, ampere-hours, milliamp-hours (mAh), faraday, abcoulomb and statcoulomb.", faq:[["How many coulombs in a mAh?","1 milliamp-hour = 3.6 coulombs, and 1 ampere-hour = 3,600 coulombs."],["How do I compare battery mAh?","mAh is charge capacity. A 3,000 mAh battery holds 3 Ah = 10,800 coulombs of charge."],["What is a faraday?","One faraday equals about 96,485 coulombs — the charge of one mole of electrons."]]},
+  "resistance-converter":   {title:"Resistance Converter – Ohm, kΩ, MΩ, mΩ", desc:"Convert electrical resistance between ohms, milliohms, microhms, kilohms, megohms and gigohms.", faq:[["How many ohms in a kilohm?","1 kilohm (kΩ) = 1,000 ohms."],["What is a 4.7k resistor in ohms?","A 4.7 kΩ resistor equals 4,700 ohms."],["What is a megohm?","1 megohm (MΩ) = 1,000,000 ohms, common for high-resistance and insulation measurements."]]},
+  "capacitance-converter":  {title:"Capacitance Converter – Farad, µF, nF, pF", desc:"Convert capacitance between farads, millifarads, microfarads, nanofarads, picofarads and kilofarads.", faq:[["How many nanofarads in a microfarad?","1 microfarad (µF) = 1,000 nanofarads (nF) = 1,000,000 picofarads (pF)."],["What is a 100nF capacitor in µF?","100 nF equals 0.1 µF."],["Why are capacitors measured in µF, nF and pF?","A farad is very large, so practical capacitors use sub-multiples: µF, nF and pF."]]},
+  "inductance-converter":   {title:"Inductance Converter – Henry, mH, µH, nH", desc:"Convert inductance between henries, millihenries, microhenries, nanohenries and kilohenries.", faq:[["How many microhenries in a millihenry?","1 millihenry (mH) = 1,000 microhenries (µH)."],["What unit is inductance measured in?","The SI unit of inductance is the henry (H); coils are often rated in mH, µH or nH."],["What is a 10µH inductor in mH?","10 µH equals 0.01 mH."]]},
+  "magnetic-field-converter":{title:"Magnetic Field Converter – Tesla, Gauss, µT", desc:"Convert magnetic flux density between tesla, millitesla, microtesla, gauss, milligauss and kilogauss.", faq:[["How many gauss in a tesla?","1 tesla (T) = 10,000 gauss (G)."],["What is Earth's magnetic field in gauss?","Earth's field is about 0.25–0.65 gauss, roughly 25–65 microtesla."],["What is an MRI magnet strength?","A common MRI scanner is 1.5 T or 3 T, i.e. 15,000–30,000 gauss."]]},
+  "magnetic-flux-converter":{title:"Magnetic Flux Converter – Weber, Maxwell", desc:"Convert magnetic flux between weber, milliweber, microweber, maxwell and kiloweber.", faq:[["How many maxwell in a weber?","1 weber (Wb) = 100,000,000 maxwell (Mx)."],["What is magnetic flux?","Flux is the total magnetic field through a surface, measured in webers (volt-seconds)."],["How does weber relate to tesla?","1 weber = 1 tesla × 1 square meter (Wb = T·m²)."]]},
+  "dynamic-viscosity-converter":{title:"Dynamic Viscosity Converter – Pa·s, Poise, cP", desc:"Convert dynamic viscosity between pascal-second, poise, centipoise, millipascal-second and micropoise.", faq:[["What is the viscosity of water?","Water at 20°C is about 1 centipoise (cP) = 0.001 Pa·s = 1 mPa·s."],["How many centipoise in a poise?","1 poise (P) = 100 centipoise (cP) = 0.1 Pa·s."],["What is dynamic viscosity?","It measures a fluid's resistance to flow under an applied shear force, in pascal-seconds."]]},
+  "kinematic-viscosity-converter":{title:"Kinematic Viscosity Converter – Stokes, cSt, m²/s", desc:"Convert kinematic viscosity between square meters per second, mm²/s, cm²/s, stokes, centistokes and ft²/s.", faq:[["What is the kinematic viscosity of water?","Water at 20°C is about 1 centistokes (cSt) = 1 mm²/s = 1×10⁻⁶ m²/s."],["How many centistokes in a stokes?","1 stokes (St) = 100 centistokes (cSt) = 1×10⁻⁴ m²/s."],["What is kinematic viscosity?","It is dynamic viscosity divided by density, describing how fast a fluid flows under gravity."]]},
+  "blood-sugar-converter":  {title:"Blood Sugar Converter – mg/dL to mmol/L", desc:"Convert blood glucose readings between mg/dL (US) and mmol/L (international), plus g/L and µmol/L. Uses the glucose factor 18.0182.", faq:[["How do I convert mg/dL to mmol/L?","Divide mg/dL by 18.0182. For example, 100 mg/dL ≈ 5.55 mmol/L."],["What is a normal fasting blood sugar?","Roughly 70–100 mg/dL (3.9–5.5 mmol/L); this tool is for unit conversion only, not medical advice."],["Why two different glucose units?","The US uses mg/dL while most other countries use mmol/L; the conversion factor for glucose is 18.0182."]]},
 };
 
 // ─── TOOL COMPONENTS ─────────────────────────────────────────────────────────
