@@ -623,6 +623,346 @@ function TypographyConverter() {
   );
 }
 
+/* ===== Batch W3: additional verified converters ===== */
+const SPEED_OF_LIGHT = 299792458; // m/s (exact)
+const MILE_KM = 1.609344;         // km per statute mile (exact)
+
+/* Linear converters (buildLinearConverter idiom) */
+const DataTransferConverter = buildLinearConverter(
+  [
+    { key: "bps", label: "bit/s", toBase: 1 },
+    { key: "kbps", label: "kbit/s", toBase: 1e3 },
+    { key: "mbps", label: "Mbit/s", toBase: 1e6 },
+    { key: "gbps", label: "Gbit/s", toBase: 1e9 },
+    { key: "Bps", label: "byte/s", toBase: 8 },
+    { key: "KBps", label: "KB/s (10³)", toBase: 8e3 },
+    { key: "MBps", label: "MB/s (10⁶)", toBase: 8e6 },
+    { key: "GBps", label: "GB/s (10⁹)", toBase: 8e9 },
+  ],
+  "mbps",
+  "Base: bit/s\n1 byte = 8 bits\nSI decimal prefixes (k=1000, M=10⁶, G=10⁹)\n1 MB/s = 8 Mbit/s"
+);
+
+const TirePressureConverter = buildLinearConverter(
+  [
+    { key: "psi", label: "PSI", toBase: 6894.757293168 },
+    { key: "bar", label: "Bar", toBase: 1e5 },
+    { key: "kpa", label: "Kilopascal (kPa)", toBase: 1000 },
+    { key: "atm", label: "Atmosphere (atm)", toBase: 101325 },
+    { key: "mmhg", label: "mmHg (torr)", toBase: 133.322387415 },
+  ],
+  "psi",
+  "Base: Pascal\n1 psi = 6894.757293 Pa\n1 bar = 100,000 Pa\n1 atm = 101,325 Pa"
+);
+
+const AngleConverter = buildLinearConverter(
+  [
+    { key: "deg", label: "Degree (°)", toBase: Math.PI / 180 },
+    { key: "rad", label: "Radian (rad)", toBase: 1 },
+    { key: "grad", label: "Gradian (gon)", toBase: Math.PI / 200 },
+    { key: "arcmin", label: "Arcminute (′)", toBase: Math.PI / 10800 },
+    { key: "arcsec", label: "Arcsecond (″)", toBase: Math.PI / 648000 },
+    { key: "turn", label: "Turn (revolution)", toBase: 2 * Math.PI },
+  ],
+  "deg",
+  "Base: Radian\n180° = π rad\n1 turn = 360° = 2π rad\n1° = 60′ = 3600″"
+);
+
+const BloodGlucoseConverter = buildLinearConverter(
+  [
+    { key: "mmol", label: "mmol/L", toBase: 1 },
+    { key: "mgdl", label: "mg/dL", toBase: 1 / 18.0182 },
+  ],
+  "mmol",
+  "Base: mmol/L (glucose)\nmg/dL = mmol/L × 18.0182\nmmol/L = mg/dL ÷ 18.0182"
+);
+
+/* Frequency ↔ wavelength (electromagnetic, in vacuum) */
+function FrequencyWavelengthConverter() {
+  const [hz, setHz] = useState("100000000");
+  const [m, setM] = useState(String(round(SPEED_OF_LIGHT / 1e8, 9)));
+
+  const onHz = (raw) => {
+    setHz(raw);
+    const f = n(raw);
+    setM(f > 0 ? String(round(SPEED_OF_LIGHT / f, 12)) : "");
+  };
+  const onM = (raw) => {
+    setM(raw);
+    const l = n(raw);
+    setHz(l > 0 ? String(round(SPEED_OF_LIGHT / l, 6)) : "");
+  };
+
+  const f = n(hz);
+  const rows = f > 0
+    ? [
+        ["Frequency", `${round(f / 1e3, 6)} kHz`],
+        ["Frequency", `${round(f / 1e6, 6)} MHz`],
+        ["Frequency", `${round(f / 1e9, 9)} GHz`],
+        ["Wavelength", `${round(SPEED_OF_LIGHT / f, 9)} m`],
+        ["Wavelength", `${round((SPEED_OF_LIGHT / f) * 100, 6)} cm`],
+        ["Wavelength", `${round((SPEED_OF_LIGHT / f) * 1000, 4)} mm`],
+      ]
+    : [];
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Frequency (Hz)</Label><Input value={hz} onChange={onHz} /></div>
+        <div><Label>Wavelength (m)</Label><Input value={m} onChange={onM} /></div>
+      </Grid2>
+      <Formula>{"λ = c ÷ f   and   f = c ÷ λ\nc = 299,792,458 m/s (speed of light in vacuum)\nExample: 100 MHz → 2.99792458 m"}</Formula>
+      {rows.length ? <DataTable columns={["Quantity", "Value"]} rows={rows} /> : <div style={{ color: C.muted, fontSize: 12 }}>Enter a positive frequency or wavelength.</div>}
+    </VStack>
+  );
+}
+
+/* Color temperature ↔ mired */
+function ColorTemperatureMiredConverter() {
+  const [k, setK] = useState("6500");
+  const [mired, setMired] = useState(String(round(1e6 / 6500, 6)));
+
+  const onK = (raw) => {
+    setK(raw);
+    const v = n(raw);
+    setMired(v > 0 ? String(round(1e6 / v, 8)) : "");
+  };
+  const onM = (raw) => {
+    setMired(raw);
+    const v = n(raw);
+    setK(v > 0 ? String(round(1e6 / v, 4)) : "");
+  };
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Color Temperature (K)</Label><Input value={k} onChange={onK} /></div>
+        <div><Label>Mired (µrd)</Label><Input value={mired} onChange={onM} /></div>
+      </Grid2>
+      <Formula>{"mired = 1,000,000 ÷ Kelvin\nKelvin = 1,000,000 ÷ mired\nMireds add linearly for filters (useful for CTO/CTB gels).\n6500 K ≈ 153.85 mired · 3200 K = 312.5 mired"}</Formula>
+      <DataTable
+        columns={["Source", "Kelvin", "Mired"]}
+        rows={[
+          ["Candle flame", "1900", round(1e6 / 1900, 1)],
+          ["Tungsten", "3200", round(1e6 / 3200, 1)],
+          ["Daylight", "5600", round(1e6 / 5600, 1)],
+          ["Overcast / D65", "6500", round(1e6 / 6500, 1)],
+          ["Blue sky", "10000", round(1e6 / 10000, 1)],
+        ]}
+      />
+    </VStack>
+  );
+}
+
+/* Roman numerals */
+const ROMAN_TABLE = [[1000,"M"],[900,"CM"],[500,"D"],[400,"CD"],[100,"C"],[90,"XC"],[50,"L"],[40,"XL"],[10,"X"],[9,"IX"],[5,"V"],[4,"IV"],[1,"I"]];
+function intToRoman(num) {
+  num = Math.floor(num);
+  if (!Number.isFinite(num) || num < 1 || num > 3999) return null;
+  let out = "";
+  for (const [v, s] of ROMAN_TABLE) { while (num >= v) { out += s; num -= v; } }
+  return out;
+}
+function romanToInt(str) {
+  if (!str) return null;
+  const s = String(str).toUpperCase().trim();
+  if (!/^[MDCLXVI]+$/.test(s)) return null;
+  const map = { M: 1000, D: 500, C: 100, L: 50, X: 10, V: 5, I: 1 };
+  let total = 0, prev = 0;
+  for (let i = s.length - 1; i >= 0; i--) {
+    const v = map[s[i]];
+    if (v < prev) total -= v; else { total += v; prev = v; }
+  }
+  if (intToRoman(total) !== s) return null; // reject non-canonical forms
+  return total;
+}
+function RomanNumeralConverter() {
+  const [num, setNum] = useState("2024");
+  const [roman, setRoman] = useState("MMXXIV");
+  const [err, setErr] = useState("");
+
+  const onNum = (raw) => {
+    setNum(raw);
+    if (raw.trim() === "") { setRoman(""); setErr(""); return; }
+    const r = intToRoman(Math.floor(n(raw)));
+    if (r) { setRoman(r); setErr(""); } else { setRoman(""); setErr("Enter a whole number from 1 to 3999."); }
+  };
+  const onRoman = (raw) => {
+    setRoman(raw);
+    if (raw.trim() === "") { setNum(""); setErr(""); return; }
+    const v = romanToInt(raw);
+    if (v != null) { setNum(String(v)); setErr(""); } else { setNum(""); setErr("Invalid Roman numeral (use standard form, ≤ 3999)."); }
+  };
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Number (1–3999)</Label><Input value={num} onChange={onNum} /></div>
+        <div>
+          <Label>Roman Numeral</Label>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <div style={{ flex: 1 }}><Input value={roman} onChange={onRoman} /></div>
+            <CopyBtn text={roman} />
+          </div>
+        </div>
+      </Grid2>
+      {err && <div style={{ color: "#F87171", fontSize: 12 }}>{err}</div>}
+      <Formula>{"Additive/subtractive system: M=1000 D=500 C=100 L=50 X=10 V=5 I=1\nSubtractive pairs: CM=900 CD=400 XC=90 XL=40 IX=9 IV=4\nValid range 1–3999 (no zero, no fractions)."}</Formula>
+    </VStack>
+  );
+}
+
+/* Running pace ↔ speed */
+function PaceConverter() {
+  const units = [
+    { key: "minkm", label: "Pace (min/km)" },
+    { key: "minmi", label: "Pace (min/mi)" },
+    { key: "kmh", label: "Speed (km/h)" },
+    { key: "mph", label: "Speed (mph)" },
+  ];
+  const init = () => {
+    const p = 5; const kmh = 60 / p;
+    return { minkm: String(p), minmi: String(round(p * MILE_KM, 6)), kmh: String(round(kmh, 6)), mph: String(round(kmh / MILE_KM, 6)) };
+  };
+  const [vals, setVals] = useState(init);
+  const [activeKey, setActiveKey] = useState("minkm");
+
+  const onEdit = (key, raw) => {
+    setActiveKey(key);
+    const v = n(raw);
+    if (!(v > 0)) {
+      const bad = {}; units.forEach((u) => { bad[u.key] = "—"; }); bad[key] = raw; setVals(bad); return;
+    }
+    let p; // min/km
+    if (key === "minkm") p = v;
+    else if (key === "minmi") p = v / MILE_KM;
+    else if (key === "kmh") p = 60 / v;
+    else p = 60 / (v * MILE_KM); // mph
+    const kmh = 60 / p;
+    const next = {
+      minkm: String(round(p, 6)),
+      minmi: String(round(p * MILE_KM, 6)),
+      kmh: String(round(kmh, 6)),
+      mph: String(round(kmh / MILE_KM, 6)),
+    };
+    next[key] = raw;
+    setVals(next);
+  };
+
+  return <ConverterGrid title="Pace ↔ Speed" units={units} state={vals} onEdit={onEdit} formula={"Pace is in decimal minutes (5.5 = 5 min 30 s).\nspeed(km/h) = 60 ÷ pace(min/km)\npace(min/mi) = pace(min/km) × 1.609344\nmph = km/h ÷ 1.609344"} activeKey={activeKey} />;
+}
+
+/* Fuel economy */
+function FuelEconomyConverter() {
+  const units = [
+    { key: "l100", label: "L/100 km" },
+    { key: "mpgus", label: "MPG (US)" },
+    { key: "mpguk", label: "MPG (UK/imperial)" },
+    { key: "kml", label: "km/L" },
+  ];
+  const fromL100 = (x) => ({
+    l100: String(round(x, 6)),
+    mpgus: String(round(235.2145833 / x, 6)),
+    mpguk: String(round(282.4809363 / x, 6)),
+    kml: String(round(100 / x, 6)),
+  });
+  const [vals, setVals] = useState(() => fromL100(8));
+  const [activeKey, setActiveKey] = useState("l100");
+
+  const onEdit = (key, raw) => {
+    setActiveKey(key);
+    const v = n(raw);
+    if (!(v > 0)) {
+      const bad = {}; units.forEach((u) => { bad[u.key] = "—"; }); bad[key] = raw; setVals(bad); return;
+    }
+    let x; // L/100km
+    if (key === "l100") x = v;
+    else if (key === "mpgus") x = 235.2145833 / v;
+    else if (key === "mpguk") x = 282.4809363 / v;
+    else x = 100 / v; // km/L
+    const next = fromL100(x);
+    next[key] = raw;
+    setVals(next);
+  };
+
+  return <ConverterGrid title="Fuel Economy" units={units} state={vals} onEdit={onEdit} formula={"L/100 km is the base.\nMPG(US) = 235.214583 ÷ (L/100km)\nMPG(UK) = 282.480936 ÷ (L/100km)\nkm/L = 100 ÷ (L/100km)"} activeKey={activeKey} />;
+}
+
+/* Oven gas mark */
+function GasMarkConverter() {
+  const marks = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const descOf = { 1: "Cool", 2: "Slow", 3: "Moderately slow", 4: "Moderate", 5: "Moderately hot", 6: "Hot", 7: "Hot", 8: "Very hot", 9: "Very hot" };
+  const F = (g) => 25 * g + 250;
+  const [gm, setGm] = useState("4");
+  const g = Math.round(n(gm));
+  const valid = marks.includes(g);
+  const rows = marks.map((mk) => [String(mk), `${F(mk)} °F`, `${round((F(mk) - 32) * 5 / 9, 0)} °C`, descOf[mk]]);
+
+  return (
+    <VStack>
+      <div>
+        <Label>Gas Mark</Label>
+        <SelectInput value={gm} onChange={setGm} options={marks.map((mk) => ({ value: String(mk), label: `Gas Mark ${mk}` }))} />
+      </div>
+      {valid && (
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <div style={{ background: "rgba(6,182,212,0.08)", border: `1px solid ${C.border}`, borderRadius: 8, padding: "12px", textAlign: "center" }}>
+            <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 22, fontWeight: 700, color: C.blue }}>{F(g)} °F</div>
+            <div style={{ fontSize: 11, color: C.muted, marginTop: 2 }}>Fahrenheit</div>
+          </div>
+          <div style={{ background: "rgba(6,182,212,0.08)", border: `1px solid ${C.border}`, borderRadius: 8, padding: "12px", textAlign: "center" }}>
+            <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 22, fontWeight: 700, color: C.blue }}>{round((F(g) - 32) * 5 / 9, 0)} °C</div>
+            <div style={{ fontSize: 11, color: C.muted, marginTop: 2 }}>Celsius</div>
+          </div>
+        </div>
+      )}
+      <Formula>{"°F = 25 × gas mark + 250\n°C = (°F − 32) × 5⁄9\nGas Mark 4 = 350 °F = 177 °C (standard \"moderate\" oven)."}</Formula>
+      <DataTable columns={["Gas Mark", "°F", "°C", "Oven"]} rows={rows} />
+    </VStack>
+  );
+}
+
+/* Ring size (reference table, US/UK/EU/mm) */
+const RING_TABLE = [
+  // [US, UK, EU(ISO circ mm), diameter mm, circumference mm]
+  ["3", "F", "44", "14.1", "44.2"],
+  ["3.5", "G", "45", "14.5", "45.5"],
+  ["4", "H", "47", "14.9", "46.8"],
+  ["4.5", "I", "48", "15.3", "48.0"],
+  ["5", "J½", "49", "15.7", "49.3"],
+  ["5.5", "K½", "51", "16.1", "50.6"],
+  ["6", "L½", "52", "16.5", "51.9"],
+  ["6.5", "M½", "53", "16.9", "53.1"],
+  ["7", "N½", "54", "17.3", "54.4"],
+  ["7.5", "O½", "56", "17.7", "55.7"],
+  ["8", "P½", "57", "18.1", "57.0"],
+  ["8.5", "Q½", "58", "18.5", "58.3"],
+  ["9", "R½", "59", "18.9", "59.5"],
+  ["9.5", "S½", "61", "19.4", "60.8"],
+  ["10", "T½", "62", "19.8", "62.1"],
+  ["10.5", "U½", "63", "20.2", "63.4"],
+  ["11", "V½", "64", "20.6", "64.6"],
+  ["11.5", "W½", "66", "21.0", "65.9"],
+  ["12", "X½", "67", "21.4", "67.2"],
+  ["12.5", "Z", "68", "21.8", "68.5"],
+  ["13", "Z+1", "69", "22.2", "69.7"],
+];
+function RingSizeConverter() {
+  const [us, setUs] = useState("7");
+  const selected = useMemo(() => RING_TABLE.find((r) => r[0] === us) || RING_TABLE[8], [us]);
+  return (
+    <VStack>
+      <div>
+        <Label>US Ring Size</Label>
+        <SelectInput value={us} onChange={setUs} options={RING_TABLE.map((r) => ({ value: r[0], label: `US ${r[0]}` }))} />
+      </div>
+      <DataTable columns={["US", "UK", "EU", "Diameter (mm)", "Circumference (mm)"]} rows={[selected]} />
+      <Formula>{"Ring size is set by inside circumference.\ncircumference (mm) ≈ diameter (mm) × π\nEU/ISO size = inside circumference in mm.\nHalf-sizes and letters vary slightly by brand."}</Formula>
+      <DataTable columns={["US", "UK", "EU", "Diameter (mm)", "Circumference (mm)"]} rows={RING_TABLE} />
+    </VStack>
+  );
+}
+
 /* Registry */
 const TOOLS = [
   { id: "force-converter", cat: "electrical", name: "Force Converter", icon: "🧲", desc: "Newtons, kN, lbf, kp, dyne." },
@@ -648,6 +988,20 @@ const TOOLS = [
   { id: "bra-size-converter", cat: "everyday", name: "Bra Size Converter", icon: "🩱", desc: "US, UK, EU, FR/BE, IT, AU/NZ." },
   { id: "paper-size-converter", cat: "everyday", name: "Paper Size Converter", icon: "📄", desc: "A/B + US sizes, dimensions + visuals." },
   { id: "typography-converter", cat: "everyday", name: "Typography Converter", icon: "🔠", desc: "pt, px, em, rem, mm, cm by DPI." },
+
+  { id: "frequency-wavelength-converter", cat: "physical", name: "Frequency ↔ Wavelength Converter", icon: "📡", desc: "Convert between frequency (Hz, kHz, MHz, GHz) and electromagnetic wavelength using λ = c/f with the exact speed of light." },
+  { id: "data-transfer-rate-converter", cat: "physical", name: "Data Transfer Rate Converter", icon: "🌐", desc: "Convert bit/s, kbit/s, Mbit/s, Gbit/s and byte-based KB/s, MB/s, GB/s using SI decimal prefixes and the 8-bits-per-byte relation." },
+  { id: "angle-unit-converter", cat: "physical", name: "Angle Unit Converter", icon: "📐", desc: "Convert degrees, radians, gradians, arcminutes, arcseconds and turns for geometry, trigonometry and navigation." },
+  { id: "tire-pressure-converter", cat: "physical", name: "Tire Pressure Converter", icon: "🛞", desc: "Convert tire and general pressure between PSI, bar, kPa, atmospheres and mmHg (torr)." },
+  { id: "blood-glucose-converter", cat: "physical", name: "Blood Glucose Converter", icon: "🩸", desc: "Convert blood sugar readings between mg/dL and mmol/L using the standard glucose factor of 18.0182." },
+
+  { id: "color-temperature-mired-converter", cat: "light", name: "Color Temperature ↔ Mired Converter", icon: "🌡️", desc: "Convert Kelvin color temperature to and from mireds (mired = 1,000,000 ÷ K) for photography and lighting gel calculations." },
+
+  { id: "roman-numeral-converter", cat: "everyday", name: "Roman Numeral Converter", icon: "🏛️", desc: "Convert whole numbers (1–3999) to Roman numerals and parse Roman numerals back to integers with canonical-form validation." },
+  { id: "pace-speed-converter", cat: "everyday", name: "Running Pace ↔ Speed Converter", icon: "🏃", desc: "Convert running pace (min/km, min/mi) to and from speed (km/h, mph) for training and race planning." },
+  { id: "fuel-economy-converter", cat: "everyday", name: "Fuel Economy Converter", icon: "⛽", desc: "Convert fuel efficiency between L/100 km, US MPG, imperial (UK) MPG and km/L." },
+  { id: "gas-mark-converter", cat: "everyday", name: "Oven Gas Mark Converter", icon: "🔥", desc: "Convert oven gas marks (1–9) to Fahrenheit and Celsius with a full baking temperature reference table." },
+  { id: "ring-size-converter", cat: "everyday", name: "Ring Size Converter", icon: "💍", desc: "Convert ring sizes across US, UK, EU/ISO and inside diameter/circumference in millimetres." },
 ];
 
 const TOOL_COMPONENTS = {
@@ -674,6 +1028,20 @@ const TOOL_COMPONENTS = {
   "bra-size-converter": BraSizeConverter,
   "paper-size-converter": PaperSizeConverter,
   "typography-converter": TypographyConverter,
+
+  "frequency-wavelength-converter": FrequencyWavelengthConverter,
+  "data-transfer-rate-converter": DataTransferConverter,
+  "angle-unit-converter": AngleConverter,
+  "tire-pressure-converter": TirePressureConverter,
+  "blood-glucose-converter": BloodGlucoseConverter,
+
+  "color-temperature-mired-converter": ColorTemperatureMiredConverter,
+
+  "roman-numeral-converter": RomanNumeralConverter,
+  "pace-speed-converter": PaceConverter,
+  "fuel-economy-converter": FuelEconomyConverter,
+  "gas-mark-converter": GasMarkConverter,
+  "ring-size-converter": RingSizeConverter,
 };
 
 const CATEGORIES = [

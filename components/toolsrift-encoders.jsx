@@ -230,6 +230,18 @@ const TOOLS = [
   { id:"base58",               cat:"base",    name:"Base58 Encoder / Decoder", desc:"Bitcoin-alphabet Base58 encode & decode with leading-zero support", icon:"🪙", free:true },
   { id:"hex-dump",             cat:"binary",  name:"Hex Dump Viewer",          desc:"View text as a hexdump -C style offset, hex and ASCII dump", icon:"🧮", free:true },
   { id:"data-uri-generator",   cat:"base",    name:"Data URI Generator",       desc:"Convert text, SVG, CSS or HTML into a data: URI (base64 or URL-encoded)", icon:"📦", free:true },
+  { id:"base45",               cat:"base",    name:"Base45 Encoder / Decoder", desc:"RFC 9285 Base45 encode & decode, as used in EU COVID QR certificates", icon:"🔡", free:true },
+  { id:"ascii85",              cat:"base",    name:"Ascii85 Encoder / Decoder", desc:"Adobe Ascii85 (base85) encode & decode with z shortcut and <~ ~> delimiters", icon:"🅰️", free:true },
+  { id:"z85",                  cat:"base",    name:"Z85 Encoder / Decoder",    desc:"ZeroMQ Z85 (RFC 32) base85 encode & decode for 4-byte-aligned binary data", icon:"⚡", free:true },
+  { id:"base62",               cat:"base",    name:"Base62 Encoder / Decoder", desc:"Compact 0-9A-Za-z Base62 encode & decode, ideal for short IDs and URLs", icon:"🔠", free:true },
+  { id:"base64-to-hex",        cat:"base",    name:"Base64 ↔ Hex Converter",   desc:"Convert Base64 directly to hexadecimal and back without leaving your browser", icon:"🔀", free:true },
+  { id:"punycode",             cat:"unicode", name:"Punycode / IDN Converter", desc:"RFC 3492 Punycode encode & decode for internationalized domain names (xn--)", icon:"🌐", free:true },
+  { id:"rot47-cipher",         cat:"cipher",  name:"ROT47 Cipher",             desc:"ROT47 rotate all printable ASCII by 47 — symmetric encode & decode", icon:"🔁", free:true },
+  { id:"rot18-cipher",         cat:"cipher",  name:"ROT18 Cipher",             desc:"ROT13 for letters plus ROT5 for digits — symmetric encode & decode", icon:"🔂", free:true },
+  { id:"decimal-entities",     cat:"html",    name:"Numeric HTML Entities",    desc:"Encode text to decimal/hex numeric HTML entities (&#NN;) and decode them back", icon:"🔢", free:true },
+  { id:"url-encode-all",       cat:"url",     name:"URL Encode All Characters", desc:"Percent-encode every character as %XX — full-escape any string for URLs", icon:"🔗", free:true },
+  { id:"uuencode",             cat:"special", name:"Uuencode / Uudecode",      desc:"Classic Unix uuencode & uudecode with begin/end wrapper for text payloads", icon:"📮", free:true },
+  { id:"xxencode",             cat:"special", name:"XXencode / XXdecode",      desc:"XXencode & XXdecode using the portable +-0-9A-Za-z alphabet", icon:"📫", free:true },
 ];
 
 const CATEGORIES = [
@@ -272,6 +284,18 @@ const TOOL_META = {
   "base58": { title:"Base58 Encoder & Decoder — Bitcoin Alphabet Online", desc:"Encode and decode Base58 using the Bitcoin alphabet (no 0, O, I, l). Preserves leading zero bytes, ideal for addresses, keys and short IDs.", howTo:"Choose Encode or Decode and enter your text. Encoding converts the UTF-8 bytes to a Base58 string; decoding reverses it back to text (or hex if the bytes aren't valid UTF-8).", faq:[["Why does Base58 skip 0, O, I and l?","Those characters are easy to confuse when read or typed by hand. Removing them makes Base58 strings less error-prone — which is why Bitcoin addresses use it."],["How are leading zeros handled?","Each leading zero byte (0x00) is encoded as a leading '1' character, and restored on decode, so byte-exact round-trips are preserved."],["Is Base58 the same as Base58Check?","No — Base58Check adds a version byte and a 4-byte checksum. This tool implements plain Base58 encoding only."]] },
   "hex-dump": { title:"Hex Dump Viewer — hexdump -C Style Online", desc:"Generate a classic hexdump -C style view of any text: 16-byte rows with hex offset, two hex columns and a printable-ASCII panel.", howTo:"Type or paste text and the hex dump updates live. Each row shows the byte offset in hex, the 16 bytes as hex pairs, and an ASCII column where non-printable bytes show as a dot.", faq:[["What does each row contain?","An 8-digit hex offset, up to 16 bytes shown as hex pairs (split into two groups of 8), and the same bytes rendered as ASCII inside |bars|."],["Why are some characters shown as dots?","Bytes below 0x20 or above 0x7e are non-printable, so they are displayed as '.' in the ASCII column — exactly like the Unix hexdump -C tool."],["How is the text turned into bytes?","The text is encoded as UTF-8, so multi-byte characters expand into several hex bytes."]] },
   "data-uri-generator": { title:"Data URI Generator — Convert Text, SVG & CSS to data: URIs", desc:"Turn text, SVG, CSS, HTML or JSON into an inline data: URI. Choose base64 or URL-encoding — URL-encoded SVG is smaller and CSS-friendly.", howTo:"Paste your content, pick its MIME type, and choose base64 or URL-encoded output. Copy the resulting data: URI straight into your HTML src, CSS url() or JavaScript.", faq:[["When should I use URL-encoding vs base64?","URL-encoding is usually smaller for text-based content like SVG and keeps it human-readable; base64 is more robust for arbitrary/binary content and older parsers."],["Why embed content as a data URI?","It inlines assets directly into HTML or CSS, removing a network request — great for small icons, SVGs and CSS backgrounds."],["Which MIME type should I pick?","Match the content: image/svg+xml for SVG, text/css for stylesheets, text/html for markup, application/json for JSON, or text/plain for raw text."]] },
+  "base45": { title:"Base45 Encoder & Decoder — RFC 9285 Online", desc:"Encode and decode Base45 (RFC 9285), the compact alphanumeric encoding used inside EU Digital COVID Certificate QR codes. Runs entirely in your browser.", howTo:"Pick Encode or Decode and enter your text. Encoding turns UTF-8 bytes into the RFC 9285 Base45 alphabet; decoding reverses it back to text.", faq:[["What is Base45?","A binary-to-text encoding from RFC 9285 that maps data onto 45 characters (0-9, A-Z, space and a few symbols). It is optimised to pack tightly into QR codes' alphanumeric mode."],["Where is Base45 used?","Most famously in EU Digital COVID Certificates, where the payload is Base45-encoded before being placed in the QR code."],["Why 45 characters?","QR alphanumeric mode has exactly 45 symbols; Base45 uses that full set so two bytes fit in three QR-friendly characters with no waste."]] },
+  "ascii85": { title:"Ascii85 Encoder & Decoder — Base85 Online", desc:"Encode and decode Adobe Ascii85 (base85). Supports the z all-zero shortcut and optional <~ ~> delimiters. More compact than Base64 for binary text.", howTo:"Choose Encode or Decode and paste your text. Encoding produces 5 Ascii85 characters per 4 bytes; use the delimiters option to wrap output in <~ ~> as PostScript/PDF expect.", faq:[["How is Ascii85 different from Base64?","Ascii85 packs 4 bytes into 5 characters (~25% overhead) versus Base64's 3-into-4 (~33%), so it is more compact. It uses 85 printable ASCII characters starting at '!'."],["What is the z shortcut?","A group of four zero bytes is written as a single 'z' instead of five '!' characters, saving space — a standard Adobe optimisation."],["What are the <~ and ~> markers?","They delimit an Ascii85 stream in PostScript and PDF. Enable the delimiters option to include them; the decoder strips them automatically."]] },
+  "z85": { title:"Z85 Encoder & Decoder — ZeroMQ RFC 32 Base85", desc:"Encode and decode Z85, the ZeroMQ base85 variant defined in RFC 32. Uses a URL/source-code-safe alphabet for 4-byte-aligned binary data.", howTo:"Pick Encode or Decode. Z85 requires the byte length to be a multiple of 4, so encoding pads is not applied — enter data whose byte count is divisible by 4, or decode a Z85 string whose length is a multiple of 5.", faq:[["What is Z85?","A base85 encoding from the ZeroMQ RFC 32 spec. It uses 85 characters chosen to be safe inside source code and strings (no backslash or quotes)."],["Why must input be a multiple of 4 bytes?","Z85 has no padding scheme, so it only encodes whole 4-byte frames into 5-character blocks. This tool reports an error if the length does not align."],["How does Z85 differ from Ascii85?","They share the 4-into-5 ratio but use different alphabets and offsets. Z85's alphabet avoids characters that need escaping in code, making it ideal for keys and config."]] },
+  "base62": { title:"Base62 Encoder & Decoder — 0-9A-Za-z Online", desc:"Encode and decode Base62 using digits and both letter cases (0-9, A-Z, a-z). Produces short, URL-safe strings ideal for IDs and shortlinks.", howTo:"Choose Encode or Decode and enter your text. Encoding treats the UTF-8 bytes as one big number rendered in Base62; decoding reverses it back to the original text.", faq:[["Why use Base62 instead of Base64?","Base62 avoids the +, / and = characters, so its output is fully alphanumeric and safe to drop into URLs, filenames and IDs without escaping."],["How are leading zero bytes handled?","Each leading zero byte is preserved as a leading '0' character so byte-exact round-trips work."],["Where is Base62 used?","URL shorteners, short unique IDs, and anywhere a compact human-typable token is needed."]] },
+  "base64-to-hex": { title:"Base64 to Hex Converter — Base64 ↔ Hexadecimal", desc:"Convert Base64 strings straight to hexadecimal and hex back to Base64, without an intermediate step. Handles standard and URL-safe Base64.", howTo:"Pick a direction, then paste a Base64 string to get its hex bytes, or paste hex (with or without spaces / 0x) to get Base64. Whitespace is ignored.", faq:[["Why convert Base64 directly to hex?","Both encode the same bytes; going straight across saves you decoding to raw binary and re-encoding by hand when inspecting hashes, keys or tokens."],["Does it accept URL-safe Base64?","Yes — the - and _ characters are converted to + and / and missing padding is added before decoding."],["What hex formats are accepted?","Continuous or space-separated hex, upper or lower case, with an optional 0x prefix that is stripped automatically."]] },
+  "punycode": { title:"Punycode Converter — IDN Encode & Decode (RFC 3492)", desc:"Convert internationalized domain names to and from Punycode (xn--). Encode Unicode domains to ASCII and decode xn-- labels back to Unicode.", howTo:"Pick To ASCII or To Unicode and enter a domain. Encoding converts each non-ASCII label to its xn-- Punycode form; decoding turns xn-- labels back into readable Unicode.", faq:[["What is Punycode?","An RFC 3492 encoding that represents Unicode domain labels using only ASCII, prefixed with xn--. It lets internationalized domains work in the ASCII-only DNS."],["Why does bücher.com become xn--bcher-kva.com?","Only the label with non-ASCII characters is encoded. 'bücher' becomes 'bcher-kva' and gains the xn-- prefix; the .com stays untouched."],["Does it handle emoji domains?","Yes — any Unicode code point, including emoji and non-Latin scripts, round-trips correctly through the encoder and decoder."]] },
+  "rot47-cipher": { title:"ROT47 Cipher — Encode & Decode Online", desc:"Apply the ROT47 cipher, rotating every printable ASCII character (33-126) by 47. It is symmetric, so the same operation encodes and decodes.", howTo:"Type or paste text and the ROT47 result appears instantly. Because ROT47 is its own inverse, run the output through the tool again to recover the original.", faq:[["What is ROT47?","A variant of ROT13 that rotates the 94 printable ASCII characters (from '!' to '~') by 47 positions, so it scrambles letters, digits and punctuation alike."],["Is ROT47 secure?","No — it is a fixed substitution with no key, meant for obscuring spoilers or puzzles, not for real security."],["Is encoding the same as decoding?","Yes — applying ROT47 twice returns the original text, so one tool does both."]] },
+  "rot18-cipher": { title:"ROT18 Cipher — ROT13 + ROT5 Encode & Decode", desc:"Apply ROT18: rotate letters by 13 (ROT13) and digits by 5 (ROT5). Symmetric, so the same operation encodes and decodes text and numbers.", howTo:"Enter text and the ROT18 output updates live. Letters shift 13 places and digits shift 5; running the result back through the tool restores the original.", faq:[["What is ROT18?","A combination cipher: letters use ROT13 and digits use ROT5. It obscures both text and numbers while staying its own inverse."],["Why combine ROT13 and ROT5?","Plain ROT13 leaves digits unchanged. ROT18 also scrambles 0-9, which is handy when the content mixes words and numbers."],["Is it reversible without a key?","Yes — like ROT13, applying ROT18 a second time returns the original, so no key is required."]] },
+  "decimal-entities": { title:"Numeric HTML Entity Encoder & Decoder", desc:"Encode text into numeric HTML entities (&#NN; decimal or &#xNN; hex) and decode them back. Great for escaping any character safely in HTML.", howTo:"Choose Encode or Decode, pick decimal or hex output for encoding, and enter your text. Decoding accepts both &#NN; and &#xNN; forms mixed with plain text.", faq:[["What are numeric HTML entities?","References like &#65; (decimal) or &#x41; (hex) that stand for a character by its Unicode code point, so any character can appear safely in HTML."],["When should I use them?","To embed characters that would otherwise break markup, or to include symbols and emoji without worrying about file encoding."],["Decimal or hex — which should I choose?","Both are equivalent; decimal (&#128512;) is common, hex (&#x1F600;) matches Unicode's U+ notation. Decoding handles either."]] },
+  "url-encode-all": { title:"URL Encode All Characters — Full Percent Escape", desc:"Percent-encode every character of a string as %XX, escaping even letters and digits. Useful for aggressive URL escaping and obfuscation.", howTo:"Pick Encode or Decode and enter your text. Encoding turns each UTF-8 byte into an uppercase %XX sequence; decoding restores the original text.", faq:[["How is this different from a normal URL encoder?","A standard encoder leaves safe characters (A-Z, a-z, 0-9, -_.~) untouched. This tool escapes every character, so even 'A' becomes %41."],["When is full encoding useful?","For maximum-compatibility escaping, lightweight obfuscation of query values, or when a target parser demands fully-encoded input."],["Does it handle Unicode?","Yes — text is encoded as UTF-8 first, so 'é' becomes %C3%A9 and decodes back correctly."]] },
+  "uuencode": { title:"Uuencode & Uudecode — Classic Unix Encoding Online", desc:"Encode text with classic Unix uuencode (begin/end wrapper) and decode uuencoded payloads back to text. Runs fully in your browser.", howTo:"Choose Encode or Decode. Encoding wraps your text in a begin 644 … / end block using the traditional uuencode alphabet; decoding reads that block back to text.", faq:[["What is uuencode?","A historic Unix encoding that packs 3 bytes into 4 printable characters (each 6-bit value plus 0x20), used to send binary data over text-only email and Usenet."],["What do the begin and end lines mean?","'begin <mode> <name>' starts the stream with a file permission mode and name; a line with a single grave and 'end' close it. This tool includes them automatically."],["Does it handle the space/backtick quirk?","Yes — zero values may be written as a backtick instead of a space, and the decoder accepts both."]] },
+  "xxencode": { title:"XXencode & XXdecode — Portable Encoding Online", desc:"Encode and decode XXencode, a uuencode sibling using the safer +-0-9A-Za-z alphabet that survives EBCDIC and character-set translation.", howTo:"Pick Encode or Decode. Encoding wraps text in a begin/end block using the XXencode alphabet; decoding reverses it back to the original text.", faq:[["How does XXencode differ from uuencode?","It packs bytes the same 3-into-4 way but maps 6-bit values onto the alphabet +-0-9A-Za-z instead of raw ASCII offsets, so it survives non-ASCII mail gateways."],["Why choose XXencode?","Its alphabet avoids characters that older EBCDIC systems and some mailers mangled, making transfers more reliable than uuencode in those environments."],["Is the output still a begin/end block?","Yes — like uuencode it uses a 'begin <mode> <name>' header and an 'end' trailer, so the format is familiar."]] },
 };
 
 // �"����� MORSE TABLE �������������������������������������������������������������������������������������������������������������������������"�
@@ -1308,6 +1332,586 @@ function DataUriGenerator() {
   );
 }
 
+// �"��� Base45 (RFC 9285) �������������������������������������������������������������������������������������������������������������"�
+const B45_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:";
+function base45Encode(str) {
+  const bytes = new TextEncoder().encode(str);
+  let out = "";
+  for(let i=0;i<bytes.length;i+=2){
+    if(i+1<bytes.length){
+      const n = bytes[i]*256 + bytes[i+1];
+      out += B45_CHARS[n%45] + B45_CHARS[Math.floor(n/45)%45] + B45_CHARS[Math.floor(n/2025)];
+    } else {
+      const n = bytes[i];
+      out += B45_CHARS[n%45] + B45_CHARS[Math.floor(n/45)];
+    }
+  }
+  return out;
+}
+function base45Decode(str) {
+  const s = str.toUpperCase().replace(/\n/g,"");
+  const vals = [];
+  for(const ch of s){ const v = B45_CHARS.indexOf(ch); if(v<0) throw new Error(`Invalid Base45 character: '${ch}'`); vals.push(v); }
+  const bytes = [];
+  for(let i=0;i<vals.length;i+=3){
+    if(i+2<vals.length){
+      const n = vals[i] + vals[i+1]*45 + vals[i+2]*2025;
+      if(n>0xFFFF) throw new Error("Invalid Base45 triple (out of range)");
+      bytes.push(Math.floor(n/256), n%256);
+    } else if(i+1<vals.length){
+      const n = vals[i] + vals[i+1]*45;
+      if(n>0xFF) throw new Error("Invalid Base45 pair (out of range)");
+      bytes.push(n);
+    } else {
+      throw new Error("Invalid Base45 length (dangling character)");
+    }
+  }
+  return new TextDecoder("utf-8",{ fatal:false }).decode(new Uint8Array(bytes));
+}
+function Base45() {
+  const [input, setInput] = useState("");
+  const [mode, setMode] = useState("encode");
+  const [error, setError] = useState("");
+  const output = useMemo(()=>{
+    if(!input){ setError(""); return ""; }
+    try{ setError(""); return mode==="encode"?base45Encode(input):base45Decode(input.trim()); }
+    catch(e){ setError(e.message); return ""; }
+  },[input,mode]);
+  return (
+    <VStack>
+      <ModeToggle mode={mode} setMode={setMode} options={[["encode","Text → Base45"],["decode","Base45 → Text"]]} />
+      <IOPanel input={input} onInput={setInput} output={output} error={error}
+        inputLabel={mode==="encode"?"Plain Text":"Base45 String"} outputLabel={mode==="encode"?"Base45 Encoded":"Decoded Text"}
+        inputMono={mode!=="encode"} outputMono={mode==="encode"} />
+      <Card style={{ background:"rgba(59,130,246,0.05)", border:"1px solid rgba(59,130,246,0.12)" }}>
+        <div style={{ fontSize:12, color:C.muted, lineHeight:1.8 }}>
+          <strong style={{ color:C.text }}>RFC 9285</strong> — two bytes map to three characters from a 45-symbol alphabet optimised for QR alphanumeric mode. Used in EU Digital COVID Certificates. Try <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>AB → BB8</span>.
+        </div>
+      </Card>
+    </VStack>
+  );
+}
+
+// �"��� Ascii85 (Adobe) �����������������������������������������������������������������������������������������������������������������������"�
+function ascii85Encode(str, delimiters) {
+  const bytes = new TextEncoder().encode(str);
+  let out = "";
+  for(let i=0;i<bytes.length;i+=4){
+    const chunk = bytes.slice(i,i+4);
+    const n = chunk.length;
+    let num = 0n;
+    for(let j=0;j<4;j++) num = num*256n + BigInt(j<n?chunk[j]:0);
+    if(n===4 && num===0n){ out += "z"; continue; }
+    const chars = [];
+    for(let k=0;k<5;k++){ chars.unshift(Number(num%85n)); num = num/85n; }
+    for(let k=0;k<n+1;k++) out += String.fromCharCode(chars[k]+33);
+  }
+  return delimiters ? "<~"+out+"~>" : out;
+}
+function ascii85Decode(str) {
+  let s = str.trim().replace(/^<~/,"").replace(/~>$/,"").replace(/\s/g,"");
+  const bytes = [];
+  let i = 0;
+  while(i<s.length){
+    if(s[i]==="z"){ bytes.push(0,0,0,0); i++; continue; }
+    const group = []; let j = 0;
+    for(;j<5 && i<s.length;j++,i++){
+      const v = s.charCodeAt(i)-33;
+      if(v<0||v>84) throw new Error(`Invalid Ascii85 character: '${s[i]}'`);
+      group.push(v);
+    }
+    const cnt = j;
+    if(cnt===1) throw new Error("Invalid Ascii85 length (dangling character)");
+    while(group.length<5) group.push(84);
+    let num = 0n;
+    for(const g of group) num = num*85n + BigInt(g);
+    const b = [Number((num>>24n)&0xFFn), Number((num>>16n)&0xFFn), Number((num>>8n)&0xFFn), Number(num&0xFFn)];
+    for(let k=0;k<cnt-1;k++) bytes.push(b[k]);
+  }
+  return new TextDecoder("utf-8",{ fatal:false }).decode(new Uint8Array(bytes));
+}
+function Ascii85() {
+  const [input, setInput] = useState("");
+  const [mode, setMode] = useState("encode");
+  const [delim, setDelim] = useState(false);
+  const [error, setError] = useState("");
+  const output = useMemo(()=>{
+    if(!input){ setError(""); return ""; }
+    try{ setError(""); return mode==="encode"?ascii85Encode(input,delim):ascii85Decode(input); }
+    catch(e){ setError(e.message); return ""; }
+  },[input,mode,delim]);
+  return (
+    <VStack>
+      <div style={{ display:"flex", gap:12, alignItems:"center", flexWrap:"wrap" }}>
+        <ModeToggle mode={mode} setMode={setMode} options={[["encode","Text → Ascii85"],["decode","Ascii85 → Text"]]} />
+        {mode==="encode" && (
+          <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", fontSize:13, color:C.text }}>
+            <input type="checkbox" checked={delim} onChange={e=>setDelim(e.target.checked)} /> Wrap in &lt;~ ~&gt; delimiters
+          </label>
+        )}
+      </div>
+      <IOPanel input={input} onInput={setInput} output={output} error={error}
+        inputLabel={mode==="encode"?"Plain Text":"Ascii85 String"} outputLabel={mode==="encode"?"Ascii85 Encoded":"Decoded Text"}
+        inputMono={mode!=="encode"} outputMono={mode==="encode"} />
+      <Card style={{ background:"rgba(139,92,246,0.05)", border:"1px solid rgba(139,92,246,0.15)" }}>
+        <div style={{ fontSize:12, color:C.muted, lineHeight:1.8 }}>
+          <strong style={{ color:C.text }}>Adobe Ascii85:</strong> 4 bytes → 5 characters (~25% overhead vs Base64's 33%). Four zero bytes collapse to <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#A78BFA" }}>z</span>. Used in PostScript & PDF.
+        </div>
+      </Card>
+    </VStack>
+  );
+}
+
+// �"��� Z85 (ZeroMQ / RFC 32) �������������������������������������������������������������������������������������������������������"�
+const Z85_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.-:+=^!/*?&<>()[]{}@%$#";
+function z85EncodeBytes(bytes) {
+  if(bytes.length%4!==0) throw new Error("Z85 requires the byte length to be a multiple of 4 (got "+bytes.length+")");
+  let out = "";
+  for(let i=0;i<bytes.length;i+=4){
+    let num = 0n;
+    for(let j=0;j<4;j++) num = num*256n + BigInt(bytes[i+j]);
+    const chars = [];
+    for(let k=0;k<5;k++){ chars.unshift(Z85_CHARS[Number(num%85n)]); num = num/85n; }
+    out += chars.join("");
+  }
+  return out;
+}
+function z85DecodeToBytes(str) {
+  const s = str.trim().replace(/\s/g,"");
+  if(s.length%5!==0) throw new Error("Z85 string length must be a multiple of 5 (got "+s.length+")");
+  const bytes = [];
+  for(let i=0;i<s.length;i+=5){
+    let num = 0n;
+    for(let j=0;j<5;j++){ const v = Z85_CHARS.indexOf(s[i+j]); if(v<0) throw new Error(`Invalid Z85 character: '${s[i+j]}'`); num = num*85n + BigInt(v); }
+    for(let k=3;k>=0;k--) bytes.push(Number((num>>BigInt(k*8))&0xFFn));
+  }
+  return bytes;
+}
+function Z85() {
+  const [input, setInput] = useState("");
+  const [mode, setMode] = useState("encode");
+  const [error, setError] = useState("");
+  const output = useMemo(()=>{
+    if(!input){ setError(""); return ""; }
+    try{
+      setError("");
+      if(mode==="encode") return z85EncodeBytes(Array.from(new TextEncoder().encode(input)));
+      const bytes = z85DecodeToBytes(input);
+      try{ return new TextDecoder("utf-8",{ fatal:true }).decode(new Uint8Array(bytes)); }
+      catch(_){ return "0x" + bytes.map(b=>b.toString(16).padStart(2,"0")).join(""); }
+    } catch(e){ setError(e.message); return ""; }
+  },[input,mode]);
+  return (
+    <VStack>
+      <ModeToggle mode={mode} setMode={setMode} options={[["encode","Text → Z85"],["decode","Z85 → Text"]]} />
+      <IOPanel input={input} onInput={setInput} output={output} error={error}
+        inputLabel={mode==="encode"?"Plain Text (byte length must be ÷4)":"Z85 String"} outputLabel={mode==="encode"?"Z85 Encoded":"Decoded Text"}
+        inputMono={mode!=="encode"} outputMono={mode==="encode"} />
+      <Card style={{ background:"rgba(245,158,11,0.05)", border:"1px solid rgba(245,158,11,0.15)" }}>
+        <div style={{ fontSize:12, color:C.muted, lineHeight:1.8 }}>
+          <strong style={{ color:C.text }}>ZeroMQ RFC 32</strong> — a base85 alphabet with no quotes or backslashes, safe inside source code and config. Requires 4-byte-aligned input; non-UTF-8 decoded output is shown as hex.
+        </div>
+      </Card>
+    </VStack>
+  );
+}
+
+// �"��� Base62 �������������������������������������������������������������������������������������������������������������������������������������"�
+const B62_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+function base62EncodeBytes(bytes) {
+  if(!bytes.length) return "";
+  let zeros = 0;
+  while(zeros<bytes.length && bytes[zeros]===0) zeros++;
+  let num = 0n;
+  for(const b of bytes) num = num*256n + BigInt(b);
+  let out = "";
+  while(num>0n){ out = B62_ALPHABET[Number(num%62n)] + out; num = num/62n; }
+  return "0".repeat(zeros) + out;
+}
+function base62DecodeToBytes(str) {
+  if(!str.length) return [];
+  let num = 0n;
+  for(const ch of str){ const v = B62_ALPHABET.indexOf(ch); if(v<0) throw new Error(`Invalid Base62 character: '${ch}'`); num = num*62n + BigInt(v); }
+  const bytes = [];
+  while(num>0n){ bytes.unshift(Number(num%256n)); num = num/256n; }
+  let zeros = 0;
+  while(zeros<str.length && str[zeros]==="0") zeros++;
+  for(let i=0;i<zeros;i++) bytes.unshift(0);
+  return bytes;
+}
+function Base62() {
+  const [input, setInput] = useState("");
+  const [mode, setMode] = useState("encode");
+  const [error, setError] = useState("");
+  const output = useMemo(()=>{
+    if(!input.trim() && mode==="decode"){ setError(""); return ""; }
+    if(!input && mode==="encode"){ setError(""); return ""; }
+    try{
+      setError("");
+      if(mode==="encode") return base62EncodeBytes(Array.from(new TextEncoder().encode(input)));
+      const bytes = base62DecodeToBytes(input.trim());
+      try{ return new TextDecoder("utf-8",{ fatal:true }).decode(new Uint8Array(bytes)); }
+      catch(_){ return "0x" + bytes.map(b=>b.toString(16).padStart(2,"0")).join(""); }
+    } catch(e){ setError(e.message); return ""; }
+  },[input,mode]);
+  return (
+    <VStack>
+      <ModeToggle mode={mode} setMode={setMode} options={[["encode","Text → Base62"],["decode","Base62 → Text"]]} />
+      <IOPanel input={input} onInput={setInput} output={output} error={error}
+        inputLabel={mode==="encode"?"Plain Text":"Base62 String"} outputLabel={mode==="encode"?"Base62 Encoded":"Decoded Text"}
+        inputMono={mode!=="encode"} outputMono={mode==="encode"} />
+      <Card style={{ background:"rgba(59,130,246,0.05)", border:"1px solid rgba(59,130,246,0.12)" }}>
+        <div style={{ fontSize:12, color:C.muted, lineHeight:1.8 }}>
+          <strong style={{ color:C.text }}>Alphanumeric only</strong> — 0-9, A-Z, a-z with no +, / or =, so output drops straight into URLs, filenames and IDs. Leading zero bytes are preserved as leading <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>0</span>.
+        </div>
+      </Card>
+    </VStack>
+  );
+}
+
+// �"��� Base64 ↔ Hex ���������������������������������������������������������������������������������������������������������������������������"�
+function b64ToHex(b64) {
+  let s = b64.trim().replace(/\s/g,"").replace(/-/g,"+").replace(/_/g,"/");
+  while(s.length%4) s += "=";
+  const bin = atob(s);
+  let out = "";
+  for(let i=0;i<bin.length;i++) out += bin.charCodeAt(i).toString(16).padStart(2,"0");
+  return out;
+}
+function hexToB64(hex) {
+  let h = hex.trim().replace(/^0x/i,"").replace(/\s/g,"");
+  if(h.length%2) throw new Error("Hex length must be even");
+  if(/[^0-9a-fA-F]/.test(h)) throw new Error("Input contains non-hex characters");
+  let bin = "";
+  for(let i=0;i<h.length;i+=2) bin += String.fromCharCode(parseInt(h.slice(i,i+2),16));
+  return btoa(bin);
+}
+function Base64Hex() {
+  const [input, setInput] = useState("");
+  const [mode, setMode] = useState("b64hex");
+  const [error, setError] = useState("");
+  const output = useMemo(()=>{
+    if(!input.trim()){ setError(""); return ""; }
+    try{ setError(""); return mode==="b64hex"?b64ToHex(input):hexToB64(input); }
+    catch(e){ setError(mode==="b64hex"?"Invalid Base64: "+e.message:e.message); return ""; }
+  },[input,mode]);
+  return (
+    <VStack>
+      <ModeToggle mode={mode} setMode={setMode} options={[["b64hex","Base64 → Hex"],["hexb64","Hex → Base64"]]} />
+      <IOPanel input={input} onInput={setInput} output={output} error={error}
+        inputLabel={mode==="b64hex"?"Base64 String":"Hex String"} outputLabel={mode==="b64hex"?"Hexadecimal":"Base64"}
+        inputMono outputMono />
+      <Card style={{ background:"rgba(139,92,246,0.05)", border:"1px solid rgba(139,92,246,0.15)" }}>
+        <div style={{ fontSize:12, color:C.muted, lineHeight:1.8 }}>
+          <strong style={{ color:C.text }}>Same bytes, two views.</strong> Handy for inspecting hashes, keys and tokens. Accepts URL-safe Base64 (<span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#A78BFA" }}>-_</span>) and hex with spaces or a <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#A78BFA" }}>0x</span> prefix.
+        </div>
+      </Card>
+    </VStack>
+  );
+}
+
+// �"��� Punycode (RFC 3492 / IDN) �������������������������������������������������������������������������������������������������"�
+const PUNY = { base:36, tmin:1, tmax:26, skew:38, damp:700, initialBias:72, initialN:128, delim:"-" };
+function punyAdapt(delta, numPoints, firstTime) {
+  delta = firstTime ? Math.floor(delta/PUNY.damp) : Math.floor(delta/2);
+  delta += Math.floor(delta/numPoints);
+  let k = 0;
+  while(delta > Math.floor(((PUNY.base-PUNY.tmin)*PUNY.tmax)/2)){ delta = Math.floor(delta/(PUNY.base-PUNY.tmin)); k += PUNY.base; }
+  return k + Math.floor(((PUNY.base-PUNY.tmin+1)*delta)/(delta+PUNY.skew));
+}
+function punyDigit(d) { return d<26 ? String.fromCharCode(d+97) : String.fromCharCode(d-26+48); }
+function punyDigitVal(c) {
+  const cc = c.charCodeAt(0);
+  if(cc>=48 && cc<=57) return cc-48+26;
+  if(cc>=65 && cc<=90) return cc-65;
+  if(cc>=97 && cc<=122) return cc-97;
+  return -1;
+}
+function punyEncodeLabel(input) {
+  const cps = Array.from(input).map(c=>c.codePointAt(0));
+  let n = PUNY.initialN, delta = 0, bias = PUNY.initialBias;
+  let output = cps.filter(c=>c<128).map(c=>String.fromCodePoint(c)).join("");
+  let h = output.length; const b = h;
+  if(b>0) output += PUNY.delim;
+  while(h<cps.length){
+    let m = Infinity;
+    for(const c of cps) if(c>=n && c<m) m = c;
+    delta += (m-n)*(h+1);
+    n = m;
+    for(const c of cps){
+      if(c<n) delta++;
+      if(c===n){
+        let q = delta;
+        for(let k=PUNY.base;;k+=PUNY.base){
+          const t = k<=bias ? PUNY.tmin : (k>=bias+PUNY.tmax ? PUNY.tmax : k-bias);
+          if(q<t) break;
+          output += punyDigit(t + ((q-t)%(PUNY.base-t)));
+          q = Math.floor((q-t)/(PUNY.base-t));
+        }
+        output += punyDigit(q);
+        bias = punyAdapt(delta, h+1, h===b);
+        delta = 0; h++;
+      }
+    }
+    delta++; n++;
+  }
+  return output;
+}
+function punyDecodeLabel(input) {
+  let n = PUNY.initialN, bias = PUNY.initialBias, i = 0;
+  const lastDelim = input.lastIndexOf(PUNY.delim);
+  const output = []; let basicEnd = 0;
+  if(lastDelim>0){ for(let j=0;j<lastDelim;j++) output.push(input.charCodeAt(j)); basicEnd = lastDelim+1; }
+  let idx = basicEnd;
+  while(idx<input.length){
+    const oldi = i; let w = 1;
+    for(let k=PUNY.base;;k+=PUNY.base){
+      if(idx>=input.length) throw new Error("Malformed Punycode (unexpected end)");
+      const digit = punyDigitVal(input[idx++]);
+      if(digit<0) throw new Error(`Invalid Punycode digit: '${input[idx-1]}'`);
+      i += digit*w;
+      const t = k<=bias ? PUNY.tmin : (k>=bias+PUNY.tmax ? PUNY.tmax : k-bias);
+      if(digit<t) break;
+      w *= (PUNY.base-t);
+    }
+    const out = output.length+1;
+    bias = punyAdapt(i-oldi, out, oldi===0);
+    n += Math.floor(i/out);
+    i = i%out;
+    output.splice(i, 0, n);
+    i++;
+  }
+  return String.fromCodePoint(...output);
+}
+function punyToASCII(domain) {
+  return domain.split(".").map(l=>/[^\x00-\x7F]/.test(l) ? "xn--"+punyEncodeLabel(l) : l).join(".");
+}
+function punyToUnicode(domain) {
+  return domain.split(".").map(l=>l.toLowerCase().startsWith("xn--") ? punyDecodeLabel(l.slice(4)) : l).join(".");
+}
+function Punycode() {
+  const [input, setInput] = useState("");
+  const [mode, setMode] = useState("ascii");
+  const [error, setError] = useState("");
+  const output = useMemo(()=>{
+    if(!input.trim()){ setError(""); return ""; }
+    try{ setError(""); return mode==="ascii"?punyToASCII(input.trim()):punyToUnicode(input.trim()); }
+    catch(e){ setError(e.message); return ""; }
+  },[input,mode]);
+  return (
+    <VStack>
+      <ModeToggle mode={mode} setMode={setMode} options={[["ascii","Unicode → ASCII (xn--)"],["unicode","ASCII → Unicode"]]} />
+      <IOPanel input={input} onInput={setInput} output={output} error={error} rows={4}
+        inputLabel={mode==="ascii"?"Unicode Domain (e.g. bücher.com)":"ASCII Domain (e.g. xn--bcher-kva.com)"} outputLabel={mode==="ascii"?"Punycode / ASCII":"Unicode Domain"}
+        inputMono={false} outputMono />
+      <Card style={{ background:"rgba(59,130,246,0.05)", border:"1px solid rgba(59,130,246,0.12)" }}>
+        <div style={{ fontSize:12, color:C.muted, lineHeight:1.8 }}>
+          <strong style={{ color:C.text }}>RFC 3492</strong> — only non-ASCII labels are encoded and prefixed with <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>xn--</span>. Example: <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>bücher.com → xn--bcher-kva.com</span>.
+        </div>
+      </Card>
+    </VStack>
+  );
+}
+
+// �"��� ROT47 / ROT18 (symmetric ciphers) �����������������������������������������������������������������������������������"�
+function rot47(str) {
+  return str.replace(/[\x21-\x7E]/g, c => String.fromCharCode(33 + ((c.charCodeAt(0)-33+47)%94)));
+}
+function rot18(str) {
+  return str.replace(/[a-zA-Z]/g, c => { const base = c<="Z"?65:97; return String.fromCharCode(((c.charCodeAt(0)-base+13)%26)+base); })
+            .replace(/[0-9]/g, d => String.fromCharCode(((d.charCodeAt(0)-48+5)%10)+48));
+}
+function RotCipher({ fn, name, note }) {
+  const [input, setInput] = useState("");
+  const output = useMemo(()=> input?fn(input):"", [input,fn]);
+  return (
+    <VStack>
+      <IOPanel input={input} onInput={setInput} output={output} inputLabel="Input Text" outputLabel={`${name} Output`} inputMono={false} outputMono={false} />
+      <Card style={{ background:"rgba(139,92,246,0.05)", border:"1px solid rgba(139,92,246,0.15)" }}>
+        <div style={{ fontSize:12, color:C.muted, lineHeight:1.8 }}>
+          <strong style={{ color:C.text }}>Symmetric:</strong> {note} Run the output through the tool again to recover the original text — no key needed.
+        </div>
+      </Card>
+    </VStack>
+  );
+}
+function Rot47Cipher() { return <RotCipher fn={rot47} name="ROT47" note="ROT47 rotates every printable ASCII character (! to ~) by 47 positions, scrambling letters, digits and punctuation alike." />; }
+function Rot18Cipher() { return <RotCipher fn={rot18} name="ROT18" note="ROT18 applies ROT13 to letters and ROT5 to digits (0-9), so both text and numbers are obscured." />; }
+
+// �"��� Numeric HTML Entities �����������������������������������������������������������������������������������������������������������"�
+function numEntEncode(str, hex) {
+  let out = "";
+  for(const ch of str){
+    const cp = ch.codePointAt(0);
+    if(cp<128 && !/["'&<>]/.test(ch)) out += ch;
+    else out += hex ? "&#x"+cp.toString(16).toUpperCase()+";" : "&#"+cp+";";
+  }
+  return out;
+}
+function numEntDecode(str) {
+  return str.replace(/&#x([0-9a-fA-F]+);/g, (_,h)=>String.fromCodePoint(parseInt(h,16)))
+            .replace(/&#(\d+);/g, (_,d)=>String.fromCodePoint(parseInt(d,10)));
+}
+function DecimalEntities() {
+  const [input, setInput] = useState("");
+  const [mode, setMode] = useState("encode");
+  const [hex, setHex] = useState(false);
+  const output = useMemo(()=>{
+    if(!input) return "";
+    return mode==="encode" ? numEntEncode(input, hex) : numEntDecode(input);
+  },[input,mode,hex]);
+  return (
+    <VStack>
+      <div style={{ display:"flex", gap:12, alignItems:"center", flexWrap:"wrap" }}>
+        <ModeToggle mode={mode} setMode={setMode} options={[["encode","Text → Entities"],["decode","Entities → Text"]]} />
+        {mode==="encode" && (
+          <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", fontSize:13, color:C.text }}>
+            <input type="checkbox" checked={hex} onChange={e=>setHex(e.target.checked)} /> Hex entities (&amp;#xNN;)
+          </label>
+        )}
+      </div>
+      <IOPanel input={input} onInput={setInput} output={output}
+        inputLabel={mode==="encode"?"Plain Text":"HTML with Numeric Entities"} outputLabel={mode==="encode"?"Numeric Entities":"Decoded Text"}
+        inputMono={mode!=="encode"} outputMono={mode==="encode"} />
+      <Card style={{ background:"rgba(59,130,246,0.05)", border:"1px solid rgba(59,130,246,0.12)" }}>
+        <div style={{ fontSize:12, color:C.muted, lineHeight:1.8 }}>
+          <strong style={{ color:C.text }}>Numeric references</strong> encode any character by its Unicode code point: <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>A → &amp;#65;</span> or <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>&amp;#x41;</span>. Decoding accepts both forms mixed with plain text.
+        </div>
+      </Card>
+    </VStack>
+  );
+}
+
+// �"��� URL Encode All Characters �������������������������������������������������������������������������������������������������������"�
+function urlEncodeAll(str) {
+  return Array.from(new TextEncoder().encode(str)).map(b=>"%"+b.toString(16).toUpperCase().padStart(2,"0")).join("");
+}
+function UrlEncodeAll() {
+  const [input, setInput] = useState("");
+  const [mode, setMode] = useState("encode");
+  const [error, setError] = useState("");
+  const output = useMemo(()=>{
+    if(!input){ setError(""); return ""; }
+    try{ setError(""); return mode==="encode"?urlEncodeAll(input):decodeURIComponent(input.trim()); }
+    catch(e){ setError("Malformed percent-encoding: "+e.message); return ""; }
+  },[input,mode]);
+  return (
+    <VStack>
+      <ModeToggle mode={mode} setMode={setMode} options={[["encode","Full Encode"],["decode","Decode"]]} />
+      <IOPanel input={input} onInput={setInput} output={output} error={error}
+        inputLabel={mode==="encode"?"Plain Text":"Percent-Encoded String"} outputLabel={mode==="encode"?"Fully Encoded (%XX)":"Decoded Text"}
+        inputMono={mode!=="encode"} outputMono={mode==="encode"} />
+      <Card style={{ background:"rgba(245,158,11,0.05)", border:"1px solid rgba(245,158,11,0.15)" }}>
+        <div style={{ fontSize:12, color:C.muted, lineHeight:1.8 }}>
+          <strong style={{ color:C.text }}>Escapes everything</strong> — even safe characters, so <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#FCD34D" }}>A → %41</span>. Text is UTF-8 encoded first, so <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#FCD34D" }}>é → %C3%A9</span>.
+        </div>
+      </Card>
+    </VStack>
+  );
+}
+
+// �"��� Uuencode / XXencode �����������������������������������������������������������������������������������������������������������������"�
+function uuEncode(str, filename) {
+  const bytes = new TextEncoder().encode(str);
+  const enc = v => String.fromCharCode(((v&0x3f)===0) ? 0x60 : (v&0x3f)+0x20);
+  let out = "begin 644 "+(filename||"file.txt")+"\n";
+  for(let i=0;i<bytes.length;i+=45){
+    const line = bytes.slice(i,i+45);
+    out += enc(line.length);
+    for(let j=0;j<line.length;j+=3){
+      const b0 = line[j]||0, b1 = line[j+1]||0, b2 = line[j+2]||0;
+      out += enc(b0>>2) + enc(((b0<<4)|(b1>>4))&0x3f) + enc(((b1<<2)|(b2>>6))&0x3f) + enc(b2&0x3f);
+    }
+    out += "\n";
+  }
+  return out + "`\nend\n";
+}
+function uuDecode(str) {
+  const lines = str.split(/\r?\n/);
+  const bytes = [];
+  const dec = c => (c.charCodeAt(0)-0x20)&0x3f;
+  let started = false;
+  for(const line of lines){
+    if(/^begin\s/.test(line)){ started = true; continue; }
+    if(!started) continue;
+    if(/^end\s*$/.test(line)) break;
+    if(line==="" || line==="`") continue;
+    const len = dec(line[0]);
+    if(len===0) continue;
+    let out = [];
+    for(let i=1;i<line.length && out.length<len;i+=4){
+      const c0=dec(line[i]||"`"), c1=dec(line[i+1]||"`"), c2=dec(line[i+2]||"`"), c3=dec(line[i+3]||"`");
+      out.push((c0<<2)|(c1>>4), ((c1<<4)|(c2>>2))&0xff, ((c2<<6)|c3)&0xff);
+    }
+    bytes.push(...out.slice(0,len));
+  }
+  return new TextDecoder("utf-8",{ fatal:false }).decode(new Uint8Array(bytes));
+}
+const XX_ALPHABET = "+-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+function xxEncode(str, filename) {
+  const bytes = new TextEncoder().encode(str);
+  let out = "begin 644 "+(filename||"file.txt")+"\n";
+  for(let i=0;i<bytes.length;i+=45){
+    const line = bytes.slice(i,i+45);
+    out += XX_ALPHABET[line.length];
+    for(let j=0;j<line.length;j+=3){
+      const b0 = line[j]||0, b1 = line[j+1]||0, b2 = line[j+2]||0;
+      out += XX_ALPHABET[b0>>2] + XX_ALPHABET[((b0<<4)|(b1>>4))&0x3f] + XX_ALPHABET[((b1<<2)|(b2>>6))&0x3f] + XX_ALPHABET[b2&0x3f];
+    }
+    out += "\n";
+  }
+  return out + XX_ALPHABET[0] + "\nend\n";
+}
+function xxDecode(str) {
+  const lines = str.split(/\r?\n/);
+  const bytes = [];
+  const dec = c => XX_ALPHABET.indexOf(c);
+  let started = false;
+  for(const line of lines){
+    if(/^begin\s/.test(line)){ started = true; continue; }
+    if(!started) continue;
+    if(/^end\s*$/.test(line)) break;
+    if(line==="") continue;
+    const len = dec(line[0]);
+    if(len<=0) continue;
+    let out = [];
+    for(let i=1;i<line.length && out.length<len;i+=4){
+      const c0=dec(line[i]), c1=dec(line[i+1]), c2=dec(line[i+2]), c3=dec(line[i+3]);
+      if(c0<0||c1<0) break;
+      out.push((c0<<2)|(c1>>4));
+      if(c2>=0) out.push(((c1<<4)|(c2>>2))&0xff);
+      if(c3>=0) out.push(((c2<<6)|c3)&0xff);
+    }
+    bytes.push(...out.slice(0,len));
+  }
+  return new TextDecoder("utf-8",{ fatal:false }).decode(new Uint8Array(bytes));
+}
+function UuXxEncoder({ encodeFn, decodeFn, name, prefix, note }) {
+  const [input, setInput] = useState("");
+  const [mode, setMode] = useState("encode");
+  const [error, setError] = useState("");
+  const output = useMemo(()=>{
+    if(!input){ setError(""); return ""; }
+    try{ setError(""); return mode==="encode"?encodeFn(input,prefix+".txt"):decodeFn(input); }
+    catch(e){ setError(e.message); return ""; }
+  },[input,mode,encodeFn,decodeFn,prefix]);
+  return (
+    <VStack>
+      <ModeToggle mode={mode} setMode={setMode} options={[["encode",`Text → ${name}`],["decode",`${name} → Text`]]} />
+      <IOPanel input={input} onInput={setInput} output={output} error={error} rows={8}
+        inputLabel={mode==="encode"?"Plain Text":`${name}d Block`} outputLabel={mode==="encode"?`${name}d Output`:"Decoded Text"}
+        inputMono outputMono />
+      <Card style={{ background:"rgba(59,130,246,0.05)", border:"1px solid rgba(59,130,246,0.12)" }}>
+        <div style={{ fontSize:12, color:C.muted, lineHeight:1.8 }}>
+          <strong style={{ color:C.text }}>{name}</strong> — {note} Output is wrapped in a <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>begin … end</span> block; the decoder reads that block back.
+        </div>
+      </Card>
+    </VStack>
+  );
+}
+function Uuencode() { return <UuXxEncoder encodeFn={uuEncode} decodeFn={uuDecode} name="Uuencode" prefix="file" note="Classic Unix encoding that packs 3 bytes into 4 printable characters, historically used for binary email and Usenet." />; }
+function Xxencode() { return <UuXxEncoder encodeFn={xxEncode} decodeFn={xxDecode} name="XXencode" prefix="file" note="A uuencode sibling using the portable +-0-9A-Za-z alphabet that survives EBCDIC and character-set translation." />; }
+
 // �"����� COMPONENT MAP �����������������������������������������������������������������������������������������������������������������������"�
 const TOOL_COMPONENTS = {
   "base64-encode": Base64Encode,
@@ -1339,6 +1943,18 @@ const TOOL_COMPONENTS = {
   "base58": Base58,
   "hex-dump": HexDump,
   "data-uri-generator": DataUriGenerator,
+  "base45": Base45,
+  "ascii85": Ascii85,
+  "z85": Z85,
+  "base62": Base62,
+  "base64-to-hex": Base64Hex,
+  "punycode": Punycode,
+  "rot47-cipher": Rot47Cipher,
+  "rot18-cipher": Rot18Cipher,
+  "decimal-entities": DecimalEntities,
+  "url-encode-all": UrlEncodeAll,
+  "uuencode": Uuencode,
+  "xxencode": Xxencode,
 };
 
 // �"����� BREADCRUMB �����������������������������������������������������������������������������������������������������������������������������"�

@@ -183,6 +183,18 @@ const TOOLS = [
   { id:"regex-tester", cat:"converter", name:"Regex Tester", desc:"Real-time regular expression tester with match highlighting, groups, and detailed match information", icon:"🔍", free:true },
   { id:"js-console-simulator", cat:"converter", name:"JS Console Simulator", desc:"Simulate JavaScript console.log output for code snippets and preview execution results", icon:"💻", free:true },
   { id:"cjs-esm-converter", cat:"converter", name:"CommonJS ⇄ ESM Converter", desc:"Convert CommonJS require and module.exports to ES module import/export syntax and back for the common static patterns", icon:"🔀", free:true },
+  { id:"js-string-escaper", cat:"converter", name:"JS String Escaper", desc:"Escape raw text into a valid JavaScript string literal (\\n, \\t, quotes, control chars) or unescape a literal back to plain text", icon:"⤵️", free:true },
+  { id:"js-unicode-escaper", cat:"converter", name:"JS Unicode Escaper", desc:"Escape non-ASCII characters to \\uXXXX sequences so source stays ASCII-safe, or decode \\uXXXX, \\u{...} and \\xXX back to text", icon:"🔡", free:true },
+  { id:"js-regex-escape", cat:"converter", name:"JS Regex Escaper", desc:"Escape a literal string so its special characters are matched literally inside a RegExp, with optional forward-slash escaping", icon:"🛡️", free:true },
+  { id:"js-template-to-concat", cat:"converter", name:"Template Literal → Concat", desc:"Convert ES6 template literals with ${expr} interpolation into equivalent string concatenation, string and regex aware", icon:"➕", free:true },
+  { id:"js-ternary-to-if", cat:"converter", name:"Ternary to If/Else", desc:"Expand ternary assignments, declarations and returns into readable if/else blocks, safely skipping ?? and ?. operators", icon:"🔀", free:true },
+  { id:"js-array-from-list", cat:"converter", name:"List to JS Array", desc:"Turn a list of lines, comma or space separated values into a JavaScript array literal with quoting, trimming and de-duplication", icon:"📚", free:true },
+
+  // Formatter & Validator
+  { id:"js-variable-name-validator", cat:"formatter", name:"JS Variable Name Validator", desc:"Check whether a name is a valid JavaScript identifier and explain each problem — digits, symbols, spaces or reserved keywords", icon:"🏷️", free:true },
+  { id:"js-quote-normalizer", cat:"formatter", name:"JS Quote Normalizer", desc:"Convert JavaScript string quotes between single and double, string, comment and regex aware, re-escaping quotes as needed", icon:"❝", free:true },
+  { id:"js-object-key-sorter", cat:"formatter", name:"JSON Key Sorter", desc:"Recursively sort the keys of a JSON object alphabetically (ascending or descending) with configurable indentation", icon:"🔤", free:true },
+  { id:"js-var-to-let", cat:"formatter", name:"var to let / const", desc:"Replace the var keyword with let or const across your code, string, comment and regex aware so text like \"var\" in a string is safe", icon:"🔧", free:true },
 ];
 
 const CATEGORIES = [
@@ -319,6 +331,106 @@ const TOOL_META = {
       ["Which patterns are converted?", "Default (const x = require('y')), named (const { a } = require('y')), side-effect (require('y')), module.exports and exports.foo — and the reverse import/export forms for ESM to CommonJS."],
       ["Does it convert dynamic require()?", "No. Only static, top-level patterns are converted. Dynamic or conditional require() calls, re-exports (export ... from) and mixed default+named imports are left unchanged."],
       ["Is the output ready to run?", "It handles the common cases but is a static text transform, not a bundler. Review edge cases such as interop defaults and mixed imports before shipping."]
+    ]
+  },
+  "js-string-escaper": {
+    title: "Free JS String Escaper – Escape & Unescape JS Strings | ToolsRift",
+    desc: "Escape text into a JavaScript string literal or unescape one back to plain text. Handles \\n, \\t, quotes, \\xXX and \\uXXXX. Round-trip safe.",
+    howTo: "Choose Escape or Unescape, paste your text, pick the quote character, then click Convert and copy the result.",
+    faq: [
+      ["What does escaping do?", "Escaping turns special characters — newlines, tabs, quotes, backslashes and control characters — into their JavaScript escape sequences so the text can be safely pasted inside a string literal."],
+      ["Is the conversion reversible?", "Yes. Unescaping decodes \\n, \\t, \\r, \\b, \\f, \\v, \\0, \\xXX, \\uXXXX and \\u{...} back to the original characters, so escape then unescape returns your exact input."],
+      ["Which quote should I pick?", "Pick the quote you will wrap the string in. The escaper escapes only that quote character, leaving the other quote untouched for cleaner output."]
+    ]
+  },
+  "js-unicode-escaper": {
+    title: "Free JS Unicode Escaper – \\uXXXX Encode & Decode | ToolsRift",
+    desc: "Escape non-ASCII characters to \\uXXXX so JavaScript source stays ASCII-safe, or decode \\uXXXX, \\u{...} and \\xXX back to readable text.",
+    howTo: "Choose Escape or Unescape, paste your text, then click Convert. Escape turns accented letters, CJK and emoji into \\uXXXX sequences; Unescape reverses them.",
+    faq: [
+      ["Why escape to \\uXXXX?", "ASCII-only source avoids encoding problems in older toolchains, minifiers or systems that mangle UTF-8. Escaping keeps the exact characters while making the file pure ASCII."],
+      ["Does it handle emoji and astral characters?", "Yes. Characters above U+FFFF are emitted as UTF-16 surrogate pairs (two \\uXXXX units) on escape, and decoding also understands the \\u{...} code-point form."],
+      ["Are normal letters changed?", "No. Printable ASCII (space through ~) is left as-is. Only non-ASCII and control characters are converted, so your code stays readable."]
+    ]
+  },
+  "js-regex-escape": {
+    title: "Free JS Regex Escaper – Escape String for RegExp | ToolsRift",
+    desc: "Escape a literal string so its special characters match literally inside a JavaScript RegExp. Optional forward-slash escaping for /regex/ literals.",
+    howTo: "Paste the literal text you want to match, optionally enable slash escaping for regex literals, then copy the escaped output to drop into new RegExp().",
+    faq: [
+      ["Which characters are escaped?", "The regex metacharacters . * + ? ^ $ { } ( ) | [ ] and backslash are prefixed with a backslash so they are treated as literal text rather than pattern operators."],
+      ["When do I need slash escaping?", "Only when building an inline /pattern/ literal. Enable it to also escape forward slashes. For new RegExp('...') you usually do not need it."],
+      ["Is this the same as MDN's escape function?", "Yes. It uses the well-known pattern str.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&') recommended in the MDN RegExp guide."]
+    ]
+  },
+  "js-template-to-concat": {
+    title: "Free Template Literal to Concat Converter | ToolsRift",
+    desc: "Convert ES6 template literals with ${expr} interpolation into equivalent string concatenation. String, comment and regex aware; skips tagged templates.",
+    howTo: "Paste JavaScript containing backtick template literals, then click Convert. Each `...${x}...` becomes \"...\" + (x) + \"...\".",
+    faq: [
+      ["Why convert templates to concatenation?", "Concatenation runs on very old engines that lack template literal support, and some code styles or linters prefer explicit + concatenation."],
+      ["Are interpolated expressions preserved?", "Yes. Each ${expression} becomes the same expression wrapped in parentheses, so operator precedence around the concatenation stays correct."],
+      ["What is not converted?", "Tagged templates like tag`...` are left untouched because their semantics differ, and template literals inside strings, comments or regex are ignored."]
+    ]
+  },
+  "js-ternary-to-if": {
+    title: "Free Ternary to If/Else Converter – Expand JS Ternary | ToolsRift",
+    desc: "Expand JavaScript ternary assignments, declarations and returns into readable if/else blocks. Safely ignores ?? nullish and ?. optional chaining.",
+    howTo: "Paste statements that use the ? : ternary operator, one per line, then click Convert to expand each recognised statement into an if/else block.",
+    faq: [
+      ["Which statements are converted?", "Three forms per line: a declaration (const/let/var x = c ? a : b), a plain assignment (x = c ? a : b) and a return (return c ? a : b). Other lines are left unchanged."],
+      ["Does it touch ?? or ?.?", "No. The nullish coalescing operator ?? and optional chaining ?. are detected and skipped so they are never mistaken for a ternary."],
+      ["How are nested ternaries handled?", "The outer ternary is expanded and any nested ternary is kept intact inside the branch, so the code stays valid — run it again to expand deeper levels."]
+    ]
+  },
+  "js-array-from-list": {
+    title: "Free List to JS Array Converter – Lines to Array | ToolsRift",
+    desc: "Turn a list of lines, comma or space separated values into a JavaScript array literal. Choose quotes, trim whitespace, skip blanks and de-duplicate.",
+    howTo: "Paste your list, choose the delimiter and quote style, toggle trim / skip-empty / dedupe / multiline, then click Generate Array and copy the literal.",
+    faq: [
+      ["What delimiters are supported?", "Split by newline, by comma, or by any whitespace. Each resulting item becomes one element of the generated array."],
+      ["How are values quoted?", "Pick single or double quotes and each item is safely escaped for that quote. Choose None to keep raw values such as numbers or booleans unquoted."],
+      ["Can it remove duplicates?", "Yes. Enable De-duplicate to keep only the first occurrence of each item, and Skip empty to drop blank lines before building the array."]
+    ]
+  },
+  "js-variable-name-validator": {
+    title: "Free JS Variable Name Validator – Check Identifiers | ToolsRift",
+    desc: "Check whether a name is a valid JavaScript identifier and get a clear reason for each problem: leading digits, symbols, spaces or reserved keywords.",
+    howTo: "Type or paste a variable name, then click Validate. You get a valid / invalid verdict plus a list of exactly what is wrong.",
+    faq: [
+      ["What makes a name valid?", "It must start with a letter, $ or _, contain only letters, digits, $ or _, be non-empty, and must not be a reserved JavaScript keyword."],
+      ["Which words are reserved?", "Keywords like class, return, let, function, new and future-reserved words such as enum and implements cannot be used as identifiers."],
+      ["Does it allow Unicode names?", "JavaScript permits some Unicode identifiers, but this validator checks the standard ASCII rules and will flag non-ASCII characters as invalid for portability."]
+    ]
+  },
+  "js-quote-normalizer": {
+    title: "Free JS Quote Normalizer – Single ⇄ Double Quotes | ToolsRift",
+    desc: "Convert JavaScript string quotes between single and double. String, comment and regex aware, re-escaping the target quote and unescaping the old one.",
+    howTo: "Choose the target quote (single or double), paste your code, then click Normalize. Only real string literals are re-quoted; comments and regex are untouched.",
+    faq: [
+      ["Is it safe on tricky strings?", "Yes. It walks the source character by character, tracking strings, comments and regex literals, so quotes inside comments or regex are never changed."],
+      ["What happens to escaped quotes?", "An escaped source quote (like \\' in a single-quoted string) is unescaped, and any target quote inside the string is escaped, keeping the value identical."],
+      ["Are template literals affected?", "No. Backtick template literals are left completely untouched, including any strings inside their ${...} expressions."]
+    ]
+  },
+  "js-object-key-sorter": {
+    title: "Free JSON Key Sorter – Sort Object Keys Alphabetically | ToolsRift",
+    desc: "Recursively sort the keys of a JSON object alphabetically, ascending or descending, with configurable indentation or minified output.",
+    howTo: "Paste valid JSON, choose sort direction and indentation, then click Sort Keys. Nested objects and objects inside arrays are sorted too.",
+    faq: [
+      ["Does it sort nested objects?", "Yes. Sorting is recursive, so objects nested inside other objects or inside arrays all have their keys ordered consistently."],
+      ["Is array order preserved?", "Yes. Only object keys are reordered. The order of array elements is never changed, keeping the data semantically identical."],
+      ["What input does it accept?", "It expects strict JSON with double-quoted keys. Invalid JSON produces a clear error message so you can fix it before sorting."]
+    ]
+  },
+  "js-var-to-let": {
+    title: "Free var to let/const Converter – Modernize JS | ToolsRift",
+    desc: "Replace the var keyword with let or const across your JavaScript. String, comment and regex aware so the text \"var\" inside a string is never touched.",
+    howTo: "Paste your code, choose let or const as the replacement, then click Convert. Every var declaration keyword is replaced and the count is reported.",
+    faq: [
+      ["Will it break strings containing 'var'?", "No. The converter tracks string, comment and regex literals, so only the actual var keyword is replaced — text like \"var\" inside a string stays intact."],
+      ["Should I choose let or const?", "let is the safe default for variables that are reassigned. const is stricter; only pick it if you know none of the declarations are reassigned later."],
+      ["Does it rename identifiers like 'variable'?", "No. Replacement is whole-word only, so identifiers that merely contain the letters var, such as variable or avar, are left unchanged."]
     ]
   }
 };
@@ -1470,6 +1582,717 @@ function JsImportSorter() {
   );
 }
 
+// ===== Batch 3 helpers (verified in scratch script — all pure, deterministic) =====
+const TR_ESC_MAP = { '\\':'\\\\', '\n':'\\n', '\r':'\\r', '\t':'\\t', '\b':'\\b', '\f':'\\f', '\v':'\\v', '\0':'\\0' };
+function trEscBody(text, quote) {
+  let out = '';
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i], code = text.charCodeAt(i);
+    if (ch === quote) { out += '\\' + quote; continue; }
+    if (TR_ESC_MAP[ch] !== undefined) {
+      if (ch === '\0' && /[0-9]/.test(text[i + 1] || '')) { out += '\\x00'; continue; }
+      out += TR_ESC_MAP[ch]; continue;
+    }
+    if (code < 0x20) { out += '\\x' + code.toString(16).padStart(2, '0'); continue; }
+    out += ch;
+  }
+  return out;
+}
+function trEscapeJsString(text, quote) { quote = quote || '"'; return quote + trEscBody(text, quote) + quote; }
+function trUnescapeJsString(text) {
+  let s = text.trim();
+  if (s.length >= 2 && (s[0] === '"' || s[0] === "'" || s[0] === '`') && s[s.length - 1] === s[0]) s = s.slice(1, -1);
+  let out = '';
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+    if (ch !== '\\') { out += ch; continue; }
+    const nx = s[i + 1];
+    if (nx === undefined) { out += '\\'; break; }
+    switch (nx) {
+      case 'n': out += '\n'; i++; break;
+      case 'r': out += '\r'; i++; break;
+      case 't': out += '\t'; i++; break;
+      case 'b': out += '\b'; i++; break;
+      case 'f': out += '\f'; i++; break;
+      case 'v': out += '\v'; i++; break;
+      case '0': out += '\0'; i++; break;
+      case 'x': { const h = s.substr(i + 2, 2); if (/^[0-9a-fA-F]{2}$/.test(h)) { out += String.fromCharCode(parseInt(h, 16)); i += 3; } else { out += 'x'; i++; } break; }
+      case 'u': {
+        if (s[i + 2] === '{') { const m = /^\\u\{([0-9a-fA-F]+)\}/.exec(s.slice(i)); if (m) { out += String.fromCodePoint(parseInt(m[1], 16)); i += m[0].length - 1; break; } out += 'u'; i++; break; }
+        const h = s.substr(i + 2, 4); if (/^[0-9a-fA-F]{4}$/.test(h)) { out += String.fromCharCode(parseInt(h, 16)); i += 5; } else { out += 'u'; i++; } break;
+      }
+      default: out += nx; i++; break;
+    }
+  }
+  return out;
+}
+
+const TR_RESERVED = new Set(['break','case','catch','class','const','continue','debugger','default','delete','do','else','export','extends','false','finally','for','function','if','import','in','instanceof','new','null','return','super','switch','this','throw','true','try','typeof','var','void','while','with','yield','let','static','enum','await','implements','package','protected','interface','private','public','abstract','boolean','byte','char','double','final','float','goto','int','long','native','short','synchronized','throws','transient','volatile']);
+function trValidateIdent(name) {
+  const issues = [];
+  if (name === '') { issues.push('Name is empty.'); return { valid: false, issues }; }
+  if (/\s/.test(name)) issues.push('Contains whitespace — identifiers cannot contain spaces.');
+  if (/^[0-9]/.test(name)) issues.push('Starts with a digit — identifiers must start with a letter, $ or _.');
+  else if (!/^[A-Za-z_$]/.test(name)) issues.push('First character "' + name[0] + '" is not a letter, $ or _.');
+  const bad = [...name].filter(c => !/[A-Za-z0-9_$]/.test(c));
+  if (bad.length) issues.push('Invalid character' + (bad.length > 1 ? 's' : '') + ': ' + [...new Set(bad)].map(c => JSON.stringify(c)).join(', '));
+  if (TR_RESERVED.has(name)) issues.push('"' + name + '" is a reserved word / keyword.');
+  return { valid: issues.length === 0, issues };
+}
+
+function trNormalizeQuotes(src, target) {
+  const qt = target === 'single' ? "'" : '"';
+  const qs = qt === '"' ? "'" : '"';
+  let out = '', i = 0, val = false; const n = src.length;
+  while (i < n) {
+    const ch = src[i], nx = src[i + 1];
+    if (ch === '`') { const end = trScanStringEnd(src, i); out += src.slice(i, end); i = end; val = true; continue; }
+    if (ch === '/' && nx === '/') { let j = i + 2; while (j < n && src[j] !== '\n') j++; out += src.slice(i, j); i = j; continue; }
+    if (ch === '/' && nx === '*') { let j = i + 2; while (j < n && !(src[j] === '*' && src[j + 1] === '/')) j++; const e = Math.min(j + 2, n); out += src.slice(i, e); i = e; continue; }
+    if (ch === '/' && !val) { const e = trScanRegexEnd(src, i); if (e !== -1) { out += src.slice(i, e); i = e; val = true; continue; } }
+    if (ch === qs || ch === qt) {
+      const end = trScanStringEnd(src, i);
+      if (ch === qt) { out += src.slice(i, end); }
+      else {
+        const inner = src.slice(i + 1, end - 1); let res = '';
+        for (let k = 0; k < inner.length; k++) {
+          const c = inner[k];
+          if (c === '\\') { const c2 = inner[k + 1]; if (c2 === qs) { res += qs; k++; } else { res += c + (c2 === undefined ? '' : c2); k++; } continue; }
+          if (c === qt) { res += '\\' + qt; continue; }
+          res += c;
+        }
+        out += qt + res + qt;
+      }
+      i = end; val = true; continue;
+    }
+    out += ch; val = trNextValueState(ch, val); i++;
+  }
+  return out;
+}
+
+function trEscapeUnicode(text) {
+  let out = '';
+  for (let i = 0; i < text.length; i++) {
+    const code = text.charCodeAt(i);
+    if (code > 0x7E || code < 0x20) out += '\\u' + code.toString(16).padStart(4, '0');
+    else out += text[i];
+  }
+  return out;
+}
+function trUnescapeUnicode(text) {
+  return text
+    .replace(/\\u\{([0-9a-fA-F]+)\}/g, (m, h) => String.fromCodePoint(parseInt(h, 16)))
+    .replace(/\\u([0-9a-fA-F]{4})/g, (m, h) => String.fromCharCode(parseInt(h, 16)))
+    .replace(/\\x([0-9a-fA-F]{2})/g, (m, h) => String.fromCharCode(parseInt(h, 16)));
+}
+
+function trDecodeTemplateQuasi(raw) {
+  let out = '';
+  for (let i = 0; i < raw.length; i++) {
+    const c = raw[i];
+    if (c !== '\\') { out += c; continue; }
+    const nx = raw[i + 1];
+    switch (nx) {
+      case 'n': out += '\n'; i++; break;
+      case 't': out += '\t'; i++; break;
+      case 'r': out += '\r'; i++; break;
+      case 'b': out += '\b'; i++; break;
+      case 'f': out += '\f'; i++; break;
+      case 'v': out += '\v'; i++; break;
+      case '`': out += '`'; i++; break;
+      case '$': out += '$'; i++; break;
+      case '\\': out += '\\'; i++; break;
+      case 'u': { if (raw[i + 2] === '{') { const m = /^\\u\{([0-9a-fA-F]+)\}/.exec(raw.slice(i)); if (m) { out += String.fromCodePoint(parseInt(m[1], 16)); i += m[0].length - 1; break; } } const h = raw.substr(i + 2, 4); if (/^[0-9a-fA-F]{4}$/.test(h)) { out += String.fromCharCode(parseInt(h, 16)); i += 5; } else { out += nx; i++; } break; }
+      case 'x': { const h = raw.substr(i + 2, 2); if (/^[0-9a-fA-F]{2}$/.test(h)) { out += String.fromCharCode(parseInt(h, 16)); i += 3; } else { out += nx; i++; } break; }
+      default: out += (nx === undefined ? '' : nx); i++; break;
+    }
+  }
+  return out;
+}
+function trScanExprEnd(src, p) {
+  let i = p, depth = 0; const n = src.length;
+  while (i < n) {
+    const c = src[i];
+    if (c === '"' || c === "'") { i = trScanStringEnd(src, i); continue; }
+    if (c === '`') { i = trScanTemplateEnd(src, i); continue; }
+    if (c === '{') { depth++; i++; continue; }
+    if (c === '}') { if (depth === 0) return i; depth--; i++; continue; }
+    i++;
+  }
+  return -1;
+}
+function trScanTemplateEnd(src, start) {
+  let i = start + 1; const n = src.length;
+  while (i < n) {
+    const c = src[i];
+    if (c === '\\') { i += 2; continue; }
+    if (c === '`') return i + 1;
+    if (c === '$' && src[i + 1] === '{') { const e = trScanExprEnd(src, i + 2); if (e === -1) return n; i = e + 1; continue; }
+    i++;
+  }
+  return n;
+}
+function trParseTemplate(src, start) {
+  let i = start + 1; const n = src.length; let quasi = ''; const quasis = [], exprs = [];
+  while (i < n) {
+    const c = src[i];
+    if (c === '\\') { quasi += c + (src[i + 1] || ''); i += 2; continue; }
+    if (c === '`') { quasis.push(quasi); i++; break; }
+    if (c === '$' && src[i + 1] === '{') { quasis.push(quasi); quasi = ''; const e = trScanExprEnd(src, i + 2); const expr = src.slice(i + 2, e === -1 ? n : e); exprs.push(expr); i = (e === -1 ? n : e + 1); continue; }
+    quasi += c; i++;
+  }
+  return { end: i, quasis, exprs };
+}
+function trTemplateToConcat(src) {
+  let out = '', i = 0, val = false; const n = src.length;
+  while (i < n) {
+    const ch = src[i], nx = src[i + 1];
+    if (ch === '"' || ch === "'") { const end = trScanStringEnd(src, i); out += src.slice(i, end); i = end; val = true; continue; }
+    if (ch === '/' && nx === '/') { let j = i + 2; while (j < n && src[j] !== '\n') j++; out += src.slice(i, j); i = j; continue; }
+    if (ch === '/' && nx === '*') { let j = i + 2; while (j < n && !(src[j] === '*' && src[j + 1] === '/')) j++; const e = Math.min(j + 2, n); out += src.slice(i, e); i = e; continue; }
+    if (ch === '/' && !val) { const e = trScanRegexEnd(src, i); if (e !== -1) { out += src.slice(i, e); i = e; val = true; continue; } }
+    if (ch === '`') {
+      const prev = out.replace(/\s+$/, '').slice(-1);
+      if (/[A-Za-z0-9_$)\]]/.test(prev)) { const end = trScanTemplateEnd(src, i); out += src.slice(i, end); i = end; val = true; continue; }
+      const t = trParseTemplate(src, i);
+      const parts = [];
+      for (let k = 0; k < t.quasis.length; k++) {
+        const q = trDecodeTemplateQuasi(t.quasis[k]);
+        if (q !== '') parts.push(trEscapeJsString(q, '"'));
+        if (k < t.exprs.length) parts.push('(' + t.exprs[k].trim() + ')');
+      }
+      out += parts.length ? parts.join(' + ') : '""';
+      i = t.end; val = true; continue;
+    }
+    out += ch; val = trNextValueState(ch, val); i++;
+  }
+  return out;
+}
+
+function trSplitTernary(expr) {
+  let depth = 0, i = 0, qpos = -1; const n = expr.length;
+  while (i < n) {
+    const c = expr[i];
+    if (c === '"' || c === "'" || c === '`') { i = trScanStringEnd(expr, i); continue; }
+    if (c === '(' || c === '[' || c === '{') { depth++; i++; continue; }
+    if (c === ')' || c === ']' || c === '}') { depth--; i++; continue; }
+    if (depth === 0 && c === '?') {
+      if (expr[i + 1] === '?') { i += 2; continue; }
+      if (expr[i + 1] === '.') { i += 2; continue; }
+      qpos = i; break;
+    }
+    i++;
+  }
+  if (qpos === -1) return null;
+  let j = qpos + 1, td = 0, cd = 0, colon = -1;
+  while (j < n) {
+    const c = expr[j];
+    if (c === '"' || c === "'" || c === '`') { j = trScanStringEnd(expr, j); continue; }
+    if (c === '(' || c === '[' || c === '{') { cd++; j++; continue; }
+    if (c === ')' || c === ']' || c === '}') { cd--; j++; continue; }
+    if (cd === 0 && c === '?') { if (expr[j + 1] === '?' || expr[j + 1] === '.') { j += 2; continue; } td++; j++; continue; }
+    if (cd === 0 && c === ':') { if (td === 0) { colon = j; break; } td--; j++; continue; }
+    j++;
+  }
+  if (colon === -1) return null;
+  return { cond: expr.slice(0, qpos).trim(), cons: expr.slice(qpos + 1, colon).trim(), alt: expr.slice(colon + 1).trim() };
+}
+function trTernaryLine(line) {
+  const m = /^(\s*)([\s\S]*?)(\s*)$/.exec(line);
+  const indent = m[1]; let body = m[2];
+  if (!body) return line;
+  let semi = ''; if (body.endsWith(';')) { semi = ';'; body = body.slice(0, -1); }
+  let mm;
+  if ((mm = /^return\s+([\s\S]+)$/.exec(body))) {
+    const t = trSplitTernary(mm[1]); if (!t) return line;
+    return indent + 'if (' + t.cond + ') {\n' + indent + '  return ' + t.cons + semi + '\n' + indent + '} else {\n' + indent + '  return ' + t.alt + semi + '\n' + indent + '}';
+  }
+  if ((mm = /^(const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*([\s\S]+)$/.exec(body))) {
+    const t = trSplitTernary(mm[3]); if (!t) return line;
+    const kw = mm[1] === 'const' ? 'let' : mm[1];
+    return indent + kw + ' ' + mm[2] + ';\n' + indent + 'if (' + t.cond + ') {\n' + indent + '  ' + mm[2] + ' = ' + t.cons + semi + '\n' + indent + '} else {\n' + indent + '  ' + mm[2] + ' = ' + t.alt + semi + '\n' + indent + '}';
+  }
+  if ((mm = /^([A-Za-z_$][\w$.\[\]'"]*)\s*=\s*([\s\S]+)$/.exec(body))) {
+    const t = trSplitTernary(mm[2]); if (!t) return line;
+    return indent + 'if (' + t.cond + ') {\n' + indent + '  ' + mm[1] + ' = ' + t.cons + semi + '\n' + indent + '} else {\n' + indent + '  ' + mm[1] + ' = ' + t.alt + semi + '\n' + indent + '}';
+  }
+  return line;
+}
+function trTernaryToIf(src) { return src.split('\n').map(trTernaryLine).join('\n'); }
+
+function trSortKeysDeep(val, dir) {
+  if (Array.isArray(val)) return val.map(v => trSortKeysDeep(v, dir));
+  if (val && typeof val === 'object') {
+    const keys = Object.keys(val).sort((a, b) => a.localeCompare(b));
+    if (dir === 'desc') keys.reverse();
+    const o = {};
+    keys.forEach(k => { o[k] = trSortKeysDeep(val[k], dir); });
+    return o;
+  }
+  return val;
+}
+function trSortObjectKeys(text, dir, indent) {
+  const parsed = JSON.parse(text);
+  const sorted = trSortKeysDeep(parsed, dir);
+  if (indent === 'min') return JSON.stringify(sorted);
+  const ind = indent === 'tab' ? '\t' : parseInt(indent);
+  return JSON.stringify(sorted, null, ind);
+}
+
+function trArrayFromList(text, opts) {
+  const { delim, quote, trim, skipEmpty, dedupe, multiline } = opts;
+  let items;
+  if (delim === 'newline') items = text.split(/\r?\n/);
+  else if (delim === 'comma') items = text.split(',');
+  else items = text.split(/\s+/);
+  if (trim) items = items.map(s => s.trim());
+  if (skipEmpty) items = items.filter(s => s !== '');
+  if (dedupe) items = [...new Set(items)];
+  const q = quote === 'single' ? "'" : quote === 'double' ? '"' : null;
+  const encoded = items.map(s => q === null ? s : trEscapeJsString(s, q));
+  if (multiline) return '[\n' + encoded.map(s => '  ' + s).join(',\n') + '\n]';
+  return '[' + encoded.join(', ') + ']';
+}
+
+function trVarToLet(src, target) {
+  let out = '', i = 0, val = false; const n = src.length; let count = 0;
+  while (i < n) {
+    const ch = src[i], nx = src[i + 1];
+    if (ch === '"' || ch === "'" || ch === '`') { const end = trScanStringEnd(src, i); out += src.slice(i, end); i = end; val = true; continue; }
+    if (ch === '/' && nx === '/') { let j = i + 2; while (j < n && src[j] !== '\n') j++; out += src.slice(i, j); i = j; continue; }
+    if (ch === '/' && nx === '*') { let j = i + 2; while (j < n && !(src[j] === '*' && src[j + 1] === '/')) j++; const e = Math.min(j + 2, n); out += src.slice(i, e); i = e; continue; }
+    if (ch === '/' && !val) { const e = trScanRegexEnd(src, i); if (e !== -1) { out += src.slice(i, e); i = e; val = true; continue; } }
+    if (ch === 'v' && src.startsWith('var', i)) {
+      const pc = i > 0 ? src[i - 1] : '', ac = src[i + 3] || '';
+      if (!/[A-Za-z0-9_$]/.test(pc) && !/[A-Za-z0-9_$]/.test(ac)) { out += target; count++; i += 3; val = true; continue; }
+    }
+    out += ch; val = trNextValueState(ch, val); i++;
+  }
+  return { code: out, count };
+}
+
+// JS String Escaper Component
+function JsStringEscaper() {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+  const [mode, setMode] = useState('escape');
+  const [quote, setQuote] = useState('"');
+  const run = () => {
+    if (!input) { setOutput(''); return; }
+    try {
+      setOutput(mode === 'escape' ? trEscapeJsString(input, quote) : trUnescapeJsString(input));
+    } catch (err) { setOutput('Error: ' + err.message); }
+  };
+  return (
+    <VStack>
+      <Grid2>
+        <div>
+          <Label>Mode</Label>
+          <SelectInput value={mode} onChange={setMode} options={[
+            { value:'escape', label:'Escape → JS string literal' },
+            { value:'unescape', label:'Unescape → plain text' },
+          ]} style={{ width:'100%' }} />
+        </div>
+        <div>
+          <Label>Quote Character</Label>
+          <SelectInput value={quote} onChange={setQuote} options={[
+            { value:'"', label:'Double quote "' },
+            { value:"'", label:"Single quote '" },
+          ]} style={{ width:'100%' }} />
+        </div>
+      </Grid2>
+      <div>
+        <Label>{mode === 'escape' ? 'Plain Text' : 'JS String Literal'}</Label>
+        <Textarea value={input} onChange={setInput} rows={8} mono placeholder={mode === 'escape' ? 'Line 1\nLine 2 with "quotes" and a tab\there' : '"Line 1\\nLine 2 with \\"quotes\\""'} />
+      </div>
+      <Btn onClick={run} disabled={!input}>{mode === 'escape' ? 'Escape String' : 'Unescape String'}</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>{mode === 'escape' ? 'Escaped Literal' : 'Decoded Text'}</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={8} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// JS Unicode Escaper Component
+function JsUnicodeEscaper() {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+  const [mode, setMode] = useState('escape');
+  const run = () => {
+    if (!input) { setOutput(''); return; }
+    setOutput(mode === 'escape' ? trEscapeUnicode(input) : trUnescapeUnicode(input));
+  };
+  return (
+    <VStack>
+      <div>
+        <Label>Mode</Label>
+        <SelectInput value={mode} onChange={setMode} options={[
+          { value:'escape', label:'Escape non-ASCII → \\uXXXX' },
+          { value:'unescape', label:'Unescape \\uXXXX → text' },
+        ]} />
+      </div>
+      <div>
+        <Label>{mode === 'escape' ? 'Text' : '\\uXXXX Escaped Text'}</Label>
+        <Textarea value={input} onChange={setInput} rows={8} mono placeholder={mode === 'escape' ? 'café ☕ 汉字 😀' : 'caf\\u00e9 \\u2615'} />
+      </div>
+      <Btn onClick={run} disabled={!input}>{mode === 'escape' ? 'Escape Unicode' : 'Unescape Unicode'}</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>Output</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={8} mono />
+        </div>
+      )}
+      <div style={{ padding:12, background:"rgba(59,130,246,0.1)", border:`1px solid rgba(59,130,246,0.3)`, borderRadius:8, fontSize:12, color:C.text }}>
+        💡 Printable ASCII is left as-is; only non-ASCII and control characters are converted. Astral chars (emoji) become surrogate pairs.
+      </div>
+    </VStack>
+  );
+}
+
+// JS Regex Escaper Component
+function JsRegexEscape() {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+  const [slash, setSlash] = useState(false);
+  const run = () => {
+    if (!input) { setOutput(''); return; }
+    let out = input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    if (slash) out = out.replace(/\//g, '\\/');
+    setOutput(out);
+  };
+  return (
+    <VStack>
+      <div>
+        <Label>Literal Text to Match</Label>
+        <Textarea value={input} onChange={setInput} rows={6} mono placeholder="price: $5.00 (per item)" />
+      </div>
+      <label style={{ display:"flex", alignItems:"center", gap:6, cursor:"pointer", fontSize:13 }}>
+        <input type="checkbox" checked={slash} onChange={e => setSlash(e.target.checked)} />
+        <span>Also escape forward slashes (for <code style={{ fontFamily:"'JetBrains Mono',monospace" }}>/regex/</code> literals)</span>
+      </label>
+      <Btn onClick={run} disabled={!input}>Escape for RegExp</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>Escaped Pattern</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={6} mono />
+          <div style={{ marginTop:8 }}>
+            <Label>Usage</Label>
+            <Result>{`new RegExp("${output.replace(/"/g, '\\"')}")`}</Result>
+          </div>
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// Template Literal to Concat Component
+function JsTemplateToConcat() {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+  const run = () => { if (!input.trim()) return; setOutput(trTemplateToConcat(input)); };
+  return (
+    <VStack>
+      <div>
+        <Label>JavaScript (with template literals)</Label>
+        <Textarea value={input} onChange={setInput} rows={9} mono placeholder={"const msg = `Hello ${name}, you have ${count} messages`;"} />
+      </div>
+      <Btn onClick={run} disabled={!input.trim()}>Convert to Concatenation</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>String Concatenation</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={9} mono />
+        </div>
+      )}
+      <div style={{ padding:12, background:"rgba(59,130,246,0.1)", border:`1px solid rgba(59,130,246,0.3)`, borderRadius:8, fontSize:12, color:C.text }}>
+        💡 Each <code style={{ fontFamily:"'JetBrains Mono',monospace" }}>{'${expr}'}</code> becomes <code style={{ fontFamily:"'JetBrains Mono',monospace" }}>+ (expr) +</code>. Tagged templates and templates inside strings, comments or regex are left untouched.
+      </div>
+    </VStack>
+  );
+}
+
+// Ternary to If/Else Component
+function JsTernaryToIf() {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+  const run = () => { if (!input.trim()) return; setOutput(trTernaryToIf(input)); };
+  return (
+    <VStack>
+      <div>
+        <Label>Ternary Statements (one per line)</Label>
+        <Textarea value={input} onChange={setInput} rows={8} mono placeholder={"const max = a > b ? a : b;\nreturn ok ? 200 : 500;\nlabel = active ? 'On' : 'Off';"} />
+      </div>
+      <Btn onClick={run} disabled={!input.trim()}>Convert to If / Else</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>If / Else Blocks</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={12} mono />
+        </div>
+      )}
+      <div style={{ padding:12, background:"rgba(59,130,246,0.1)", border:`1px solid rgba(59,130,246,0.3)`, borderRadius:8, fontSize:12, color:C.text }}>
+        💡 Handles declaration, assignment and return forms. The <code style={{ fontFamily:"'JetBrains Mono',monospace" }}>??</code> and <code style={{ fontFamily:"'JetBrains Mono',monospace" }}>?.</code> operators are never touched. Nested ternaries expand one level per run.
+      </div>
+    </VStack>
+  );
+}
+
+// List to JS Array Component
+function JsArrayFromList() {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+  const [delim, setDelim] = useState('newline');
+  const [quote, setQuote] = useState('double');
+  const [trim, setTrim] = useState(true);
+  const [skipEmpty, setSkipEmpty] = useState(true);
+  const [dedupe, setDedupe] = useState(false);
+  const [multiline, setMultiline] = useState(false);
+  const run = () => {
+    if (!input.trim()) return;
+    setOutput(trArrayFromList(input, { delim, quote, trim, skipEmpty, dedupe, multiline }));
+  };
+  const chk = (label, val, set) => (
+    <label style={{ display:"flex", alignItems:"center", gap:6, cursor:"pointer", fontSize:13 }}>
+      <input type="checkbox" checked={val} onChange={e => set(e.target.checked)} />
+      <span>{label}</span>
+    </label>
+  );
+  return (
+    <VStack>
+      <div>
+        <Label>List</Label>
+        <Textarea value={input} onChange={setInput} rows={7} mono placeholder={"apple\nbanana\ncherry"} />
+      </div>
+      <Grid2>
+        <div>
+          <Label>Split By</Label>
+          <SelectInput value={delim} onChange={setDelim} options={[
+            { value:'newline', label:'New line' },
+            { value:'comma', label:'Comma' },
+            { value:'whitespace', label:'Whitespace' },
+          ]} style={{ width:'100%' }} />
+        </div>
+        <div>
+          <Label>Quotes</Label>
+          <SelectInput value={quote} onChange={setQuote} options={[
+            { value:'double', label:'Double "..."' },
+            { value:'single', label:"Single '...'" },
+            { value:'none', label:'None (raw)' },
+          ]} style={{ width:'100%' }} />
+        </div>
+      </Grid2>
+      <div style={{ display:"flex", gap:16, flexWrap:"wrap" }}>
+        {chk('Trim', trim, setTrim)}
+        {chk('Skip empty', skipEmpty, setSkipEmpty)}
+        {chk('De-duplicate', dedupe, setDedupe)}
+        {chk('Multiline output', multiline, setMultiline)}
+      </div>
+      <Btn onClick={run} disabled={!input.trim()}>Generate Array</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>JS Array Literal</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={multiline ? 10 : 4} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// JS Variable Name Validator Component
+function JsVariableNameValidator() {
+  const [input, setInput] = useState('');
+  const [result, setResult] = useState(null);
+  const run = () => {
+    if (input === '') { setResult(null); return; }
+    setResult(trValidateIdent(input));
+  };
+  return (
+    <VStack>
+      <div>
+        <Label>Variable Name</Label>
+        <Input value={input} onChange={setInput} placeholder="myVariable$1" style={{ fontFamily:"'JetBrains Mono',monospace" }} />
+      </div>
+      <Btn onClick={run} disabled={input === ''}>Validate Name</Btn>
+      {result && (
+        result.valid ? (
+          <div style={{ padding:16, background:"rgba(16,185,129,0.1)", border:`1px solid rgba(16,185,129,0.3)`, borderRadius:8, color:C.success }}>
+            ✓ <strong>{input}</strong> is a valid JavaScript identifier.
+          </div>
+        ) : (
+          <div>
+            <div style={{ padding:12, background:"rgba(239,68,68,0.1)", border:`1px solid rgba(239,68,68,0.3)`, borderRadius:8, color:C.danger, marginBottom:10 }}>
+              ✗ <strong>{input || '(empty)'}</strong> is not a valid identifier.
+            </div>
+            <Label>Issues</Label>
+            <Result mono={false}>
+              {result.issues.map((iss, i) => (
+                <div key={i} style={{ marginBottom:4 }}>• {iss}</div>
+              ))}
+            </Result>
+          </div>
+        )
+      )}
+      <div style={{ padding:12, background:"rgba(59,130,246,0.1)", border:`1px solid rgba(59,130,246,0.3)`, borderRadius:8, fontSize:12, color:C.text }}>
+        💡 A valid name starts with a letter, <code style={{ fontFamily:"'JetBrains Mono',monospace" }}>$</code> or <code style={{ fontFamily:"'JetBrains Mono',monospace" }}>_</code>, uses only letters/digits/<code style={{ fontFamily:"'JetBrains Mono',monospace" }}>$</code>/<code style={{ fontFamily:"'JetBrains Mono',monospace" }}>_</code>, and is not a reserved keyword.
+      </div>
+    </VStack>
+  );
+}
+
+// JS Quote Normalizer Component
+function JsQuoteNormalizer() {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+  const [target, setTarget] = useState('single');
+  const run = () => { if (!input.trim()) return; setOutput(trNormalizeQuotes(input, target)); };
+  return (
+    <VStack>
+      <div>
+        <Label>Target Quote Style</Label>
+        <SelectInput value={target} onChange={setTarget} options={[
+          { value:'single', label:"Single quotes '...'" },
+          { value:'double', label:'Double quotes "..."' },
+        ]} />
+      </div>
+      <div>
+        <Label>JavaScript Code</Label>
+        <Textarea value={input} onChange={setInput} rows={9} mono placeholder={'const a = "hello";\nconst b = "say \\"hi\\"";'} />
+      </div>
+      <Btn onClick={run} disabled={!input.trim()}>Normalize Quotes</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>Normalized Code</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={9} mono />
+        </div>
+      )}
+      <div style={{ padding:12, background:"rgba(59,130,246,0.1)", border:`1px solid rgba(59,130,246,0.3)`, borderRadius:8, fontSize:12, color:C.text }}>
+        💡 String, comment and regex aware. Backtick template literals are left untouched. The target quote inside a string is escaped automatically.
+      </div>
+    </VStack>
+  );
+}
+
+// JSON Key Sorter Component
+function JsObjectKeySorter() {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+  const [dir, setDir] = useState('asc');
+  const [indent, setIndent] = useState('2');
+  const [error, setError] = useState('');
+  const run = () => {
+    if (!input.trim()) return;
+    try { setOutput(trSortObjectKeys(input, dir, indent)); setError(''); }
+    catch (err) { setOutput(''); setError('Invalid JSON: ' + err.message); }
+  };
+  return (
+    <VStack>
+      <div>
+        <Label>JSON</Label>
+        <Textarea value={input} onChange={setInput} rows={9} mono placeholder={'{"name":"Ada","age":36,"city":"London"}'} />
+      </div>
+      <Grid2>
+        <div>
+          <Label>Direction</Label>
+          <SelectInput value={dir} onChange={setDir} options={[
+            { value:'asc', label:'Ascending A → Z' },
+            { value:'desc', label:'Descending Z → A' },
+          ]} style={{ width:'100%' }} />
+        </div>
+        <div>
+          <Label>Indent</Label>
+          <SelectInput value={indent} onChange={setIndent} options={[
+            { value:'2', label:'2 spaces' },
+            { value:'4', label:'4 spaces' },
+            { value:'tab', label:'Tab' },
+            { value:'min', label:'Minified' },
+          ]} style={{ width:'100%' }} />
+        </div>
+      </Grid2>
+      <Btn onClick={run} disabled={!input.trim()}>Sort Keys</Btn>
+      {error && (
+        <div style={{ padding:12, background:"rgba(239,68,68,0.1)", border:`1px solid rgba(239,68,68,0.3)`, borderRadius:8, color:C.danger, fontSize:13 }}>{error}</div>
+      )}
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>Sorted JSON</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={9} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// var to let/const Component
+function JsVarToLet() {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+  const [count, setCount] = useState(null);
+  const [target, setTarget] = useState('let');
+  const run = () => {
+    if (!input.trim()) return;
+    const res = trVarToLet(input, target);
+    setOutput(res.code); setCount(res.count);
+  };
+  return (
+    <VStack>
+      <div>
+        <Label>Replace var with</Label>
+        <SelectInput value={target} onChange={setTarget} options={[
+          { value:'let', label:'let (safe default)' },
+          { value:'const', label:'const' },
+        ]} />
+      </div>
+      <div>
+        <Label>JavaScript Code</Label>
+        <Textarea value={input} onChange={setInput} rows={9} mono placeholder={'var count = 0;\nvar name = "var in a string is safe";'} />
+      </div>
+      <Btn onClick={run} disabled={!input.trim()}>Convert var → {target}</Btn>
+      {count !== null && (
+        <div style={{ fontSize:12, color: count > 0 ? C.success : C.muted }}>
+          {count > 0 ? `✓ Replaced ${count} var keyword${count > 1 ? 's' : ''}` : 'No var keywords found'}
+        </div>
+      )}
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>Converted Code</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={9} mono />
+        </div>
+      )}
+      <div style={{ padding:12, background:"rgba(245,158,11,0.1)", border:`1px solid rgba(245,158,11,0.3)`, borderRadius:8, fontSize:12, color:C.text }}>
+        ⚠️ Whole-word, string/comment/regex safe. Choosing <code style={{ fontFamily:"'JetBrains Mono',monospace" }}>const</code> may break code that reassigns a variable — review the result.
+      </div>
+    </VStack>
+  );
+}
+
 const TOOL_COMPONENTS = {
   "js-formatter": JsFormatter,
   "js-minifier": JsMinifier,
@@ -1485,6 +2308,16 @@ const TOOL_COMPONENTS = {
   "js-comment-remover": JsCommentRemover,
   "js-import-sorter": JsImportSorter,
   "cjs-esm-converter": CjsEsmConverter,
+  "js-string-escaper": JsStringEscaper,
+  "js-unicode-escaper": JsUnicodeEscaper,
+  "js-regex-escape": JsRegexEscape,
+  "js-template-to-concat": JsTemplateToConcat,
+  "js-ternary-to-if": JsTernaryToIf,
+  "js-array-from-list": JsArrayFromList,
+  "js-variable-name-validator": JsVariableNameValidator,
+  "js-quote-normalizer": JsQuoteNormalizer,
+  "js-object-key-sorter": JsObjectKeySorter,
+  "js-var-to-let": JsVarToLet,
 };
 
 function Breadcrumb({ tool, cat }) {
