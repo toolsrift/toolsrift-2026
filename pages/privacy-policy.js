@@ -28,15 +28,16 @@ const SECTIONS = [
 We do not sell, rent, or trade your data to any third parties.`
   },
   {
-    title: '3. Cookies',
-    content: `ToolsRift uses cookies in the following limited ways:
+    title: '3. Cookies & Local Storage',
+    content: `ToolsRift uses cookies and browser storage in the following limited ways:
 
 - Google Analytics Cookies: To understand aggregate traffic patterns. You can opt out via Google Analytics Opt-out Browser Add-on.
-- Google AdSense Cookies: To serve relevant ads. These are governed by Google's advertising policies.
-- Theme Preference: We store your dark/light theme preference in localStorage. This never leaves your device.
-- No tracking cookies of our own are set beyond the above.
+- Google AdSense Cookies: To serve ads. Where you have consented, these may be used to personalize the ads you see. These cookies are governed by Google's advertising policies.
+- Consent Cookie (_cmp_consent): We set one first-party cookie that remembers your cookie-consent choices (which categories you accepted) so we do not re-prompt you on every visit. It stores only your preference flags and expires after about 6 months.
+- Theme Preference: We store your dark/light theme preference in your browser's localStorage. This never leaves your device.
+- Tool Drafts (_draft_*): Some generator tools (such as the invoice and resume builders) save your in-progress drafts to your browser's local storage only, so your work is not lost. These are never transmitted to our servers and are cleared when you clear your browser data.
 
-You can disable cookies in your browser settings at any time.`
+Aside from the consent cookie above, we do not set tracking cookies of our own. For the complete, itemized list of cookies and how to control them, see our Cookie Policy. You can disable cookies in your browser settings at any time.`
   },
   {
     title: '4. Third-Party Services',
@@ -65,15 +66,35 @@ No method of transmission over the internet is 100% secure. While we strive to p
     content: `ToolsRift is a general-purpose tools platform intended for users of all ages. We do not knowingly collect personal information from children under 13. If you believe a child has provided personal information to us, please contact us and we will promptly delete it.`
   },
   {
-    title: '7. Your Rights',
-    content: `Depending on your location, you may have the following rights:
+    title: '7. Your Rights (GDPR & CCPA)',
+    content: `ToolsRift serves a global audience and runs Google AdSense, which can show personalized ads. Depending on where you live, you have specific rights over your data.
 
+Legal basis for processing (GDPR): For visitors in the European Economic Area and the UK, we rely on your consent (Article 6(1)(a)) as the legal basis for analytics and personalized advertising cookies — you provide or withdraw this consent through our cookie/consent banner. Where we process strictly necessary data to operate and secure the site (such as remembering your consent choice), we rely on our legitimate interests (Article 6(1)(f)).
+
+Your rights under the GDPR include:
 - Access: Request information about any data we hold about you
-- Deletion: Request deletion of your data
-- Opt-out: Opt out of analytics and advertising cookies via your browser settings or Google's opt-out tools
+- Rectification: Ask us to correct inaccurate data
+- Erasure: Request deletion of your data ("right to be forgotten")
+- Restriction & Objection: Restrict or object to processing, including profiling for personalized ads
 - Portability: Request a copy of your data in a portable format
+- Withdraw consent: Withdraw your cookie consent at any time via the cookie banner
+- Lodge a complaint with your local data protection authority
 
-To exercise these rights, contact us at the email below.`
+Your rights under the CCPA/CPRA (California residents):
+- Know what personal information is collected and how it is used
+- Request deletion of your personal information
+- Correct inaccurate personal information
+- Opt out of the "sale" or "sharing" of personal information (see below)
+- Non-discrimination for exercising your rights
+
+Do Not Sell or Share My Personal Information: ToolsRift does not sell your personal information for money. However, under the CCPA/CPRA, allowing third-party advertising partners such as Google to use advertising cookies for personalized ads may be considered "sharing" or a "sale" of personal information. You can opt out of this ad personalization at any time by:
+- Declining or adjusting advertising cookies in our cookie/consent banner
+- Visiting Google Ad Settings (adssettings.google.com) to turn off personalized advertising
+- Using industry opt-out tools at aboutads.info/choices (US) or youronlinechoices.eu (EU)
+
+After you opt out, you will still see ads, but they will not be personalized based on your activity.
+
+To exercise any of these rights, contact us at the email below.`
   },
   {
     title: '8. Changes to This Policy',

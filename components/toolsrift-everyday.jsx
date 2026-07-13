@@ -13,12 +13,12 @@ const BRAND = { name: "ToolsRift", tagline: "Everyday Tools" };
 
 const C = {
   bg: "#06090F", surface: "#0D1117", border: "rgba(255,255,255,0.06)",
-  indigo: "#6366F1", indigoD: "#4F46E5",
+  indigo: "#F97316", indigoD: "#EA580C",
   text: "#E2E8F0", muted: "#64748B",
   success: "#10B981", warn: "#F59E0B", danger: "#EF4444",
 };
 
-const GLOBAL_CSS = `@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap'); *{box-sizing:border-box;margin:0;padding:0} ::-webkit-scrollbar{width:6px;height:6px} ::-webkit-scrollbar-track{background:transparent} ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px} ::selection{background:rgba(99,102,241,0.3)} button:hover{filter:brightness(1.1)} select option{background:#0D1117} textarea{resize:vertical} .fade-in{animation:fadeIn .25s ease} @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}} .tr-nav-cats{display:flex;gap:4px;align-items:center} .tr-nav-badge{display:inline-flex} @media(max-width:640px){ .tr-nav-cats{display:none!important} .tr-nav-badge{display:none!important} }`;
+const GLOBAL_CSS = `@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap'); *{box-sizing:border-box;margin:0;padding:0} ::-webkit-scrollbar{width:6px;height:6px} ::-webkit-scrollbar-track{background:transparent} ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px} ::selection{background:rgba(249,115,22,0.3)} button:hover{filter:brightness(1.1)} select option{background:#0D1117} textarea{resize:vertical} .fade-in{animation:fadeIn .25s ease} @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}} .tr-nav-cats{display:flex;gap:4px;align-items:center} .tr-nav-badge{display:inline-flex} @media(max-width:640px){ .tr-nav-cats{display:none!important} .tr-nav-badge{display:none!important} }`;
 
 const T = {
   body: { fontFamily:"'Plus Jakarta Sans',sans-serif", fontSize:14, color:C.text },
@@ -43,7 +43,7 @@ function Btn({ children, onClick, variant="primary", size="md", href, disabled, 
   const base = { display:"inline-flex", alignItems:"center", justifyContent:"center", gap:6, border:"none", cursor:disabled?"not-allowed":"pointer", borderRadius:8, fontWeight:600, transition:"all .15s", fontFamily:"'Plus Jakarta Sans',sans-serif", textDecoration:"none", opacity:disabled?0.5:1 };
   const sz = { sm:{padding:"6px 14px",fontSize:12}, md:{padding:"9px 20px",fontSize:13}, lg:{padding:"12px 28px",fontSize:14} }[size];
   const v = {
-    primary:{ background:`linear-gradient(135deg,${ACCENT},${ACCENTD})`, color:"#fff", boxShadow:`0 2px 8px rgba(99,102,241,0.25)` },
+    primary:{ background:`linear-gradient(135deg,${ACCENT},${ACCENTD})`, color:"#fff", boxShadow:`0 2px 8px rgba(249,115,22,0.25)` },
     secondary:{ background:"rgba(255,255,255,0.05)", color:C.text, border:`1px solid ${C.border}` },
     ghost:{ background:"transparent", color:C.muted },
     danger:{ background:"rgba(239,68,68,0.15)", color:"#FCA5A5" },
@@ -100,7 +100,7 @@ function Result({ children, mono=true }) {
 
 function BigResult({ value, label }) {
   return (
-    <div style={{ textAlign:"center", padding:"20px 16px", background:"rgba(99,102,241,0.08)", border:`1px solid rgba(99,102,241,0.2)`, borderRadius:10 }}>
+    <div style={{ textAlign:"center", padding:"20px 16px", background:"rgba(249,115,22,0.08)", border:`1px solid rgba(249,115,22,0.2)`, borderRadius:10 }}>
       <div style={{ fontFamily:"'Sora',sans-serif", fontSize:32, fontWeight:700, color:C.indigo }}>{value}</div>
       <div style={{ ...T.label, marginTop:4 }}>{label}</div>
     </div>
@@ -682,7 +682,7 @@ function Stopwatch() {
       <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
         {!running ? <button onClick={() => setRunning(true)} style={bigBtn("#22C55E")}>▶ Start</button>
           : <button onClick={() => setRunning(false)} style={bigBtn("#F59E0B")}>⏸ Pause</button>}
-        <button onClick={() => running && setLaps(l => [elapsed, ...l])} disabled={!running} style={{ ...bigBtn("rgba(99,102,241,0.9)"), opacity: running ? 1 : 0.4 }}>⚑ Lap</button>
+        <button onClick={() => running && setLaps(l => [elapsed, ...l])} disabled={!running} style={{ ...bigBtn("rgba(249,115,22,0.9)"), opacity: running ? 1 : 0.4 }}>⚑ Lap</button>
         <button onClick={() => { setRunning(false); setElapsed(0); setLaps([]); }} style={bigBtn("rgba(255,255,255,0.1)")}>↺ Reset</button>
       </div>
       {laps.length > 0 && <DataTable columns={["Lap", "Time"]} rows={laps.map((t, i) => [laps.length - i, fmt(t)])} />}
@@ -785,7 +785,7 @@ function TypingSpeedTest() {
           {target.split("").map((ch, i) => (
             <span key={i} style={{
               color: i < typed.length ? (typed[i] === ch ? "#4ADE80" : "#F87171") : "#64748B",
-              background: i === typed.length ? "rgba(99,102,241,0.35)" : (i < typed.length && typed[i] !== ch ? "rgba(239,68,68,0.15)" : "transparent"),
+              background: i === typed.length ? "rgba(249,115,22,0.35)" : (i < typed.length && typed[i] !== ch ? "rgba(239,68,68,0.15)" : "transparent"),
               borderRadius: 2,
             }}>{ch}</span>
           ))}
@@ -800,7 +800,7 @@ function TypingSpeedTest() {
       {finished && <Result mono={false}>🎉 Done! You typed at <b>{stats.wpm} WPM</b> with <b>{stats.acc}%</b> accuracy. Average is ~40 WPM — try again to beat your score!</Result>}
       <div style={{ display: "flex", gap: 12 }}>
         <button onClick={() => restart(false)} style={bigBtn("rgba(255,255,255,0.1)")}>↺ Restart</button>
-        <button onClick={() => restart(true)} style={bigBtn("rgba(99,102,241,0.9)")}>📄 New Text</button>
+        <button onClick={() => restart(true)} style={bigBtn("rgba(249,115,22,0.9)")}>📄 New Text</button>
       </div>
     </VStack>
   );
@@ -1019,7 +1019,7 @@ function WorldClock() {
         <Label>Current Time Around the World</Label>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 12 }}>
           {cities.map((c) => (
-            <div key={c.tz + c.name} style={{ background: c.local ? "rgba(99,102,241,0.08)" : "rgba(255,255,255,0.03)", border: `1px solid ${c.local ? "rgba(99,102,241,0.3)" : C.border}`, borderRadius: 12, padding: "14px 16px" }}>
+            <div key={c.tz + c.name} style={{ background: c.local ? "rgba(249,115,22,0.08)" : "rgba(255,255,255,0.03)", border: `1px solid ${c.local ? "rgba(249,115,22,0.3)" : C.border}`, borderRadius: 12, padding: "14px 16px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
                 <span style={{ fontSize: 13, fontWeight: 700, color: C.text }}>{c.name}</span>
                 <span style={{ fontSize: 10, color: C.muted, fontFamily: "'JetBrains Mono',monospace" }}>{tzOffsetLabel(nowDate, c.tz)}</span>
@@ -1230,7 +1230,7 @@ function MoonPhase() {
       <div><Label>Date</Label><input type="date" value={date} onChange={e => setDate(e.target.value)} style={dateInputStyle} /></div>
       {out ? (
         <>
-          <div style={{ textAlign: "center", padding: "18px 16px", background: "rgba(99,102,241,0.08)", border: `1px solid rgba(99,102,241,0.2)`, borderRadius: 10 }}>
+          <div style={{ textAlign: "center", padding: "18px 16px", background: "rgba(249,115,22,0.08)", border: `1px solid rgba(249,115,22,0.2)`, borderRadius: 10 }}>
             <div style={{ fontSize: 64, lineHeight: 1 }}>{out.emoji}</div>
             <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 24, fontWeight: 700, color: C.indigo, marginTop: 8 }}>{out.name}</div>
             <div style={{ ...T.label, marginTop: 4 }}>{out.pretty}</div>
@@ -1496,7 +1496,7 @@ function ZodiacSign() {
       <div><Label>Birthday</Label><input type="date" value={dob} onChange={e => setDob(e.target.value)} style={dateInputStyle} /></div>
       {out ? (
         <>
-          <div style={{ textAlign: "center", padding: "20px 16px", background: "rgba(99,102,241,0.08)", border: `1px solid rgba(99,102,241,0.2)`, borderRadius: 10 }}>
+          <div style={{ textAlign: "center", padding: "20px 16px", background: "rgba(249,115,22,0.08)", border: `1px solid rgba(249,115,22,0.2)`, borderRadius: 10 }}>
             <div style={{ fontSize: 56, lineHeight: 1 }}>{out.sym}</div>
             <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 26, fontWeight: 700, color: C.indigo, marginTop: 6 }}>{out.name}</div>
             <div style={{ ...T.label, marginTop: 4 }}>{out.elem} element · {out.pretty}</div>
@@ -1525,7 +1525,7 @@ function ChineseZodiac() {
       <div><Label>Birth Year</Label><Input value={year} onChange={setYear} placeholder="e.g. 1996" /></div>
       {out ? (
         <>
-          <div style={{ textAlign: "center", padding: "20px 16px", background: "rgba(99,102,241,0.08)", border: `1px solid rgba(99,102,241,0.2)`, borderRadius: 10 }}>
+          <div style={{ textAlign: "center", padding: "20px 16px", background: "rgba(249,115,22,0.08)", border: `1px solid rgba(249,115,22,0.2)`, borderRadius: 10 }}>
             <div style={{ fontSize: 56, lineHeight: 1 }}>{out.emoji}</div>
             <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 26, fontWeight: 700, color: C.indigo, marginTop: 6 }}>Year of the {out.animal}</div>
             <div style={{ ...T.label, marginTop: 4 }}>{out.traits}</div>
@@ -1736,14 +1736,14 @@ function Nav() {
     return () => window.removeEventListener("scroll", fn);
   }, []);
   return (
-    <nav style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"0 24px", height:56, borderBottom:`1px solid ${scrolled?"rgba(99,102,241,0.2)":C.border}`, position:"sticky", top:0, background:`rgba(6,9,15,${scrolled?0.97:0.85})`, backdropFilter:"blur(12px)", zIndex:100, transition:"background 0.2s,border-color 0.2s" }}>
+    <nav style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"0 24px", height:56, borderBottom:`1px solid ${scrolled?"rgba(249,115,22,0.2)":C.border}`, position:"sticky", top:0, background:`rgba(6,9,15,${scrolled?0.97:0.85})`, backdropFilter:"blur(12px)", zIndex:100, transition:"background 0.2s,border-color 0.2s" }}>
       <div style={{ display:"flex", alignItems:"center", gap:10 }}>
         <a href="/" aria-label="ToolsRift home" style={{display:"flex",alignItems:"center",flexShrink:0}}><img src="/logo.svg" alt="ToolsRift" style={{height:26,display:"block"}}/></a>
         <span style={{ color:"rgba(255,255,255,0.2)", fontSize:14 }}>›</span>
         <a href="#/" style={{ fontFamily:"'Plus Jakarta Sans',sans-serif", fontSize:13, fontWeight:500, color:C.indigo, textDecoration:"none" }}>{THEME?.name||"Everyday Tools"}</a>
       </div>
       <div style={{ display:"flex", gap:8, alignItems:"center" }}>
-        <span className="tr-nav-badge" style={{ background:"rgba(99,102,241,0.12)", color:C.indigo, fontSize:11, fontWeight:700, fontFamily:"'Plus Jakarta Sans',sans-serif", padding:"3px 10px", borderRadius:20, letterSpacing:"0.02em", border:"1px solid rgba(99,102,241,0.25)" }}>{TOOLS.length} tools</span>
+        <span className="tr-nav-badge" style={{ background:"rgba(249,115,22,0.12)", color:C.indigo, fontSize:11, fontWeight:700, fontFamily:"'Plus Jakarta Sans',sans-serif", padding:"3px 10px", borderRadius:20, letterSpacing:"0.02em", border:"1px solid rgba(249,115,22,0.25)" }}>{TOOLS.length} tools</span>
         {/* PHASE 2: <UsageCounter/> */}
         <a href="/" style={{ display:"flex", alignItems:"center", gap:5, padding:"6px 14px", borderRadius:8, fontSize:12, fontWeight:600, color:"#E2E8F0", textDecoration:"none", background:"rgba(255,255,255,0.06)", border:`1px solid ${C.border}` }}>🏠 Home</a>
       </div>
@@ -1782,7 +1782,7 @@ function SiteFooter({ currentPage }) {
     <div style={{maxWidth:860,margin:"0 auto",padding:"32px 20px 28px",borderTop:"1px solid rgba(255,255,255,0.06)"}}>
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
         <span style={{fontSize:11,fontWeight:700,color:"#475569",textTransform:"uppercase",letterSpacing:"0.06em"}}>Explore More Tools</span>
-        <a href="/" style={{fontSize:12,color:"#6366F1",textDecoration:"none",fontWeight:600}}>← Back to Home</a>
+        <a href="/" style={{fontSize:12,color:"#F97316",textDecoration:"none",fontWeight:600}}>← Back to Home</a>
       </div>
       <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:20}}>
         {pages.map(p => (

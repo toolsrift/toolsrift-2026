@@ -14,7 +14,7 @@ const BRAND = { name: "ToolsRift", tagline: "Text & Content Tools" };
 // �"����� SHARED DESIGN TOKENS ���������������������������������������������������������������������������������������������������������"�
 const C = {
   bg: "#06090F", surface: "#0D1117", border: "rgba(255,255,255,0.06)",
-  blue: "#8B5CF6", blueD: "#7C3AED", text: "#E2E8F0", muted: "#64748B",
+  blue: "#3B82F6", blueD: "#2563EB", text: "#E2E8F0", muted: "#64748B",
   success: "#10B981", warn: "#F59E0B", danger: "#EF4444",
 };
 
@@ -25,7 +25,7 @@ const GLOBAL_CSS = `
   ::-webkit-scrollbar{width:6px;height:6px}
   ::-webkit-scrollbar-track{background:transparent}
   ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px}
-  ::selection{background:rgba(139,92,246,0.3)}
+  ::selection{background:rgba(59,130,246,0.3)}
   button:hover{filter:brightness(1.1)}
   select option{background:#0D1117}
   textarea{resize:vertical}
@@ -62,7 +62,7 @@ function Btn({ children, onClick, variant="primary", size="md", href, disabled, 
   const base = { display:"inline-flex", alignItems:"center", justifyContent:"center", gap:6, border:"none", cursor:disabled?"not-allowed":"pointer", borderRadius:8, fontWeight:600, transition:"all .15s", fontFamily:"'Plus Jakarta Sans',sans-serif", textDecoration:"none", opacity:disabled?0.5:1 };
   const sz = { sm:{padding:"6px 14px",fontSize:12}, md:{padding:"9px 20px",fontSize:13}, lg:{padding:"12px 28px",fontSize:14} }[size];
   const v = {
-    primary:{ background:`linear-gradient(135deg,${C.blue},${C.blueD})`, color:"#fff", boxShadow:"0 2px 8px rgba(139,92,246,0.25)" },
+    primary:{ background:`linear-gradient(135deg,${C.blue},${C.blueD})`, color:"#fff", boxShadow:"0 2px 8px rgba(59,130,246,0.25)" },
     secondary:{ background:"rgba(255,255,255,0.05)", color:C.text, border:`1px solid ${C.border}` },
     ghost:{ background:"transparent", color:C.muted },
     danger:{ background:"rgba(239,68,68,0.15)", color:"#FCA5A5" },
@@ -2318,7 +2318,7 @@ function DuplicateWordFinder() {
           {dupes.length > 0 && (
             <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
               {dupes.map(([w,c]) => (
-                <span key={w} style={{ display:"inline-flex", alignItems:"center", gap:6, background:"rgba(139,92,246,0.1)", border:`1px solid rgba(139,92,246,0.25)`, borderRadius:20, padding:"4px 12px", fontSize:13, color:C.text }}>
+                <span key={w} style={{ display:"inline-flex", alignItems:"center", gap:6, background:"rgba(59,130,246,0.1)", border:`1px solid rgba(59,130,246,0.25)`, borderRadius:20, padding:"4px 12px", fontSize:13, color:C.text }}>
                   {w}<span style={{ background:C.blue, color:"#fff", borderRadius:10, padding:"1px 7px", fontSize:11, fontWeight:700 }}>{c}</span>
                 </span>
               ))}

@@ -15,6 +15,7 @@ MAP = {
  'generators':'toolsrift-gen-security','generators2':'toolsrift-gen-content','hash':'toolsrift-hash',
  'html':'toolsrift-html','images':'toolsrift-images','js':'toolsrift-js','json':'toolsrift-json',
  'mathcalc':'toolsrift-calc-math','pdf':'toolsrift-pdf','text':'toolsrift-text','units':'toolsrift-units',
+ 'random':'toolsrift-random',
 }
 
 cc = open('lib/categoryContent.js', encoding='utf-8').read()

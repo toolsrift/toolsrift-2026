@@ -15,8 +15,8 @@ const C = {
   bg: "#06090F",
   surface: "#0D1117",
   border: "rgba(255,255,255,0.06)",
-  blue: "#06B6D4",
-  blueD: "#0891B2",
+  blue: "#0EA5E9",
+  blueD: "#0284C7",
   text: "#E2E8F0",
   muted: "#64748B",
 };
@@ -26,7 +26,7 @@ const GLOBAL_CSS = `@import url('https://fonts.googleapis.com/css2?family=Sora:w
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px}
-::selection{background:rgba(6,182,212,0.3)}
+::selection{background:rgba(14,165,233,0.3)}
 input,select,textarea{outline:none}
 button:hover{filter:brightness(1.07)}
 .fade-in{animation:fadeIn .25s ease}
@@ -55,7 +55,7 @@ const n = (v) => {
 const round = (x, p = 8) => (Number.isFinite(x) ? Number(x.toFixed(p)) : 0);
 
 function Badge({ children }) {
-  return <span style={{ background: "rgba(6,182,212,0.15)", color: "#67E8F9", borderRadius: 4, padding: "2px 8px", fontSize: 11, fontWeight: 600 }}>{children}</span>;
+  return <span style={{ background: "rgba(14,165,233,0.15)", color: "#38BDF8", borderRadius: 4, padding: "2px 8px", fontSize: 11, fontWeight: 600 }}>{children}</span>;
 }
 function Input({ value, onChange, placeholder, type = "text" }) {
   return <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} style={{ width: "100%", background: "rgba(255,255,255,0.04)", border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px", color: C.text, fontSize: 13 }} />;
@@ -123,7 +123,7 @@ function ConverterGrid({ title, units, state, onEdit, formula, activeKey }) {
         {units.map((u, idx) => {
           const isActive = u.key === activeKey;
           return (
-            <div key={u.key} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 12px", background: isActive ? "rgba(6,182,212,0.08)" : idx % 2 === 0 ? "#0F172A" : "#1a2234", borderLeft: isActive ? "3px solid #06B6D4" : "3px solid transparent" }}>
+            <div key={u.key} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 12px", background: isActive ? "rgba(14,165,233,0.08)" : idx % 2 === 0 ? "#0F172A" : "#1a2234", borderLeft: isActive ? "3px solid #0EA5E9" : "3px solid transparent" }}>
               <span style={{ fontSize: 12, color: isActive ? C.blue : C.muted, fontWeight: isActive ? 600 : 400 }}>{u.label}</span>
               <span style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
                 <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 13, color: isActive ? C.blue : C.text, fontWeight: 600, overflowWrap: "anywhere", wordBreak: "break-word", textAlign: "right" }}>{state[u.key] ?? "—"}</span>
@@ -558,7 +558,7 @@ function PaperSizeConverter() {
             return (
               <div key={k} style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${C.border}`, borderRadius: 8, padding: 8, textAlign: "center" }}>
                 <div style={{ marginBottom: 6, fontSize: 11, color: C.muted }}>{k}</div>
-                <div style={{ width: w, height: h, margin: "0 auto", border: `2px solid ${k===size?C.blue:"#64748B"}`, borderRadius: 2, background: "rgba(6,182,212,0.08)" }} />
+                <div style={{ width: w, height: h, margin: "0 auto", border: `2px solid ${k===size?C.blue:"#64748B"}`, borderRadius: 2, background: "rgba(14,165,233,0.08)" }} />
               </div>
             );
           })}
@@ -906,11 +906,11 @@ function GasMarkConverter() {
       </div>
       {valid && (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-          <div style={{ background: "rgba(6,182,212,0.08)", border: `1px solid ${C.border}`, borderRadius: 8, padding: "12px", textAlign: "center" }}>
+          <div style={{ background: "rgba(14,165,233,0.08)", border: `1px solid ${C.border}`, borderRadius: 8, padding: "12px", textAlign: "center" }}>
             <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 22, fontWeight: 700, color: C.blue }}>{F(g)} °F</div>
             <div style={{ fontSize: 11, color: C.muted, marginTop: 2 }}>Fahrenheit</div>
           </div>
-          <div style={{ background: "rgba(6,182,212,0.08)", border: `1px solid ${C.border}`, borderRadius: 8, padding: "12px", textAlign: "center" }}>
+          <div style={{ background: "rgba(14,165,233,0.08)", border: `1px solid ${C.border}`, borderRadius: 8, padding: "12px", textAlign: "center" }}>
             <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 22, fontWeight: 700, color: C.blue }}>{round((F(g) - 32) * 5 / 9, 0)} °C</div>
             <div style={{ fontSize: 11, color: C.muted, marginTop: 2 }}>Celsius</div>
           </div>
@@ -1091,9 +1091,353 @@ function Breadcrumb({ tool, cat }) {
   );
 }
 
+const TOOL_META = {
+  "force-converter": {
+    title: "Force Converter — Newton, kN, lbf, kp, Dyne Online",
+    desc: "Convert force between newtons, kilonewtons, pound-force, kilopond and dyne. Real-time results using exact SI factors for physics, engineering and statics.",
+    keywords: "force converter, newton to lbf, pound-force to newton, kilonewton converter, dyne converter",
+    faq: [
+      ["How many newtons is 1 pound-force?", "1 lbf equals 4.4482216152605 N exactly, derived from the standard gravity acting on one pound mass."],
+      ["What is the base unit for force?", "The newton (N) is the SI base for this tool; every unit is converted through newtons using its factor."],
+      ["How is a dyne related to a newton?", "1 dyne is 10⁻⁵ N (the CGS force unit), so 100,000 dyne equal one newton."]
+    ],
+    howTo: "Type a value into any force field. The tool multiplies by that unit's newton factor, then divides to fill every other unit instantly."
+  },
+  "torque-converter": {
+    title: "Torque Converter — N·m, lb·ft, lb·in, kg·m Online",
+    desc: "Convert torque and moment of force between newton-metres, pound-feet, pound-inches and kilogram-metres. Exact factors for automotive, fastening and mechanical work.",
+    keywords: "torque converter, nm to lb-ft, pound-foot to newton-metre, kg-m torque, wrench torque conversion",
+    faq: [
+      ["How many N·m is 1 lb·ft?", "1 pound-foot equals 1.3558179483314 N·m, the exact conversion used for tightening specs."],
+      ["What is the base unit here?", "The newton-metre (N·m) is the SI base; all torque units convert through it."],
+      ["How do lb·ft and lb·in relate?", "1 lb·ft = 12 lb·in, so pound-inch values are twelve times larger than pound-foot for the same torque."]
+    ],
+    howTo: "Enter a torque value in any field. It is converted to N·m using the unit factor, then redistributed to all other torque units."
+  },
+  "current-converter": {
+    title: "Electric Current Converter — A, mA, µA, kA Online",
+    desc: "Convert electric current between amperes, milliamperes, microamperes and kiloamperes. Instant metric-prefix scaling for electronics, circuits and power work.",
+    keywords: "current converter, amps to milliamps, mA to A, microampere converter, kiloampere",
+    faq: [
+      ["How many milliamps are in an amp?", "1 A equals 1000 mA; the metric milli prefix means one-thousandth of the base ampere."],
+      ["What is the base unit?", "The ampere (A) is the SI base for current in this tool, and every prefix scales from it."],
+      ["How small is a microampere?", "1 µA is 10⁻⁶ A, so one ampere contains one million microamperes — common in low-power sensors."]
+    ],
+    howTo: "Type a current in any field. Each metric-prefixed unit is scaled to amperes, then converted back out to all other units live."
+  },
+  "voltage-converter": {
+    title: "Voltage Converter — Volt, mV, kV, MV Online",
+    desc: "Convert voltage between volts, millivolts, kilovolts and megavolts. Real-time metric-prefix conversion for electronics, power lines and instrumentation.",
+    keywords: "voltage converter, volts to millivolts, kV to V, megavolt converter, mV to V",
+    faq: [
+      ["How many millivolts in a volt?", "1 V equals 1000 mV; the milli prefix represents one-thousandth of a volt."],
+      ["What is the base unit here?", "The volt (V) is the base; kilovolts and megavolts scale up by 1,000 and 1,000,000."],
+      ["How large is a megavolt?", "1 MV is 1,000,000 V, a scale seen in high-voltage transmission and lab equipment."]
+    ],
+    howTo: "Enter a voltage in any field. It is scaled to volts using the metric factor, then divided out to populate every other unit."
+  },
+  "resistance-converter": {
+    title: "Resistance Converter — Ohm, kΩ, MΩ, µΩ Online",
+    desc: "Convert electrical resistance between ohms, kiloohms, megaohms and microohms. Instant metric-prefix scaling for resistors, circuit design and measurements.",
+    keywords: "resistance converter, ohm to kilohm, MΩ to Ω, microohm converter, resistor value converter",
+    faq: [
+      ["How many ohms in a kiloohm?", "1 kΩ equals 1000 Ω; kilo means one thousand base ohms."],
+      ["What is the base unit?", "The ohm (Ω) is the base for this tool, with kΩ and MΩ scaling by powers of 1000."],
+      ["How small is a microohm?", "1 µΩ is 10⁻⁶ Ω, used for very low resistances like contacts and shunts."]
+    ],
+    howTo: "Type a resistance in any field. The value is converted to ohms with its prefix factor, then redistributed to all other units."
+  },
+  "capacitance-converter": {
+    title: "Capacitance Converter — Farad, µF, nF, pF Online",
+    desc: "Convert capacitance between farads, microfarads, nanofarads and picofarads. Real-time factor-of-1000 scaling for capacitors, filters and electronics design.",
+    keywords: "capacitance converter, farad to microfarad, µF to nF, picofarad converter, pF to nF",
+    faq: [
+      ["How many picofarads in a nanofarad?", "1 nF equals 1000 pF; each step down the prefix ladder multiplies by 1000."],
+      ["What is the base unit?", "The farad (F) is the base; µF, nF and pF are 10⁻⁶, 10⁻⁹ and 10⁻¹² F."],
+      ["Why are capacitors rated in µF and pF?", "One farad is enormous, so real capacitors use microfarads, nanofarads and picofarads."]
+    ],
+    howTo: "Enter a capacitance in any field. It converts to farads using the prefix factor, then fills every other unit instantly."
+  },
+  "inductance-converter": {
+    title: "Inductance Converter — Henry, mH, µH, nH Online",
+    desc: "Convert inductance between henries, millihenries, microhenries and nanohenries. Instant metric-prefix scaling for coils, chokes, transformers and RF design.",
+    keywords: "inductance converter, henry to millihenry, µH to nH, nanohenry converter, coil inductance",
+    faq: [
+      ["How many microhenries in a millihenry?", "1 mH equals 1000 µH; each prefix step scales by a factor of 1000."],
+      ["What is the base unit?", "The henry (H) is the base; mH, µH and nH are 10⁻³, 10⁻⁶ and 10⁻⁹ H."],
+      ["Where are nanohenries used?", "Nanohenries appear in high-frequency RF circuits where very small inductances matter."]
+    ],
+    howTo: "Type an inductance in any field. The value scales to henries via its prefix factor, then converts out to all other units live."
+  },
+  "luminance-converter": {
+    title: "Luminance Converter — cd/m², Nit, Foot-Lambert Online",
+    desc: "Convert luminance between candela per square metre (nit), foot-lambert, stilb and lambert. Exact factors for displays, photometry and lighting design.",
+    keywords: "luminance converter, nit to foot-lambert, cd/m2 converter, stilb, lambert to nit",
+    faq: [
+      ["Is a nit the same as cd/m²?", "Yes — 1 nit equals exactly 1 candela per square metre, the SI luminance unit."],
+      ["How many cd/m² is a foot-lambert?", "1 ft-L equals 3.4262590996 cd/m², the factor used in cinema and display specs."],
+      ["What is a stilb?", "1 stilb equals 10,000 cd/m² (1 cd/cm²), a CGS luminance unit."]
+    ],
+    howTo: "Enter a luminance in any field. It converts to cd/m² using the unit factor, then redistributes to every other luminance unit."
+  },
+  "illuminance-converter": {
+    title: "Illuminance Converter — Lux, Foot-Candle, Phot Online",
+    desc: "Convert illuminance between lux, foot-candles, phot and nox. Exact photometric factors for lighting design, photography and workplace light-level checks.",
+    keywords: "illuminance converter, lux to foot-candle, fc to lux, phot converter, nox lighting",
+    faq: [
+      ["How many lux is one foot-candle?", "1 fc equals 10.7639104167 lux — one lumen per square foot versus per square metre."],
+      ["What is the base unit?", "The lux (lumen per square metre) is the base; all other units convert through it."],
+      ["What is a phot?", "1 phot equals 10,000 lux (1 lumen/cm²), a CGS illuminance unit."]
+    ],
+    howTo: "Type an illuminance in any field. It converts to lux with the unit factor, then fills the other illuminance units instantly."
+  },
+  "magnetic-flux-converter": {
+    title: "Magnetic Flux Converter — Weber, Maxwell, T·m² Online",
+    desc: "Convert magnetic flux between webers, maxwells, tesla-square-metres and volt-seconds. Exact factors for electromagnetism, transformers and coil calculations.",
+    keywords: "magnetic flux converter, weber to maxwell, Wb to Mx, tesla m2, volt-second flux",
+    faq: [
+      ["How many maxwells in a weber?", "1 Wb equals 10⁸ maxwells; the maxwell is the tiny CGS flux unit."],
+      ["Why do Wb, T·m² and V·s share a value?", "They are dimensionally equal: 1 Wb = 1 T·m² = 1 V·s, reflecting Faraday's law."],
+      ["What is the base unit?", "The weber (Wb) is the SI base for magnetic flux used in this tool."]
+    ],
+    howTo: "Enter a flux value in any field. It converts to webers using the unit factor, then redistributes to all equivalent flux units."
+  },
+  "density-converter": {
+    title: "Density Converter — kg/m³, g/cm³, lb/ft³ Online",
+    desc: "Convert density between kg/m³, g/cm³, g/L, lb/ft³, lb/gal and oz/in³. Exact factors for materials, chemistry, fluids and engineering calculations.",
+    keywords: "density converter, kg/m3 to g/cm3, lb/ft3 converter, g/L to kg/m3, lb per gallon density",
+    faq: [
+      ["How many kg/m³ is 1 g/cm³?", "1 g/cm³ equals 1000 kg/m³ — the density of water is about 1 g/cm³."],
+      ["What is the base unit?", "The kilogram per cubic metre (kg/m³) is the SI base used for all conversions here."],
+      ["Is g/L the same as kg/m³?", "Yes — 1 g/L equals exactly 1 kg/m³, so the two scales line up one-to-one."]
+    ],
+    howTo: "Type a density in any field. The value converts to kg/m³ with the unit factor, then fills every other density unit live."
+  },
+  "viscosity-converter": {
+    title: "Viscosity Converter — Pa·s, cP, Poise, cSt, Stokes",
+    desc: "Convert dynamic viscosity (Pa·s, cP, poise) and kinematic viscosity (m²/s, cSt, stokes) in independent panels. Exact factors for fluids, oils and lab work.",
+    keywords: "viscosity converter, pascal-second to centipoise, poise converter, centistokes, kinematic viscosity",
+    faq: [
+      ["How many centipoise in a pascal-second?", "1 Pa·s equals 1000 cP; water at 20°C is about 1 cP or 0.001 Pa·s."],
+      ["What is the difference between dynamic and kinematic viscosity?", "Dynamic (Pa·s) measures shear resistance; kinematic (m²/s) is dynamic divided by density."],
+      ["How does cSt relate to m²/s?", "1 centistokes equals 10⁻⁶ m²/s, the common unit for oil viscosity grades."]
+    ],
+    howTo: "Use the dynamic panel for Pa·s/cP/poise and the kinematic panel for m²/s/cSt/stokes. Each converts within its own base independently."
+  },
+  "flow-rate-converter": {
+    title: "Flow Rate Converter — m³/s, L/min, GPM, CFM Online",
+    desc: "Convert volumetric flow rate between m³/s, L/min, US GPM, CFM and barrels per day. Exact factors for pumps, HVAC, plumbing and process engineering.",
+    keywords: "flow rate converter, gpm to lpm, cfm converter, m3/s to l/min, barrel per day flow",
+    faq: [
+      ["How many L/min in 1 m³/s?", "1 m³/s equals 60,000 L/min, since one cubic metre is 1000 litres over 60 seconds."],
+      ["What is the base unit?", "The cubic metre per second (m³/s) is the SI base for flow in this tool."],
+      ["Is GPM here US or imperial?", "This tool uses US gallons per minute, where 1 GPM ≈ 0.0000630902 m³/s."]
+    ],
+    howTo: "Enter a flow value in any field. It converts to m³/s using the unit factor, then redistributes to all other flow-rate units."
+  },
+  "acceleration-converter": {
+    title: "Acceleration Converter — m/s², g-force, ft/s², Gal",
+    desc: "Convert acceleration between metres per second squared, g-force, feet per second squared and gal. Exact factors for physics, vehicles and seismology.",
+    keywords: "acceleration converter, m/s2 to g, g-force converter, ft/s2, gal acceleration",
+    faq: [
+      ["How many m/s² is 1 g?", "1 g equals 9.80665 m/s² exactly — the standard gravitational acceleration."],
+      ["What is the base unit?", "The metre per second squared (m/s²) is the SI base used for all conversions."],
+      ["What is a gal?", "1 gal equals 0.01 m/s², a CGS unit widely used in geodesy and seismology."]
+    ],
+    howTo: "Type an acceleration in any field. It converts to m/s² using the unit factor, then fills the other acceleration units live."
+  },
+  "wire-gauge-converter": {
+    title: "Wire Gauge Converter — AWG to mm and mm² Online",
+    desc: "Convert American Wire Gauge (AWG) to diameter in millimetres and cross-sectional area in mm². Full 0000–40 reference table for electrical and wiring work.",
+    keywords: "AWG converter, wire gauge to mm, awg to mm2, wire diameter calculator, cable gauge chart",
+    faq: [
+      ["What is the AWG-to-diameter formula?", "d(mm) = 0.127 × 92^((36 − AWG)/39); each 6 gauges roughly halves or doubles the diameter."],
+      ["How is the area found?", "Area(mm²) = π × (d/2)², computed automatically from the AWG diameter."],
+      ["Does a higher AWG mean thicker wire?", "No — a higher AWG number means a thinner wire, so 24 AWG is much finer than 12 AWG."]
+    ],
+    howTo: "Enter an AWG number, a diameter in mm, or an area in mm². The tool solves the AWG formula both ways and updates all fields."
+  },
+  "clothing-size-converter": {
+    title: "Clothing Size Converter — US, UK, EU, IT, AU Chart",
+    desc: "Convert clothing sizes between US, UK, EU, Italian and Australian systems for men and women. Alpha (S/M/L) mapping with a full reference chart for shopping.",
+    keywords: "clothing size converter, us to eu size, uk clothing size, international size chart, dress size conversion",
+    faq: [
+      ["How do US and EU clothing sizes relate?", "EU numeric sizes run larger; the chart maps each alpha size (S, M, L) across systems for a close match."],
+      ["Are men's and women's charts different?", "Yes — women's sizes apply regional offsets to the men's baseline, so pick the correct gender."],
+      ["Are these conversions exact?", "Apparel sizing varies by brand, so treat the chart as an approximate fashion reference, not a guarantee."]
+    ],
+    howTo: "Choose gender and an alpha size. The tool looks up the matching US/UK/EU/IT/AU numbers and shows the full chart for comparison."
+  },
+  "shoe-size-converter": {
+    title: "Shoe Size Converter — US, UK, EU, JP, CN, BR Online",
+    desc: "Convert shoe sizes between US, UK, EU, Japan, China, Australia and Brazil for men and women. Quick international foot-size mapping for online shoe shopping.",
+    keywords: "shoe size converter, us to eu shoe size, uk shoe size, japan shoe size, international shoe chart",
+    faq: [
+      ["How do US and UK shoe sizes differ?", "UK sizes run about one size smaller than US, so UK = US − 1 in this tool's mapping."],
+      ["How is EU shoe size estimated?", "EU size is approximated as US + 33, matching the common Paris-point scale."],
+      ["Do men's and women's scales differ?", "Yes — Japanese, Australian and Brazilian offsets differ by gender, so choose the right one."]
+    ],
+    howTo: "Pick gender and enter your US size. The tool applies each region's formula to display UK, EU, JP, CN, AU and BR equivalents."
+  },
+  "bra-size-converter": {
+    title: "Bra Size Converter — US, UK, EU, FR, IT, AU Chart",
+    desc: "Convert bra band and cup sizes between US, UK, EU, French/Belgian, Italian and Australian systems. Fast international lingerie sizing reference for shopping.",
+    keywords: "bra size converter, us to eu bra size, band size conversion, cup size chart, international bra size",
+    faq: [
+      ["How is EU band size calculated?", "EU band ≈ US × 2.25 + 10, mapping the inch-based US band to the centimetre EU scale."],
+      ["How do FR and BE sizes relate to EU?", "French and Belgian band sizes are EU + 15, a fixed offset shown automatically."],
+      ["Are cup letters the same everywhere?", "Cup lettering varies by country and brand, so treat cup output as an approximate guide."]
+    ],
+    howTo: "Enter your US band number and select a cup letter. The tool applies each system's band formula and shows matching sizes side by side."
+  },
+  "paper-size-converter": {
+    title: "Paper Size Converter — A4, A3, Letter in mm, cm, in",
+    desc: "Convert ISO A/B and US paper sizes to millimetres, centimetres and inches with proportional visuals. Handy for printing, design and document layout.",
+    keywords: "paper size converter, a4 in mm, a3 to inches, letter paper size, iso paper dimensions",
+    faq: [
+      ["What are A4 dimensions?", "A4 is 210 × 297 mm, which is 21.0 × 29.7 cm or about 8.27 × 11.69 inches."],
+      ["How do ISO A sizes relate?", "Each A size is half the previous one and keeps a √2:1 aspect ratio, so A5 is half an A4."],
+      ["How is size converted to inches?", "Inches equal millimetres divided by 25.4; centimetres equal millimetres divided by 10."]
+    ],
+    howTo: "Select a paper size to see its mm, cm and inch dimensions, a proportional rectangle preview, and a full comparison table."
+  },
+  "typography-converter": {
+    title: "Typography Unit Converter — pt, px, em, rem, mm, cm",
+    desc: "Convert typographic units between points, pixels, em, rem, millimetres and centimetres at any DPI. Essential for web, print and CSS font-size work.",
+    keywords: "typography converter, pt to px, px to em, rem converter, points to pixels, font size units",
+    faq: [
+      ["How many pixels is 12pt?", "At 96 DPI, 12pt equals 16px using px = pt × DPI / 72."],
+      ["Why does DPI matter?", "Point-to-pixel conversion depends on resolution; changing DPI rescales every point and metric result."],
+      ["How are em and rem computed?", "Both use a 16px root by default, so 1em = 1rem = 16px unless your root font-size differs."]
+    ],
+    howTo: "Set the DPI, then type a value in any unit field. The tool converts everything through pixels to update pt, em, rem, mm and cm."
+  },
+  "frequency-wavelength-converter": {
+    title: "Frequency to Wavelength Converter — λ = c ÷ f Online",
+    desc: "Convert between frequency (Hz, kHz, MHz, GHz) and electromagnetic wavelength using λ = c/f with the exact speed of light. Ideal for RF, radio and optics.",
+    keywords: "frequency to wavelength, wavelength calculator, hz to meters, mhz wavelength, lambda equals c over f",
+    faq: [
+      ["What formula converts frequency to wavelength?", "λ = c ÷ f, where c is 299,792,458 m/s, the exact speed of light in vacuum."],
+      ["What wavelength is 100 MHz?", "100 MHz gives λ = c/f ≈ 2.9979 m, a typical FM-radio wavelength."],
+      ["Does this assume a vacuum?", "Yes — it uses the vacuum speed of light; in other media, wavelength shrinks by the refractive index."]
+    ],
+    howTo: "Enter a frequency in Hz or a wavelength in metres. The tool applies λ = c/f both ways and lists kHz, MHz, GHz, cm and mm values."
+  },
+  "data-transfer-rate-converter": {
+    title: "Data Transfer Rate Converter — bps, Mbps, MB/s Online",
+    desc: "Convert data rates between bit/s, kbit/s, Mbit/s, Gbit/s and byte-based KB/s, MB/s, GB/s. Uses SI decimal prefixes and 8 bits per byte for network speeds.",
+    keywords: "data transfer rate converter, mbps to mb/s, bits to bytes, gbps converter, bandwidth converter",
+    faq: [
+      ["How many Mbit/s is 1 MB/s?", "1 MB/s equals 8 Mbit/s, because one byte holds eight bits."],
+      ["Are these decimal or binary prefixes?", "This tool uses SI decimal prefixes where k = 1000, M = 10⁶ and G = 10⁹."],
+      ["Why is my download slower than my Mbps plan?", "ISPs quote megabits (Mbit/s) while downloads show megabytes (MB/s), which is eight times smaller."]
+    ],
+    howTo: "Type a rate in any field. Values convert to bit/s (using 8 bits per byte), then fill all bit- and byte-based units instantly."
+  },
+  "angle-unit-converter": {
+    title: "Angle Converter — Degrees, Radians, Gradians, Turns",
+    desc: "Convert angles between degrees, radians, gradians, arcminutes, arcseconds and turns. Exact factors for geometry, trigonometry, surveying and navigation.",
+    keywords: "angle converter, degrees to radians, gradian converter, arcminute arcsecond, radians to degrees",
+    faq: [
+      ["How many radians is 180 degrees?", "180° equals π radians, so 1 radian ≈ 57.2958°."],
+      ["What is the base unit?", "The radian is the SI base for angles; degrees, gradians and turns convert through it."],
+      ["How do arcminutes and arcseconds work?", "1° = 60 arcminutes and 1 arcminute = 60 arcseconds, so 1° = 3600 arcseconds."]
+    ],
+    howTo: "Enter an angle in any field. It converts to radians using the unit factor, then redistributes to every other angular unit live."
+  },
+  "tire-pressure-converter": {
+    title: "Tire Pressure Converter — PSI, Bar, kPa, atm, mmHg",
+    desc: "Convert tire and general pressure between PSI, bar, kilopascal, atmosphere and mmHg (torr). Exact factors for vehicles, cycling and pressure measurement.",
+    keywords: "tire pressure converter, psi to bar, bar to psi, kpa converter, psi to kpa, mmhg torr",
+    faq: [
+      ["How many bar is 32 PSI?", "32 PSI ≈ 2.206 bar, using 1 PSI = 6894.757 Pa and 1 bar = 100,000 Pa."],
+      ["What is the base unit?", "The pascal (Pa) is the SI base; every pressure unit converts through pascals."],
+      ["Is mmHg the same as torr?", "Effectively yes — 1 mmHg = 133.322387415 Pa, and the torr is defined nearly identically."]
+    ],
+    howTo: "Enter a pressure in any field. It converts to pascals using the unit factor, then fills PSI, bar, kPa, atm and mmHg instantly."
+  },
+  "blood-glucose-converter": {
+    title: "Blood Glucose Converter — mg/dL to mmol/L Online",
+    desc: "Convert blood sugar readings between mg/dL and mmol/L using the standard glucose factor of 18.0182. Fast reference for diabetes logs and lab-value comparison.",
+    keywords: "blood glucose converter, mg/dl to mmol/l, mmol/l to mg/dl, blood sugar conversion, glucose units",
+    faq: [
+      ["What is the mg/dL to mmol/L formula?", "mmol/L = mg/dL ÷ 18.0182, and mg/dL = mmol/L × 18.0182 for glucose."],
+      ["What is 100 mg/dL in mmol/L?", "100 mg/dL ≈ 5.55 mmol/L, a common fasting reference value."],
+      ["Why is 18.0182 used?", "It reflects the molar mass of glucose (about 180.16 g/mol) scaled between the two unit systems."]
+    ],
+    howTo: "Enter a reading in mg/dL or mmol/L. The tool multiplies or divides by 18.0182 to show the equivalent value instantly."
+  },
+  "color-temperature-mired-converter": {
+    title: "Color Temperature to Mired Converter — Kelvin ↔ Mired",
+    desc: "Convert Kelvin color temperature to and from mireds using mired = 1,000,000 ÷ K. Built for photography, video lighting and CTO/CTB gel calculations.",
+    keywords: "mired converter, kelvin to mired, color temperature converter, cto ctb gel, mired shift",
+    faq: [
+      ["What is the Kelvin-to-mired formula?", "mired = 1,000,000 ÷ Kelvin, and Kelvin = 1,000,000 ÷ mired."],
+      ["Why use mireds instead of Kelvin?", "Mireds add linearly, so lighting gels shift color by a fixed mired amount regardless of the starting temperature."],
+      ["What is 6500 K in mireds?", "6500 K ≈ 153.85 mired, close to daylight/D65, while 3200 K tungsten is 312.5 mired."]
+    ],
+    howTo: "Enter a value in Kelvin or mired. The tool applies mired = 1,000,000 ÷ K both ways and shows a reference table of common sources."
+  },
+  "roman-numeral-converter": {
+    title: "Roman Numeral Converter — Number to Roman & Back",
+    desc: "Convert whole numbers 1–3999 to Roman numerals and parse Roman numerals back to integers with canonical-form validation. Perfect for dates, names and outlines.",
+    keywords: "roman numeral converter, number to roman numerals, roman to number, roman numeral date, convert roman numerals",
+    faq: [
+      ["Why is the range limited to 1–3999?", "Standard Roman numerals have no zero and cannot cleanly express 4000+ without overlines, so 1–3999 is the valid range."],
+      ["What are the subtractive pairs?", "CM=900, CD=400, XC=90, XL=40, IX=9 and IV=4 encode values just below the next symbol."],
+      ["Does it reject invalid numerals?", "Yes — the parser re-encodes the result and rejects any non-canonical form like IIII or IC."]
+    ],
+    howTo: "Type a number (1–3999) or a Roman numeral. The tool converts in the direction you edit and validates that the numeral is canonical."
+  },
+  "pace-speed-converter": {
+    title: "Running Pace Converter — min/km, min/mi to km/h, mph",
+    desc: "Convert running pace (min/km, min/mi) to and from speed (km/h, mph). Real-time results for race planning, treadmill settings and training splits.",
+    keywords: "pace converter, min/km to km/h, running pace to speed, min/mile converter, mph to pace",
+    faq: [
+      ["How is pace converted to speed?", "speed(km/h) = 60 ÷ pace(min/km), so a 5 min/km pace equals 12 km/h."],
+      ["How is pace entered?", "Pace uses decimal minutes, so 5 min 30 s is typed as 5.5, not 5.30."],
+      ["How do min/km and min/mi relate?", "min/mi = min/km × 1.609344, since a mile is 1.609344 km long."]
+    ],
+    howTo: "Enter a pace or a speed in any field. The tool converts through min/km, then fills min/mi, km/h and mph together instantly."
+  },
+  "fuel-economy-converter": {
+    title: "Fuel Economy Converter — L/100km, MPG, km/L Online",
+    desc: "Convert fuel efficiency between L/100 km, US MPG, imperial UK MPG and km/L. Exact inverse-relation factors for cars, road trips and mileage comparison.",
+    keywords: "fuel economy converter, l/100km to mpg, mpg to l/100km, us to uk mpg, km/l converter",
+    faq: [
+      ["How does L/100 km relate to US MPG?", "MPG(US) = 235.214583 ÷ (L/100 km); the two scales are inversely related."],
+      ["Why do US and UK MPG differ?", "The imperial gallon is larger, so UK MPG = 282.480936 ÷ (L/100 km) gives higher numbers than US MPG."],
+      ["Is a lower L/100 km better?", "Yes — fewer litres per 100 km means better efficiency, unlike MPG where higher is better."]
+    ],
+    howTo: "Type a value in any field. The tool converts through L/100 km using each inverse factor to fill US MPG, UK MPG and km/L."
+  },
+  "gas-mark-converter": {
+    title: "Oven Gas Mark Converter — Gas Mark to °F and °C",
+    desc: "Convert oven gas marks 1–9 to Fahrenheit and Celsius with a full baking temperature table. Handy for UK recipes, ovens and cooking conversions.",
+    keywords: "gas mark converter, gas mark to fahrenheit, gas mark to celsius, oven temperature chart, uk gas mark",
+    faq: [
+      ["What is the gas mark formula?", "°F = 25 × gas mark + 250, then °C = (°F − 32) × 5⁄9 for the Celsius value."],
+      ["What temperature is Gas Mark 4?", "Gas Mark 4 = 350 °F = about 177 °C, the standard 'moderate' oven setting."],
+      ["What range do gas marks cover?", "Gas marks run 1 (cool, 275 °F) to 9 (very hot, 475 °F) in 25 °F steps."]
+    ],
+    howTo: "Select a gas mark to see its Fahrenheit and Celsius temperatures, plus a full reference table of every mark from 1 to 9."
+  },
+  "ring-size-converter": {
+    title: "Ring Size Converter — US, UK, EU, mm Diameter Chart",
+    desc: "Convert ring sizes across US, UK, EU/ISO and inside diameter and circumference in millimetres. Reference chart for jewellery shopping and gift sizing.",
+    keywords: "ring size converter, us to uk ring size, ring size in mm, eu ring size, ring diameter chart",
+    faq: [
+      ["How is ring size measured?", "Ring size is set by the inside circumference; EU/ISO size equals that circumference in millimetres."],
+      ["How do diameter and circumference relate?", "circumference ≈ diameter × π, so a wider band means a larger circumference and size."],
+      ["Are half sizes exact?", "Half sizes and letter grades vary slightly by brand, so treat the chart as a close reference."]
+    ],
+    howTo: "Select your US ring size to see the matching UK letter, EU/ISO number, and inside diameter and circumference in millimetres."
+  },
+};
+
 function ToolPage({ toolId }) {
   const tool = TOOLS.find(t => t.id === toolId);
-  const meta = null;
+  const meta = TOOL_META[toolId] || null;
   const ToolComp = TOOL_COMPONENTS[toolId];
   useEffect(() => {
     document.title = meta?.title || `${tool?.name} – Free Converter | ToolsRift`;
@@ -1182,7 +1526,7 @@ function Nav() {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => { const h=()=>setScrolled(window.scrollY>8); window.addEventListener("scroll",h,{passive:true}); return ()=>window.removeEventListener("scroll",h); }, []);
   return (
-    <nav style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 24px", borderBottom: `1px solid ${scrolled?"rgba(6,182,212,0.2)":C.border}`, position: "sticky", top: 0, background: scrolled?"rgba(6,9,15,0.97)":"rgba(6,9,15,0.85)", backdropFilter: "blur(12px)", zIndex: 100, transition:"all 0.3s" }}>
+    <nav style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 24px", borderBottom: `1px solid ${scrolled?"rgba(14,165,233,0.2)":C.border}`, position: "sticky", top: 0, background: scrolled?"rgba(6,9,15,0.97)":"rgba(6,9,15,0.85)", backdropFilter: "blur(12px)", zIndex: 100, transition:"all 0.3s" }}>
       <a href="https://toolsrift.com" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
         <img src="/logo.svg" alt="ToolsRift" style={{ height: 36 }} />
         <span style={{ fontSize: 11, color: C.muted, background: "rgba(255,255,255,0.05)", padding: "2px 8px", borderRadius: 10 }}>UNIT CONVERTERS</span>
@@ -1219,7 +1563,7 @@ function SiteFooter({ currentPage }) {
     <div style={{ maxWidth: 860, margin: "0 auto", padding: "32px 20px 28px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
         <span style={{ fontSize: 11, fontWeight: 700, color: "#475569", textTransform: "uppercase", letterSpacing: "0.06em" }}>Explore More Tools</span>
-        <a href="/" style={{ fontSize: 12, color: "#06B6D4", textDecoration: "none", fontWeight: 600 }}>← Back to Home</a>
+        <a href="/" style={{ fontSize: 12, color: "#0EA5E9", textDecoration: "none", fontWeight: 600 }}>← Back to Home</a>
       </div>
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
         {pages.map((p) => (

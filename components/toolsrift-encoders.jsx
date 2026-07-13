@@ -11,7 +11,7 @@ import ToolPageLayout from './shared/ToolPageLayout';
 // �"����� BRAND / TOKENS �������������������������������������������������������������������������������������������������������������������"�
 const C = {
   bg:"#06090F", surface:"#0D1117", border:"rgba(255,255,255,0.06)",
-  blue:"#3B82F6", blueD:"#2563EB", text:"#E2E8F0", muted:"#64748B",
+  blue:"#F59E0B", blueD:"#D97706", text:"#E2E8F0", muted:"#64748B",
   success:"#10B981", warn:"#F59E0B", danger:"#EF4444", purple:"#8B5CF6",
 };
 
@@ -21,7 +21,7 @@ const GLOBAL_CSS = `
   ::-webkit-scrollbar{width:6px;height:6px}
   ::-webkit-scrollbar-track{background:transparent}
   ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px}
-  ::selection{background:rgba(59,130,246,0.3)}
+  ::selection{background:rgba(245,158,11,0.3)}
   button:hover{filter:brightness(1.1)}
   select option{background:#0D1117}
   textarea{resize:vertical}
@@ -54,10 +54,10 @@ function Btn({ children, onClick, variant="primary", size="md", href, disabled, 
   const base={ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:6, border:"none", cursor:disabled?"not-allowed":"pointer", borderRadius:8, fontWeight:600, transition:"all .15s", fontFamily:"'Plus Jakarta Sans',sans-serif", textDecoration:"none", opacity:disabled?0.5:1 };
   const sz={ sm:{padding:"6px 14px",fontSize:12}, md:{padding:"9px 20px",fontSize:13}, lg:{padding:"12px 28px",fontSize:14} }[size];
   const v={
-    primary:{ background:`linear-gradient(135deg,${C.blue},${C.blueD})`, color:"#fff", boxShadow:"0 2px 8px rgba(59,130,246,0.25)" },
+    primary:{ background:`linear-gradient(135deg,${C.blue},${C.blueD})`, color:"#fff", boxShadow:"0 2px 8px rgba(245,158,11,0.25)" },
     secondary:{ background:"rgba(255,255,255,0.05)", color:C.text, border:`1px solid ${C.border}` },
     ghost:{ background:"transparent", color:C.muted },
-    blue:{ background:`linear-gradient(135deg,${C.blue},${C.blueD})`, color:"#fff", boxShadow:"0 2px 8px rgba(59,130,246,0.25)" },
+    blue:{ background:`linear-gradient(135deg,${C.blue},${C.blueD})`, color:"#fff", boxShadow:"0 2px 8px rgba(245,158,11,0.25)" },
     danger:{ background:"rgba(239,68,68,0.15)", color:"#FCA5A5" },
   }[variant];
   const p={ style:{...base,...sz,...v,...style}, onClick, disabled };
@@ -1125,7 +1125,7 @@ function QuotedPrintable() {
     <VStack>
       <ModeToggle mode={mode} setMode={setMode} options={[["encode","Encode"],["decode","Decode"]]} />
       <IOPanel input={input} onInput={setInput} output={output} inputLabel={mode==="encode"?"Plain Text":"QP Encoded"} outputLabel={mode==="encode"?"Quoted-Printable":"Decoded Text"} inputMono={false} />
-      <Card style={{ background:"rgba(59,130,246,0.05)", border:"1px solid rgba(59,130,246,0.12)" }}>
+      <Card style={{ background:"rgba(245,158,11,0.05)", border:"1px solid rgba(245,158,11,0.12)" }}>
         <div style={{ fontSize:12, color:C.muted, lineHeight:1.8 }}>
           <strong style={{ color:C.text }}>RFC 2045</strong> — Printable ASCII passes through unchanged. Non-ASCII and = become <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>=XX</span> hex pairs. Lines are soft-wrapped at 76 chars with <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>=\r\n</span>.
         </div>
@@ -1264,7 +1264,7 @@ function HexDump() {
       <div style={{ background:"rgba(0,0,0,0.35)", border:`1px solid ${C.border}`, borderRadius:8, padding:"12px 14px", fontFamily:"'JetBrains Mono',monospace", fontSize:12.5, color:C.text, lineHeight:1.7, whiteSpace:"pre", overflowX:"auto", minHeight:80 }}>
         {output || <span style={{ color:C.muted }}>Offset   Hex bytes                                          ASCII</span>}
       </div>
-      <Card style={{ background:"rgba(59,130,246,0.05)", border:"1px solid rgba(59,130,246,0.12)" }}>
+      <Card style={{ background:"rgba(245,158,11,0.05)", border:"1px solid rgba(245,158,11,0.12)" }}>
         <div style={{ fontSize:12, color:C.muted, lineHeight:1.7 }}>
           <strong style={{ color:C.text }}>Format:</strong> each row is <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>offset</span> · 16 hex bytes (split 8 + 8) · <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>|ASCII|</span>. Bytes below 0x20 or above 0x7e render as <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>.</span> — just like <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>hexdump -C</span>.
         </div>
@@ -1383,7 +1383,7 @@ function Base45() {
       <IOPanel input={input} onInput={setInput} output={output} error={error}
         inputLabel={mode==="encode"?"Plain Text":"Base45 String"} outputLabel={mode==="encode"?"Base45 Encoded":"Decoded Text"}
         inputMono={mode!=="encode"} outputMono={mode==="encode"} />
-      <Card style={{ background:"rgba(59,130,246,0.05)", border:"1px solid rgba(59,130,246,0.12)" }}>
+      <Card style={{ background:"rgba(245,158,11,0.05)", border:"1px solid rgba(245,158,11,0.12)" }}>
         <div style={{ fontSize:12, color:C.muted, lineHeight:1.8 }}>
           <strong style={{ color:C.text }}>RFC 9285</strong> — two bytes map to three characters from a 45-symbol alphabet optimised for QR alphanumeric mode. Used in EU Digital COVID Certificates. Try <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>AB → BB8</span>.
         </div>
@@ -1560,7 +1560,7 @@ function Base62() {
       <IOPanel input={input} onInput={setInput} output={output} error={error}
         inputLabel={mode==="encode"?"Plain Text":"Base62 String"} outputLabel={mode==="encode"?"Base62 Encoded":"Decoded Text"}
         inputMono={mode!=="encode"} outputMono={mode==="encode"} />
-      <Card style={{ background:"rgba(59,130,246,0.05)", border:"1px solid rgba(59,130,246,0.12)" }}>
+      <Card style={{ background:"rgba(245,158,11,0.05)", border:"1px solid rgba(245,158,11,0.12)" }}>
         <div style={{ fontSize:12, color:C.muted, lineHeight:1.8 }}>
           <strong style={{ color:C.text }}>Alphanumeric only</strong> — 0-9, A-Z, a-z with no +, / or =, so output drops straight into URLs, filenames and IDs. Leading zero bytes are preserved as leading <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>0</span>.
         </div>
@@ -1704,7 +1704,7 @@ function Punycode() {
       <IOPanel input={input} onInput={setInput} output={output} error={error} rows={4}
         inputLabel={mode==="ascii"?"Unicode Domain (e.g. bücher.com)":"ASCII Domain (e.g. xn--bcher-kva.com)"} outputLabel={mode==="ascii"?"Punycode / ASCII":"Unicode Domain"}
         inputMono={false} outputMono />
-      <Card style={{ background:"rgba(59,130,246,0.05)", border:"1px solid rgba(59,130,246,0.12)" }}>
+      <Card style={{ background:"rgba(245,158,11,0.05)", border:"1px solid rgba(245,158,11,0.12)" }}>
         <div style={{ fontSize:12, color:C.muted, lineHeight:1.8 }}>
           <strong style={{ color:C.text }}>RFC 3492</strong> — only non-ASCII labels are encoded and prefixed with <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>xn--</span>. Example: <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>bücher.com → xn--bcher-kva.com</span>.
         </div>
@@ -1773,7 +1773,7 @@ function DecimalEntities() {
       <IOPanel input={input} onInput={setInput} output={output}
         inputLabel={mode==="encode"?"Plain Text":"HTML with Numeric Entities"} outputLabel={mode==="encode"?"Numeric Entities":"Decoded Text"}
         inputMono={mode!=="encode"} outputMono={mode==="encode"} />
-      <Card style={{ background:"rgba(59,130,246,0.05)", border:"1px solid rgba(59,130,246,0.12)" }}>
+      <Card style={{ background:"rgba(245,158,11,0.05)", border:"1px solid rgba(245,158,11,0.12)" }}>
         <div style={{ fontSize:12, color:C.muted, lineHeight:1.8 }}>
           <strong style={{ color:C.text }}>Numeric references</strong> encode any character by its Unicode code point: <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>A → &amp;#65;</span> or <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>&amp;#x41;</span>. Decoding accepts both forms mixed with plain text.
         </div>
@@ -1901,7 +1901,7 @@ function UuXxEncoder({ encodeFn, decodeFn, name, prefix, note }) {
       <IOPanel input={input} onInput={setInput} output={output} error={error} rows={8}
         inputLabel={mode==="encode"?"Plain Text":`${name}d Block`} outputLabel={mode==="encode"?`${name}d Output`:"Decoded Text"}
         inputMono outputMono />
-      <Card style={{ background:"rgba(59,130,246,0.05)", border:"1px solid rgba(59,130,246,0.12)" }}>
+      <Card style={{ background:"rgba(245,158,11,0.05)", border:"1px solid rgba(245,158,11,0.12)" }}>
         <div style={{ fontSize:12, color:C.muted, lineHeight:1.8 }}>
           <strong style={{ color:C.text }}>{name}</strong> — {note} Output is wrapped in a <span style={{ fontFamily:"'JetBrains Mono',monospace", color:"#60A5FA" }}>begin … end</span> block; the decoder reads that block back.
         </div>
@@ -2057,7 +2057,7 @@ function ToolPage({ toolId }) {
         <ToolComp />
       </Card>
       {meta?.howTo && (
-        <div style={{ background:'rgba(59,130,246,0.05)', border:'1px solid rgba(59,130,246,0.12)', borderRadius:16, padding:'28px 32px', marginBottom:24, marginTop:24 }}>
+        <div style={{ background:'rgba(245,158,11,0.05)', border:'1px solid rgba(245,158,11,0.12)', borderRadius:16, padding:'28px 32px', marginBottom:24, marginTop:24 }}>
           <h2 style={{ fontSize:17, fontWeight:700, color:'#F1F5F9', margin:'0 0 12px', fontFamily:"'Sora', sans-serif" }}>📖 How to Use This Tool</h2>
           <p style={{ fontSize:14, color:'#94A3B8', lineHeight:1.8, margin:0 }}>{meta.howTo}</p>
         </div>

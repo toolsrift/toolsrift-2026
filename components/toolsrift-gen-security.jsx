@@ -13,12 +13,12 @@ const BRAND = { name: "ToolsRift", tagline: "Security & Data Generators" };
 
 const C = {
 bg: "#06090F", surface: "#0D1117", border: "rgba(255,255,255,0.06)",
-blue: "#14B8A6", blueD: "#0D9488",
+blue: "#84CC16", blueD: "#65A30D",
 text: "#E2E8F0", muted: "#64748B",
 success: "#10B981", warn: "#F59E0B", danger: "#EF4444",
 };
 
-const GLOBAL_CSS = `@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap'); *{box-sizing:border-box;margin:0;padding:0} ::-webkit-scrollbar{width:6px;height:6px} ::-webkit-scrollbar-track{background:transparent} ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px} ::selection{background:rgba(20,184,166,0.3)} button:hover{filter:brightness(1.1)} select option{background:#0D1117} textarea{resize:vertical} .fade-in{animation:fadeIn .25s ease} @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}} .tr-nav-cats{display:flex;gap:4px;align-items:center} .tr-nav-badge{display:inline-flex} @media(max-width:640px){ .tr-nav-cats{display:none!important} .tr-nav-badge{display:none!important} };`;
+const GLOBAL_CSS = `@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap'); *{box-sizing:border-box;margin:0;padding:0} ::-webkit-scrollbar{width:6px;height:6px} ::-webkit-scrollbar-track{background:transparent} ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px} ::selection{background:rgba(132,204,22,0.3)} button:hover{filter:brightness(1.1)} select option{background:#0D1117} textarea{resize:vertical} .fade-in{animation:fadeIn .25s ease} @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}} .tr-nav-cats{display:flex;gap:4px;align-items:center} .tr-nav-badge{display:inline-flex} @media(max-width:640px){ .tr-nav-cats{display:none!important} .tr-nav-badge{display:none!important} };`;
 
 const T = {
 body: { fontFamily:"'Plus Jakarta Sans',sans-serif", fontSize:14, color:C.text },
@@ -43,7 +43,7 @@ const ACCENT = C.blue; const ACCENTD = C.blueD;
 const base = { display:"inline-flex", alignItems:"center", justifyContent:"center", gap:6, border:"none", cursor:disabled?"not-allowed":"pointer", borderRadius:8, fontWeight:600, transition:"all .15s", fontFamily:"'Plus Jakarta Sans',sans-serif", textDecoration:"none", opacity:disabled?0.5:1 };
 const sz = { sm:{padding:"6px 14px",fontSize:12}, md:{padding:"9px 20px",fontSize:13}, lg:{padding:"12px 28px",fontSize:14} }[size];
 const v = {
-primary:{ background:`linear-gradient(135deg,${ACCENT},${ACCENTD})`, color:"#fff", boxShadow:"0 2px 8px rgba(20,184,166,0.25)" },
+primary:{ background:`linear-gradient(135deg,${ACCENT},${ACCENTD})`, color:"#fff", boxShadow:"0 2px 8px rgba(132,204,22,0.25)" },
 secondary:{ background:"rgba(255,255,255,0.05)", color:C.text, border:`1px solid ${C.border}` },
 ghost:{ background:"transparent", color:C.muted },
 danger:{ background:"rgba(239,68,68,0.15)", color:"#FCA5A5" },
@@ -1767,7 +1767,7 @@ function Nav() {
       padding: "0 24px", position: "sticky", top: 0, zIndex: 100,
       background: `rgba(6,9,15,${scrolled ? 0.97 : 0.85})`,
       backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
-      borderBottom: `1px solid ${scrolled ? "rgba(20,184,166,0.2)" : C.border}`,
+      borderBottom: `1px solid ${scrolled ? "rgba(132,204,22,0.2)" : C.border}`,
       transition: "background 0.2s, border-color 0.2s",
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -1776,7 +1776,7 @@ function Nav() {
         <span style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 14, fontWeight: 500, color: C.blue }}>{THEME?.name}</span>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <span style={{ background: "rgba(20,184,166,0.12)", color: C.blue, border: "1px solid rgba(20,184,166,0.25)", borderRadius: 20, fontSize: 11, fontWeight: 700, padding: "3px 10px", fontFamily: "'Plus Jakarta Sans',sans-serif" }}>{TOOLS.length} tools</span>
+        <span style={{ background: "rgba(132,204,22,0.12)", color: C.blue, border: "1px solid rgba(132,204,22,0.25)", borderRadius: 20, fontSize: 11, fontWeight: 700, padding: "3px 10px", fontFamily: "'Plus Jakarta Sans',sans-serif" }}>{TOOLS.length} tools</span>
         <a href="/" style={{ fontSize: 12, color: C.muted, textDecoration: "none", fontWeight: 500 }}>🏠 Home</a>
         {/* PHASE 2: <UsageCounter/> */}
       </div>
