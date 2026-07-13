@@ -266,6 +266,10 @@ const TOOLS = [
   {id:"json-merger",        cat:"analyze",  name:"JSON Merger",               desc:"Deep merge two JSON objects with conflict resolution",   icon:"🧬", free:true},
   {id:"json-array-tools",   cat:"analyze",  name:"JSON Array Tools",          desc:"Filter, sort, map and paginate JSON arrays interactively", icon:"🧬", free:true},
   {id:"json-query",         cat:"analyze",  name:"JSON Query / Filter",       desc:"Filter and transform JSON arrays with field conditions",  icon:"🧬", free:true},
+  {id:"json-repair",        cat:"format",   name:"JSON Repair",               desc:"Fix broken JSON — trailing commas, single quotes, unquoted keys, comments", icon:"🔧", free:true},
+  {id:"jsonl-converter",    cat:"convert",  name:"JSON ⇄ JSONL Converter",    desc:"Convert a JSON array to JSONL/NDJSON and back, line by line",  icon:"📑", free:true},
+  {id:"json-to-go",         cat:"convert",  name:"JSON to Go Struct",         desc:"Generate a Go struct with json tags from a JSON sample",  icon:"🐹", free:true},
+  {id:"json-to-python",     cat:"convert",  name:"JSON to Python TypedDict",  desc:"Generate a Python TypedDict class from a JSON sample",    icon:"🐍", free:true},
 ];
 
 const CATEGORIES = [
@@ -282,6 +286,10 @@ const TOOL_META = {
   "json-diff":          {title:"JSON Diff Tool — Compare Two JSON Objects Online",       desc:"Compare two JSON objects side-by-side and visualize additions, deletions, and changes.", faq:[["What types of differences are shown?","Added keys (green), removed keys (red), and changed values (yellow) are all highlighted."],["Does it handle nested objects?","Yes — the diff is recursive and shows differences at any nesting level."],["Can I compare JSON arrays?","Yes — array element differences are shown with index-based tracking."]]},
   "json-path":          {title:"JSONPath Tester — Test JSONPath Expressions Online",     desc:"Test JSONPath expressions against JSON data. Supports standard JSONPath syntax including wildcards and filters.", faq:[["What is JSONPath?","JSONPath is a query language for JSON, similar to XPath for XML. Developed by Stefan Goessner."],["What is the root symbol?","$ represents the root of the JSON document. $.users[0].name gets the first user's name."],["What are common JSONPath operators?","$ (root), . (child), [] (subscript), * (wildcard), [?(@.prop)] (filter), .. (recursive descent)"]]},
   "json-to-typescript": {title:"JSON to TypeScript Interface Generator",                 desc:"Automatically generate TypeScript interface definitions from JSON objects. Handles nested types and arrays.", faq:[["Can it handle nested objects?","Yes — nested objects become nested interfaces or inline types automatically."],["What about arrays?","Arrays of objects generate typed array signatures like UserItem[]."],["Does it handle optional fields?","Fields are marked as required by default. Manually add ? for optional fields."]]},
+  "json-repair":        {title:"JSON Repair — Fix Broken & Malformed JSON Online",       desc:"Paste broken JSON and get valid, strict JSON back. Fixes trailing commas, single quotes, unquoted keys, and comments using JSON5.", faq:[["What can it fix?","Trailing commas, single-quoted strings, unquoted object keys, comments, and other JSON5-tolerated syntax are all repaired into strict JSON."],["How does it work?","Your input is parsed with the JSON5 parser (which is lenient) and re-serialized with strict JSON.stringify, producing valid JSON."],["Why can't some JSON be repaired?","If the input is too broken for even the lenient JSON5 parser (e.g. missing brackets or mismatched quotes), it reports the parse error instead of guessing."]]},
+  "jsonl-converter":    {title:"JSON to JSONL / NDJSON Converter (Both Ways)",           desc:"Convert a JSON array to JSONL (newline-delimited JSON) and back. One compact object per line, with per-line error reporting.", faq:[["What is JSONL / NDJSON?","JSONL (also called NDJSON) is newline-delimited JSON — one complete JSON value per line. It is used for streaming, logs, and big-data pipelines."],["Does it validate each line?","Yes — when converting JSONL back to an array, every non-empty line is parsed and the exact line number of any failure is reported."],["Does the array need to be objects?","No — any JSON array works. Each element becomes one line, whether it is an object, number, string, or nested array."]]},
+  "json-to-go":         {title:"JSON to Go Struct Generator — Struct with json Tags",     desc:"Generate a Go struct from a JSON sample, with PascalCase fields and json tags. Nested objects become nested struct types.", faq:[["What types does it infer?","string→string, whole numbers→int, decimals→float64, true/false→bool, null→interface{}, arrays→[]T, and objects→nested structs."],["Is the output ready to compile?","It is a strong starting point. Review numeric widths, optional fields, and pointer usage — inference is intentionally conservative."],["How are nested objects handled?","Each nested object gets its own named struct type, referenced by field, with matching json tags for the original keys."]]},
+  "json-to-python":     {title:"JSON to Python TypedDict Generator",                     desc:"Generate a Python TypedDict from a JSON sample. Nested objects become nested TypedDicts, with functional syntax for non-identifier keys.", faq:[["Why TypedDict instead of dataclass?","TypedDict describes dictionary shapes exactly as JSON decodes them, so it matches json.loads output without conversion."],["What about keys that aren't valid identifiers?","Keys like 'first-name' use the functional TypedDict(...) syntax so any string key is supported."],["Is the output final?","Treat it as a starting point — verify Optional fields and numeric types, since they are inferred from a single sample."]]},
 };
 
 // �"����� YAML HELPERS �������������������������������������������������������������������������������������������������������������������������"�
@@ -1542,6 +1550,254 @@ function JsonQuery() {
   );
 }
 
+// ═══ CDN SCRIPT LOADER (cached) ═══════════════════════════════════════════
+const _scripts = {};
+function loadScript(src) {
+  if (_scripts[src]) return _scripts[src];
+  _scripts[src] = new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = src; s.async = true;
+    s.onload = res;
+    s.onerror = () => { delete _scripts[src]; rej(new Error('load failed')); };
+    document.body.appendChild(s);
+  });
+  return _scripts[src];
+}
+
+// ═══ CODEGEN HELPERS (Go / Python) ════════════════════════════════════════
+function codePascal(s) {
+  return String(s).replace(/[^a-zA-Z0-9]+/g, ' ').trim().split(/\s+/)
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('') || 'Field';
+}
+function singularize(s) {
+  const w = String(s || 'Item');
+  if (/ies$/i.test(w)) return w.replace(/ies$/i, 'y');
+  if (/ses$/i.test(w)) return w.replace(/es$/i, '');
+  if (/s$/i.test(w) && !/ss$/i.test(w)) return w.replace(/s$/i, '');
+  return w;
+}
+
+// JSON → Go struct. Conservative type inference; nested objects become named structs.
+function jsonToGo(value, rootName) {
+  const structs = [];
+  function goType(val, nameHint) {
+    if (val === null) return 'interface{}';
+    const t = typeof val;
+    if (t === 'boolean') return 'bool';
+    if (t === 'number') return Number.isInteger(val) ? 'int' : 'float64';
+    if (t === 'string') return 'string';
+    if (Array.isArray(val)) {
+      if (val.length === 0) return '[]interface{}';
+      return '[]' + goType(val[0], singularize(nameHint));
+    }
+    if (t === 'object') {
+      const name = codePascal(nameHint);
+      buildStruct(val, name);
+      return name;
+    }
+    return 'interface{}';
+  }
+  function buildStruct(obj, name) {
+    // Build field types first so nested struct defs are pushed before this one.
+    const fields = Object.entries(obj).map(([k, v]) =>
+      '\t' + codePascal(k) + ' ' + goType(v, k) + ' `json:"' + k + '"`');
+    const body = fields.length ? fields.join('\n') : '\t// (empty object)';
+    structs.push('type ' + name + ' struct {\n' + body + '\n}');
+  }
+  const rn = codePascal(rootName || 'AutoGenerated');
+  if (Array.isArray(value)) {
+    if (value.length && value[0] && typeof value[0] === 'object' && !Array.isArray(value[0])) {
+      buildStruct(value[0], rn);
+      structs.push('// Root JSON is an array — use: type Root = []' + rn);
+    } else {
+      return '// Root JSON is an array of scalars: ' + goType(value, rn);
+    }
+  } else if (value && typeof value === 'object') {
+    buildStruct(value, rn);
+  } else {
+    return '// Root JSON is ' + goType(value, rn) + ' (not an object)';
+  }
+  return '// Starting point — review numeric widths, pointers and optional fields.\n\n' + structs.join('\n\n');
+}
+
+const PY_KEYWORDS = new Set(['False','None','True','and','as','assert','async','await','break','class','continue','def','del','elif','else','except','finally','for','from','global','if','import','in','is','lambda','nonlocal','not','or','pass','raise','return','try','while','with','yield']);
+function isValidPyId(k) { return /^[A-Za-z_][A-Za-z0-9_]*$/.test(k) && !PY_KEYWORDS.has(k); }
+
+// JSON → Python TypedDict. Nested objects become nested TypedDicts (defined first).
+function jsonToPython(value, rootName) {
+  const classes = [];
+  function pyType(val, nameHint) {
+    if (val === null) return 'Optional[Any]';
+    const t = typeof val;
+    if (t === 'boolean') return 'bool';
+    if (t === 'number') return Number.isInteger(val) ? 'int' : 'float';
+    if (t === 'string') return 'str';
+    if (Array.isArray(val)) {
+      if (val.length === 0) return 'List[Any]';
+      return 'List[' + pyType(val[0], singularize(nameHint)) + ']';
+    }
+    if (t === 'object') {
+      const name = codePascal(nameHint);
+      buildClass(val, name);
+      return name;
+    }
+    return 'Any';
+  }
+  function buildClass(obj, name) {
+    const entries = Object.entries(obj);
+    // Resolve field types first so nested classes are defined before this one.
+    const fieldTypes = entries.map(([k, v]) => [k, pyType(v, k)]);
+    const allValid = entries.every(([k]) => isValidPyId(k));
+    let def;
+    if (allValid) {
+      const body = fieldTypes.length
+        ? fieldTypes.map(([k, ty]) => '    ' + k + ': ' + ty).join('\n')
+        : '    pass';
+      def = 'class ' + name + '(TypedDict):\n' + body;
+    } else {
+      const body = fieldTypes.map(([k, ty]) => "    '" + k + "': " + ty + ',').join('\n');
+      def = name + " = TypedDict('" + name + "', {\n" + body + '\n})';
+    }
+    classes.push(def);
+  }
+  const rn = codePascal(rootName || 'Model');
+  if (Array.isArray(value)) {
+    if (value.length && value[0] && typeof value[0] === 'object' && !Array.isArray(value[0])) {
+      buildClass(value[0], rn);
+      classes.push('# Root JSON is an array — use: List[' + rn + ']');
+    } else {
+      return '# Root JSON is an array of scalars: ' + pyType(value, rn);
+    }
+  } else if (value && typeof value === 'object') {
+    buildClass(value, rn);
+  } else {
+    return '# Root JSON is ' + pyType(value, rn) + ' (not an object)';
+  }
+  const header = 'from typing import TypedDict, List, Optional, Any\n';
+  return header + '\n# Starting point — verify Optional fields and numeric types.\n\n' + classes.join('\n\n');
+}
+
+// ═══ NEW TOOL COMPONENTS ══════════════════════════════════════════════════
+function JsonRepair() {
+  const [input,setInput]=useState("{\n  name: 'ToolsRift',\n  // trailing comma + single quotes + unquoted keys\n  tags: ['json', 'repair',],\n  count: 42,\n  active: true,\n}");
+  const [output,setOutput]=useState("");
+  const [error,setError]=useState("");
+  const [ready,setReady]=useState(typeof window!=="undefined"&&!!window.JSON5);
+  useEffect(()=>{
+    if(typeof window!=="undefined"&&window.JSON5){setReady(true);return;}
+    loadScript("https://cdn.jsdelivr.net/npm/json5@2.2.3/dist/index.min.js")
+      .then(()=>setReady(true))
+      .catch(()=>setError("Could not load the JSON5 library. Check your connection and retry."));
+  },[]);
+  useEffect(()=>{
+    if(!input.trim()){setOutput("");setError("");return;}
+    if(!ready||!window.JSON5){setOutput("");return;}
+    try{
+      const obj=window.JSON5.parse(input);
+      setOutput(JSON.stringify(obj,null,2));
+      setError("");
+    }catch(e){setError("Could not repair JSON: "+e.message);setOutput("");}
+  },[input,ready]);
+  return (
+    <VStack>
+      <div style={{fontSize:12,color:C.muted}}>Paste malformed JSON — trailing commas, single quotes, unquoted keys and comments are all tolerated and rewritten as strict, valid JSON.{!ready&&" (loading repair engine…)"}</div>
+      <ErrorBox msg={error}/>
+      <Grid2>
+        <JsonEditor value={input} onChange={setInput} label="Broken JSON" height={320}/>
+        <JsonEditor value={output} onChange={()=>{}} label="Repaired (Strict JSON)" height={320} readOnly/>
+      </Grid2>
+      {output&&<SuccessBox msg="✓ Repaired into valid, strict JSON."/>}
+    </VStack>
+  );
+}
+
+function JsonlConverter() {
+  const [mode,setMode]=useState("toJsonl");
+  const [input,setInput]=useState(JSON.stringify([{id:1,name:"Alice",active:true},{id:2,name:"Bob",active:false}],null,2));
+  const [error,setError]=useState("");
+  const output=useMemo(()=>{
+    if(!input.trim()) return "";
+    try{
+      if(mode==="toJsonl"){
+        const arr=JSON.parse(input);
+        if(!Array.isArray(arr)) throw new Error("Input must be a JSON array.");
+        setError("");
+        return arr.map(item=>JSON.stringify(item)).join("\n");
+      } else {
+        const lines=input.split(/\r?\n/);
+        const arr=[];
+        lines.forEach((line,i)=>{
+          if(!line.trim()) return;
+          try{ arr.push(JSON.parse(line)); }
+          catch(e){ throw new Error("Line "+(i+1)+": "+e.message); }
+        });
+        setError("");
+        return JSON.stringify(arr,null,2);
+      }
+    }catch(e){ setError(e.message); return ""; }
+  },[input,mode]);
+  const swap=()=>{ if(output){setInput(output);} setMode(m=>m==="toJsonl"?"toArray":"toJsonl"); };
+  return (
+    <VStack>
+      <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}}>
+        <ModeToggle mode={mode} setMode={setMode} options={[["toJsonl","Array → JSONL"],["toArray","JSONL → Array"]]}/>
+        <Btn variant="secondary" size="sm" onClick={swap}>⇄ Use output as input</Btn>
+      </div>
+      <ErrorBox msg={error}/>
+      <Grid2>
+        {mode==="toJsonl"
+          ? <JsonEditor value={input} onChange={setInput} label="JSON Array" height={320}/>
+          : <div><Label>JSONL / NDJSON (one JSON value per line)</Label><Textarea value={input} onChange={setInput} rows={16} mono/></div>}
+        {mode==="toJsonl"
+          ? <div><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}><Label>JSONL Output</Label>{output&&<CopyBtn text={output}/>}</div><Textarea value={output} onChange={()=>{}} rows={16} readOnly mono/></div>
+          : <JsonEditor value={output} onChange={()=>{}} label="JSON Array" height={320} readOnly/>}
+      </Grid2>
+    </VStack>
+  );
+}
+
+function JsonToGo() {
+  const [input,setInput]=useState(SAMPLE);
+  const [rootName,setRootName]=useState("AutoGenerated");
+  const [error,setError]=useState("");
+  const output=useMemo(()=>{
+    if(!input.trim()) return "";
+    try{ const parsed=JSON.parse(input); setError(""); return jsonToGo(parsed,rootName||"AutoGenerated"); }
+    catch(e){ setError(e.message); return ""; }
+  },[input,rootName]);
+  return (
+    <VStack>
+      <div><Label>Root Struct Name</Label><Input value={rootName} onChange={setRootName} placeholder="AutoGenerated" style={{maxWidth:220}}/></div>
+      <ErrorBox msg={error}/>
+      <Grid2>
+        <JsonEditor value={input} onChange={setInput} label="Input JSON" height={340}/>
+        <div><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}><Label>Go Struct</Label>{output&&<CopyBtn text={output}/>}</div><Textarea value={output} onChange={()=>{}} rows={16} readOnly mono/></div>
+      </Grid2>
+    </VStack>
+  );
+}
+
+function JsonToPython() {
+  const [input,setInput]=useState(SAMPLE);
+  const [rootName,setRootName]=useState("Model");
+  const [error,setError]=useState("");
+  const output=useMemo(()=>{
+    if(!input.trim()) return "";
+    try{ const parsed=JSON.parse(input); setError(""); return jsonToPython(parsed,rootName||"Model"); }
+    catch(e){ setError(e.message); return ""; }
+  },[input,rootName]);
+  return (
+    <VStack>
+      <div><Label>Root Class Name</Label><Input value={rootName} onChange={setRootName} placeholder="Model" style={{maxWidth:220}}/></div>
+      <ErrorBox msg={error}/>
+      <Grid2>
+        <JsonEditor value={input} onChange={setInput} label="Input JSON" height={340}/>
+        <div><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}><Label>Python TypedDict</Label>{output&&<CopyBtn text={output}/>}</div><Textarea value={output} onChange={()=>{}} rows={16} readOnly mono/></div>
+      </Grid2>
+    </VStack>
+  );
+}
+
 // �"����� COMPONENT MAP �����������������������������������������������������������������������������������������������������������������������"�
 const TOOL_COMPONENTS = {
   "json-formatter":    JsonFormatter,
@@ -1569,6 +1825,10 @@ const TOOL_COMPONENTS = {
   "json-merger":       JsonMerger,
   "json-array-tools":  JsonArrayTools,
   "json-query":        JsonQuery,
+  "json-repair":       JsonRepair,
+  "jsonl-converter":   JsonlConverter,
+  "json-to-go":        JsonToGo,
+  "json-to-python":    JsonToPython,
 };
 
 // �"����� PAGE SHELLS ���������������������������������������������������������������������������������������������������������������������������"�
@@ -1721,12 +1981,6 @@ const JSON_SPECIAL_CSS = `
   @media(max-width:1024px){.trj-grid{grid-template-columns:repeat(3,1fr)}}
   @media(max-width:640px){.trj-grid{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:400px){.trj-grid{grid-template-columns:1fr}}
-  .trj-detail{display:grid;grid-template-columns:220px 1fr;gap:24px;padding:16px 0 60px}
-  @media(max-width:768px){.trj-detail{grid-template-columns:1fr;padding:16px 0 96px}}
-  .trj-sidebar{display:block}
-  @media(max-width:768px){.trj-sidebar{display:none}}
-  .trj-mobile-bar{display:none}
-  @media(max-width:768px){.trj-mobile-bar{display:flex}}
   /* Dev mono overrides — output areas */
   .trj-tool-area pre,
   .trj-tool-area code,
@@ -1743,7 +1997,7 @@ function CategoryHomePage() {
   useEffect(() => { document.title = 'Free JSON Tools Online — ToolsRift'; }, []);
 
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={null}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={null} tools={TOOLS} subcats={CATEGORIES}>
       <CategoryDashboard
         theme={PAGE_THEME}
         tools={TOOLS}
@@ -1758,16 +2012,14 @@ function ToolDetailPage({ toolId }) {
   const tool     = TOOLS.find(t => t.id === toolId);
   const meta     = TOOL_META[toolId];
   const ToolComp = TOOL_COMPONENTS[toolId];
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const acc = PAGE_THEME.color;
 
   useEffect(() => {
     document.title = meta?.title || `${tool?.name} — Free JSON Tool | ToolsRift`;
-    setDrawerOpen(false);
   }, [toolId]);
 
   if (!tool || !ToolComp) return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'} tools={TOOLS} subcats={CATEGORIES}>
       <div style={{ padding:40, textAlign:'center', color:'#64748B', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
         <div style={{ fontSize:48, marginBottom:16 }}>🔍</div>
         <p style={{ color:'#E2E8F0', marginBottom:8, fontSize:16 }}>Tool not found</p>
@@ -1776,71 +2028,27 @@ function ToolDetailPage({ toolId }) {
     </CategoryLayout>
   );
 
-  const sidebarTools = TOOLS.filter(t => t.cat === tool.cat);
-  const toolData = { name:tool.name, description:meta?.desc||tool.desc, howTo:meta?.howTo, faq:meta?.faq };
+  const toolData = { id:tool.id, name:tool.name, description:meta?.desc||tool.desc, howTo:meta?.howTo, faq:meta?.faq };
 
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={toolId}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId} tools={TOOLS} subcats={CATEGORIES}>
       <style>{JSON_SPECIAL_CSS}</style>
-      <div className="trj-detail">
-        <aside className="trj-sidebar">
-          <div style={{ position:'sticky', top:72, background:'#0D1117', border:'1px solid rgba(255,255,255,0.06)', borderRadius:12, overflow:'hidden' }}>
-            <div style={{ padding:'12px 16px', borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
-              <div style={{ fontSize:11, fontWeight:700, color:'#475569', textTransform:'uppercase', letterSpacing:'0.06em' }}>
-                {CATEGORIES.find(c => c.id === tool.cat)?.name || 'Tools'}
-              </div>
-            </div>
-            <div style={{ padding:'8px 0', maxHeight:'calc(100vh - 160px)', overflowY:'auto' }}>
-              {sidebarTools.map(t => {
-                const isActive = t.id === toolId;
-                return (
-                  <a key={t.id} href={`#/tool/${t.id}`}
-                    style={{ display:'flex', alignItems:'center', gap:10, minHeight:44, padding:'10px 16px', textDecoration:'none', background:isActive?`${acc}18`:'transparent', borderLeft:isActive?`2px solid ${acc}`:'2px solid transparent', transition:'background 0.15s' }}
-                    onMouseEnter={e => { if (!isActive) e.currentTarget.style.background='rgba(255,255,255,0.03)'; }}
-                    onMouseLeave={e => { if (!isActive) e.currentTarget.style.background='transparent'; }}
-                  >
-                    <span style={{ fontSize:15, flexShrink:0 }}>{t.icon}</span>
-                    <span style={{ fontSize:13, fontWeight:isActive?600:400, color:isActive?'#F1F5F9':'#94A3B8', lineHeight:1.3, fontFamily:"'Plus Jakarta Sans',sans-serif" }}>{t.name}</span>
-                  </a>
-                );
-              })}
-            </div>
-          </div>
-        </aside>
-
-        <div style={{ minWidth:0 }} className="trj-tool-area">
-          <a href="#/" style={{ display:'inline-flex', alignItems:'center', gap:6, color:'#64748B', fontSize:13, textDecoration:'none', marginBottom:16, fontFamily:"'Plus Jakarta Sans',sans-serif" }}
-            onMouseEnter={e => e.currentTarget.style.color='#E2E8F0'}
-            onMouseLeave={e => e.currentTarget.style.color='#64748B'}
-          >← Back to JSON Tools</a>
-          <ToolPageLayout theme={PAGE_THEME} tool={toolData}>
-            <ToolComp />
-          </ToolPageLayout>
-        </div>
+      {/* .trj-tool-area styles the tools' textarea/pre/code — keep it wrapping the tool. */}
+      <div className="trj-tool-area">
+        <a href="#/" style={{ display:'inline-flex', alignItems:'center', gap:6, color:'#64748B', fontSize:13, textDecoration:'none', marginTop:20, fontFamily:"'Plus Jakarta Sans',sans-serif" }}
+          onMouseEnter={e => e.currentTarget.style.color='#E2E8F0'}
+          onMouseLeave={e => e.currentTarget.style.color='#64748B'}
+        >← Back to JSON Tools</a>
+        <ToolPageLayout
+          theme={PAGE_THEME}
+          tool={toolData}
+          tools={TOOLS}
+          subcats={CATEGORIES}
+          related={TOOLS.filter(t => t.id !== tool.id && t.cat === tool.cat).slice(0, 8)}
+        >
+          <ToolComp />
+        </ToolPageLayout>
       </div>
-
-      <div className="trj-mobile-bar" style={{ position:'fixed', bottom:0, left:0, right:0, zIndex:200, background:'rgba(6,9,15,0.96)', backdropFilter:'blur(12px)', borderTop:'1px solid rgba(255,255,255,0.06)', padding:'12px 16px', justifyContent:'space-between', alignItems:'center' }}>
-        <span style={{ fontSize:13, color:'#94A3B8', fontFamily:"'Plus Jakarta Sans',sans-serif", overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', maxWidth:'60%' }}>{tool.icon} {tool.name}</span>
-        <button onClick={() => setDrawerOpen(d => !d)} style={{ background:acc, color:'#fff', border:'none', borderRadius:8, padding:'8px 16px', fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:"'Plus Jakarta Sans',sans-serif", minHeight:44, flexShrink:0 }}>
-          {drawerOpen ? '✕ Close' : '☰ All Tools'}
-        </button>
-      </div>
-
-      {drawerOpen && (
-        <div style={{ position:'fixed', bottom:0, left:0, right:0, zIndex:199, background:'#0D1117', borderTop:`2px solid ${acc}`, maxHeight:'60vh', overflowY:'auto', padding:'8px 0 80px' }}>
-          {sidebarTools.map(t => {
-            const isActive = t.id === toolId;
-            return (
-              <a key={t.id} href={`#/tool/${t.id}`} onClick={() => setDrawerOpen(false)}
-                style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 20px', minHeight:52, textDecoration:'none', background:isActive?`${acc}18`:'transparent', borderLeft:isActive?`3px solid ${acc}`:'3px solid transparent' }}
-              >
-                <span style={{ fontSize:20 }}>{t.icon}</span>
-                <span style={{ fontSize:14, fontWeight:isActive?600:400, color:isActive?'#F1F5F9':'#94A3B8', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>{t.name}</span>
-              </a>
-            );
-          })}
-        </div>
-      )}
     </CategoryLayout>
   );
 }

@@ -199,6 +199,10 @@ const TOOLS = [
   {id:"css-loader",        cat:"effects",     name:"CSS Loader Generator",        desc:"Create pure CSS loading spinners and animated indicators",     icon:"⏳", free:true},
   {id:"css-triangle",      cat:"shapes",      name:"CSS Triangle Generator",      desc:"Generate CSS border-trick triangles and arrows",              icon:"▲",  free:true},
   {id:"css-color-palette", cat:"backgrounds", name:"CSS Color Palette Generator", desc:"Generate harmonious color palettes as CSS custom properties",  icon:"🎨", free:true},
+  {id:"px-to-rem-converter",       cat:"components",  name:"PX to REM Converter",         desc:"Convert px to rem and rem to px with adjustable root font size", icon:"📏", free:true},
+  {id:"css-specificity-calculator",cat:"components",  name:"CSS Specificity Calculator",   desc:"Score any CSS selector's specificity as an (a, b, c) triple",   icon:"🧮", free:true},
+  {id:"css-pattern-generator",     cat:"backgrounds", name:"CSS Pattern Generator",        desc:"Create pure-CSS background patterns from gradients, no images", icon:"🔳", free:true},
+  {id:"cubic-bezier-editor",       cat:"effects",     name:"Cubic Bezier Editor",          desc:"Build cubic-bezier easing curves with a live animated preview", icon:"📈", free:true},
 ];
 
 const CATEGORIES = [
@@ -215,6 +219,10 @@ const TOOL_META = {
   "css-flexbox":       {title:"CSS Flexbox Generator – Visual Flexbox Builder Online",  desc:"Build Flexbox layouts visually. Control flex-direction, justify-content, align-items and all flex properties.", faq:[["What is Flexbox?","A one-dimensional CSS layout model that distributes space and aligns items in a container."],["When should I use Flexbox vs Grid?","Flexbox is ideal for one-dimensional layouts (rows OR columns). CSS Grid is better for two-dimensional layouts."],["What is flex-grow?","flex-grow determines how much a flex item grows relative to siblings when extra space is available."]]},
   "css-glassmorphism": {title:"CSS Glassmorphism Generator – Frosted Glass Effect",    desc:"Generate modern glassmorphism CSS with backdrop-filter blur, background transparency and border glow.", faq:[["What is glassmorphism?","A design trend featuring frosted-glass-like elements with blur, transparency, and subtle borders."],["What browser support does backdrop-filter have?","backdrop-filter is supported in all modern browsers. IE and older Firefox don't support it."],["How do I make the glass effect more visible?","Place the glass element over a colorful or blurred background — the effect requires content behind the element."]]},
   "css-animation":     {title:"CSS Animation Generator – Keyframe Animation Builder",  desc:"Create CSS @keyframe animations with custom easing, duration, delay and iteration control.", faq:[["What is a CSS keyframe animation?","An animation defined with @keyframes that specifies styles at certain points in the animation sequence."],["What is an easing function?","Controls the speed curve of the animation. ease-in starts slow, ease-out ends slow, cubic-bezier allows custom curves."],["Can I loop animations infinitely?","Yes — set animation-iteration-count to infinite."]]},
+  "px-to-rem-converter":       {title:"PX to REM Converter – Pixels to REM Online",             desc:"Convert px to rem and rem to px instantly with an adjustable root font size. Batch-convert lists and copy CSS-ready values.", faq:[["How do I convert px to rem?","Divide the pixel value by the root font size. With the default 16px root, 24px equals 1.5rem."],["What is the root font size?","The font-size set on the html element. Browsers default it to 16px, but you can change it in the converter."],["Why use rem instead of px?","rem units scale with the user's root font size, making layouts more accessible and responsive."]]},
+  "css-specificity-calculator":{title:"CSS Specificity Calculator – Score Selectors Online",    desc:"Calculate the specificity of any CSS selector as an (a, b, c) triple with a plain-English breakdown of what matched.", faq:[["What is CSS specificity?","A weight the browser assigns to a selector to decide which rule wins. It is expressed as three numbers: IDs, classes/attributes/pseudo-classes, and elements/pseudo-elements."],["Does the universal selector add specificity?","No — the universal selector * has zero specificity and is ignored."],["How is :not() scored?","The :not() and :is() pseudo-classes take the specificity of their most specific argument, while :where() always contributes zero."]]},
+  "css-pattern-generator":     {title:"CSS Pattern Generator – Gradient Background Patterns",   desc:"Generate pure-CSS background patterns — stripes, dots, checkerboard, grid and zigzag — using only gradients. Live preview and copyable CSS.", faq:[["Are these patterns real images?","No — every pattern is built from CSS gradients, so there are no image files to load and the output stays crisp at any scale."],["Can I change the pattern colors?","Yes — pick any two colors and adjust the pattern size to fine-tune the look."],["How do I use the generated CSS?","Copy the background-image and background-size rules onto any element to apply the pattern."]]},
+  "cubic-bezier-editor":       {title:"Cubic Bezier Editor – Custom Easing Curve Generator",    desc:"Design cubic-bezier easing curves with numeric inputs, presets and a live animated preview. Copy the cubic-bezier() string and a ready transition.", faq:[["What is a cubic-bezier easing curve?","A timing function defined by two control points that shapes how an animation accelerates and decelerates over time."],["What range can the values use?","The x values are clamped between 0 and 1, while the y values can go slightly beyond for overshoot and bounce effects."],["How do I preview the easing?","The editor animates a dot along the curve so you can feel the timing before copying the CSS."]]},
 };
 
 // ─── TOOL COMPONENTS ─────────────────────────────────────────────────────────
@@ -1171,6 +1179,328 @@ function CssColorPalette() {
   );
 }
 
+// ── 21. PX TO REM CONVERTER ───────────────────────────────────────────────────
+function PxToRem() {
+  const [root,setRoot]=useState(16);
+  const [px,setPx]=useState("24");
+  const [rem,setRem]=useState("1.5");
+  const [batch,setBatch]=useState("12, 16, 18, 24, 32, 48");
+
+  const rootNum=parseFloat(root)||16;
+  const fmt=n=>Number.isFinite(n)?parseFloat(n.toFixed(4)).toString():"—";
+
+  const pxNum=parseFloat(px);
+  const pxToRemVal=Number.isFinite(pxNum)?fmt(pxNum/rootNum):"—";
+  const remNum=parseFloat(rem);
+  const remToPxVal=Number.isFinite(remNum)?fmt(remNum*rootNum):"—";
+
+  const batchRows=useMemo(()=>{
+    return (batch.match(/-?\d*\.?\d+/g)||[]).map(v=>{
+      const n=parseFloat(v);
+      return {px:fmt(n),rem:fmt(n/rootNum)};
+    });
+  },[batch,rootNum]);
+  const batchCss=batchRows.map(r=>`/* ${r.px}px */ ${r.rem}rem`).join("\n")||"/* enter px values above */";
+
+  return (
+    <VStack>
+      <div style={{maxWidth:220}}>
+        <Label>Root Font Size (px)</Label>
+        <Input value={root} onChange={setRoot} type="number" mono/>
+      </div>
+      <Grid2>
+        <Card style={{padding:16}}>
+          <Label>PX → REM</Label>
+          <Input value={px} onChange={setPx} type="number" mono style={{marginTop:6}}/>
+          <div style={{marginTop:12,display:"flex",alignItems:"center",justifyContent:"space-between",gap:10}}>
+            <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:18,fontWeight:600,color:C.cyan}}>{pxToRemVal==="—"?"—":`${pxToRemVal}rem`}</span>
+            <CopyBtn text={pxToRemVal==="—"?"":`${pxToRemVal}rem`}/>
+          </div>
+        </Card>
+        <Card style={{padding:16}}>
+          <Label>REM → PX</Label>
+          <Input value={rem} onChange={setRem} type="number" mono style={{marginTop:6}}/>
+          <div style={{marginTop:12,display:"flex",alignItems:"center",justifyContent:"space-between",gap:10}}>
+            <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:18,fontWeight:600,color:C.cyan}}>{remToPxVal==="—"?"—":`${remToPxVal}px`}</span>
+            <CopyBtn text={remToPxVal==="—"?"":`${remToPxVal}px`}/>
+          </div>
+        </Card>
+      </Grid2>
+      <div>
+        <Label>Batch Convert (paste px values, comma / space / newline separated)</Label>
+        <textarea value={batch} onChange={e=>setBatch(e.target.value)} rows={3}
+          style={{width:"100%",background:"rgba(255,255,255,0.04)",border:`1px solid ${C.border}`,borderRadius:8,padding:"10px 14px",color:C.text,fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none",resize:"vertical"}}/>
+      </div>
+      {batchRows.length>0&&(
+        <div>
+          <Label>Conversion Table (root = {rootNum}px)</Label>
+          <div style={{border:`1px solid ${C.border}`,borderRadius:10,overflow:"hidden"}}>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",background:"rgba(255,255,255,0.03)",fontSize:12,fontWeight:600,color:C.muted}}>
+              <div style={{padding:"8px 14px"}}>PX</div><div style={{padding:"8px 14px"}}>REM</div>
+            </div>
+            {batchRows.map((r,i)=>(
+              <div key={i} style={{display:"grid",gridTemplateColumns:"1fr 1fr",fontFamily:"'JetBrains Mono',monospace",fontSize:13,borderTop:`1px solid ${C.border}`}}>
+                <div style={{padding:"7px 14px",color:C.text}}>{r.px}px</div>
+                <div style={{padding:"7px 14px",color:C.cyan}}>{r.rem}rem</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      <CSSOutput css={batchCss}/>
+    </VStack>
+  );
+}
+
+// ── 22. CSS SPECIFICITY CALCULATOR ────────────────────────────────────────────
+function cmpSpecificity(x,y){ if(x.a!==y.a)return x.a-y.a; if(x.b!==y.b)return x.b-y.b; return x.c-y.c; }
+function splitSelectorList(input){
+  const out=[]; let depth=0,cur="";
+  for(const ch of input){
+    if(ch==="("||ch==="[")depth++;
+    else if(ch===")"||ch==="]")depth=Math.max(0,depth-1);
+    if(ch===","&&depth===0){out.push(cur);cur="";}
+    else cur+=ch;
+  }
+  if(cur.trim())out.push(cur);
+  return out.map(s=>s.trim()).filter(Boolean);
+}
+function scoreSpecificity(selector){
+  const notes=[];
+  let a=0,b=0,c=0;
+  let s=(selector||"").trim();
+  if(!s) return {a,b,c,notes};
+  // 1. Functional pseudo-classes :is() :not() :where() :has()
+  const funcRe=/:(is|not|where|has)\(([^()]*)\)/i;
+  let m;
+  while((m=s.match(funcRe))){
+    const fn=m[1].toLowerCase(), args=m[2];
+    if(fn==="where"){
+      notes.push(`:where(${args}) → contributes (0,0,0)`);
+    } else {
+      const argSels=splitSelectorList(args);
+      let best={a:0,b:0,c:0}, bestSel="";
+      argSels.forEach(as=>{ const sc=scoreSpecificity(as); if(cmpSpecificity(sc,best)>0){best={a:sc.a,b:sc.b,c:sc.c};bestSel=as;} });
+      a+=best.a; b+=best.b; c+=best.c;
+      notes.push(`:${fn}(${args}) → most specific argument "${bestSel}" adds (${best.a},${best.b},${best.c})`);
+    }
+    s=s.slice(0,m.index)+" "+s.slice(m.index+m[0].length);
+  }
+  // 2. Pseudo-elements (::x and legacy single-colon forms) → c
+  s=s.replace(/::[\w-]+/g,x=>{c++;notes.push(`${x} → pseudo-element (c)`);return " ";});
+  s=s.replace(/:(before|after|first-line|first-letter|selection|placeholder|marker|backdrop)\b/gi,x=>{c++;notes.push(`${x} → pseudo-element (c)`);return " ";});
+  // 3. IDs → a
+  s=s.replace(/#[\w-]+/g,x=>{a++;notes.push(`${x} → ID selector (a)`);return " ";});
+  // 4. Classes → b
+  s=s.replace(/\.[\w-]+/g,x=>{b++;notes.push(`${x} → class (b)`);return " ";});
+  // 5. Attribute selectors → b
+  s=s.replace(/\[[^\]]*\]/g,x=>{b++;notes.push(`${x} → attribute (b)`);return " ";});
+  // 6. Remaining pseudo-classes (single colon, maybe with args) → b
+  s=s.replace(/:[\w-]+(\([^()]*\))?/g,x=>{b++;notes.push(`${x} → pseudo-class (b)`);return " ";});
+  // 7. Type/element selectors → c (universal * is ignored)
+  s=s.replace(/[>+~]/g," ");
+  const typeRe=/[a-zA-Z][\w-]*/g; let tm;
+  while((tm=typeRe.exec(s))){ c++; notes.push(`${tm[0]} → type/element (c)`); }
+  return {a,b,c,notes};
+}
+
+function CssSpecificity() {
+  const [input,setInput]=useState("#nav .item a:hover");
+  const results=useMemo(()=>splitSelectorList(input).map(sel=>({sel,...scoreSpecificity(sel)})),[input]);
+
+  return (
+    <VStack>
+      <div>
+        <Label>CSS Selector (comma-separate to score several)</Label>
+        <Input value={input} onChange={setInput} mono placeholder="#nav .item a:hover"/>
+      </div>
+      {results.length===0&&<div style={{fontSize:13,color:C.muted}}>Enter a selector above to score it.</div>}
+      {results.map((r,i)=>(
+        <Card key={i} style={{padding:16}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10,marginBottom:12}}>
+            <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:14,color:C.text,wordBreak:"break-all"}}>{r.sel}</span>
+            <div style={{display:"flex",gap:6,alignItems:"center"}}>
+              {[["a",r.a,"purple"],["b",r.b,"cyan"],["c",r.c,"green"]].map(([k,v,col])=>(
+                <div key={k} style={{textAlign:"center"}}>
+                  <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:22,fontWeight:700,color:{purple:C.purple,cyan:C.cyan,green:C.green}[col]}}>{v}</div>
+                  <div style={{fontSize:10,color:C.muted,textTransform:"uppercase"}}>{k}</div>
+                </div>
+              ))}
+              <span style={{margin:"0 6px",fontSize:22,color:C.muted}}>=</span>
+              <Badge color="cyan">{r.a},{r.b},{r.c}</Badge>
+            </div>
+          </div>
+          <div style={{display:"flex",flexDirection:"column",gap:4}}>
+            {r.notes.length?r.notes.map((n,j)=>(
+              <div key={j} style={{fontSize:12,color:C.muted,fontFamily:"'JetBrains Mono',monospace"}}>• {n}</div>
+            )):<div style={{fontSize:12,color:C.muted}}>No specificity contributions (0,0,0).</div>}
+          </div>
+        </Card>
+      ))}
+    </VStack>
+  );
+}
+
+// ── 23. CSS PATTERN GENERATOR ─────────────────────────────────────────────────
+function CssPattern() {
+  const [preset,setPreset]=useState("stripes");
+  const [stripeDir,setStripeDir]=useState("diagonal");
+  const [c1,setC1]=useState("#0D1117");
+  const [c2,setC2]=useState("#06B6D4");
+  const [size,setSize]=useState(40);
+
+  const build=()=>{
+    const h=Math.round(size/2), q=Math.round(size/4), r=Math.max(2,Math.round(size/6));
+    if(preset==="stripes"){
+      const ang=stripeDir==="vertical"?"90deg":stripeDir==="horizontal"?"0deg":"45deg";
+      return {
+        style:{backgroundImage:`repeating-linear-gradient(${ang}, ${c1} 0, ${c1} ${h}px, ${c2} ${h}px, ${c2} ${size}px)`},
+        css:`background-image: repeating-linear-gradient(${ang}, ${c1} 0, ${c1} ${h}px, ${c2} ${h}px, ${c2} ${size}px);`
+      };
+    }
+    if(preset==="dots"){
+      return {
+        style:{backgroundColor:c1,backgroundImage:`radial-gradient(${c2} ${r}px, transparent ${r}px)`,backgroundSize:`${size}px ${size}px`},
+        css:`background-color: ${c1};\nbackground-image: radial-gradient(${c2} ${r}px, transparent ${r}px);\nbackground-size: ${size}px ${size}px;`
+      };
+    }
+    if(preset==="checkerboard"){
+      const img=`linear-gradient(45deg, ${c2} 25%, transparent 25%, transparent 75%, ${c2} 75%), linear-gradient(45deg, ${c2} 25%, transparent 25%, transparent 75%, ${c2} 75%)`;
+      const pos=`0 0, ${h}px ${h}px`;
+      return {
+        style:{backgroundColor:c1,backgroundImage:img,backgroundSize:`${size}px ${size}px`,backgroundPosition:pos},
+        css:`background-color: ${c1};\nbackground-image: linear-gradient(45deg, ${c2} 25%, transparent 25%, transparent 75%, ${c2} 75%),\n  linear-gradient(45deg, ${c2} 25%, transparent 25%, transparent 75%, ${c2} 75%);\nbackground-size: ${size}px ${size}px;\nbackground-position: ${pos};`
+      };
+    }
+    if(preset==="grid"){
+      const img=`linear-gradient(${c2} 1px, transparent 1px), linear-gradient(90deg, ${c2} 1px, transparent 1px)`;
+      return {
+        style:{backgroundColor:c1,backgroundImage:img,backgroundSize:`${size}px ${size}px`},
+        css:`background-color: ${c1};\nbackground-image: linear-gradient(${c2} 1px, transparent 1px),\n  linear-gradient(90deg, ${c2} 1px, transparent 1px);\nbackground-size: ${size}px ${size}px;`
+      };
+    }
+    // zigzag
+    const img=`linear-gradient(135deg, ${c2} 25%, transparent 25%), linear-gradient(225deg, ${c2} 25%, transparent 25%), linear-gradient(45deg, ${c2} 25%, transparent 25%), linear-gradient(315deg, ${c2} 25%, transparent 25%)`;
+    const pos=`${h}px 0, ${h}px 0, 0 0, 0 0`;
+    return {
+      style:{backgroundColor:c1,backgroundImage:img,backgroundSize:`${size}px ${size}px`,backgroundPosition:pos},
+      css:`background-color: ${c1};\nbackground-image: linear-gradient(135deg, ${c2} 25%, transparent 25%),\n  linear-gradient(225deg, ${c2} 25%, transparent 25%),\n  linear-gradient(45deg, ${c2} 25%, transparent 25%),\n  linear-gradient(315deg, ${c2} 25%, transparent 25%);\nbackground-size: ${size}px ${size}px;\nbackground-position: ${pos};`
+    };
+  };
+  const {style,css}=build();
+
+  return (
+    <VStack>
+      <div>
+        <Label>Pattern</Label>
+        <div style={{display:"flex",flexWrap:"wrap",gap:6,marginTop:6}}>
+          {["stripes","dots","checkerboard","grid","zigzag"].map(p=>(
+            <Btn key={p} size="sm" variant={preset===p?"primary":"secondary"} onClick={()=>setPreset(p)}>{p}</Btn>
+          ))}
+        </div>
+      </div>
+      {preset==="stripes"&&(
+        <div><Label>Stripe Direction</Label>
+          <SelectInput value={stripeDir} onChange={setStripeDir} options={["diagonal","vertical","horizontal"].map(v=>({value:v,label:v}))}/>
+        </div>
+      )}
+      <Grid2>
+        <ColorPicker label="Color 1 (base)" value={c1} onChange={setC1}/>
+        <ColorPicker label="Color 2 (pattern)" value={c2} onChange={setC2}/>
+      </Grid2>
+      <Slider label="Pattern Size" value={size} onChange={setSize} min={8} max={120} unit="px"/>
+      <PreviewBox height={200}>
+        <div style={{position:"absolute",inset:0,...style}}/>
+      </PreviewBox>
+      <CSSOutput css={css}/>
+    </VStack>
+  );
+}
+
+// ── 24. CUBIC BEZIER EDITOR ───────────────────────────────────────────────────
+function CubicBezier() {
+  const presets={
+    ease:[0.25,0.1,0.25,1], "ease-in":[0.42,0,1,1], "ease-out":[0,0,0.58,1],
+    "ease-in-out":[0.42,0,0.58,1], linear:[0,0,1,1],
+    "smooth":[0.25,0.46,0.45,0.94], "back-out":[0.34,1.56,0.64,1],
+    "back-in":[0.36,0,0.66,-0.56], "bounce":[0.68,-0.55,0.27,1.55],
+  };
+  const [x1,setX1]=useState(0.25);
+  const [y1,setY1]=useState(0.1);
+  const [x2,setX2]=useState(0.25);
+  const [y2,setY2]=useState(1);
+
+  const clampX=v=>Math.max(0,Math.min(1,v));
+  const clampY=v=>Math.max(-1,Math.min(2,v));
+  const num=v=>{const n=parseFloat(v);return Number.isFinite(n)?n:0;};
+  const applyPreset=k=>{const[a,b,c,d]=presets[k];setX1(a);setY1(b);setX2(c);setY2(d);};
+
+  const cx1=clampX(x1),cy1=clampY(y1),cx2=clampX(x2),cy2=clampY(y2);
+  const bez=`cubic-bezier(${cx1}, ${cy1}, ${cx2}, ${cy2})`;
+  const css=`transition-timing-function: ${bez};\n\n/* shorthand example */\ntransition: transform 0.6s ${bez};`;
+
+  // SVG mapping: unit square 0..100, y flipped (CSS y goes up)
+  const sx=v=>+(v*100).toFixed(2);
+  const sy=v=>+((1-v)*100).toFixed(2);
+  const path=`M ${sx(0)} ${sy(0)} C ${sx(cx1)} ${sy(cy1)}, ${sx(cx2)} ${sy(cy2)}, ${sx(1)} ${sy(1)}`;
+
+  const numInput=(val,setter,clamp)=>(
+    <input type="number" step="0.01" value={val}
+      onChange={e=>setter(clamp(num(e.target.value)))}
+      style={{width:"100%",background:"rgba(255,255,255,0.04)",border:`1px solid ${C.border}`,borderRadius:8,padding:"9px 12px",color:C.text,fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none"}}/>
+  );
+
+  return (
+    <VStack>
+      <style>{`@keyframes cbMove{from{left:2px}to{left:calc(100% - 26px)}}`}</style>
+      <div>
+        <Label>Presets</Label>
+        <div style={{display:"flex",flexWrap:"wrap",gap:6,marginTop:6}}>
+          {Object.keys(presets).map(k=><Btn key={k} size="sm" variant="secondary" onClick={()=>applyPreset(k)}>{k}</Btn>)}
+        </div>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:12}}>
+        <div><Label>x1</Label>{numInput(x1,setX1,clampX)}</div>
+        <div><Label>y1</Label>{numInput(y1,setY1,clampY)}</div>
+        <div><Label>x2</Label>{numInput(x2,setX2,clampX)}</div>
+        <div><Label>y2</Label>{numInput(y2,setY2,clampY)}</div>
+      </div>
+      <Grid2>
+        <div>
+          <Label>Curve</Label>
+          <div style={{background:"#0B0F17",border:`1px solid ${C.border}`,borderRadius:10,padding:16}}>
+            <svg viewBox="-8 -28 116 156" style={{width:"100%",height:180,overflow:"visible"}}>
+              <rect x="0" y="0" width="100" height="100" fill="none" stroke="rgba(255,255,255,0.08)"/>
+              <line x1="0" y1="50" x2="100" y2="50" stroke="rgba(255,255,255,0.05)"/>
+              <line x1="50" y1="0" x2="50" y2="100" stroke="rgba(255,255,255,0.05)"/>
+              <line x1={sx(0)} y1={sy(0)} x2={sx(cx1)} y2={sy(cy1)} stroke={C.purple} strokeWidth="0.8" strokeDasharray="3 2"/>
+              <line x1={sx(1)} y1={sy(1)} x2={sx(cx2)} y2={sy(cy2)} stroke={C.pink} strokeWidth="0.8" strokeDasharray="3 2"/>
+              <path d={path} fill="none" stroke={C.cyan} strokeWidth="1.6"/>
+              <circle cx={sx(0)} cy={sy(0)} r="2" fill={C.muted}/>
+              <circle cx={sx(1)} cy={sy(1)} r="2" fill={C.muted}/>
+              <circle cx={sx(cx1)} cy={sy(cy1)} r="2.6" fill={C.purple}/>
+              <circle cx={sx(cx2)} cy={sy(cy2)} r="2.6" fill={C.pink}/>
+            </svg>
+          </div>
+        </div>
+        <div>
+          <Label>Animated Preview (1.5s loop)</Label>
+          <div style={{background:"#0B0F17",border:`1px solid ${C.border}`,borderRadius:10,padding:16,display:"flex",flexDirection:"column",justifyContent:"center",height:212,gap:20}}>
+            <div style={{position:"relative",height:20}}>
+              <div style={{position:"absolute",top:2,width:20,height:16,borderRadius:4,background:C.cyan,left:0,animationName:"cbMove",animationDuration:"1.5s",animationIterationCount:"infinite",animationDirection:"alternate",animationTimingFunction:bez}}/>
+            </div>
+            <div style={{position:"relative",height:20}}>
+              <div style={{position:"absolute",top:2,width:16,height:16,borderRadius:"50%",background:C.pink,left:0,animationName:"cbMove",animationDuration:"1.5s",animationIterationCount:"infinite",animationDirection:"alternate",animationTimingFunction:bez}}/>
+            </div>
+            <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:12,color:C.muted,textAlign:"center"}}>{bez}</div>
+          </div>
+        </div>
+      </Grid2>
+      <CSSOutput css={css}/>
+    </VStack>
+  );
+}
+
 // ─── COMPONENT MAP ────────────────────────────────────────────────────────────
 const TOOL_COMPONENTS = {
   "css-gradient":      CssGradient,
@@ -1193,6 +1523,10 @@ const TOOL_COMPONENTS = {
   "css-loader":        CssLoader,
   "css-triangle":      CssTriangle,
   "css-color-palette": CssColorPalette,
+  "px-to-rem-converter":        PxToRem,
+  "css-specificity-calculator": CssSpecificity,
+  "css-pattern-generator":      CssPattern,
+  "cubic-bezier-editor":        CubicBezier,
 };
 
 // ─── PAGE SHELLS ──────────────────────────────────────────────────────────────
@@ -1267,7 +1601,7 @@ function ToolPage({ toolId }) {
 
   if (!tool || !ToolComp) {
     return (
-      <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'}>
+      <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'} tools={TOOLS} subcats={CATEGORIES}>
         <div style={{ padding:'48px 20px', textAlign:'center', color:'#94A3B8' }}>
           Tool not found. <a href="#/" style={{ color: PAGE_THEME.color }}>← Back to {PAGE_THEME.name}</a>
         </div>
@@ -1286,8 +1620,8 @@ function ToolPage({ toolId }) {
   const related = TOOLS.filter(t => t.id !== tool.id && t.cat === tool.cat).slice(0, 8);
 
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={toolId}>
-      <ToolPageLayout theme={PAGE_THEME} tool={toolData} related={related}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId} tools={TOOLS} subcats={CATEGORIES}>
+      <ToolPageLayout theme={PAGE_THEME} tool={toolData} tools={TOOLS} subcats={CATEGORIES} related={related}>
         <ToolComp />
       </ToolPageLayout>
     </CategoryLayout>
@@ -1320,7 +1654,7 @@ function CategoryPage({ catId }) {
 function HomePage() {
   useEffect(()=>{document.title="Free CSS Generator Tools – Online CSS Builders | ToolsRift";},[]);
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={null}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={null} tools={TOOLS} subcats={CATEGORIES}>
       <CategoryDashboard
         theme={PAGE_THEME}
         tools={TOOLS}

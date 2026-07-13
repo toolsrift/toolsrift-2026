@@ -1033,6 +1033,10 @@ const TOOLS = [
 { id:"fake-data-bulk", cat:"fakedata", name:"Bulk Fake Data Generator", desc:"Generate bulk fake data rows online with name, email, phone, and address and export as CSV for QA and dev workflows.", icon:"📊", free:true },
 { id:"random-country-gen", cat:"fakedata", name:"Random Country Generator", desc:"Generate random country data online including ISO code, capital, and currency for localization and mock dashboards.", icon:"🌍", free:true },
 { id:"random-color-gen", cat:"fakedata", name:"Random Color Generator", desc:"Generate random colors online in HEX, RGB, and HSL with preview swatch for design systems, mocks, and palettes.", icon:"🎨", free:true },
+{ id:"totp-secret-gen", cat:"security", name:"2FA / TOTP Secret Generator", desc:"Generate a cryptographically random Base32 TOTP secret and otpauth:// URI for Google Authenticator and Authy setup.", icon:"🔑", free:true },
+{ id:"rsa-key-pair-gen", cat:"security", name:"RSA Key Pair Generator", desc:"Generate an RSA public/private key pair in PEM format entirely in your browser using the native WebCrypto API.", icon:"🔏", free:true },
+{ id:"ulid-gen", cat:"ids", name:"ULID Generator", desc:"Generate ULIDs online — lexicographically sortable, timestamp-prefixed identifiers in Crockford Base32.", icon:"🆔", free:true },
+{ id:"objectid-gen", cat:"ids", name:"MongoDB ObjectId Generator", desc:"Generate valid MongoDB ObjectId values online with a real timestamp prefix and random tail for testing and seeds.", icon:"🍃", free:true },
 ];
 
 const CATEGORIES = [
@@ -1051,7 +1055,166 @@ faq:[
 ]
 }]));
 
+// ─── Base32 (RFC 4648) encode — for TOTP secrets ───
+const B32_ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+function base32Encode(bytes) {
+  let bits = 0, value = 0, out = "";
+  for (const b of bytes) {
+    value = (value << 8) | b; bits += 8;
+    while (bits >= 5) { out += B32_ALPHA[(value >>> (bits - 5)) & 31]; bits -= 5; }
+  }
+  if (bits > 0) out += B32_ALPHA[(value << (5 - bits)) & 31];
+  return out;
+}
+// ─── Crockford Base32 — for ULID ───
+const CROCKFORD = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+
+function TotpSecretGen() {
+  const [len, setLen] = useState("20");
+  const [label, setLabel] = useState("user@example.com");
+  const [issuer, setIssuer] = useState("ToolsRift");
+  const [out, setOut] = useState(null);
+  const gen = () => {
+    const n = Math.max(10, Math.min(64, Number(len) || 20));
+    const secret = base32Encode(safeCryptoBytes(n));
+    const uri = `otpauth://totp/${encodeURIComponent(issuer)}:${encodeURIComponent(label)}?secret=${secret}&issuer=${encodeURIComponent(issuer)}&algorithm=SHA1&digits=6&period=30`;
+    setOut({ secret, uri });
+  };
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Secret length (bytes)</Label><Input value={len} onChange={setLen} placeholder="20" /></div>
+        <div><Label>Account label</Label><Input value={label} onChange={setLabel} placeholder="user@example.com" /></div>
+      </Grid2>
+      <div><Label>Issuer</Label><Input value={issuer} onChange={setIssuer} placeholder="ToolsRift" /></div>
+      <Btn onClick={gen}>Generate TOTP Secret</Btn>
+      {out && (
+        <>
+          <div><Label>Base32 secret</Label><Result>{out.secret}</Result><CopyBtn text={out.secret} /></div>
+          <div><Label>otpauth:// URI (paste into an authenticator, or make a QR of it)</Label><Result>{out.uri}</Result><CopyBtn text={out.uri} /></div>
+          <Card style={{ background:"rgba(59,130,246,0.06)" }}>
+            <div style={{ fontSize:12, color:"#94A3B8", lineHeight:1.7 }}>Random bytes come from <strong style={{color:"#E2E8F0"}}>crypto.getRandomValues</strong> and are Base32-encoded (RFC 4648). Feed the secret to any RFC 6238 authenticator — it will produce the same 6-digit codes as the ToolsRift OTP tool.</div>
+          </Card>
+        </>
+      )}
+    </VStack>
+  );
+}
+
+function UlidGen() {
+  const [count, setCount] = useState("5");
+  const [out, setOut] = useState("");
+  const makeUlid = () => {
+    const time = Date.now();
+    // 48-bit timestamp → 10 Crockford chars
+    let ts = "", t = time;
+    for (let i = 9; i >= 0; i--) { ts = CROCKFORD[t % 32] + ts; t = Math.floor(t / 32); }
+    // 80 bits of randomness → 16 Crockford chars
+    const rnd = safeCryptoBytes(10);
+    let rand = "", bits = 0, value = 0;
+    for (const b of rnd) {
+      value = (value << 8) | b; bits += 8;
+      while (bits >= 5) { rand += CROCKFORD[(value >>> (bits - 5)) & 31]; bits -= 5; }
+    }
+    if (bits > 0) rand += CROCKFORD[(value << (5 - bits)) & 31];
+    return (ts + rand).slice(0, 26);
+  };
+  const gen = () => {
+    const n = Math.max(1, Math.min(1000, Number(count) || 1));
+    setOut(Array.from({ length: n }, makeUlid).join("\n"));
+  };
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>How many</Label><Input value={count} onChange={setCount} placeholder="5" /></div>
+        <div style={{ display:"flex", alignItems:"flex-end" }}><Btn onClick={gen} style={{ width:"100%" }}>Generate ULIDs</Btn></div>
+      </Grid2>
+      {out && <><Result>{out}</Result><CopyBtn text={out} /></>}
+      <Card style={{ background:"rgba(59,130,246,0.06)" }}>
+        <div style={{ fontSize:12, color:"#94A3B8", lineHeight:1.7 }}>A <strong style={{color:"#E2E8F0"}}>ULID</strong> is 26 Crockford-Base32 chars: a 48-bit millisecond timestamp (sortable) followed by 80 crypto-random bits. Unlike UUIDv4, ULIDs generated later sort lexicographically later.</div>
+      </Card>
+    </VStack>
+  );
+}
+
+function ObjectIdGen() {
+  const [count, setCount] = useState("5");
+  const [out, setOut] = useState("");
+  // Per-session random machine/process id (5 bytes) + incrementing counter (3 bytes), like the spec.
+  const machine = useMemo(() => bytesToHex(safeCryptoBytes(5)), []);
+  const counterRef = useRef((safeCryptoBytes(3)[0] << 16) | (safeCryptoBytes(1)[0] << 8) | safeCryptoBytes(1)[0]);
+  const makeId = () => {
+    const ts = Math.floor(Date.now() / 1000).toString(16).padStart(8, "0");
+    counterRef.current = (counterRef.current + 1) & 0xffffff;
+    const ctr = counterRef.current.toString(16).padStart(6, "0");
+    return ts + machine + ctr;
+  };
+  const gen = () => {
+    const n = Math.max(1, Math.min(1000, Number(count) || 1));
+    setOut(Array.from({ length: n }, makeId).join("\n"));
+  };
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>How many</Label><Input value={count} onChange={setCount} placeholder="5" /></div>
+        <div style={{ display:"flex", alignItems:"flex-end" }}><Btn onClick={gen} style={{ width:"100%" }}>Generate ObjectIds</Btn></div>
+      </Grid2>
+      {out && <><Result>{out}</Result><CopyBtn text={out} /></>}
+      <Card style={{ background:"rgba(59,130,246,0.06)" }}>
+        <div style={{ fontSize:12, color:"#94A3B8", lineHeight:1.7 }}>A MongoDB <strong style={{color:"#E2E8F0"}}>ObjectId</strong> is 24 hex chars: a 4-byte Unix timestamp, a 5-byte random value, and a 3-byte incrementing counter. The timestamp prefix makes them roughly time-ordered.</div>
+      </Card>
+    </VStack>
+  );
+}
+
+function RsaKeyPairGen() {
+  const [bits, setBits] = useState("2048");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  const [out, setOut] = useState(null);
+  const toPem = (buf, label) => {
+    const b64 = bytesToBase64(new Uint8Array(buf));
+    const lines = b64.match(/.{1,64}/g).join("\n");
+    return `-----BEGIN ${label}-----\n${lines}\n-----END ${label}-----`;
+  };
+  const gen = async () => {
+    setBusy(true); setErr(""); setOut(null);
+    try {
+      const kp = await crypto.subtle.generateKey(
+        { name: "RSASSA-PKCS1-v1_5", modulusLength: Number(bits), publicExponent: new Uint8Array([1,0,1]), hash: "SHA-256" },
+        true, ["sign", "verify"]
+      );
+      const spki = await crypto.subtle.exportKey("spki", kp.publicKey);
+      const pkcs8 = await crypto.subtle.exportKey("pkcs8", kp.privateKey);
+      setOut({ pub: toPem(spki, "PUBLIC KEY"), priv: toPem(pkcs8, "PRIVATE KEY") });
+    } catch (e) { setErr(e.message); }
+    setBusy(false);
+  };
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Key size</Label><SelectInput value={bits} onChange={setBits} options={[{value:"2048",label:"2048-bit (standard)"},{value:"3072",label:"3072-bit"},{value:"4096",label:"4096-bit (slow)"}]} /></div>
+        <div style={{ display:"flex", alignItems:"flex-end" }}><Btn onClick={gen} disabled={busy} style={{ width:"100%" }}>{busy ? "Generating…" : "Generate RSA Key Pair"}</Btn></div>
+      </Grid2>
+      {err && <div style={{ padding:12, background:"rgba(239,68,68,0.1)", border:"1px solid rgba(239,68,68,0.3)", borderRadius:8, fontSize:13, color:"#E2E8F0" }}>{err}</div>}
+      {out && (
+        <>
+          <div><Label>Public key (SPKI PEM)</Label><Result>{out.pub}</Result><CopyBtn text={out.pub} /></div>
+          <div><Label>Private key (PKCS#8 PEM)</Label><Result>{out.priv}</Result><CopyBtn text={out.priv} /></div>
+          <Card style={{ background:"rgba(245,158,11,0.08)" }}>
+            <div style={{ fontSize:12, color:"#E2E8F0", lineHeight:1.7 }}>Generated locally with the browser's native <strong>WebCrypto</strong> — the private key never leaves your device. Still, treat any generated private key as test/development material unless you fully control this environment.</div>
+          </Card>
+        </>
+      )}
+    </VStack>
+  );
+}
+
 const TOOL_COMPONENTS = {
+"totp-secret-gen": TotpSecretGen,
+"rsa-key-pair-gen": RsaKeyPairGen,
+"ulid-gen": UlidGen,
+"objectid-gen": ObjectIdGen,
 "strong-password-gen": StrongPasswordGen,
 "passphrase-gen": PassphraseGen,
 "pin-gen": PinGen,
@@ -1111,7 +1274,7 @@ function ToolPage({ toolId }) {
 
   if (!tool || !ToolComp) {
     return (
-      <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'}>
+      <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'} tools={TOOLS} subcats={CATEGORIES}>
         <div style={{ padding:'48px 20px', textAlign:'center', color:'#94A3B8' }}>
           Tool not found. <a href="#/" style={{ color: PAGE_THEME.color }}>← Back to {PAGE_THEME.name}</a>
         </div>
@@ -1130,8 +1293,8 @@ function ToolPage({ toolId }) {
   const related = TOOLS.filter(t => t.id !== tool.id && t.cat === tool.cat).slice(0, 8);
 
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={toolId}>
-      <ToolPageLayout theme={PAGE_THEME} tool={toolData} related={related}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId} tools={TOOLS} subcats={CATEGORIES}>
+      <ToolPageLayout theme={PAGE_THEME} tool={toolData} tools={TOOLS} subcats={CATEGORIES} related={related}>
         <ToolComp />
       </ToolPageLayout>
     </CategoryLayout>
@@ -1170,7 +1333,7 @@ return (
 function HomePage() {
   useEffect(() => { document.title = "ToolsRift Generators – Free Security & Data Generators Online"; }, []);
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={null}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={null} tools={TOOLS} subcats={CATEGORIES}>
       <CategoryDashboard
         theme={PAGE_THEME}
         tools={TOOLS}

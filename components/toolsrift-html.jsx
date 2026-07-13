@@ -181,6 +181,7 @@ const TOOLS = [
   { id:"html-entities-encode", cat:"converter", name:"HTML Entities Encoder", desc:"Encode special characters to HTML entities like &amp; &lt; &gt; &quot; for safe display", icon:"🔒", free:true },
   { id:"html-entities-decode", cat:"converter", name:"HTML Entities Decoder", desc:"Decode HTML entities back to readable characters and symbols from encoded text", icon:"🔓", free:true },
   { id:"html-to-pdf-preview", cat:"converter", name:"HTML Preview", desc:"Preview how HTML code renders in browser with live sandbox iframe visualization", icon:"👁️", free:true },
+  { id:"html-table-to-csv", cat:"converter", name:"HTML Table to CSV", desc:"Convert pasted HTML table markup into CSV and JSON. Parses rows and cells, auto-escaping commas, quotes and newlines", icon:"🧾", free:true },
 
   // Generators
   { id:"meta-tag-generator", cat:"generator", name:"Meta Tag Generator", desc:"Generate complete SEO meta tags including title, description, Open Graph, and Twitter Cards", icon:"🏷️", free:true },
@@ -193,6 +194,9 @@ const TOOLS = [
   { id:"html-button-generator", cat:"generator", name:"HTML Button Generator", desc:"Generate styled HTML button code with classes, attributes, and event handlers", icon:"🔘", free:true },
   { id:"iframe-generator", cat:"generator", name:"iFrame Generator", desc:"Generate iframe embed code with src, width, height, sandbox, and all iframe options", icon:"📺", free:true },
   { id:"html-input-generator", cat:"generator", name:"HTML Input Generator", desc:"Generate form input fields with labels, types, validation, and accessibility attributes", icon:"📝", free:true },
+  { id:"schema-json-ld-generator", cat:"generator", name:"Schema.org JSON-LD Generator", desc:"Build schema.org structured data JSON-LD for Article, Product, FAQPage, LocalBusiness, Organization and BreadcrumbList", icon:"🧬", free:true },
+  { id:"html-boilerplate-generator", cat:"generator", name:"HTML5 Boilerplate Generator", desc:"Generate a complete HTML5 starter document with meta, Open Graph, Twitter cards, favicons and an optional CSS reset", icon:"📄", free:true },
+  { id:"srcset-generator", cat:"generator", name:"Responsive Image Srcset Generator", desc:"Generate responsive img srcset and picture markup from a filename pattern, width list, sizes attribute and alt text", icon:"🌅", free:true },
 
   // Tools & Utilities
   { id:"html-tag-counter", cat:"tools", name:"HTML Tag Counter", desc:"Count how many of each HTML tag exists in your code with detailed statistics breakdown", icon:"🔢", free:true },
@@ -431,6 +435,46 @@ const TOOL_META = {
       ["Does it remove conditional comments?", "Yes, it removes all comments including IE conditional comments (<!--[if IE]>). Be careful if you rely on conditional comments for legacy browser support."],
       ["Are comments bad for production?", "Comments increase file size and may expose information. Remove them in production builds. Keep them in source code for documentation."],
       ["Will it break my code?", "No, removing comments only deletes text between <!-- and -->. It doesn't affect HTML structure, scripts, or functionality."]
+    ]
+  },
+  "html-table-to-csv": {
+    title: "Free HTML Table to CSV Converter – Table to CSV & JSON | ToolsRift",
+    desc: "Convert HTML table markup to CSV and JSON online. Paste any <table>, extract rows and cells, and download clean comma-separated or JSON data instantly.",
+    howTo: "Paste your HTML table markup (including the <table> tag) into the input box, then click Convert. Copy the generated CSV or JSON array-of-objects. The first row is used as column headers for the JSON output.",
+    faq: [
+      ["How does it handle commas inside cells?", "Cells containing a comma, double-quote, or line break are automatically wrapped in double quotes, and any inner double-quotes are escaped by doubling them (\" becomes \"\"), following the standard CSV/RFC 4180 rules."],
+      ["What is the JSON output format?", "The JSON is an array of objects. The first table row is treated as the header, so each following row becomes an object keyed by those header names. Empty headers fall back to column1, column2, etc."],
+      ["Does it support colspan and rowspan?", "The parser walks each <tr> and reads every <th>/<td> in order, so merged cells using colspan or rowspan are not expanded to fill the spanned positions. Each cell maps to a single CSV/JSON field."]
+    ]
+  },
+  "schema-json-ld-generator": {
+    title: "Free Schema.org JSON-LD Generator – Structured Data Tool | ToolsRift",
+    desc: "Generate schema.org JSON-LD structured data for Article, Product, FAQPage, LocalBusiness, Organization and BreadcrumbList. Copy a ready-to-paste script tag for rich results.",
+    howTo: "Choose a schema type, fill in the relevant fields (add multiple rows for FAQ questions or breadcrumb items), then click Generate. Copy the <script type=\"application/ld+json\"> block and paste it into the <head> of your page.",
+    faq: [
+      ["What is JSON-LD structured data?", "JSON-LD is the format Google recommends for structured data. It describes your page's content (an article, product, FAQ, business, etc.) so search engines can show rich results like star ratings, FAQ dropdowns and breadcrumbs."],
+      ["Which schema types are supported?", "Article, Product (with offers/price), FAQPage, LocalBusiness (with postal address), Organization and BreadcrumbList. Each type shows only the fields relevant to it."],
+      ["Where do I place the generated code?", "Paste the entire <script type=\"application/ld+json\"> block into the <head> of your HTML page. You can validate it afterward with Google's Rich Results Test or the Schema Markup Validator."]
+    ]
+  },
+  "html-boilerplate-generator": {
+    title: "Free HTML5 Boilerplate Generator – Starter Template | ToolsRift",
+    desc: "Generate a complete HTML5 boilerplate document with charset, viewport, meta description, Open Graph, Twitter cards, favicons and a modern CSS reset. Copy or download index.html.",
+    howTo: "Set your page title, description and language, then toggle the sections you want (Open Graph, Twitter card, favicons, CSS reset) and add any stylesheet or script paths. The full document builds live. Copy it or download it as an .html file.",
+    faq: [
+      ["What is an HTML boilerplate?", "A boilerplate is the minimal, correct starting structure every HTML5 page needs: the doctype, html/head/body tags, charset, viewport and title. This tool builds that skeleton plus optional SEO and social tags."],
+      ["What does the CSS reset do?", "The optional reset applies sensible defaults, box-sizing: border-box, removes default margins, sets a base line-height, and makes images block-level and responsive, so your styling starts from a predictable baseline across browsers."],
+      ["Why include Open Graph and Twitter tags?", "Open Graph and Twitter Card meta tags control how your page looks when shared on social media, defining the title, description and preview image. They are optional here and only added when you enable them."]
+    ]
+  },
+  "srcset-generator": {
+    title: "Free Responsive Image Srcset Generator – img & picture | ToolsRift",
+    desc: "Generate responsive image markup online. Build an img srcset with width descriptors and a picture element with AVIF/WebP sources from a filename pattern and width list.",
+    howTo: "Enter a filename pattern using {w} as the width placeholder (e.g. image-{w}.jpg), list your target widths, set the sizes attribute and alt text. The img and picture markup update live for you to copy.",
+    faq: [
+      ["What does the {w} placeholder do?", "The {w} token in your filename pattern is replaced by each width you list. For example image-{w}.jpg with widths 320 and 640 produces image-320.jpg and image-640.jpg in the srcset."],
+      ["What is the difference between the img and picture output?", "The img version uses one srcset with width descriptors so the browser picks a size. The picture version adds <source> elements offering a modern format (AVIF or WebP) with a fallback for browsers that don't support it."],
+      ["What should the sizes attribute contain?", "sizes tells the browser how wide the image will render at different breakpoints, e.g. (max-width: 600px) 100vw, 600px. The browser uses it with srcset to choose the most appropriate file before layout."]
     ]
   }
 };
@@ -1844,6 +1888,506 @@ function HtmlCommentRemover() {
   );
 }
 
+// HTML Table to CSV Component
+function HtmlTableToCsv() {
+  const [input, setInput] = useState('');
+  const [csv, setCsv] = useState('');
+  const [json, setJson] = useState('');
+  const [error, setError] = useState('');
+
+  const escapeCsv = (cell) => {
+    if (/[",\n\r]/.test(cell)) return '"' + cell.replace(/"/g, '""') + '"';
+    return cell;
+  };
+
+  const convert = () => {
+    setError(''); setCsv(''); setJson('');
+    if (!input.trim()) return;
+    try {
+      const doc = new DOMParser().parseFromString(input, 'text/html');
+      const table = doc.querySelector('table');
+      if (!table) { setError('No <table> element found. Paste HTML markup that contains a <table>.'); return; }
+      const rows = Array.from(table.querySelectorAll('tr'));
+      if (!rows.length) { setError('The <table> has no <tr> rows to convert.'); return; }
+      const matrix = rows.map(tr =>
+        Array.from(tr.querySelectorAll('th, td')).map(cell => cell.textContent.trim())
+      );
+      // CSV
+      const csvOut = matrix.map(row => row.map(escapeCsv).join(',')).join('\n');
+      setCsv(csvOut);
+      // JSON array-of-objects (first row = headers)
+      const [headers, ...body] = matrix;
+      const jsonRows = body.map(row => {
+        const obj = {};
+        headers.forEach((h, i) => { obj[h || `column${i + 1}`] = row[i] !== undefined ? row[i] : ''; });
+        return obj;
+      });
+      setJson(JSON.stringify(jsonRows, null, 2));
+    } catch (err) {
+      setError('Could not parse the HTML: ' + err.message);
+    }
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>HTML Table Markup</Label>
+        <Textarea value={input} onChange={setInput} rows={10} mono placeholder="<table><tr><th>Name</th><th>City</th></tr><tr><td>Ann</td><td>Paris</td></tr></table>" />
+      </div>
+      <Btn onClick={convert} disabled={!input.trim()}>Convert to CSV &amp; JSON</Btn>
+      {error && (
+        <div style={{ padding:14, background:"rgba(239,68,68,0.1)", border:`1px solid rgba(239,68,68,0.3)`, borderRadius:8, color:C.danger, fontSize:13 }}>
+          ⚠ {error}
+        </div>
+      )}
+      {csv && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>CSV Output</Label>
+            <CopyBtn text={csv} />
+          </div>
+          <Textarea value={csv} onChange={() => {}} rows={8} mono />
+        </div>
+      )}
+      {json && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>JSON Output (first row as keys)</Label>
+            <CopyBtn text={json} />
+          </div>
+          <Textarea value={json} onChange={() => {}} rows={8} mono />
+        </div>
+      )}
+      {(csv || json) && (
+        <div style={{ fontSize:11, color:C.muted }}>Note: colspan / rowspan are not expanded — each cell maps to one CSV/JSON field.</div>
+      )}
+    </VStack>
+  );
+}
+
+// Schema.org JSON-LD Generator Component
+function SchemaJsonLdGenerator() {
+  const [type, setType] = useState('Article');
+  const [output, setOutput] = useState('');
+
+  // Article
+  const [artHeadline, setArtHeadline] = useState('');
+  const [artAuthor, setArtAuthor] = useState('');
+  const [artDate, setArtDate] = useState('');
+  const [artImage, setArtImage] = useState('');
+  const [artPublisher, setArtPublisher] = useState('');
+  // Product
+  const [prodName, setProdName] = useState('');
+  const [prodImage, setProdImage] = useState('');
+  const [prodDesc, setProdDesc] = useState('');
+  const [prodBrand, setProdBrand] = useState('');
+  const [prodPrice, setProdPrice] = useState('');
+  const [prodCurrency, setProdCurrency] = useState('USD');
+  const [prodAvailability, setProdAvailability] = useState('InStock');
+  // FAQPage
+  const [faqRows, setFaqRows] = useState([{ q:'', a:'' }]);
+  // LocalBusiness
+  const [lbName, setLbName] = useState('');
+  const [lbPhone, setLbPhone] = useState('');
+  const [lbStreet, setLbStreet] = useState('');
+  const [lbCity, setLbCity] = useState('');
+  const [lbRegion, setLbRegion] = useState('');
+  const [lbPostal, setLbPostal] = useState('');
+  const [lbCountry, setLbCountry] = useState('');
+  // Organization
+  const [orgName, setOrgName] = useState('');
+  const [orgUrl, setOrgUrl] = useState('');
+  const [orgLogo, setOrgLogo] = useState('');
+  // BreadcrumbList
+  const [crumbs, setCrumbs] = useState([{ name:'', url:'' }]);
+
+  const build = () => {
+    const obj = { "@context": "https://schema.org" };
+    if (type === 'Article') {
+      obj["@type"] = "Article";
+      if (artHeadline) obj.headline = artHeadline;
+      if (artImage) obj.image = [artImage];
+      if (artAuthor) obj.author = { "@type": "Person", "name": artAuthor };
+      if (artPublisher) obj.publisher = { "@type": "Organization", "name": artPublisher };
+      if (artDate) obj.datePublished = artDate;
+    } else if (type === 'Product') {
+      obj["@type"] = "Product";
+      if (prodName) obj.name = prodName;
+      if (prodImage) obj.image = [prodImage];
+      if (prodDesc) obj.description = prodDesc;
+      if (prodBrand) obj.brand = { "@type": "Brand", "name": prodBrand };
+      if (prodPrice) obj.offers = {
+        "@type": "Offer",
+        "price": prodPrice,
+        "priceCurrency": prodCurrency,
+        "availability": `https://schema.org/${prodAvailability}`
+      };
+    } else if (type === 'FAQPage') {
+      obj["@type"] = "FAQPage";
+      obj.mainEntity = faqRows.filter(f => f.q.trim()).map(f => ({
+        "@type": "Question",
+        "name": f.q,
+        "acceptedAnswer": { "@type": "Answer", "text": f.a }
+      }));
+    } else if (type === 'LocalBusiness') {
+      obj["@type"] = "LocalBusiness";
+      if (lbName) obj.name = lbName;
+      if (lbPhone) obj.telephone = lbPhone;
+      const addr = { "@type": "PostalAddress" };
+      if (lbStreet) addr.streetAddress = lbStreet;
+      if (lbCity) addr.addressLocality = lbCity;
+      if (lbRegion) addr.addressRegion = lbRegion;
+      if (lbPostal) addr.postalCode = lbPostal;
+      if (lbCountry) addr.addressCountry = lbCountry;
+      if (Object.keys(addr).length > 1) obj.address = addr;
+    } else if (type === 'Organization') {
+      obj["@type"] = "Organization";
+      if (orgName) obj.name = orgName;
+      if (orgUrl) obj.url = orgUrl;
+      if (orgLogo) obj.logo = orgLogo;
+    } else if (type === 'BreadcrumbList') {
+      obj["@type"] = "BreadcrumbList";
+      obj.itemListElement = crumbs.filter(c => c.name.trim()).map((c, i) => {
+        const item = { "@type": "ListItem", "position": i + 1, "name": c.name };
+        if (c.url) item.item = c.url;
+        return item;
+      });
+    }
+    setOutput(`<script type="application/ld+json">\n${JSON.stringify(obj, null, 2)}\n</` + `script>`);
+  };
+
+  const setFaq = (i, key, v) => setFaqRows(faqRows.map((r, idx) => idx === i ? { ...r, [key]: v } : r));
+  const setCrumb = (i, key, v) => setCrumbs(crumbs.map((r, idx) => idx === i ? { ...r, [key]: v } : r));
+
+  return (
+    <VStack>
+      <div>
+        <Label>Schema Type</Label>
+        <SelectInput value={type} onChange={setType} options={[
+          { value:'Article', label:'Article' },
+          { value:'Product', label:'Product' },
+          { value:'FAQPage', label:'FAQ Page' },
+          { value:'LocalBusiness', label:'Local Business' },
+          { value:'Organization', label:'Organization' },
+          { value:'BreadcrumbList', label:'Breadcrumb List' }
+        ]} />
+      </div>
+
+      {type === 'Article' && (
+        <>
+          <div><Label>Headline</Label><Input value={artHeadline} onChange={setArtHeadline} placeholder="How to bake sourdough bread" /></div>
+          <div><Label>Author Name</Label><Input value={artAuthor} onChange={setArtAuthor} placeholder="Jane Doe" /></div>
+          <div><Label>Date Published</Label><Input value={artDate} onChange={setArtDate} placeholder="2026-07-13" /></div>
+          <div><Label>Image URL</Label><Input value={artImage} onChange={setArtImage} placeholder="https://example.com/cover.jpg" /></div>
+          <div><Label>Publisher (Organization)</Label><Input value={artPublisher} onChange={setArtPublisher} placeholder="ToolsRift" /></div>
+        </>
+      )}
+
+      {type === 'Product' && (
+        <>
+          <div><Label>Product Name</Label><Input value={prodName} onChange={setProdName} placeholder="Wireless Headphones" /></div>
+          <div><Label>Image URL</Label><Input value={prodImage} onChange={setProdImage} placeholder="https://example.com/product.jpg" /></div>
+          <div><Label>Description</Label><Textarea value={prodDesc} onChange={setProdDesc} rows={2} placeholder="Noise-cancelling over-ear headphones." /></div>
+          <div><Label>Brand</Label><Input value={prodBrand} onChange={setProdBrand} placeholder="Acme Audio" /></div>
+          <Grid2>
+            <div><Label>Price</Label><Input value={prodPrice} onChange={setProdPrice} placeholder="199.99" /></div>
+            <div><Label>Currency</Label><Input value={prodCurrency} onChange={setProdCurrency} placeholder="USD" /></div>
+          </Grid2>
+          <div>
+            <Label>Availability</Label>
+            <SelectInput value={prodAvailability} onChange={setProdAvailability} options={[
+              { value:'InStock', label:'In Stock' },
+              { value:'OutOfStock', label:'Out of Stock' },
+              { value:'PreOrder', label:'Pre-Order' },
+              { value:'Discontinued', label:'Discontinued' }
+            ]} />
+          </div>
+        </>
+      )}
+
+      {type === 'FAQPage' && (
+        <div>
+          <Label>Questions &amp; Answers</Label>
+          <VStack gap={10}>
+            {faqRows.map((f, i) => (
+              <div key={i} style={{ padding:12, background:"rgba(255,255,255,0.03)", borderRadius:8, border:`1px solid ${C.border}` }}>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+                  <span style={{ fontSize:12, fontWeight:600, color:C.orange }}>Q{i + 1}</span>
+                  {faqRows.length > 1 && <Btn size="sm" variant="danger" onClick={() => setFaqRows(faqRows.filter((_, idx) => idx !== i))}>Remove</Btn>}
+                </div>
+                <Input value={f.q} onChange={v => setFaq(i, 'q', v)} placeholder="Question" />
+                <div style={{ height:8 }} />
+                <Textarea value={f.a} onChange={v => setFaq(i, 'a', v)} rows={2} placeholder="Answer" />
+              </div>
+            ))}
+          </VStack>
+          <div style={{ marginTop:8 }}>
+            <Btn size="sm" variant="secondary" onClick={() => setFaqRows([...faqRows, { q:'', a:'' }])}>+ Add Q&amp;A</Btn>
+          </div>
+        </div>
+      )}
+
+      {type === 'LocalBusiness' && (
+        <>
+          <div><Label>Business Name</Label><Input value={lbName} onChange={setLbName} placeholder="Acme Coffee House" /></div>
+          <div><Label>Telephone</Label><Input value={lbPhone} onChange={setLbPhone} placeholder="+1-555-123-4567" /></div>
+          <div><Label>Street Address</Label><Input value={lbStreet} onChange={setLbStreet} placeholder="123 Main St" /></div>
+          <Grid2>
+            <div><Label>City</Label><Input value={lbCity} onChange={setLbCity} placeholder="Springfield" /></div>
+            <div><Label>Region / State</Label><Input value={lbRegion} onChange={setLbRegion} placeholder="IL" /></div>
+          </Grid2>
+          <Grid2>
+            <div><Label>Postal Code</Label><Input value={lbPostal} onChange={setLbPostal} placeholder="62704" /></div>
+            <div><Label>Country</Label><Input value={lbCountry} onChange={setLbCountry} placeholder="US" /></div>
+          </Grid2>
+        </>
+      )}
+
+      {type === 'Organization' && (
+        <>
+          <div><Label>Organization Name</Label><Input value={orgName} onChange={setOrgName} placeholder="ToolsRift" /></div>
+          <div><Label>Website URL</Label><Input value={orgUrl} onChange={setOrgUrl} placeholder="https://toolsrift.com" /></div>
+          <div><Label>Logo URL</Label><Input value={orgLogo} onChange={setOrgLogo} placeholder="https://toolsrift.com/logo.png" /></div>
+        </>
+      )}
+
+      {type === 'BreadcrumbList' && (
+        <div>
+          <Label>Breadcrumb Items</Label>
+          <VStack gap={10}>
+            {crumbs.map((c, i) => (
+              <div key={i} style={{ padding:12, background:"rgba(255,255,255,0.03)", borderRadius:8, border:`1px solid ${C.border}` }}>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+                  <span style={{ fontSize:12, fontWeight:600, color:C.orange }}>#{i + 1}</span>
+                  {crumbs.length > 1 && <Btn size="sm" variant="danger" onClick={() => setCrumbs(crumbs.filter((_, idx) => idx !== i))}>Remove</Btn>}
+                </div>
+                <Input value={c.name} onChange={v => setCrumb(i, 'name', v)} placeholder="Page name (e.g. Home)" />
+                <div style={{ height:8 }} />
+                <Input value={c.url} onChange={v => setCrumb(i, 'url', v)} placeholder="https://example.com/page" />
+              </div>
+            ))}
+          </VStack>
+          <div style={{ marginTop:8 }}>
+            <Btn size="sm" variant="secondary" onClick={() => setCrumbs([...crumbs, { name:'', url:'' }])}>+ Add Item</Btn>
+          </div>
+        </div>
+      )}
+
+      <Btn onClick={build}>Generate JSON-LD</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>JSON-LD Structured Data</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={14} mono />
+        </div>
+      )}
+    </VStack>
+  );
+}
+
+// HTML5 Boilerplate Generator Component
+function HtmlBoilerplateGenerator() {
+  const [title, setTitle] = useState('My Page');
+  const [description, setDescription] = useState('');
+  const [lang, setLang] = useState('en');
+  const [charset, setCharset] = useState('UTF-8');
+  const [viewport, setViewport] = useState(true);
+  const [includeOg, setIncludeOg] = useState(false);
+  const [ogImage, setOgImage] = useState('');
+  const [ogUrl, setOgUrl] = useState('');
+  const [includeTwitter, setIncludeTwitter] = useState(false);
+  const [includeFavicon, setIncludeFavicon] = useState(true);
+  const [cssReset, setCssReset] = useState(true);
+  const [stylesheet, setStylesheet] = useState('');
+  const [scriptPath, setScriptPath] = useState('');
+
+  const output = useMemo(() => {
+    const L = [];
+    L.push('<!DOCTYPE html>');
+    L.push(`<html lang="${lang || 'en'}">`);
+    L.push('<head>');
+    L.push(`  <meta charset="${charset || 'UTF-8'}">`);
+    if (viewport) L.push('  <meta name="viewport" content="width=device-width, initial-scale=1.0">');
+    L.push(`  <title>${title || 'Document'}</title>`);
+    if (description) L.push(`  <meta name="description" content="${description}">`);
+    if (includeOg) {
+      L.push(`  <meta property="og:title" content="${title || 'Document'}">`);
+      if (description) L.push(`  <meta property="og:description" content="${description}">`);
+      if (ogImage) L.push(`  <meta property="og:image" content="${ogImage}">`);
+      if (ogUrl) L.push(`  <meta property="og:url" content="${ogUrl}">`);
+      L.push('  <meta property="og:type" content="website">');
+    }
+    if (includeTwitter) {
+      L.push('  <meta name="twitter:card" content="summary_large_image">');
+      L.push(`  <meta name="twitter:title" content="${title || 'Document'}">`);
+      if (description) L.push(`  <meta name="twitter:description" content="${description}">`);
+      if (ogImage) L.push(`  <meta name="twitter:image" content="${ogImage}">`);
+    }
+    if (includeFavicon) {
+      L.push('  <link rel="icon" href="/favicon.ico" sizes="any">');
+      L.push('  <link rel="icon" href="/icon.svg" type="image/svg+xml">');
+      L.push('  <link rel="apple-touch-icon" href="/apple-touch-icon.png">');
+    }
+    if (cssReset) {
+      L.push('  <style>');
+      L.push('    *, *::before, *::after { box-sizing: border-box; }');
+      L.push('    * { margin: 0; }');
+      L.push('    html { -webkit-text-size-adjust: 100%; }');
+      L.push('    body { min-height: 100vh; line-height: 1.5; -webkit-font-smoothing: antialiased; }');
+      L.push('    img, picture, video, canvas, svg { display: block; max-width: 100%; }');
+      L.push('    input, button, textarea, select { font: inherit; }');
+      L.push('  </style>');
+    }
+    if (stylesheet) L.push(`  <link rel="stylesheet" href="${stylesheet}">`);
+    L.push('</head>');
+    L.push('<body>');
+    L.push('  <h1>Hello, world!</h1>');
+    if (scriptPath) L.push(`  <script src="${scriptPath}" defer></` + 'script>');
+    L.push('</body>');
+    L.push('</html>');
+    return L.join('\n');
+  }, [title, description, lang, charset, viewport, includeOg, ogImage, ogUrl, includeTwitter, includeFavicon, cssReset, stylesheet, scriptPath]);
+
+  const download = () => {
+    const blob = new Blob([output], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'index.html';
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  const chk = (checked, on, label) => (
+    <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", fontSize:13 }}>
+      <input type="checkbox" checked={checked} onChange={e => on(e.target.checked)} />
+      {label}
+    </label>
+  );
+
+  return (
+    <VStack>
+      <div><Label>Page Title</Label><Input value={title} onChange={setTitle} placeholder="My Page" /></div>
+      <div><Label>Meta Description</Label><Textarea value={description} onChange={setDescription} rows={2} placeholder="A short description of the page." /></div>
+      <Grid2>
+        <div><Label>Language</Label><Input value={lang} onChange={setLang} placeholder="en" /></div>
+        <div><Label>Charset</Label><Input value={charset} onChange={setCharset} placeholder="UTF-8" /></div>
+      </Grid2>
+      <div style={{ display:"flex", flexDirection:"column", gap:8, padding:12, background:"rgba(255,255,255,0.03)", borderRadius:8 }}>
+        {chk(viewport, setViewport, 'Include viewport meta tag')}
+        {chk(includeFavicon, setIncludeFavicon, 'Include favicon links')}
+        {chk(cssReset, setCssReset, 'Include modern CSS reset')}
+        {chk(includeOg, setIncludeOg, 'Include Open Graph tags')}
+        {chk(includeTwitter, setIncludeTwitter, 'Include Twitter Card tags')}
+      </div>
+      {(includeOg || includeTwitter) && (
+        <Grid2>
+          <div><Label>Social Image URL</Label><Input value={ogImage} onChange={setOgImage} placeholder="https://example.com/og.jpg" /></div>
+          <div><Label>Canonical / OG URL</Label><Input value={ogUrl} onChange={setOgUrl} placeholder="https://example.com/" /></div>
+        </Grid2>
+      )}
+      <Grid2>
+        <div><Label>Linked Stylesheet (optional)</Label><Input value={stylesheet} onChange={setStylesheet} placeholder="/styles.css" /></div>
+        <div><Label>Linked Script (optional)</Label><Input value={scriptPath} onChange={setScriptPath} placeholder="/main.js" /></div>
+      </Grid2>
+      <div>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+          <Label>index.html</Label>
+          <div style={{ display:"flex", gap:8 }}>
+            <CopyBtn text={output} />
+            <Btn size="sm" variant="secondary" onClick={download}>Download .html</Btn>
+          </div>
+        </div>
+        <Textarea value={output} onChange={() => {}} rows={16} mono />
+      </div>
+    </VStack>
+  );
+}
+
+// Responsive Image Srcset Generator Component
+function SrcsetGenerator() {
+  const [pattern, setPattern] = useState('image-{w}.jpg');
+  const [widths, setWidths] = useState('320, 640, 960, 1280');
+  const [sizes, setSizes] = useState('(max-width: 600px) 100vw, 600px');
+  const [alt, setAlt] = useState('');
+  const [modernFormat, setModernFormat] = useState('webp');
+
+  const { imgTag, pictureTag, valid } = useMemo(() => {
+    const widthList = widths.split(/[,\s]+/).map(w => parseInt(w, 10)).filter(w => w > 0);
+    if (!pattern.trim() || !widthList.length) return { imgTag:'', pictureTag:'', valid:false };
+
+    const makeSrcset = (pat) => widthList.map(w => `${pat.replace(/\{w\}/g, w)} ${w}w`).join(', ');
+    const srcset = makeSrcset(pattern);
+    const fallbackSrc = pattern.replace(/\{w\}/g, widthList[widthList.length - 1]);
+    const altAttr = alt || '';
+
+    const img = [
+      '<img',
+      `  src="${fallbackSrc}"`,
+      `  srcset="${srcset}"`,
+      `  sizes="${sizes}"`,
+      `  alt="${altAttr}"`,
+      '  loading="lazy"',
+      '  decoding="async">'
+    ].join('\n');
+
+    const extMatch = pattern.match(/\.(jpe?g|png|gif|webp|avif)$/i);
+    const ext = extMatch ? extMatch[1].toLowerCase() : 'jpeg';
+    const origMime = ext === 'png' ? 'image/png' : ext === 'gif' ? 'image/gif' : (ext === 'jpg' || ext === 'jpeg') ? 'image/jpeg' : `image/${ext}`;
+    const modernPattern = pattern.replace(/\.(jpe?g|png|gif|webp|avif)$/i, `.${modernFormat}`);
+    const modernSrcset = makeSrcset(modernPattern);
+    const modernMime = modernFormat === 'avif' ? 'image/avif' : 'image/webp';
+
+    const picture = [
+      '<picture>',
+      `  <source type="${modernMime}" srcset="${modernSrcset}" sizes="${sizes}">`,
+      `  <source type="${origMime}" srcset="${srcset}" sizes="${sizes}">`,
+      `  <img src="${fallbackSrc}" alt="${altAttr}" loading="lazy" decoding="async">`,
+      '</picture>'
+    ].join('\n');
+
+    return { imgTag: img, pictureTag: picture, valid:true };
+  }, [pattern, widths, sizes, alt, modernFormat]);
+
+  return (
+    <VStack>
+      <div><Label>Filename Pattern (use {'{w}'} for width)</Label><Input value={pattern} onChange={setPattern} placeholder="image-{w}.jpg" /></div>
+      <div><Label>Widths (comma or space separated)</Label><Input value={widths} onChange={setWidths} placeholder="320, 640, 960, 1280" /></div>
+      <div><Label>Sizes Attribute</Label><Input value={sizes} onChange={setSizes} placeholder="(max-width: 600px) 100vw, 600px" /></div>
+      <div><Label>Alt Text</Label><Input value={alt} onChange={setAlt} placeholder="Description of the image" /></div>
+      <div>
+        <Label>Modern Format (for &lt;picture&gt;)</Label>
+        <SelectInput value={modernFormat} onChange={setModernFormat} options={[
+          { value:'webp', label:'WebP' },
+          { value:'avif', label:'AVIF' }
+        ]} />
+      </div>
+      {!valid && (
+        <div style={{ fontSize:12, color:C.muted }}>Enter a filename pattern and at least one width to generate markup.</div>
+      )}
+      {valid && (
+        <>
+          <div>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+              <Label>&lt;img&gt; with srcset</Label>
+              <CopyBtn text={imgTag} />
+            </div>
+            <Textarea value={imgTag} onChange={() => {}} rows={8} mono />
+          </div>
+          <div>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+              <Label>&lt;picture&gt; with {modernFormat.toUpperCase()} + fallback</Label>
+              <CopyBtn text={pictureTag} />
+            </div>
+            <Textarea value={pictureTag} onChange={() => {}} rows={6} mono />
+          </div>
+        </>
+      )}
+    </VStack>
+  );
+}
+
 const TOOL_COMPONENTS = {
   "html-formatter": HtmlFormatter,
   "html-minifier": HtmlMinifier,
@@ -1870,6 +2414,10 @@ const TOOL_COMPONENTS = {
   "html-tag-counter": HtmlTagCounter,
   "html-attribute-extractor": HtmlAttributeExtractor,
   "html-comment-remover": HtmlCommentRemover,
+  "html-table-to-csv": HtmlTableToCsv,
+  "schema-json-ld-generator": SchemaJsonLdGenerator,
+  "html-boilerplate-generator": HtmlBoilerplateGenerator,
+  "srcset-generator": SrcsetGenerator,
 };
 
 function Breadcrumb({ tool, cat }) {
@@ -1903,7 +2451,7 @@ function ToolPage({ toolId }) {
 
   if (!tool || !ToolComp) {
     return (
-      <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'}>
+      <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'} tools={TOOLS} subcats={CATEGORIES}>
         <div style={{ padding:'48px 20px', textAlign:'center', color:'#94A3B8' }}>
           Tool not found. <a href="#/" style={{ color: PAGE_THEME.color }}>← Back to {PAGE_THEME.name}</a>
         </div>
@@ -1922,8 +2470,8 @@ function ToolPage({ toolId }) {
   const related = TOOLS.filter(t => t.id !== tool.id && t.cat === tool.cat).slice(0, 8);
 
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={toolId}>
-      <ToolPageLayout theme={PAGE_THEME} tool={toolData} related={related}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId} tools={TOOLS} subcats={CATEGORIES}>
+      <ToolPageLayout theme={PAGE_THEME} tool={toolData} tools={TOOLS} subcats={CATEGORIES} related={related}>
         <ToolComp />
       </ToolPageLayout>
     </CategoryLayout>
@@ -1978,7 +2526,7 @@ function HomePage() {
     document.title = "Free HTML Tools – Format, Convert, Generate HTML Online | ToolsRift";
   }, []);
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={null}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={null} tools={TOOLS} subcats={CATEGORIES}>
       <CategoryDashboard
         theme={PAGE_THEME}
         tools={TOOLS}

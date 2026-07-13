@@ -146,6 +146,10 @@ const TOOLS = [
   { id: "jwt-debugger", cat: "text", name: "JWT Debugger", icon: "🔐", desc: "Decode JWT segments and verify." },
   { id: "chmod-calc", cat: "text", name: "Chmod Calculator", icon: "🧩", desc: "Symbolic — octal permission grid." },
   { id: "crontab-guru", cat: "text", name: "Crontab Guru", icon:"⏱️", desc:"Visual cron builder + readable output." },
+  { id: "semver-tools", cat: "text", name: "Semver Tools", icon: "🏷️", desc: "Validate, compare and range-check semantic versions." },
+  { id: "uuid-inspector", cat: "text", name: "UUID Inspector", icon: "🆔", desc: "Detect UUID version, variant and embedded timestamp." },
+  { id: "basic-auth-generator", cat: "network", name: "Basic Auth Generator", icon: "🔑", desc: "Build an HTTP Basic Authorization header from user/pass." },
+  { id: "string-escaper", cat: "text", name: "String Escaper", icon: "⛓️", desc: "Escape/unescape for JSON, JS, HTML, SQL, Regex and Shell." },
 
   // reference
   { id: "ascii-table", cat: "reference", name: "ASCII Table", icon:"🔤", desc:"0-127 searchable ASCII reference." },
@@ -336,12 +340,6 @@ const DEV_SPECIAL_CSS = `
   @media(max-width:1024px){.trd-grid{grid-template-columns:repeat(3,1fr)}}
   @media(max-width:640px){.trd-grid{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:400px){.trd-grid{grid-template-columns:1fr}}
-  .trd-detail{display:grid;grid-template-columns:220px 1fr;gap:24px;padding:16px 0 60px}
-  @media(max-width:768px){.trd-detail{grid-template-columns:1fr;padding:16px 0 96px}}
-  .trd-sidebar{display:block}
-  @media(max-width:768px){.trd-sidebar{display:none}}
-  .trd-mobile-bar{display:none}
-  @media(max-width:768px){.trd-mobile-bar{display:flex}}
   /* Dev mono textarea overrides */
   .trd-tool-area textarea,
   .trd-tool-area pre,
@@ -364,7 +362,7 @@ function CategoryHomePage() {
   useEffect(() => { document.title = 'Free Developer Tools — ToolsRift'; }, []);
 
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={null}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={null} tools={TOOLS} subcats={CATEGORIES}>
       <CategoryDashboard
         theme={PAGE_THEME}
         tools={TOOLS}
@@ -378,16 +376,14 @@ function CategoryHomePage() {
 function ToolDetailPage({ toolId }) {
   const tool     = TOOLS.find(t => t.id === toolId);
   const ToolComp = TOOL_COMPONENTS[toolId];
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const acc = PAGE_THEME.color;
 
   useEffect(() => {
     document.title = `${tool?.name || toolId} — Free Developer Tool | ToolsRift`;
-    setDrawerOpen(false);
   }, [toolId]);
 
   if (!tool || !ToolComp) return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'} tools={TOOLS} subcats={CATEGORIES}>
       <div style={{ padding:40, textAlign:'center', color:'#64748B', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
         <div style={{ fontSize:48, marginBottom:16 }}>🔍</div>
         <p style={{ color:'#E2E8F0', marginBottom:8, fontSize:16 }}>Tool not found</p>
@@ -396,71 +392,27 @@ function ToolDetailPage({ toolId }) {
     </CategoryLayout>
   );
 
-  const sidebarTools = TOOLS.filter(t => t.cat === tool.cat);
-  const toolData = { name:tool.name, description:tool.desc||'', howTo:null, faq:null };
+  const toolData = { id:tool.id, name:tool.name, description:tool.desc||'', howTo:null, faq:null };
 
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={toolId}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId} tools={TOOLS} subcats={CATEGORIES}>
       <style>{DEV_SPECIAL_CSS}</style>
-      <div className="trd-detail">
-        <aside className="trd-sidebar">
-          <div style={{ position:'sticky', top:72, background:'#0D1117', border:'1px solid rgba(255,255,255,0.06)', borderRadius:12, overflow:'hidden' }}>
-            <div style={{ padding:'12px 16px', borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
-              <div style={{ fontSize:11, fontWeight:700, color:'#475569', textTransform:'uppercase', letterSpacing:'0.06em' }}>
-                {CATEGORIES.find(c => c.id === tool.cat)?.name || 'Tools'}
-              </div>
-            </div>
-            <div style={{ padding:'8px 0', maxHeight:'calc(100vh - 160px)', overflowY:'auto' }}>
-              {sidebarTools.map(t => {
-                const isActive = t.id === toolId;
-                return (
-                  <a key={t.id} href={`#/tool/${t.id}`}
-                    style={{ display:'flex', alignItems:'center', gap:10, minHeight:44, padding:'10px 16px', textDecoration:'none', background:isActive?`${acc}18`:'transparent', borderLeft:isActive?`2px solid ${acc}`:'2px solid transparent', transition:'background 0.15s' }}
-                    onMouseEnter={e => { if (!isActive) e.currentTarget.style.background='rgba(255,255,255,0.03)'; }}
-                    onMouseLeave={e => { if (!isActive) e.currentTarget.style.background='transparent'; }}
-                  >
-                    <span style={{ fontSize:15, flexShrink:0 }}>{t.icon||'·'}</span>
-                    <span style={{ fontSize:13, fontWeight:isActive?600:400, color:isActive?'#F1F5F9':'#94A3B8', lineHeight:1.3, fontFamily:"'Plus Jakarta Sans',sans-serif" }}>{t.name}</span>
-                  </a>
-                );
-              })}
-            </div>
-          </div>
-        </aside>
-
-        <div style={{ minWidth:0 }} className="trd-tool-area">
-          <a href="#/" style={{ display:'inline-flex', alignItems:'center', gap:6, color:'#64748B', fontSize:13, textDecoration:'none', marginBottom:16, fontFamily:"'Plus Jakarta Sans',sans-serif" }}
-            onMouseEnter={e => e.currentTarget.style.color='#E2E8F0'}
-            onMouseLeave={e => e.currentTarget.style.color='#64748B'}
-          >← Back to Developer Tools</a>
-          <ToolPageLayout theme={PAGE_THEME} tool={toolData}>
-            <ToolComp />
-          </ToolPageLayout>
-        </div>
+      {/* .trd-tool-area styles the tools' textarea/pre/code — keep it wrapping the tool. */}
+      <div className="trd-tool-area">
+        <a href="#/" style={{ display:'inline-flex', alignItems:'center', gap:6, color:'#64748B', fontSize:13, textDecoration:'none', marginTop:20, fontFamily:"'Plus Jakarta Sans',sans-serif" }}
+          onMouseEnter={e => e.currentTarget.style.color='#E2E8F0'}
+          onMouseLeave={e => e.currentTarget.style.color='#64748B'}
+        >← Back to Developer Tools</a>
+        <ToolPageLayout
+          theme={PAGE_THEME}
+          tool={toolData}
+          tools={TOOLS}
+          subcats={CATEGORIES}
+          related={TOOLS.filter(t => t.id !== tool.id && t.cat === tool.cat).slice(0, 8)}
+        >
+          <ToolComp />
+        </ToolPageLayout>
       </div>
-
-      <div className="trd-mobile-bar" style={{ position:'fixed', bottom:0, left:0, right:0, zIndex:200, background:'rgba(6,9,15,0.96)', backdropFilter:'blur(12px)', borderTop:'1px solid rgba(255,255,255,0.06)', padding:'12px 16px', justifyContent:'space-between', alignItems:'center' }}>
-        <span style={{ fontSize:13, color:'#94A3B8', fontFamily:"'Plus Jakarta Sans',sans-serif", overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', maxWidth:'60%' }}>{tool.icon||'·'} {tool.name}</span>
-        <button onClick={() => setDrawerOpen(d => !d)} style={{ background:acc, color:'#fff', border:'none', borderRadius:8, padding:'8px 16px', fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:"'Plus Jakarta Sans',sans-serif", minHeight:44, flexShrink:0 }}>
-          {drawerOpen ? '✕ Close' : '☰ All Tools'}
-        </button>
-      </div>
-
-      {drawerOpen && (
-        <div style={{ position:'fixed', bottom:0, left:0, right:0, zIndex:199, background:'#0D1117', borderTop:`2px solid ${acc}`, maxHeight:'60vh', overflowY:'auto', padding:'8px 0 80px' }}>
-          {sidebarTools.map(t => {
-            const isActive = t.id === toolId;
-            return (
-              <a key={t.id} href={`#/tool/${t.id}`} onClick={() => setDrawerOpen(false)}
-                style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 20px', minHeight:52, textDecoration:'none', background:isActive?`${acc}18`:'transparent', borderLeft:isActive?`3px solid ${acc}`:'3px solid transparent' }}
-              >
-                <span style={{ fontSize:20 }}>{t.icon||'·'}</span>
-                <span style={{ fontSize:14, fontWeight:isActive?600:400, color:isActive?'#F1F5F9':'#94A3B8', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>{t.name}</span>
-              </a>
-            );
-          })}
-        </div>
-      )}
     </CategoryLayout>
   );
 }
@@ -2640,6 +2592,454 @@ Object.assign(TOOL_COMPONENTS, {
   "grid-gen": GridGenTool,
   "animation-gen": AnimationGenTool,
   "meta-tags-adv": MetaTagsAdvTool,
+});
+
+/* =========================
+   Chunk 6: Semver / UUID / Basic Auth / String Escaper
+   ========================= */
+
+function CopyBtn({ text, label = "Copy" }) {
+  const [done, setDone] = useState(false);
+  return (
+    <GhostBtn onClick={async () => {
+      const ok = await copyText(text);
+      if (ok) { setDone(true); setTimeout(() => setDone(false), 2000); }
+    }}>{done ? "✓ Copied" : label}</GhostBtn>
+  );
+}
+
+/* ---------- semver-tools ---------- */
+const SEMVER_RE = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
+
+function parseSemver(v) {
+  const m = SEMVER_RE.exec(String(v || "").trim());
+  if (!m) return null;
+  return {
+    major: parseInt(m[1], 10),
+    minor: parseInt(m[2], 10),
+    patch: parseInt(m[3], 10),
+    prerelease: m[4] ? m[4].split(".") : [],
+    build: m[5] ? m[5].split(".") : [],
+  };
+}
+
+// Compare two prerelease identifier lists per semver.org §11.
+function comparePrerelease(a, b) {
+  // A version with a prerelease has LOWER precedence than one without.
+  if (a.length === 0 && b.length === 0) return 0;
+  if (a.length === 0) return 1;   // a (no prerelease) > b (has prerelease)
+  if (b.length === 0) return -1;  // a (has prerelease) < b (no prerelease)
+  const len = Math.min(a.length, b.length);
+  for (let i = 0; i < len; i++) {
+    const x = a[i], y = b[i];
+    const xNum = /^\d+$/.test(x), yNum = /^\d+$/.test(y);
+    if (xNum && yNum) {
+      const nx = parseInt(x, 10), ny = parseInt(y, 10);
+      if (nx !== ny) return nx < ny ? -1 : 1;
+    } else if (xNum && !yNum) {
+      return -1; // numeric identifiers always have lower precedence than alphanumeric
+    } else if (!xNum && yNum) {
+      return 1;
+    } else {
+      if (x !== y) return x < y ? -1 : 1; // lexical ASCII sort
+    }
+  }
+  // All preceding identifiers equal: more identifiers > fewer.
+  if (a.length === b.length) return 0;
+  return a.length < b.length ? -1 : 1;
+}
+
+// Returns -1, 0, or 1. Build metadata is ignored.
+function compareSemver(a, b) {
+  const pa = typeof a === "string" ? parseSemver(a) : a;
+  const pb = typeof b === "string" ? parseSemver(b) : b;
+  if (!pa || !pb) return null;
+  if (pa.major !== pb.major) return pa.major < pb.major ? -1 : 1;
+  if (pa.minor !== pb.minor) return pa.minor < pb.minor ? -1 : 1;
+  if (pa.patch !== pb.patch) return pa.patch < pb.patch ? -1 : 1;
+  return comparePrerelease(pa.prerelease, pb.prerelease);
+}
+
+function verStr(major, minor, patch) { return `${major}.${minor}.${patch}`; }
+
+// Build [lowerInclusive, upperExclusive] bounds for ^ and ~ ranges.
+function caretBounds(p) {
+  const lower = verStr(p.major, p.minor, p.patch);
+  let upper;
+  if (p.major > 0) upper = verStr(p.major + 1, 0, 0);
+  else if (p.minor > 0) upper = verStr(0, p.minor + 1, 0);
+  else upper = verStr(0, 0, p.patch + 1);
+  return { lower, upper };
+}
+function tildeBounds(p) {
+  return { lower: verStr(p.major, p.minor, p.patch), upper: verStr(p.major, p.minor + 1, 0) };
+}
+
+// Evaluate a single comparator token against a parsed version.
+function satisfiesToken(version, token) {
+  const t = token.trim();
+  if (!t) return true;
+  if (t === "*" || t.toLowerCase() === "x") return true;
+  if (t[0] === "^" || t[0] === "~") {
+    const p = parseSemver(t.slice(1));
+    if (!p) return null;
+    const { lower, upper } = t[0] === "^" ? caretBounds(p) : tildeBounds(p);
+    return compareSemver(version, lower) >= 0 && compareSemver(version, upper) < 0;
+  }
+  const m = /^(>=|<=|>|<|=)?\s*(.+)$/.exec(t);
+  if (!m) return null;
+  const op = m[1] || "=";
+  const p = parseSemver(m[2]);
+  if (!p) return null;
+  const c = compareSemver(version, p);
+  if (c == null) return null;
+  switch (op) {
+    case ">": return c > 0;
+    case ">=": return c >= 0;
+    case "<": return c < 0;
+    case "<=": return c <= 0;
+    case "=": return c === 0;
+    default: return null;
+  }
+}
+
+// A range is space-separated comparators combined with AND.
+function satisfiesRange(versionStr, range) {
+  const version = parseSemver(versionStr);
+  if (!version) return null;
+  const tokens = String(range || "").trim().split(/\s+/).filter(Boolean);
+  if (!tokens.length) return null;
+  for (const tok of tokens) {
+    const r = satisfiesToken(version, tok);
+    if (r == null) return null;
+    if (r === false) return false;
+  }
+  return true;
+}
+
+function SemverToolsTool() {
+  const [ver, setVer] = useState("1.2.3-beta.1+build.99");
+  const [a, setA] = useState("1.0.0-alpha");
+  const [b, setB] = useState("1.0.0");
+  const [rangeVer, setRangeVer] = useState("1.4.2");
+  const [range, setRange] = useState("^1.2.0");
+
+  const parsed = useMemo(() => parseSemver(ver), [ver]);
+  const cmp = useMemo(() => compareSemver(a, b), [a, b]);
+  const sat = useMemo(() => satisfiesRange(rangeVer, range), [rangeVer, range]);
+
+  return (
+    <VStack>
+      <SectionTitle icon="🏷️" title="Semver Tools" subtitle="Validate, compare and range-check semantic versions (semver.org)." />
+
+      <Card>
+        <Label>Validate & Parse</Label>
+        <Input value={ver} onChange={setVer} placeholder="MAJOR.MINOR.PATCH[-prerelease][+build]" />
+        {parsed ? (
+          <div style={{ marginTop: 10 }}>
+            <div style={{ color: "#6EE7B7", fontSize: 13, marginBottom: 8 }}>✓ Valid semantic version</div>
+            <DataTable columns={["Part", "Value"]} rows={[
+              ["Major", String(parsed.major)],
+              ["Minor", String(parsed.minor)],
+              ["Patch", String(parsed.patch)],
+              ["Prerelease", parsed.prerelease.length ? parsed.prerelease.join(".") : "—"],
+              ["Build metadata", parsed.build.length ? parsed.build.join(".") : "—"],
+            ]} />
+          </div>
+        ) : (
+          <div style={{ color: "#FCA5A5", fontSize: 13, marginTop: 10 }}>✗ Not a valid semantic version.</div>
+        )}
+      </Card>
+
+      <Card>
+        <Label>Compare Two Versions</Label>
+        <Grid2>
+          <div><Label>Version A</Label><Input value={a} onChange={setA} /></div>
+          <div><Label>Version B</Label><Input value={b} onChange={setB} /></div>
+        </Grid2>
+        <div style={{ marginTop: 10, fontSize: 14 }}>
+          {cmp == null ? (
+            <span style={{ color: "#FCA5A5" }}>One or both versions are invalid.</span>
+          ) : (
+            <span>
+              Result: <b style={{ fontFamily: "'JetBrains Mono',monospace" }}>{cmp}</b>{" "}
+              → <b>{a}</b> {cmp < 0 ? "<" : cmp > 0 ? ">" : "="} <b>{b}</b>
+              <span style={{ color: C.muted }}>{" "}(build metadata ignored in precedence)</span>
+            </span>
+          )}
+        </div>
+      </Card>
+
+      <Card>
+        <Label>Range Satisfies</Label>
+        <Grid2>
+          <div><Label>Version</Label><Input value={rangeVer} onChange={setRangeVer} /></div>
+          <div><Label>Range (^, ~, &gt;, &gt;=, &lt;, &lt;=, =)</Label><Input value={range} onChange={setRange} placeholder="^1.2.0 or ~1.2.3 or >=1.0.0 <2.0.0" /></div>
+        </Grid2>
+        <div style={{ marginTop: 10, fontSize: 14 }}>
+          {sat == null ? (
+            <span style={{ color: "#FCA5A5" }}>Invalid version or range.</span>
+          ) : sat ? (
+            <span style={{ color: "#6EE7B7" }}>✓ <b>{rangeVer}</b> satisfies <b>{range}</b></span>
+          ) : (
+            <span style={{ color: "#FCA5A5" }}>✗ <b>{rangeVer}</b> does not satisfy <b>{range}</b></span>
+          )}
+        </div>
+      </Card>
+    </VStack>
+  );
+}
+
+/* ---------- uuid-inspector ---------- */
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID_VERSION_NAMES = {
+  1: "v1 — time-based (Gregorian timestamp + node)",
+  2: "v2 — DCE Security",
+  3: "v3 — name-based (MD5)",
+  4: "v4 — random",
+  5: "v5 — name-based (SHA-1)",
+  6: "v6 — reordered time-based",
+  7: "v7 — Unix-epoch time-ordered",
+  8: "v8 — custom/vendor",
+};
+
+function decodeUuidV1Date(hex) {
+  // 60-bit timestamp = (time_hi_and_version & 0x0FFF)<<48 | time_mid<<32 | time_low
+  // in 100-ns intervals since 1582-10-15. Subtract Gregorian offset, /10000 → ms.
+  const timeLow = BigInt(parseInt(hex.slice(0, 8), 16));
+  const timeMid = BigInt(parseInt(hex.slice(8, 12), 16));
+  const timeHiVer = BigInt(parseInt(hex.slice(12, 16), 16));
+  const ts = ((timeHiVer & 0x0fffn) << 48n) | (timeMid << 32n) | timeLow;
+  const GREGORIAN_OFFSET = 122192928000000000n; // 100-ns intervals 1582→1970
+  const ms = Number((ts - GREGORIAN_OFFSET) / 10000n);
+  return new Date(ms);
+}
+function decodeUuidV7Date(hex) {
+  // First 48 bits (12 hex chars) = big-endian Unix timestamp in milliseconds.
+  const ms = parseInt(hex.slice(0, 12), 16);
+  return new Date(ms);
+}
+
+function UuidInspectorTool() {
+  const [uuid, setUuid] = useState("017f22e2-79b0-7cc3-98c4-dc0c0c07398f");
+
+  const info = useMemo(() => {
+    const s = String(uuid || "").trim();
+    if (!UUID_RE.test(s)) return { valid: false };
+    const hex = s.replace(/-/g, "").toLowerCase();
+    const version = parseInt(hex[12], 16);      // high nibble of byte 6
+    const variantNibble = parseInt(hex[16], 16); // high nibble of byte 8
+    let variant;
+    if ((variantNibble & 0x8) === 0) variant = "0 — NCS (backward compatible)";
+    else if ((variantNibble & 0xc) === 0x8) variant = "RFC 4122 (10xx)";
+    else if ((variantNibble & 0xe) === 0xc) variant = "Microsoft (110x)";
+    else variant = "Reserved / future (111x)";
+
+    const rows = [
+      ["Version", `${version} — ${UUID_VERSION_NAMES[version] || "unknown"}`],
+      ["Variant", variant],
+    ];
+    let note = "";
+    if (version === 1 || version === 6) {
+      // v6 uses the same time source; decode with v1 layout for v1 only.
+      if (version === 1) {
+        const d = decodeUuidV1Date(hex);
+        rows.push(["Embedded timestamp", isNaN(d.getTime()) ? "—" : `${fmtDate(d)} (local)`]);
+        rows.push(["Timestamp (ISO)", isNaN(d.getTime()) ? "—" : d.toISOString()]);
+        note = "Version 1 embeds a 60-bit Gregorian timestamp (100-ns intervals since 1582-10-15).";
+      } else {
+        note = "Version 6 is a reordered time-based UUID.";
+      }
+    } else if (version === 7) {
+      const d = decodeUuidV7Date(hex);
+      rows.push(["Embedded timestamp", isNaN(d.getTime()) ? "—" : `${fmtDate(d)} (local)`]);
+      rows.push(["Timestamp (ISO)", isNaN(d.getTime()) ? "—" : d.toISOString()]);
+      note = "Version 7 stores a Unix millisecond timestamp in the first 48 bits.";
+    } else if (version === 4) {
+      note = "Version 4 is randomly generated — no embedded timestamp.";
+    } else {
+      note = "This version does not carry a decodable embedded timestamp here.";
+    }
+    return { valid: true, rows, note };
+  }, [uuid]);
+
+  return (
+    <VStack>
+      <SectionTitle icon="🆔" title="UUID Inspector" subtitle="Identify a UUID's version, variant and embedded timestamp." />
+      <div><Label>UUID</Label><Input value={uuid} onChange={setUuid} placeholder="8-4-4-4-12 hex" /></div>
+      {!info.valid ? (
+        <Card><div style={{ color: "#FCA5A5", fontSize: 13 }}>✗ Invalid UUID format (expected 8-4-4-4-12 hexadecimal).</div></Card>
+      ) : (
+        <>
+          <DataTable columns={["Property", "Value"]} rows={info.rows} />
+          <Card style={{ background: "rgba(59,130,246,.06)" }}>
+            <div style={{ fontSize: 13, color: "#93C5FD" }}>{info.note}</div>
+          </Card>
+        </>
+      )}
+    </VStack>
+  );
+}
+
+/* ---------- basic-auth-generator ---------- */
+function utf8Base64(str) {
+  try { return btoa(unescape(encodeURIComponent(str))); }
+  catch { return ""; }
+}
+
+function BasicAuthGeneratorTool() {
+  const [user, setUser] = useState("admin");
+  const [pass, setPass] = useState("s3cr3t");
+
+  const token = useMemo(() => utf8Base64(`${user}:${pass}`), [user, pass]);
+  const header = `Authorization: Basic ${token}`;
+
+  return (
+    <VStack>
+      <SectionTitle icon="🔑" title="Basic Auth Generator" subtitle="Build an HTTP Basic Authorization header (UTF-8-safe Base64)." />
+      <Grid2>
+        <div><Label>Username</Label><Input value={user} onChange={setUser} /></div>
+        <div><Label>Password</Label><Input value={pass} onChange={setPass} /></div>
+      </Grid2>
+      <div>
+        <Label>Authorization Header</Label>
+        <CodeBox code={header} />
+        <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+          <CopyBtn text={header} label="Copy Header" />
+        </div>
+      </div>
+      <div>
+        <Label>Base64 Token</Label>
+        <CodeBox code={token || "(empty)"} />
+        <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+          <CopyBtn text={token} label="Copy Token" />
+        </div>
+      </div>
+    </VStack>
+  );
+}
+
+/* ---------- string-escaper ---------- */
+function jsEscapeStr(s) {
+  return String(s).replace(/[\s\S]/g, (ch) => {
+    switch (ch) {
+      case "\\": return "\\\\";
+      case "'": return "\\'";
+      case '"': return '\\"';
+      case "\n": return "\\n";
+      case "\r": return "\\r";
+      case "\t": return "\\t";
+      case "\b": return "\\b";
+      case "\f": return "\\f";
+    }
+    const c = ch.charCodeAt(0);
+    if (c < 0x20 || c > 0x7e) {
+      return c > 0xff
+        ? "\\u" + c.toString(16).padStart(4, "0")
+        : "\\x" + c.toString(16).padStart(2, "0");
+    }
+    return ch;
+  });
+}
+function jsUnescapeStr(s) {
+  return String(s).replace(/\\u([0-9a-fA-F]{4})|\\x([0-9a-fA-F]{2})|\\([\\'"nrtbf0])/g, (m, u, x, e) => {
+    if (u) return String.fromCharCode(parseInt(u, 16));
+    if (x) return String.fromCharCode(parseInt(x, 16));
+    const map = { "\\": "\\", "'": "'", '"': '"', n: "\n", r: "\r", t: "\t", b: "\b", f: "\f", "0": "\0" };
+    return map[e] ?? m;
+  });
+}
+function htmlEscapeStr(s) {
+  return String(s).replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
+}
+function htmlUnescapeStr(s) {
+  return String(s)
+    .replace(/&#x([0-9a-fA-F]+);/g, (m, h) => String.fromCodePoint(parseInt(h, 16)))
+    .replace(/&#(\d+);/g, (m, d) => String.fromCodePoint(parseInt(d, 10)))
+    .replace(/&(amp|lt|gt|quot|apos|#39);/g, (m, e) => ({ amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", "#39": "'" }[e]));
+}
+const STRING_ESCAPE_TARGETS = [
+  { value: "json", label: "JSON", unescape: true },
+  { value: "js", label: "JavaScript", unescape: true },
+  { value: "html", label: "HTML", unescape: true },
+  { value: "sql", label: "SQL (single-quote)", unescape: false },
+  { value: "regex", label: "Regex", unescape: false },
+  { value: "shell", label: "Shell (POSIX single-quote)", unescape: false },
+];
+
+function escapeForTarget(target, mode, input) {
+  const s = String(input);
+  try {
+    if (target === "json") {
+      return mode === "escape" ? JSON.stringify(s) : jsonUnescape(s);
+    }
+    if (target === "js") return mode === "escape" ? jsEscapeStr(s) : jsUnescapeStr(s);
+    if (target === "html") return mode === "escape" ? htmlEscapeStr(s) : htmlUnescapeStr(s);
+    if (target === "sql") return s.replace(/'/g, "''");
+    if (target === "regex") return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    if (target === "shell") return "'" + s.replace(/'/g, "'\\''") + "'";
+  } catch (e) {
+    return `Error: ${e.message}`;
+  }
+  return s;
+}
+function jsonUnescape(s) {
+  const trimmed = s.trim();
+  try { return String(JSON.parse(trimmed)); }
+  catch {
+    try { return String(JSON.parse('"' + trimmed + '"')); }
+    catch { return "Error: not a valid JSON string literal"; }
+  }
+}
+
+function StringEscaperTool() {
+  const [target, setTarget] = useState("json");
+  const [mode, setMode] = useState("escape");
+  const [input, setInput] = useState('Hello "world"\nLine 2\tTabbed');
+
+  const targetDef = STRING_ESCAPE_TARGETS.find((t) => t.value === target);
+  const unescapeSupported = targetDef?.unescape;
+  const effectiveMode = unescapeSupported ? mode : "escape";
+  const output = useMemo(() => escapeForTarget(target, effectiveMode, input), [target, effectiveMode, input]);
+
+  return (
+    <VStack>
+      <SectionTitle icon="⛓️" title="String Escaper" subtitle="Escape or unescape a string for JSON, JS, HTML, SQL, Regex or Shell." />
+      <Grid2>
+        <div>
+          <Label>Target</Label>
+          <SelectInput value={target} onChange={setTarget} options={STRING_ESCAPE_TARGETS.map((t) => ({ value: t.value, label: t.label }))} />
+        </div>
+        <div>
+          <Label>Mode</Label>
+          <SelectInput value={effectiveMode} onChange={setMode} options={
+            unescapeSupported
+              ? [{ value: "escape", label: "Escape" }, { value: "unescape", label: "Unescape" }]
+              : [{ value: "escape", label: "Escape (unescape not supported)" }]
+          } />
+        </div>
+      </Grid2>
+      {!unescapeSupported && (
+        <div style={{ fontSize: 12, color: C.muted }}>Unescape is not well-defined for {targetDef?.label} — escape only.</div>
+      )}
+      <div><Label>Input</Label><Textarea value={input} onChange={setInput} rows={6} /></div>
+      <div>
+        <Label>Output</Label>
+        <CodeBox code={output} />
+        <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+          <CopyBtn text={output} label="Copy Output" />
+        </div>
+      </div>
+    </VStack>
+  );
+}
+
+/* ---------- register Chunk 6 tools ---------- */
+Object.assign(TOOL_COMPONENTS, {
+  "semver-tools": SemverToolsTool,
+  "uuid-inspector": UuidInspectorTool,
+  "basic-auth-generator": BasicAuthGeneratorTool,
+  "string-escaper": StringEscaperTool,
 });
 
 /* ---------- final export ---------- */

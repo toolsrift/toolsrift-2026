@@ -28,6 +28,24 @@ h1: { fontFamily:"'Sora',sans-serif", fontSize:22, fontWeight:700, color:C.text 
 h2: { fontFamily:"'Sora',sans-serif", fontSize:15, fontWeight:600, color:C.text },
 };
 
+// ─── CDN loader (cached per src) ───
+const _scripts = {};
+function loadScript(src) {
+if (_scripts[src]) return _scripts[src];
+_scripts[src] = new Promise((resolve, reject) => {
+const s = document.createElement('script');
+s.src = src; s.async = true;
+s.onload = () => resolve();
+s.onerror = () => { delete _scripts[src]; reject(new Error('Could not load a required library. Check your connection and retry.')); };
+document.body.appendChild(s);
+});
+return _scripts[src];
+}
+async function loadBcrypt() {
+await loadScript('https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js');
+return window.bcrypt || (window.dcodeIO && window.dcodeIO.bcrypt);
+}
+
 function Badge({ children, color = "blue" }) {
 const map = { blue:"rgba(59,130,246,0.15)", green:"rgba(16,185,129,0.15)", amber:"rgba(245,158,11,0.15)", red:"rgba(239,68,68,0.15)" };
 const textMap = { blue:"#60A5FA", green:"#34D399", amber:"#FCD34D", red:"#FCA5A5" };
@@ -647,7 +665,7 @@ const TOOLS = [
 
 { id:"robots-txt-gen", cat:"web", name:"Robots.txt Generator", desc:"Generate robots.txt with allow/disallow directives and sitemap references for major bots.", icon:"🤖", free:true },
 { id:"sitemap-gen", cat:"web", name:"XML Sitemap Generator", desc:"Generate XML sitemap from URL lists with priority and changefreq controls.", icon:"🗺️", free:true },
-{ id:"htpasswd-gen", cat:"web", name:".htpasswd Generator", desc:"Generate htpasswd entries with salted hash format for HTTP basic auth setups.", icon:"🔑", free:true },
+{ id:"htpasswd-gen", cat:"web", name:".htpasswd Generator", desc:"Generate real bcrypt or SHA-1 .htpasswd entries for Apache and nginx basic auth.", icon:"🔑", free:true },
 { id:"json-schema-gen", cat:"web", name:"JSON Schema Generator", desc:"Generate JSON Schema from sample JSON payloads with type inference and required fields.", icon:"📐", free:true },
 { id:"openapi-gen", cat:"web", name:"OpenAPI Generator", desc:"Generate OpenAPI 3.0 YAML skeleton from endpoint definitions for quick API docs.", icon:"📄", free:true },
 { id:"csp-header-gen", cat:"web", name:"CSP Header Generator", desc:"Generate Content-Security-Policy header values with practical default web directives.", icon:"🧱", free:true },
@@ -1376,34 +1394,65 @@ return (
 );
 }
 
-function simpleHash(str) {
-let h = 2166136261;
-for (let i = 0; i < str.length; i++) {
-h ^= str.charCodeAt(i);
-h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24);
-}
-return (h >>> 0).toString(16);
-}
-function pseudoBcrypt(password, rounds=12) {
-const salt = Math.random().toString(36).slice(2, 24).padEnd(22, "a").slice(0,22);
-const body = simpleHash(password + salt + rounds).padEnd(31, "b").slice(0,31);
-return `$2y$${String(rounds).padStart(2,"0")}$${salt}${body}`;
+// Apache-supported SHA-1 scheme: htpasswd "{SHA}" + base64(sha1(password)). Unsalted.
+async function apacheSha1(password) {
+const buf = await crypto.subtle.digest('SHA-1', new TextEncoder().encode(password));
+let bin = ''; const bytes = new Uint8Array(buf);
+for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+return '{SHA}' + btoa(bin);
 }
 
 function HtpasswdGen() {
 const [user, setUser] = useState("admin");
 const [pass, setPass] = useState("change-me");
-const [rounds, setRounds] = useState("12");
-const output = useMemo(() => `${user}:${pseudoBcrypt(pass, Number(rounds)||12)}`, [user, pass, rounds]);
+const [scheme, setScheme] = useState("bcrypt");
+const [cost, setCost] = useState("10");
+const [output, setOutput] = useState("");
+const [busy, setBusy] = useState(false);
+const [err, setErr] = useState("");
+
+const generate = async () => {
+if (!user || !pass) { setErr("Enter both a username and a password."); return; }
+setBusy(true); setErr(""); setOutput("");
+try {
+let line;
+if (scheme === "bcrypt") {
+const bcrypt = await loadBcrypt();
+if (!bcrypt) throw new Error("bcrypt library failed to load.");
+const rounds = Math.min(15, Math.max(4, Number(cost) || 10));
+const salt = bcrypt.genSaltSync(rounds);
+// Apache emits the $2y$ variant; $2a$/$2y$ are the same algorithm.
+const hash = bcrypt.hashSync(pass, salt).replace(/^\$2[ab]\$/, "$2y$");
+line = `${user}:${hash}`;
+} else {
+line = `${user}:${await apacheSha1(pass)}`;
+}
+setOutput(line);
+} catch (e) {
+setErr(e.message);
+}
+setBusy(false);
+};
 
 return (
 <VStack>
 <Grid3>
 <div><Label>Username</Label><Input value={user} onChange={setUser} /></div>
 <div><Label>Password</Label><Input value={pass} onChange={setPass} /></div>
-<div><Label>Cost</Label><Input value={rounds} onChange={setRounds} /></div>
+<div><Label>Algorithm</Label><SelectInput value={scheme} onChange={setScheme} options={[
+{ value:"bcrypt", label:"bcrypt (recommended)" },
+{ value:"sha1", label:"SHA-1 ({SHA})" },
+]} /></div>
 </Grid3>
-<OutputPanel output={output} filename=".htpasswd" />
+{scheme === "bcrypt" && (
+<div style={{ maxWidth:200 }}><Label>Cost factor (4–15)</Label><Input value={cost} onChange={setCost} /></div>
+)}
+<Btn onClick={generate} disabled={busy}>{busy ? "Hashing…" : "Generate .htpasswd line"}</Btn>
+{err && <div style={{ padding:12, background:"rgba(239,68,68,0.1)", border:"1px solid rgba(239,68,68,0.3)", borderRadius:8, fontSize:13, color:C.text }}>{err}</div>}
+{output && <OutputPanel output={output} filename=".htpasswd" />}
+<div style={{ padding:12, background:"rgba(139,92,246,0.08)", border:"1px solid rgba(139,92,246,0.2)", borderRadius:8, fontSize:12, color:C.text, lineHeight:1.6 }}>
+<strong>bcrypt</strong> is the modern default and matches <code style={{fontFamily:"'JetBrains Mono',monospace"}}>htpasswd -B</code> — supported by Apache 2.4+ and nginx. <strong>SHA-1</strong> is broadly compatible but unsalted; use it only for legacy servers. Hashing runs entirely in your browser; the password is never uploaded.
+</div>
 </VStack>
 );
 }
@@ -1615,7 +1664,7 @@ function ToolPage({ toolId }) {
 
   if (!tool || !ToolComp) {
     return (
-      <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'}>
+      <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'} tools={TOOLS} subcats={CATEGORIES}>
         <div style={{ padding:'48px 20px', textAlign:'center', color:'#94A3B8' }}>
           Tool not found. <a href="#/" style={{ color: PAGE_THEME.color }}>← Back to {PAGE_THEME.name}</a>
         </div>
@@ -1634,8 +1683,8 @@ function ToolPage({ toolId }) {
   const related = TOOLS.filter(t => t.id !== tool.id && t.cat === tool.cat).slice(0, 8);
 
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={toolId}>
-      <ToolPageLayout theme={PAGE_THEME} tool={toolData} related={related}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId} tools={TOOLS} subcats={CATEGORIES}>
+      <ToolPageLayout theme={PAGE_THEME} tool={toolData} tools={TOOLS} subcats={CATEGORIES} related={related}>
         <ToolComp />
       </ToolPageLayout>
     </CategoryLayout>
@@ -1674,7 +1723,7 @@ return (
 function HomePage() {
   useEffect(() => { document.title = "ToolsRift Dev Generators – Free Developer Config Generators Online"; }, []);
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={null}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={null} tools={TOOLS} subcats={CATEGORIES}>
       <CategoryDashboard
         theme={PAGE_THEME}
         tools={TOOLS}

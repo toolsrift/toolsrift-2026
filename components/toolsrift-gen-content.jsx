@@ -213,9 +213,15 @@ function LegalDocTool({ fields, build, filename }) {
     const o = {}; fields.forEach(f => { o[f.key] = f.default !== undefined ? f.default : (defaults[f.key] || ""); }); return o;
   });
   const set = (k, v) => setVals(p => ({ ...p, [k]: v }));
-  const text = build(vals);
+  // Every generated legal document carries a disclaimer header so it travels with
+  // the copied/downloaded text, not just the on-screen UI.
+  const DISCLAIMER = "DISCLAIMER: This is an auto-generated template, not legal advice. Review it with a qualified attorney before publishing or relying on it.";
+  const text = `${DISCLAIMER}\n${"=".repeat(64)}\n\n${build(vals)}`;
   return (
     <VStack>
+      <div style={{ padding:"12px 14px", background:"rgba(245,158,11,0.1)", border:"1px solid rgba(245,158,11,0.3)", borderRadius:8, fontSize:13, color:C.text, lineHeight:1.6 }}>
+        <strong>Not legal advice.</strong> This tool produces a starting template only. Laws vary by country, state and industry — have a qualified lawyer review any policy or agreement before you rely on it.
+      </div>
       <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
         {fields.map(f => (
           <div key={f.key} style={f.full ? { gridColumn:"1 / -1" } : {}}>
@@ -1193,7 +1199,7 @@ function ToolPage({ toolId }) {
 
   if (!tool || !ToolComp) {
     return (
-      <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'}>
+      <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'} tools={TOOLS} subcats={CATEGORIES}>
         <div style={{ padding:'48px 20px', textAlign:'center', color:'#94A3B8' }}>
           Tool not found. <a href="#/" style={{ color: PAGE_THEME.color }}>← Back to {PAGE_THEME.name}</a>
         </div>
@@ -1212,8 +1218,8 @@ function ToolPage({ toolId }) {
   const related = TOOLS.filter(t => t.id !== tool.id && t.cat === tool.cat).slice(0, 8);
 
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={toolId}>
-      <ToolPageLayout theme={PAGE_THEME} tool={toolData} related={related}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId} tools={TOOLS} subcats={CATEGORIES}>
+      <ToolPageLayout theme={PAGE_THEME} tool={toolData} tools={TOOLS} subcats={CATEGORIES} related={related}>
         <ToolComp />
       </ToolPageLayout>
     </CategoryLayout>
@@ -1252,7 +1258,7 @@ return (
 function HomePage() {
   useEffect(() => { document.title = "ToolsRift Generators – Free Legal & Content Generators Online"; }, []);
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={null}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={null} tools={TOOLS} subcats={CATEGORIES}>
       <CategoryDashboard
         theme={PAGE_THEME}
         tools={TOOLS}

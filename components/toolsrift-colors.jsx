@@ -354,6 +354,9 @@ const TOOLS = [
   {id:"hex-rgba",           cat:"convert",  name:"HEX to RGBA Converter",       desc:"Convert HEX colors to rgba() with custom alpha / opacity",       icon:"🔢", free:true},
   {id:"color-sorter",       cat:"generate", name:"Color Palette Sorter",        desc:"Sort a list of hex colors by hue, saturation, or lightness",     icon:"🔃", free:true},
   {id:"color-scheme",       cat:"generate", name:"UI Color Scheme Builder",     desc:"Build a complete UI color scheme with semantic role assignment",  icon:"🎯", free:true},
+  {id:"contrast-grid",      cat:"a11y",     name:"Contrast Grid Checker",       desc:"Check WCAG contrast for every foreground/background pair in a palette at once", icon:"▦", free:true},
+  {id:"oklch-converter",    cat:"convert",  name:"OKLCH Color Converter",       desc:"Convert HEX/RGB to and from OKLCH and OKLab (CSS Color 4)",      icon:"🧭", free:true},
+  {id:"material-palette",   cat:"generate", name:"Material Tonal Palette",      desc:"Generate a 50–900 tonal scale from one base color for design systems", icon:"🎚️", free:true},
 ];
 
 const CATEGORIES = [
@@ -1335,7 +1338,181 @@ function ColorScheme() {
 }
 
 // ─── COMPONENT MAP ────────────────────────────────────────────────────────────
+// ─── OKLab / OKLCH conversion (Björn Ottosson's OKLab) ───────────────────────
+function srgbToLinear(c) { const s = c / 255; return s <= 0.04045 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4); }
+function linearToSrgb(x) { const s = x <= 0.0031308 ? x * 12.92 : 1.055 * Math.pow(x, 1 / 2.4) - 0.055; return Math.round(Math.min(1, Math.max(0, s)) * 255); }
+
+function rgbToOklch(r, g, b) {
+  const lr = srgbToLinear(r), lg = srgbToLinear(g), lb = srgbToLinear(b);
+  const l = 0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb;
+  const m = 0.2119034982 * lr + 0.6806995451 * lg + 0.1073969566 * lb;
+  const s = 0.0883024619 * lr + 0.2817188376 * lg + 0.6299787005 * lb;
+  const l_ = Math.cbrt(l), m_ = Math.cbrt(m), s_ = Math.cbrt(s);
+  const L = 0.2104542553 * l_ + 0.7936177850 * m_ - 0.0040720468 * s_;
+  const A = 1.9779984951 * l_ - 2.4285922050 * m_ + 0.4505937099 * s_;
+  const B = 0.0259040371 * l_ + 0.7827717662 * m_ - 0.8086757660 * s_;
+  const C_ = Math.sqrt(A * A + B * B);
+  let H = Math.atan2(B, A) * 180 / Math.PI; if (H < 0) H += 360;
+  return { L, C: C_, H, a: A, b: B };
+}
+
+function oklchToRgb(L, C, H) {
+  const hr = H * Math.PI / 180;
+  const A = C * Math.cos(hr), B = C * Math.sin(hr);
+  const l_ = L + 0.3963377774 * A + 0.2158037573 * B;
+  const m_ = L - 0.1055613458 * A - 0.0638541728 * B;
+  const s_ = L - 0.0894841775 * A - 1.2914855480 * B;
+  const l = l_ * l_ * l_, m = m_ * m_ * m_, s = s_ * s_ * s_;
+  const lr = +4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s;
+  const lg = -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s;
+  const lb = -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s;
+  return { r: linearToSrgb(lr), g: linearToSrgb(lg), b: linearToSrgb(lb) };
+}
+
+// ─── Contrast Grid Checker ───────────────────────────────────────────────────
+function ContrastGrid() {
+  const [text, setText] = useState("#111827\n#FFFFFF\n#3B82F6\n#F59E0B\n#10B981");
+  const colors = useMemo(() => {
+    return text.split(/[\s,]+/).map(s => s.trim()).filter(Boolean)
+      .map(s => s.startsWith("#") ? s : "#" + s)
+      .filter(s => /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(s)).slice(0, 12);
+  }, [text]);
+
+  const badge = (ratio) => {
+    if (ratio >= 7)   return { t: "AAA", bg: "#065F46", fg: "#fff" };
+    if (ratio >= 4.5) return { t: "AA",  bg: "#047857", fg: "#fff" };
+    if (ratio >= 3)   return { t: "AA¹", bg: "#B45309", fg: "#fff" };
+    return { t: "✕",  bg: "#7F1D1D", fg: "#fff" };
+  };
+
+  return (
+    <VStack>
+      <div><Label>Palette (one hex per line, up to 12)</Label>
+        <textarea value={text} onChange={e => setText(e.target.value)} rows={5}
+          style={{width:"100%",background:"rgba(255,255,255,0.04)",border:`1px solid ${C.border}`,borderRadius:8,padding:"10px 12px",color:C.text,fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none"}} />
+      </div>
+      <div style={{fontSize:12,color:C.muted}}>Each cell = contrast ratio of that <strong>row (text)</strong> over that <strong>column (background)</strong>. AA needs 4.5, AAA needs 7; AA¹ (3.0) passes for large text only.</div>
+      <div style={{overflowX:"auto"}}>
+        <table style={{borderCollapse:"collapse",fontSize:12}}>
+          <thead><tr><th style={{padding:6}}></th>{colors.map(c => (
+            <th key={c} style={{padding:6}}><div style={{width:26,height:26,borderRadius:5,background:c,border:`1px solid ${C.border}`,margin:"0 auto"}} title={c} /></th>
+          ))}</tr></thead>
+          <tbody>
+            {colors.map(rowC => (
+              <tr key={rowC}>
+                <td style={{padding:6}}><div style={{width:26,height:26,borderRadius:5,background:rowC,border:`1px solid ${C.border}`}} title={rowC} /></td>
+                {colors.map(colC => {
+                  const ratio = contrastRatio(rowC, colC);
+                  const b = badge(ratio);
+                  return (
+                    <td key={colC} style={{padding:3,textAlign:"center"}}>
+                      <div style={{background:colC,borderRadius:5,padding:"6px 4px",border:`1px solid ${C.border}`}}>
+                        <div style={{color:rowC,fontSize:12,fontWeight:700,fontFamily:"'JetBrains Mono',monospace"}}>{ratio.toFixed(1)}</div>
+                        <div style={{display:"inline-block",marginTop:3,background:b.bg,color:b.fg,borderRadius:3,padding:"1px 5px",fontSize:9,fontWeight:700}}>{b.t}</div>
+                      </div>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </VStack>
+  );
+}
+
+// ─── OKLCH Converter ─────────────────────────────────────────────────────────
+function OklchConverter() {
+  const [hex, setHex] = useState("#3B82F6");
+  const valid = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(hex);
+  const out = useMemo(() => {
+    if (!valid) return null;
+    const { r, g, b } = hexToRgb(hex);
+    const { L, C: c, H, a, b: bb } = rgbToOklch(r, g, b);
+    return {
+      oklch: `oklch(${(L*100).toFixed(2)}% ${c.toFixed(4)} ${H.toFixed(2)})`,
+      oklab: `oklab(${(L*100).toFixed(2)}% ${a.toFixed(4)} ${bb.toFixed(4)})`,
+      L, c, H, rgb: `rgb(${r}, ${g}, ${b})`,
+    };
+  }, [hex, valid]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>HEX Color</Label><Input value={hex} onChange={setHex} mono placeholder="#3B82F6" /></div>
+        <div><Label>Preview</Label><div style={{height:42,borderRadius:8,background:valid?hex:"transparent",border:`1px solid ${C.border}`}} /></div>
+      </Grid2>
+      {out ? (
+        <>
+          <div><Label>OKLCH (CSS Color 4)</Label>
+            <div style={{display:"flex",gap:8,alignItems:"center"}}>
+              <div style={{flex:1,background:"rgba(0,0,0,0.3)",border:`1px solid ${C.border}`,borderRadius:8,padding:"12px 14px",fontFamily:"'JetBrains Mono',monospace",fontSize:14,color:C.text,wordBreak:"break-all"}}>{out.oklch}</div>
+              <CopyBtn text={out.oklch} />
+            </div>
+          </div>
+          <div><Label>OKLab</Label>
+            <div style={{display:"flex",gap:8,alignItems:"center"}}>
+              <div style={{flex:1,background:"rgba(0,0,0,0.3)",border:`1px solid ${C.border}`,borderRadius:8,padding:"12px 14px",fontFamily:"'JetBrains Mono',monospace",fontSize:14,color:C.text,wordBreak:"break-all"}}>{out.oklab}</div>
+              <CopyBtn text={out.oklab} />
+            </div>
+          </div>
+          <div style={{fontSize:12,color:C.muted,lineHeight:1.7}}>
+            <strong style={{color:C.text}}>OKLCH</strong> is a perceptually-uniform color space (CSS Color 4): <strong>L</strong>ightness {(out.L*100).toFixed(1)}%, <strong>C</strong>hroma {out.c.toFixed(3)}, <strong>H</strong>ue {out.H.toFixed(1)}°. Adjusting lightness or hue keeps perceived color relationships consistent, unlike HSL.
+          </div>
+        </>
+      ) : <div style={{padding:12,background:"rgba(239,68,68,0.1)",border:"1px solid rgba(239,68,68,0.3)",borderRadius:8,fontSize:13,color:C.text}}>Enter a valid hex color like #3B82F6.</div>}
+    </VStack>
+  );
+}
+
+// ─── Material Tonal Palette ──────────────────────────────────────────────────
+function MaterialPalette() {
+  const [hex, setHex] = useState("#6750A4");
+  const valid = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(hex);
+  // Map Material tone stops to OKLCH lightness, holding the base hue+chroma.
+  const STOPS = [
+    [50, 0.97], [100, 0.94], [200, 0.88], [300, 0.80], [400, 0.72],
+    [500, 0.64], [600, 0.56], [700, 0.48], [800, 0.40], [900, 0.32], [950, 0.24],
+  ];
+  const palette = useMemo(() => {
+    if (!valid) return [];
+    const { r, g, b } = hexToRgb(hex);
+    const { C: chroma, H } = rgbToOklch(r, g, b);
+    return STOPS.map(([tone, L]) => {
+      const rgb = oklchToRgb(L, chroma, H);
+      return { tone, hex: rgbToHex(rgb.r, rgb.g, rgb.b) };
+    });
+  }, [hex, valid]);
+
+  return (
+    <VStack>
+      <Grid2>
+        <div><Label>Base Color</Label><Input value={hex} onChange={setHex} mono placeholder="#6750A4" /></div>
+        <div><Label>Preview</Label><div style={{height:42,borderRadius:8,background:valid?hex:"transparent",border:`1px solid ${C.border}`}} /></div>
+      </Grid2>
+      {palette.length > 0 && (
+        <div>
+          <Label>Tonal Scale (constant hue & chroma, OKLCH lightness)</Label>
+          <div style={{display:"flex",flexDirection:"column",gap:4,marginTop:6}}>
+            {palette.map(({tone, hex: h}) => (
+              <div key={tone} style={{display:"flex",alignItems:"center",gap:10,background:h,borderRadius:6,padding:"10px 14px",border:`1px solid ${C.border}`}}>
+                <span style={{fontWeight:700,fontSize:12,color:tone<=400?"#000":"#fff",width:36}}>{tone}</span>
+                <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:13,color:tone<=400?"#000":"#fff",flex:1}}>{h}</span>
+                <CopyBtn text={h} />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </VStack>
+  );
+}
+
 const TOOL_COMPONENTS = {
+  "contrast-grid":     ContrastGrid,
+  "oklch-converter":   OklchConverter,
+  "material-palette":  MaterialPalette,
   "color-picker":      ColorPicker,
   "color-converter":   ColorConverter,
   "color-contrast":    ColorContrast,
@@ -1435,7 +1612,7 @@ function ToolPage({ toolId }) {
   const ToolComp=TOOL_COMPONENTS[toolId];
   useEffect(()=>{document.title=meta?.title||`${tool?.name} – Free Color Tool | ToolsRift`;},[toolId,tool,meta]);
   if(!tool||!ToolComp) return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={toolId||'unknown'}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId||'unknown'} tools={TOOLS} subcats={CATEGORIES}>
       <div style={{padding:'48px 20px',textAlign:'center',color:C.muted}}>
         Tool not found. <a href="#/" style={{color:PAGE_THEME.color}}>← Back to {PAGE_THEME.name}</a>
       </div>
@@ -1451,8 +1628,8 @@ function ToolPage({ toolId }) {
   };
   const related = TOOLS.filter(t=>t.id!==tool.id && t.cat===tool.cat).slice(0,8);
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={toolId}>
-      <ToolPageLayout theme={PAGE_THEME} tool={toolData} related={related}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId} tools={TOOLS} subcats={CATEGORIES}>
+      <ToolPageLayout theme={PAGE_THEME} tool={toolData} tools={TOOLS} subcats={CATEGORIES} related={related}>
         <ToolComp/>
       </ToolPageLayout>
     </CategoryLayout>
@@ -1485,7 +1662,7 @@ function CategoryPage({ catId }) {
 function HomePage() {
   useEffect(()=>{document.title="Free Color Tools Online – Picker, Converter, Palettes | ToolsRift";},[]);
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={null}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={null} tools={TOOLS} subcats={CATEGORIES}>
       <CategoryDashboard
         theme={PAGE_THEME}
         tools={TOOLS}

@@ -27,6 +27,117 @@ const T = {
   h2: { fontFamily:"'Sora',sans-serif", fontSize:15, fontWeight:600, color:C.text },
 };
 
+// ─── CDN library loader ───
+// Cached per src: the tools below can be mounted repeatedly (hash routing) and
+// must not re-inject the same <script> or race a half-loaded global.
+const PDFJS_SRC    = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js';
+const PDFJS_WORKER = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+const PDFLIB_SRC   = 'https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js';
+
+const _scriptCache = {};
+function loadScript(src) {
+  if (_scriptCache[src]) return _scriptCache[src];
+  _scriptCache[src] = new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = src;
+    s.async = true;
+    s.onload = () => resolve();
+    s.onerror = () => { delete _scriptCache[src]; reject(new Error(`Could not load ${src}. Check your connection and retry.`)); };
+    document.body.appendChild(s);
+  });
+  return _scriptCache[src];
+}
+
+async function loadPdfJs() {
+  await loadScript(PDFJS_SRC);
+  window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_WORKER;
+  return window.pdfjsLib;
+}
+
+async function loadPdfLib() {
+  await loadScript(PDFLIB_SRC);
+  return window.PDFLib;
+}
+
+function downloadBlob(data, filename, type) {
+  const blob = new Blob([data], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function ErrorNote({ children }) {
+  if (!children) return null;
+  return (
+    <div style={{ padding:12, background:"rgba(239,68,68,0.1)", border:`1px solid rgba(239,68,68,0.3)`, borderRadius:8, fontSize:13, color:C.text, lineHeight:1.6 }}>
+      {children}
+    </div>
+  );
+}
+
+function InfoNote({ children, tone="blue" }) {
+  const bg = tone === 'amber' ? "rgba(245,158,11,0.1)" : "rgba(59,130,246,0.08)";
+  const bd = tone === 'amber' ? "rgba(245,158,11,0.3)" : "rgba(59,130,246,0.2)";
+  return (
+    <div style={{ padding:12, background:bg, border:`1px solid ${bd}`, borderRadius:8, fontSize:12, color:C.text, lineHeight:1.6 }}>
+      {children}
+    </div>
+  );
+}
+
+// ─── Shared text-layout extraction (used by the Markdown/JSON/table/chunk tools) ───
+// pdf.js gives us positioned glyph runs. Group them into visual lines so downstream
+// tools can reason about headings, paragraphs and columns instead of a soup of spans.
+async function extractPageLines(pdf, pageNum) {
+  const page = await pdf.getPage(pageNum);
+  const viewport = page.getViewport({ scale: 1 });
+  const content = await page.getTextContent();
+
+  const items = content.items
+    .filter(it => it.str && it.str.trim())
+    .map(it => ({
+      text: it.str,
+      x: it.transform[4],
+      y: it.transform[5],
+      // transform[3] is the vertical scale — a reliable proxy for rendered font size.
+      size: Math.abs(it.transform[3]) || it.height || 0,
+      width: it.width || 0,
+    }));
+
+  // Bucket into lines by baseline, tolerant of sub-pixel drift within a line.
+  const lines = [];
+  for (const it of items) {
+    const tol = Math.max(2, it.size * 0.5);
+    const line = lines.find(l => Math.abs(l.y - it.y) <= tol);
+    if (line) { line.items.push(it); line.y = (line.y + it.y) / 2; }
+    else lines.push({ y: it.y, items: [it] });
+  }
+
+  lines.sort((a, b) => b.y - a.y);              // top of page first
+  for (const l of lines) {
+    l.items.sort((a, b) => a.x - b.x);          // left to right
+    l.text = l.items.map(i => i.text).join(' ').replace(/\s+/g, ' ').trim();
+    l.size = Math.max(...l.items.map(i => i.size));
+    l.x = l.items[0].x;
+  }
+
+  return { lines: lines.filter(l => l.text), width: viewport.width, height: viewport.height };
+}
+
+async function extractDocLines(pdf) {
+  const pages = [];
+  for (let i = 1; i <= pdf.numPages; i++) pages.push({ page: i, ...(await extractPageLines(pdf, i)) });
+  return pages;
+}
+
+function medianFontSize(pages) {
+  const sizes = pages.flatMap(p => p.lines.map(l => l.size)).filter(Boolean).sort((a, b) => a - b);
+  return sizes.length ? sizes[Math.floor(sizes.length / 2)] : 12;
+}
+
 function Badge({ children, color = "red" }) {
   const map = { red:"rgba(239,68,68,0.15)", blue:"rgba(59,130,246,0.15)", green:"rgba(16,185,129,0.15)", amber:"rgba(245,158,11,0.15)" };
   const textMap = { red:"#FCA5A5", blue:"#60A5FA", green:"#34D399", amber:"#FCD34D" };
@@ -64,6 +175,21 @@ function Textarea({ value, onChange, placeholder, rows=6, mono=false, style={} }
   return (
     <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} rows={rows}
       style={{ width:"100%", background:"rgba(255,255,255,0.04)", border:`1px solid ${C.border}`, borderRadius:8, padding:"12px 14px", color:C.text, fontSize:13, fontFamily:mono?"'JetBrains Mono',monospace":"'Plus Jakarta Sans',sans-serif", outline:"none", lineHeight:1.6, ...style }}
+      onFocus={e => e.target.style.borderColor=C.red} onBlur={e => e.target.style.borderColor=C.border} />
+  );
+}
+
+function NumInput({ value, onChange, min, max, style={} }) {
+  const clamp = (n) => {
+    if (Number.isNaN(n)) return min ?? 0;
+    if (min !== undefined) n = Math.max(min, n);
+    if (max !== undefined) n = Math.min(max, n);
+    return n;
+  };
+  return (
+    <input type="number" value={value} min={min} max={max}
+      onChange={e => onChange(clamp(parseInt(e.target.value, 10)))}
+      style={{ width:"100%", background:"rgba(255,255,255,0.04)", border:`1px solid ${C.border}`, borderRadius:8, padding:"10px 14px", color:C.text, fontSize:13, fontFamily:"'JetBrains Mono',monospace", outline:"none", ...style }}
       onFocus={e => e.target.style.borderColor=C.red} onBlur={e => e.target.style.borderColor=C.border} />
   );
 }
@@ -207,7 +333,13 @@ const TOOLS = [
   { id:"pdf-margin-adder", cat:"tools", name:"PDF Margin Tool", desc:"Add or adjust margins around PDF pages for printing or binding preparation", icon:"📄", free:true },
   { id:"pdf-cropper", cat:"tools", name:"PDF Cropper", desc:"Crop PDF pages to remove unwanted borders and whitespace around content", icon:"📄", free:true },
   { id:"pdf-bookmarks", cat:"tools", name:"PDF Bookmark Manager", desc:"View, add, edit, and organize PDF bookmarks and table of contents", icon:"📄", free:true },
-  { id:"pdf-form-filler", cat:"tools", name:"PDF Form Filler", desc:"Fill in interactive PDF forms with text, checkboxes, and signatures", icon:"📄", free:true },
+  { id:"pdf-form-filler", cat:"tools", name:"PDF Form Filler", desc:"Fill in interactive PDF forms with text fields, checkboxes and dropdowns", icon:"📄", free:true },
+
+  // Data & AI
+  { id:"pdf-to-markdown", cat:"data", name:"PDF to Markdown", desc:"Convert PDF documents to clean Markdown for LLMs, notes and static sites", icon:"📝", free:true },
+  { id:"pdf-to-json", cat:"data", name:"PDF to JSON", desc:"Extract PDF text as structured JSON with page, position and font data", icon:"🧾", free:true },
+  { id:"pdf-table-extractor", cat:"data", name:"PDF Table Extractor", desc:"Detect tables in a PDF and export them as CSV spreadsheets", icon:"📊", free:true },
+  { id:"pdf-chunker", cat:"data", name:"PDF Chunker for RAG", desc:"Split PDF text into overlapping token-sized chunks for embeddings and RAG", icon:"🧩", free:true },
 ];
 
 const CATEGORIES = [
@@ -217,6 +349,7 @@ const CATEGORIES = [
   { id:"security", name:"Security", icon:"📄", desc:"Protect, encrypt, and secure PDF documents" },
   { id:"optimize", name:"Optimize", icon:"⚡", desc:"Compress and optimize PDF files for web and storage" },
   { id:"tools", name:"Tools", icon:"📄", desc:"Additional PDF utilities and helper tools" },
+  { id:"data", name:"Data & AI", icon:"🤖", desc:"Turn PDFs into Markdown, JSON, CSV and RAG-ready chunks" },
 ];
 
 const TOOL_META = {
@@ -375,11 +508,13 @@ const TOOL_META = {
   },
   "pdf-unlock": {
     title: "Free PDF Password Remover — Unlock Protected PDFs Online | ToolsRift",
-    desc: "Remove password protection from PDF files when you have the correct password. Unlock PDFs for editing and printing.",
+    desc: "Remove password protection and editing restrictions from PDF files you own. Runs entirely in your browser — the file is never uploaded.",
+    howTo: "Upload the protected PDF. If it needs a password to open, enter it. The tool decrypts the document, re-renders every page, and rebuilds an unencrypted PDF you can download.",
     faq: [
-      ["Can I unlock a PDF without the password?", "No, you must enter the correct password to unlock the PDF. This tool cannot crack or bypass unknown passwords."],
-      ["What if I forgot my password?", "Unfortunately, if you've forgotten the password, it cannot be recovered. PDF encryption is designed to be secure against unauthorized access."],
-      ["Will unlocking reduce quality?", "No, unlocking simply removes the password protection. The PDF content remains completely unchanged."]
+      ["Can I unlock a PDF without the password?", "No. If the PDF needs a password to open, you must enter the correct one. This tool cannot crack or bypass an unknown password. PDFs that open freely but block editing or printing can be unlocked without any password."],
+      ["Will the unlocked PDF look the same?", "It will look the same, but it becomes image-based. Each page is re-rendered as a picture, so the text is no longer selectable or searchable and the file is larger. Stripping PDF encryption without a server is only possible this way."],
+      ["What if I forgot my password?", "It cannot be recovered. PDF encryption is designed to resist exactly that."],
+      ["Is this legal?", "Only remove protection from documents you own or have permission to modify. Bypassing protection on someone else's document may be unlawful where you live."]
     ]
   },
   "pdf-watermark": {
@@ -393,11 +528,13 @@ const TOOL_META = {
   },
   "pdf-redact": {
     title: "Free PDF Redaction Tool — Remove Sensitive Info from PDF | ToolsRift",
-    desc: "Permanently black out and remove sensitive information from PDF documents. Secure redaction for confidential data.",
+    desc: "Permanently black out sensitive information in PDF documents. The text underneath is destroyed, not just covered. Secure, free and fully in-browser.",
+    howTo: "Upload a PDF, then drag on the page to draw black boxes over anything sensitive. Move between pages — boxes are kept per page. When you apply the redaction, every page is re-rendered as an image with the boxes painted in, so the covered content no longer exists in the file.",
     faq: [
-      ["Is redaction permanent?", "Yes, redacted content is permanently removed from the PDF. It's not just covered with a black box'the underlying text/data is deleted."],
-      ["Can redacted information be recovered?", "No, proper redaction permanently removes the content. Make sure to keep an unredacted backup if you might need the original."],
-      ["How do I select areas to redact?", "Click and drag to draw rectangles over sensitive information. Multiple areas can be selected before applying redaction."]
+      ["Is redaction permanent?", "Yes. Each page is rasterised and the black boxes are painted onto the bitmap, so the original text and vector content is discarded. Unlike drawing a rectangle in a PDF editor, the hidden words cannot be selected, copied or recovered."],
+      ["What is the trade-off?", "Because the pages are rebuilt as images, the whole document stops being searchable and selectable, and the file size grows. Keep an unredacted original if you may need the text later."],
+      ["How do I select areas to redact?", "Click and drag to draw a rectangle over the sensitive area. Draw as many as you need, on any page, then apply them all at once. Undo removes the last box on the current page."],
+      ["Can I redact a password-protected PDF?", "Not directly — unlock it first with the PDF Password Remover, then redact the result."]
     ]
   },
   "pdf-compressor": {
@@ -465,11 +602,61 @@ const TOOL_META = {
   },
   "pdf-form-filler": {
     title: "Free PDF Form Filler — Fill Interactive PDF Forms Online | ToolsRift",
-    desc: "Fill in interactive PDF forms with text, checkboxes, radio buttons, and signatures. Save completed forms as new PDFs.",
+    desc: "Fill interactive PDF forms with text fields, checkboxes, radio buttons and dropdowns. Flatten and download the completed form. 100% in your browser.",
+    howTo: "Upload a fillable PDF. Every form field it contains is listed automatically — type into text fields, tick checkboxes and choose dropdown values. Optionally tick 'Flatten' to bake your answers permanently into the page, then download the completed PDF.",
     faq: [
-      ["What types of form fields are supported?", "Text fields, checkboxes, radio buttons, dropdown menus, and signature fields are all supported."],
-      ["Can I save partially completed forms?", "Yes, download the PDF at any time with the current form data. You can open and continue editing it later."],
-      ["Why isn't form filling available yet?", "Interactive PDF form filling isn't supported by the in-browser engine yet. Most browsers can fill a fillable PDF directly — open it, fill the fields, then Print → Save as PDF."]
+      ["What types of form fields are supported?", "Text fields, checkboxes, radio button groups, dropdowns and option lists. Digital signature fields cannot be signed here — use the PDF Watermark tool to place a signature image instead."],
+      ["What does flattening do?", "Flattening draws your answers directly onto the page and removes the interactive fields. The values can no longer be edited, which is useful when sending a final copy."],
+      ["My PDF shows no fields. Why?", "The document has no interactive AcroForm fields — it is either a flat document or a scan. A form you can only type into in Acrobat's 'Fill & Sign' mode is not a real form field."],
+      ["Is my form data uploaded anywhere?", "No. The PDF is parsed and rewritten entirely in your browser. Nothing is sent to a server."]
+    ]
+  },
+
+  "pdf-to-markdown": {
+    title: "Free PDF to Markdown Converter — PDF to MD for LLMs | ToolsRift",
+    desc: "Convert PDF documents to clean Markdown online. Detects headings, lists and paragraphs — ideal for feeding PDFs to ChatGPT, Claude, RAG pipelines and static sites.",
+    howTo: "Upload a PDF with a real text layer. The tool reads the positioned text, infers heading levels from relative font sizes, converts bullet and numbered lists, and rebuilds paragraphs. Copy the Markdown or download it as a .md file.",
+    faq: [
+      ["Why convert a PDF to Markdown?", "Language models and RAG pipelines work far better on structured Markdown than on raw PDF text, because headings and lists preserve the document's hierarchy. Markdown also drops straight into static site generators and note apps like Obsidian."],
+      ["How are headings detected?", "Each line's font size is compared against the median font size of the whole document. Lines that are noticeably larger become H1, H2 or H3. This is a heuristic, so unusual layouts may need a quick manual pass."],
+      ["Does it work on scanned PDFs?", "No. A scan contains pictures of words, not text, so there is nothing to extract. Run the scan through OCR first."],
+      ["Are tables preserved?", "Tables are emitted as plain text lines. For real tabular output, use the PDF Table Extractor to get CSV."]
+    ]
+  },
+
+  "pdf-to-json": {
+    title: "Free PDF to JSON Converter — Structured PDF Text Extraction | ToolsRift",
+    desc: "Extract PDF text as structured JSON with page numbers, x/y coordinates and font sizes. Perfect for parsers, data pipelines and automated document processing.",
+    howTo: "Upload a PDF, choose whether to include coordinates and font sizes, and the tool returns a JSON document with one entry per page and one entry per line of text. Copy it or download a .json file.",
+    faq: [
+      ["What does the JSON contain?", "A page count, then for each page its width, height and every line of text. With coordinates enabled, each line also carries its x/y position on the page and its font size."],
+      ["Why do I need coordinates?", "Positions let you reconstruct layout — identify columns, headers and footers, or find the value that sits to the right of a known label. Turn them off if you only want the words."],
+      ["What are the coordinate units?", "PDF points, measured from the bottom-left corner of the page. There are 72 points to an inch."],
+      ["Does it work on scanned PDFs?", "No — a scan has no text layer to extract. OCR the document first."]
+    ]
+  },
+
+  "pdf-table-extractor": {
+    title: "Free PDF Table Extractor — Convert PDF Tables to CSV | ToolsRift",
+    desc: "Detect tables inside a PDF and export them as CSV spreadsheets. Extract rows and columns from reports, invoices and statements — free and fully in-browser.",
+    howTo: "Upload a PDF and pick a page. The tool clusters the horizontal positions of the text to work out where the columns are, groups text into rows, and shows the result as a table. Download it as CSV for Excel, Sheets or pandas.",
+    faq: [
+      ["How does table detection work?", "The tool looks at the left edge of every piece of text on the page and finds x positions that repeat down the page — those are the columns. Text is then snapped to its nearest column and grouped into rows by vertical position."],
+      ["Which tables work best?", "Tables with clearly aligned columns and a real text layer. Tables that rely on merged cells, wrapped multi-line cells or heavy nesting will come out imperfectly and are worth a quick check."],
+      ["Nothing was detected on my page.", "Either the page has no table, its columns are not aligned enough to detect, or the PDF is a scan with no text layer. Try the neighbouring pages first."],
+      ["Can I extract every page at once?", "Not yet — tables are extracted one page at a time so you can verify each result before exporting."]
+    ]
+  },
+
+  "pdf-chunker": {
+    title: "Free PDF Chunker for RAG — Split PDFs into Token Chunks | ToolsRift",
+    desc: "Split PDF text into overlapping, token-sized chunks ready for embeddings, vector databases and RAG pipelines. Export as JSON or JSONL. No uploads.",
+    howTo: "Upload a PDF and set your chunk size and overlap in approximate tokens. The tool rebuilds paragraphs from the PDF, packs them into chunks that stay under your size limit, and carries the tail of each chunk into the next so context is never cut mid-idea. Export as .json or .jsonl.",
+    faq: [
+      ["Why chunk a PDF?", "Embedding models have a fixed context window, and retrieval quality drops when a chunk mixes unrelated topics. Chunking on paragraph boundaries with a small overlap keeps each chunk coherent and retrievable."],
+      ["How are tokens counted?", "Using the standard rough estimate of about four characters per token for English prose. It is an approximation — verify against your model's own tokenizer if you are close to a hard limit."],
+      ["What chunk size should I use?", "512 tokens with 50 tokens of overlap is a solid default for most embedding models. Use smaller chunks for precise fact retrieval and larger ones when answers need more surrounding context."],
+      ["What is the difference between JSON and JSONL?", "JSON gives one array of chunk objects. JSONL puts one chunk per line, which streams better and is what most vector-database loaders expect."]
     ]
   }
 };
@@ -1639,19 +1826,68 @@ function PdfPasswordProtect() {
 }
 
 // PDF Unlock Component
+// pdf.js decrypts the document (with the password, if one is set), then each page is
+// rasterised and rebuilt into a fresh, unencrypted PDF. This is why the output is
+// image-based: pdf-lib cannot re-emit the original encrypted content streams.
 function PdfUnlock() {
-  const [file, setFile] = useState(null);
+  const [file, setFile]         = useState(null);
   const [password, setPassword] = useState('');
-  const [notice, setNotice] = useState(false);
+  const [needsPw, setNeedsPw]   = useState(false);
+  const [pages, setPages]       = useState(0);
+  const [progress, setProgress] = useState('');
+  const [busy, setBusy]         = useState(false);
+  const [err, setErr]           = useState(null);
 
-  const handleFile = (e) => {
-    setFile(e.target.files[0]);
-    setNotice(false);
+  const reset = () => { setNeedsPw(false); setPages(0); setErr(null); setProgress(''); };
+
+  // Probe without a password so we can tell a permissions-locked file (opens fine)
+  // from a user-password file (throws PasswordException).
+  const handleFile = async (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    setFile(f); reset(); setBusy(true);
+    try {
+      const pdfjsLib = await loadPdfJs();
+      const data = new Uint8Array(await f.arrayBuffer());
+      const pdf  = await pdfjsLib.getDocument({ data }).promise;
+      setPages(pdf.numPages);
+    } catch (ex) {
+      if (ex?.name === 'PasswordException') setNeedsPw(true);
+      else setErr(`Could not read this PDF: ${ex.message}`);
+    }
+    setBusy(false);
   };
 
-  const unlockPdf = () => {
-    if (!file || !password) return;
-    setNotice(true);
+  const unlockPdf = async () => {
+    setBusy(true); setErr(null);
+    try {
+      const pdfjsLib = await loadPdfJs();
+      const PDFLib   = await loadPdfLib();
+      // pdf.js may transfer the buffer to its worker — hand it a private copy.
+      const data = new Uint8Array(await file.arrayBuffer());
+      const pdf  = await pdfjsLib.getDocument(password ? { data, password } : { data }).promise;
+
+      const out = await PDFLib.PDFDocument.create();
+      for (let i = 1; i <= pdf.numPages; i++) {
+        setProgress(`Rebuilding page ${i} of ${pdf.numPages}…`);
+        const page     = await pdf.getPage(i);
+        const viewport = page.getViewport({ scale: 2 });     // 2x for legible raster
+        const canvas   = document.createElement('canvas');
+        canvas.width = viewport.width; canvas.height = viewport.height;
+        await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+
+        const png    = await out.embedPng(canvas.toDataURL('image/png'));
+        const outPg  = out.addPage([viewport.width / 2, viewport.height / 2]);
+        outPg.drawImage(png, { x:0, y:0, width: outPg.getWidth(), height: outPg.getHeight() });
+      }
+      setProgress('');
+      downloadBlob(await out.save(), 'unlocked.pdf', 'application/pdf');
+    } catch (ex) {
+      setProgress('');
+      if (ex?.name === 'PasswordException') setErr('That password is incorrect. Check it and try again.');
+      else setErr(`Could not unlock this PDF: ${ex.message}`);
+    }
+    setBusy(false);
   };
 
   return (
@@ -1659,21 +1895,32 @@ function PdfUnlock() {
       <div>
         <Label>Upload Protected PDF File</Label>
         <input type="file" accept=".pdf" onChange={handleFile} style={{ display:"block", color:C.text, fontSize:13 }} />
+        {file && <div style={{ fontSize:12, color:C.muted, marginTop:6 }}>{file.name}{pages ? ` — ${pages} pages` : ''}</div>}
       </div>
-      <div>
-        <Label>Password</Label>
-        <Input value={password} onChange={setPassword} placeholder="Enter PDF password" style={{ fontFamily:"'JetBrains Mono',monospace" }} />
-      </div>
-      <Btn onClick={unlockPdf} disabled={!file || !password}>Unlock PDF</Btn>
-      {notice && (
-        <div style={{ padding:14, background:"rgba(245,158,11,0.1)", border:`1px solid rgba(245,158,11,0.3)`, borderRadius:8, fontSize:13, color:C.text, lineHeight:1.6 }}>
-          <strong>In-browser PDF unlocking isn't available yet.</strong><br />
-          Removing a PDF password means decrypting the file, which needs a decryption engine browsers can't run fully client-side — and ToolsRift never sends your file to a server to do it. This tool can't unlock your PDF right now; your file stayed on your device.
+
+      {needsPw && (
+        <div>
+          <Label>Password</Label>
+          <Input value={password} onChange={setPassword} placeholder="Enter PDF password" style={{ fontFamily:"'JetBrains Mono',monospace" }} />
         </div>
       )}
-      <div style={{ padding:12, background:"rgba(59,130,246,0.08)", border:`1px solid rgba(59,130,246,0.2)`, borderRadius:8, fontSize:12, color:C.text }}>
-        🔒 100% local — nothing you upload ever leaves your browser.
-      </div>
+
+      {file && !needsPw && pages > 0 && (
+        <InfoNote>
+          This PDF opens without a password — it is locked only against editing, printing or copying. Unlocking will remove those restrictions.
+        </InfoNote>
+      )}
+
+      <Btn onClick={unlockPdf} disabled={!file || busy || (needsPw && !password)}>
+        {busy ? (progress || 'Working…') : 'Unlock PDF'}
+      </Btn>
+
+      <ErrorNote>{err}</ErrorNote>
+
+      <InfoNote tone="amber">
+        <strong>The unlocked PDF is image-based.</strong> Each page is re-rendered as a picture, so the result is not searchable or selectable and the file will be larger. This is the only way to strip encryption without sending your file to a server. You must have the right to remove protection from the document.
+      </InfoNote>
+      <InfoNote>🔒 100% local — nothing you upload ever leaves your browser.</InfoNote>
     </VStack>
   );
 }
@@ -1762,13 +2009,188 @@ function PdfWatermark() {
 }
 
 // PDF Redact Component (not available client-side yet)
+// PDF Redaction Component — true redaction, not a black rectangle over live text.
+// Each page is rasterised, the marked areas are painted out on the bitmap, and the
+// PDF is rebuilt from those bitmaps. The original text/vector content is discarded,
+// so redacted words cannot be recovered by selecting or copying.
 function PdfRedact() {
+  const [file, setFile]     = useState(null);
+  const [pdf, setPdf]       = useState(null);
+  const [pageNum, setPageNum] = useState(1);
+  const [rects, setRects]   = useState({});     // { [pageNum]: [{x,y,w,h}] } as 0..1 fractions
+  const [drawing, setDrawing] = useState(null); // in-progress rect, fractions
+  const [busy, setBusy]     = useState(false);
+  const [progress, setProgress] = useState('');
+  const [err, setErr]       = useState(null);
+  const canvasRef  = useRef(null);
+  const overlayRef = useRef(null);
+  // The in-progress rect also lives in a ref: React batches state updates, so a fast
+  // drag can deliver mousemove and mouseup in one batch and `drawing` would still
+  // hold the mousedown point, silently dropping the box.
+  const drawRef = useRef(null);
+
+  const handleFile = async (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    setFile(f); setErr(null); setRects({}); setPageNum(1); setPdf(null); setBusy(true);
+    try {
+      const pdfjsLib = await loadPdfJs();
+      const data = new Uint8Array(await f.arrayBuffer());
+      setPdf(await pdfjsLib.getDocument({ data }).promise);
+    } catch (ex) {
+      setErr(ex?.name === 'PasswordException'
+        ? 'This PDF is password-protected. Unlock it first with the PDF Password Remover.'
+        : `Could not read this PDF: ${ex.message}`);
+    }
+    setBusy(false);
+  };
+
+  // Render the current page into the preview canvas whenever it changes.
+  useEffect(() => {
+    if (!pdf || !canvasRef.current) return;
+    let cancelled = false;
+    (async () => {
+      const page = await pdf.getPage(pageNum);
+      if (cancelled) return;
+      const base = page.getViewport({ scale: 1 });
+      const scale = Math.min(680 / base.width, 2);
+      const viewport = page.getViewport({ scale });
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      canvas.width = viewport.width; canvas.height = viewport.height;
+      await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+    })();
+    return () => { cancelled = true; };
+  }, [pdf, pageNum]);
+
+  const toFraction = (e) => {
+    const box = overlayRef.current.getBoundingClientRect();
+    return {
+      x: Math.min(Math.max((e.clientX - box.left) / box.width, 0), 1),
+      y: Math.min(Math.max((e.clientY - box.top) / box.height, 0), 1),
+    };
+  };
+
+  const onDown = (e) => {
+    const p = toFraction(e);
+    drawRef.current = { x0:p.x, y0:p.y, x1:p.x, y1:p.y };
+    setDrawing(drawRef.current);
+  };
+  const onMove = (e) => {
+    if (!drawRef.current) return;
+    const p = toFraction(e);
+    drawRef.current = { ...drawRef.current, x1:p.x, y1:p.y };
+    setDrawing(drawRef.current);
+  };
+  const onUp = () => {
+    const d = drawRef.current;
+    drawRef.current = null;
+    setDrawing(null);
+    if (!d) return;
+    const r = {
+      x: Math.min(d.x0, d.x1), y: Math.min(d.y0, d.y1),
+      w: Math.abs(d.x1 - d.x0), h: Math.abs(d.y1 - d.y0),
+    };
+    if (r.w < 0.005 || r.h < 0.005) return;   // ignore stray clicks
+    setRects(prev => ({ ...prev, [pageNum]: [...(prev[pageNum] || []), r] }));
+  };
+
+  const clearPage = () => setRects(prev => ({ ...prev, [pageNum]: [] }));
+  const undo = () => setRects(prev => ({ ...prev, [pageNum]: (prev[pageNum] || []).slice(0, -1) }));
+
+  const totalRects = Object.values(rects).reduce((n, a) => n + a.length, 0);
+
+  const applyRedaction = async () => {
+    setBusy(true); setErr(null);
+    try {
+      const PDFLib = await loadPdfLib();
+      const out = await PDFLib.PDFDocument.create();
+      for (let i = 1; i <= pdf.numPages; i++) {
+        setProgress(`Redacting page ${i} of ${pdf.numPages}…`);
+        const page     = await pdf.getPage(i);
+        const viewport = page.getViewport({ scale: 2 });
+        const canvas   = document.createElement('canvas');
+        canvas.width = viewport.width; canvas.height = viewport.height;
+        const ctx = canvas.getContext('2d');
+        await page.render({ canvasContext: ctx, viewport }).promise;
+
+        // Paint the marked areas onto the bitmap — the text underneath is gone.
+        ctx.fillStyle = '#000';
+        for (const r of rects[i] || []) {
+          ctx.fillRect(r.x * canvas.width, r.y * canvas.height, r.w * canvas.width, r.h * canvas.height);
+        }
+
+        const png   = await out.embedPng(canvas.toDataURL('image/png'));
+        const outPg = out.addPage([viewport.width / 2, viewport.height / 2]);
+        outPg.drawImage(png, { x:0, y:0, width: outPg.getWidth(), height: outPg.getHeight() });
+      }
+      setProgress('');
+      downloadBlob(await out.save(), 'redacted.pdf', 'application/pdf');
+    } catch (ex) {
+      setProgress('');
+      setErr(`Could not redact this PDF: ${ex.message}`);
+    }
+    setBusy(false);
+  };
+
+  const pageRects = rects[pageNum] || [];
+  const preview = drawing && {
+    x: Math.min(drawing.x0, drawing.x1), y: Math.min(drawing.y0, drawing.y1),
+    w: Math.abs(drawing.x1 - drawing.x0), h: Math.abs(drawing.y1 - drawing.y0),
+  };
+
   return (
-    <div style={{ padding:48, textAlign:'center', background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:16 }}>
-      <div style={{ fontSize:40, marginBottom:12 }}>ℹ️</div>
-      <div style={{ color:C.text, fontWeight:700, fontSize:17, marginBottom:8 }}>Not available in your browser yet</div>
-      <div style={{ color:C.muted, fontSize:14, marginBottom:4, lineHeight:1.6 }}>Secure redaction must permanently remove the underlying content (not just cover it), which can't be done reliably client-side yet. To hide sensitive areas today, use the PDF Cropper or add a solid Watermark/box over the region — but for truly permanent redaction, flatten the page in dedicated software.</div>
-    </div>
+    <VStack>
+      <div>
+        <Label>Upload PDF File</Label>
+        <input type="file" accept=".pdf" onChange={handleFile} style={{ display:"block", color:C.text, fontSize:13 }} />
+      </div>
+
+      {busy && !pdf && <div style={{ textAlign:"center", color:C.muted }}>Loading…</div>}
+      <ErrorNote>{err}</ErrorNote>
+
+      {pdf && (
+        <>
+          <InfoNote>Drag on the page to draw a black box over anything you want removed. Boxes are saved per page.</InfoNote>
+
+          <div style={{ position:'relative', display:'inline-block', maxWidth:'100%', alignSelf:'center', lineHeight:0 }}>
+            <canvas ref={canvasRef} style={{ maxWidth:'100%', height:'auto', borderRadius:8, border:`1px solid ${C.border}` }} />
+            <div
+              ref={overlayRef}
+              onMouseDown={onDown} onMouseMove={onMove} onMouseUp={onUp} onMouseLeave={onUp}
+              style={{ position:'absolute', inset:0, cursor:'crosshair' }}
+            >
+              {[...pageRects, ...(preview ? [preview] : [])].map((r, i) => (
+                <div key={i} style={{
+                  position:'absolute',
+                  left:`${r.x * 100}%`, top:`${r.y * 100}%`,
+                  width:`${r.w * 100}%`, height:`${r.h * 100}%`,
+                  background:'#000', border:'1px solid #EF4444',
+                }} />
+              ))}
+            </div>
+          </div>
+
+          <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center', justifyContent:'center' }}>
+            <Btn variant="secondary" size="sm" onClick={() => setPageNum(p => Math.max(1, p - 1))} disabled={pageNum <= 1}>← Prev</Btn>
+            <span style={{ fontSize:13, color:C.muted }}>Page {pageNum} of {pdf.numPages}</span>
+            <Btn variant="secondary" size="sm" onClick={() => setPageNum(p => Math.min(pdf.numPages, p + 1))} disabled={pageNum >= pdf.numPages}>Next →</Btn>
+            <Btn variant="ghost" size="sm" onClick={undo} disabled={!pageRects.length}>Undo</Btn>
+            <Btn variant="ghost" size="sm" onClick={clearPage} disabled={!pageRects.length}>Clear page</Btn>
+          </div>
+
+          <Btn onClick={applyRedaction} disabled={busy || !totalRects}>
+            {busy ? (progress || 'Working…') : `Apply ${totalRects} Redaction${totalRects === 1 ? '' : 's'} & Download`}
+          </Btn>
+
+          <InfoNote tone="amber">
+            <strong>Redaction is permanent and rasterises the document.</strong> Every page is rebuilt as an image, so hidden text under the boxes is destroyed — but the whole PDF also stops being searchable or selectable, and the file gets larger. Always verify the output before sharing it.
+          </InfoNote>
+        </>
+      )}
+
+      <InfoNote>🔒 100% local — files are processed in your browser and never uploaded.</InfoNote>
+    </VStack>
   );
 }
 
@@ -2240,14 +2662,556 @@ function PdfBookmarks() {
   );
 }
 
-// PDF Form Filler Component (not available client-side yet)
+// PDF Form Filler Component — reads AcroForm fields via pdf-lib and writes them back.
 function PdfFormFiller() {
+  const [file, setFile]     = useState(null);
+  const [fields, setFields] = useState(null);
+  const [values, setValues] = useState({});
+  const [flatten, setFlatten] = useState(false);
+  const [busy, setBusy]     = useState(false);
+  const [err, setErr]       = useState(null);
+  const bytesRef = useRef(null);
+
+  const readField = (PDFLib, fd) => {
+    const name = fd.getName();
+    if (fd instanceof PDFLib.PDFTextField)   return { name, type:'text',     value: fd.getText() || '' };
+    if (fd instanceof PDFLib.PDFCheckBox)    return { name, type:'checkbox', value: fd.isChecked() };
+    if (fd instanceof PDFLib.PDFDropdown)    return { name, type:'dropdown', value: fd.getSelected()[0] || '', options: fd.getOptions() };
+    if (fd instanceof PDFLib.PDFRadioGroup)  return { name, type:'radio',    value: fd.getSelected() || '',    options: fd.getOptions() };
+    if (fd instanceof PDFLib.PDFOptionList)  return { name, type:'option',   value: fd.getSelected()[0] || '', options: fd.getOptions() };
+    return { name, type:'unsupported', value:'' };
+  };
+
+  const handleFile = async (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    setFile(f); setErr(null); setFields(null); setValues({}); setBusy(true);
+    try {
+      const PDFLib = await loadPdfLib();
+      const bytes  = await f.arrayBuffer();
+      bytesRef.current = bytes;
+      const doc  = await PDFLib.PDFDocument.load(bytes);
+      const list = doc.getForm().getFields().map(fd => readField(PDFLib, fd));
+      setFields(list);
+      setValues(Object.fromEntries(list.map(fl => [fl.name, fl.value])));
+    } catch (ex) {
+      setErr(`Could not read this PDF's form: ${ex.message}`);
+    }
+    setBusy(false);
+  };
+
+  const save = async () => {
+    setBusy(true); setErr(null);
+    try {
+      const PDFLib = await loadPdfLib();
+      const doc  = await PDFLib.PDFDocument.load(bytesRef.current);
+      const form = doc.getForm();
+      const skipped = [];
+      for (const fl of fields) {
+        const v = values[fl.name];
+        try {
+          if      (fl.type === 'text')     form.getTextField(fl.name).setText(String(v ?? ''));
+          else if (fl.type === 'checkbox') { const cb = form.getCheckBox(fl.name); v ? cb.check() : cb.uncheck(); }
+          else if (fl.type === 'dropdown' && v) form.getDropdown(fl.name).select(v);
+          else if (fl.type === 'radio'    && v) form.getRadioGroup(fl.name).select(v);
+          else if (fl.type === 'option'   && v) form.getOptionList(fl.name).select(v);
+        } catch {
+          skipped.push(fl.name);   // field rejected the value (e.g. read-only) — keep going
+        }
+      }
+      if (flatten) form.flatten();
+      downloadBlob(await doc.save(), 'filled-form.pdf', 'application/pdf');
+      if (skipped.length) setErr(`Saved, but these fields could not be set (they may be read-only): ${skipped.join(', ')}`);
+    } catch (ex) {
+      setErr(`Could not save the filled PDF: ${ex.message}`);
+    }
+    setBusy(false);
+  };
+
+  const setVal = (name, v) => setValues(prev => ({ ...prev, [name]: v }));
+  const fillable = fields?.filter(f => f.type !== 'unsupported') || [];
+
   return (
-    <div style={{ padding:48, textAlign:'center', background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:16 }}>
-      <div style={{ fontSize:40, marginBottom:12 }}>ℹ️</div>
-      <div style={{ color:C.text, fontWeight:700, fontSize:17, marginBottom:8 }}>Not available in your browser yet</div>
-      <div style={{ color:C.muted, fontSize:14, marginBottom:4, lineHeight:1.6 }}>Interactive PDF form filling isn't supported by the in-browser PDF engine yet. Your files are never uploaded. Tip: most browsers can fill and save a fillable PDF directly — open it, fill the fields, then Print → Save as PDF.</div>
-    </div>
+    <VStack>
+      <div>
+        <Label>Upload a fillable PDF form</Label>
+        <input type="file" accept=".pdf" onChange={handleFile} style={{ display:"block", color:C.text, fontSize:13 }} />
+        {file && <div style={{ fontSize:12, color:C.muted, marginTop:6 }}>{file.name}</div>}
+      </div>
+
+      {busy && <div style={{ textAlign:"center", color:C.muted }}>Working…</div>}
+      <ErrorNote>{err}</ErrorNote>
+
+      {fields && fields.length === 0 && (
+        <InfoNote tone="amber">
+          This PDF has no interactive form fields. It may be a flat document or a scan — in that case use the <strong>PDF Editor</strong> or <strong>PDF Watermark</strong> tool to place text on the page.
+        </InfoNote>
+      )}
+
+      {fillable.length > 0 && (
+        <>
+          <Label>{fillable.length} field{fillable.length === 1 ? '' : 's'} found</Label>
+          <VStack gap={14}>
+            {fillable.map(fl => (
+              <div key={fl.name}>
+                <Label>{fl.name}</Label>
+                {fl.type === 'text' && (
+                  <Input value={values[fl.name] || ''} onChange={v => setVal(fl.name, v)} placeholder="Enter value" />
+                )}
+                {fl.type === 'checkbox' && (
+                  <label style={{ display:'flex', alignItems:'center', gap:8, color:C.text, fontSize:13, cursor:'pointer' }}>
+                    <input type="checkbox" checked={!!values[fl.name]} onChange={e => setVal(fl.name, e.target.checked)} />
+                    {values[fl.name] ? 'Checked' : 'Unchecked'}
+                  </label>
+                )}
+                {(fl.type === 'dropdown' || fl.type === 'radio' || fl.type === 'option') && (
+                  <SelectInput
+                    value={values[fl.name] || ''}
+                    onChange={v => setVal(fl.name, v)}
+                    options={[{ value:'', label:'— none —' }, ...fl.options.map(o => ({ value:o, label:o }))]}
+                    style={{ width:'100%' }}
+                  />
+                )}
+              </div>
+            ))}
+          </VStack>
+
+          <label style={{ display:'flex', alignItems:'center', gap:8, color:C.text, fontSize:13, cursor:'pointer' }}>
+            <input type="checkbox" checked={flatten} onChange={e => setFlatten(e.target.checked)} />
+            Flatten form (bake values into the page so they can no longer be edited)
+          </label>
+
+          <Btn onClick={save} disabled={busy}>Download Filled PDF</Btn>
+        </>
+      )}
+
+      <InfoNote>🔒 100% local — files are processed in your browser and never uploaded.</InfoNote>
+    </VStack>
+  );
+}
+
+// ─── Data & AI tools ───────────────────────────────────────────────────────
+// All four read the positioned text layer via extractDocLines() and reshape it.
+// They work on PDFs with a real text layer; scans need OCR first.
+
+function NoTextLayerNote() {
+  return (
+    <InfoNote tone="amber">
+      No text was found. This PDF is probably a scan — it holds pictures of words, not words.
+      Run it through an OCR tool first, then come back.
+    </InfoNote>
+  );
+}
+
+// PDF to Markdown — heading levels are inferred from font size vs. the document median.
+function PdfToMarkdown() {
+  const [file, setFile] = useState(null);
+  const [md, setMd]     = useState('');
+  const [busy, setBusy] = useState(false);
+  const [err, setErr]   = useState(null);
+  const [empty, setEmpty] = useState(false);
+
+  const convert = async (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    setFile(f); setErr(null); setMd(''); setEmpty(false); setBusy(true);
+    try {
+      const pdfjsLib = await loadPdfJs();
+      const data  = new Uint8Array(await f.arrayBuffer());
+      const pdf   = await pdfjsLib.getDocument({ data }).promise;
+      const pages = await extractDocLines(pdf);
+      const med   = medianFontSize(pages);
+
+      let out = '';
+      pages.forEach((p, pi) => {
+        if (pi > 0) out += '\n---\n\n';
+        let prevY = null;
+        for (const l of p.lines) {
+          const ratio = med ? l.size / med : 1;
+          let line = l.text;
+
+          if (/^[•·▪◦‣]\s*/.test(line))            line = '- ' + line.replace(/^[•·▪◦‣]\s*/, '');
+          else if (/^\d+[.)]\s+/.test(line))       line = line.replace(/^(\d+)[.)]\s+/, '$1. ');
+          else if (ratio >= 1.6)                   line = '# '   + line;
+          else if (ratio >= 1.32)                  line = '## '  + line;
+          else if (ratio >= 1.15)                  line = '### ' + line;
+
+          // A vertical gap much larger than the line height means a new paragraph.
+          if (prevY !== null && (prevY - l.y) > l.size * 1.9) out += '\n';
+          out += line + '\n';
+          prevY = l.y;
+        }
+        out += '\n';
+      });
+
+      const body = out.replace(/\n{3,}/g, '\n\n').trim();
+      if (!body) setEmpty(true);
+      setMd(body);
+    } catch (ex) {
+      setErr(`Could not convert this PDF: ${ex.message}`);
+    }
+    setBusy(false);
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>Upload PDF File</Label>
+        <input type="file" accept=".pdf" onChange={convert} style={{ display:"block", color:C.text, fontSize:13 }} />
+      </div>
+      {busy && <div style={{ textAlign:"center", color:C.muted }}>Converting to Markdown…</div>}
+      <ErrorNote>{err}</ErrorNote>
+      {empty && <NoTextLayerNote />}
+      {md && (
+        <>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+            <Label>Markdown</Label>
+            <div style={{ display:'flex', gap:8 }}>
+              <CopyBtn text={md} />
+              <Btn size="sm" variant="secondary" onClick={() => downloadBlob(md, (file?.name || 'document').replace(/\.pdf$/i, '') + '.md', 'text/markdown')}>Download .md</Btn>
+            </div>
+          </div>
+          <Textarea value={md} onChange={() => {}} rows={18} mono style={{ fontSize:12 }} />
+          <InfoNote>Headings are inferred from relative font size, so unusual layouts may need a quick manual pass.</InfoNote>
+        </>
+      )}
+    </VStack>
+  );
+}
+
+// PDF to JSON — structured page/line output for pipelines and parsers.
+function PdfToJson() {
+  const [file, setFile]   = useState(null);
+  const [json, setJson]   = useState('');
+  const [positions, setPositions] = useState(true);
+  const [pagesData, setPagesData] = useState(null);
+  const [busy, setBusy]   = useState(false);
+  const [err, setErr]     = useState(null);
+
+  const build = (pages, withPos) => JSON.stringify({
+    pages: pages.length,
+    content: pages.map(p => ({
+      page: p.page,
+      width: Math.round(p.width),
+      height: Math.round(p.height),
+      lines: withPos
+        ? p.lines.map(l => ({ text: l.text, x: +l.x.toFixed(1), y: +l.y.toFixed(1), fontSize: +l.size.toFixed(1) }))
+        : p.lines.map(l => l.text),
+    })),
+  }, null, 2);
+
+  const convert = async (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    setFile(f); setErr(null); setJson(''); setBusy(true);
+    try {
+      const pdfjsLib = await loadPdfJs();
+      const data  = new Uint8Array(await f.arrayBuffer());
+      const pdf   = await pdfjsLib.getDocument({ data }).promise;
+      const pages = await extractDocLines(pdf);
+      setPagesData(pages);
+      setJson(build(pages, positions));
+    } catch (ex) {
+      setErr(`Could not convert this PDF: ${ex.message}`);
+    }
+    setBusy(false);
+  };
+
+  const togglePositions = (v) => {
+    setPositions(v);
+    if (pagesData) setJson(build(pagesData, v));
+  };
+
+  const hasText = pagesData && pagesData.some(p => p.lines.length);
+
+  return (
+    <VStack>
+      <div>
+        <Label>Upload PDF File</Label>
+        <input type="file" accept=".pdf" onChange={convert} style={{ display:"block", color:C.text, fontSize:13 }} />
+      </div>
+      <label style={{ display:'flex', alignItems:'center', gap:8, color:C.text, fontSize:13, cursor:'pointer' }}>
+        <input type="checkbox" checked={positions} onChange={e => togglePositions(e.target.checked)} />
+        Include x/y coordinates and font sizes
+      </label>
+      {busy && <div style={{ textAlign:"center", color:C.muted }}>Extracting…</div>}
+      <ErrorNote>{err}</ErrorNote>
+      {pagesData && !hasText && <NoTextLayerNote />}
+      {json && hasText && (
+        <>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+            <Label>JSON</Label>
+            <div style={{ display:'flex', gap:8 }}>
+              <CopyBtn text={json} />
+              <Btn size="sm" variant="secondary" onClick={() => downloadBlob(json, (file?.name || 'document').replace(/\.pdf$/i, '') + '.json', 'application/json')}>Download .json</Btn>
+            </div>
+          </div>
+          <Textarea value={json} onChange={() => {}} rows={18} mono style={{ fontSize:12 }} />
+        </>
+      )}
+    </VStack>
+  );
+}
+
+// PDF Table Extractor — clusters x positions into columns, groups lines into rows.
+function PdfTableExtractor() {
+  const [file, setFile]   = useState(null);
+  const [pdfPages, setPdfPages] = useState(null);
+  const [pageNum, setPageNum]   = useState(1);
+  const [rows, setRows]   = useState(null);
+  const [busy, setBusy]   = useState(false);
+  const [err, setErr]     = useState(null);
+
+  const detect = (page) => {
+    const lines = page.lines.filter(l => l.items.length >= 2);
+    if (lines.length < 2) return [];
+
+    // Column detection: cluster the left edge of every glyph run across the page.
+    const xs = lines.flatMap(l => l.items.map(i => i.x)).sort((a, b) => a - b);
+    const cols = [];
+    for (const x of xs) {
+      const last = cols[cols.length - 1];
+      if (last && x - last.max <= 12) { last.max = x; last.xs.push(x); }
+      else cols.push({ max: x, xs: [x] });
+    }
+    const centers = cols
+      .filter(c => c.xs.length >= Math.max(2, lines.length * 0.25))   // a real column repeats down the page
+      .map(c => c.xs.reduce((a, b) => a + b, 0) / c.xs.length);
+
+    if (centers.length < 2) return [];
+
+    return lines.map(l => {
+      const cells = Array(centers.length).fill('');
+      for (const it of l.items) {
+        let best = 0;
+        for (let c = 1; c < centers.length; c++) {
+          if (Math.abs(it.x - centers[c]) < Math.abs(it.x - centers[best])) best = c;
+        }
+        cells[best] = (cells[best] ? cells[best] + ' ' : '') + it.text;
+      }
+      return cells.map(c => c.trim());
+    }).filter(r => r.filter(Boolean).length >= 2);
+  };
+
+  const handleFile = async (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    setFile(f); setErr(null); setRows(null); setPageNum(1); setBusy(true);
+    try {
+      const pdfjsLib = await loadPdfJs();
+      const data  = new Uint8Array(await f.arrayBuffer());
+      const pdf   = await pdfjsLib.getDocument({ data }).promise;
+      const pages = await extractDocLines(pdf);
+      setPdfPages(pages);
+      setRows(detect(pages[0]));
+    } catch (ex) {
+      setErr(`Could not read this PDF: ${ex.message}`);
+    }
+    setBusy(false);
+  };
+
+  const gotoPage = (n) => { setPageNum(n); setRows(detect(pdfPages[n - 1])); };
+
+  const csv = rows?.length
+    ? rows.map(r => r.map(c => /[",\n]/.test(c) ? `"${c.replace(/"/g, '""')}"` : c).join(',')).join('\n')
+    : '';
+
+  return (
+    <VStack>
+      <div>
+        <Label>Upload PDF File</Label>
+        <input type="file" accept=".pdf" onChange={handleFile} style={{ display:"block", color:C.text, fontSize:13 }} />
+      </div>
+      {busy && <div style={{ textAlign:"center", color:C.muted }}>Scanning for tables…</div>}
+      <ErrorNote>{err}</ErrorNote>
+
+      {pdfPages && (
+        <div style={{ display:'flex', gap:8, alignItems:'center', justifyContent:'center', flexWrap:'wrap' }}>
+          <Btn variant="secondary" size="sm" onClick={() => gotoPage(pageNum - 1)} disabled={pageNum <= 1}>← Prev</Btn>
+          <span style={{ fontSize:13, color:C.muted }}>Page {pageNum} of {pdfPages.length}</span>
+          <Btn variant="secondary" size="sm" onClick={() => gotoPage(pageNum + 1)} disabled={pageNum >= pdfPages.length}>Next →</Btn>
+        </div>
+      )}
+
+      {rows && rows.length === 0 && (
+        <InfoNote tone="amber">No table-like layout detected on page {pageNum}. Try another page — this works best on aligned, multi-column tables with a text layer.</InfoNote>
+      )}
+
+      {rows && rows.length > 0 && (
+        <>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+            <Label>{rows.length} rows × {rows[0].length} columns</Label>
+            <div style={{ display:'flex', gap:8 }}>
+              <CopyBtn text={csv} />
+              <Btn size="sm" variant="secondary" onClick={() => downloadBlob(csv, `table-page-${pageNum}.csv`, 'text/csv')}>Download .csv</Btn>
+            </div>
+          </div>
+          <div style={{ overflowX:'auto', border:`1px solid ${C.border}`, borderRadius:8 }}>
+            <table style={{ borderCollapse:'collapse', width:'100%', fontSize:12, fontFamily:"'JetBrains Mono',monospace" }}>
+              <tbody>
+                {rows.slice(0, 60).map((r, i) => (
+                  <tr key={i} style={{ background: i % 2 ? 'rgba(255,255,255,0.02)' : 'transparent' }}>
+                    {r.map((c, j) => (
+                      <td key={j} style={{ padding:'6px 10px', color:C.text, borderBottom:`1px solid ${C.border}`, whiteSpace:'nowrap' }}>{c}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {rows.length > 60 && <div style={{ fontSize:12, color:C.muted }}>Showing the first 60 rows. The CSV download contains all {rows.length}.</div>}
+        </>
+      )}
+    </VStack>
+  );
+}
+
+// PDF Chunker — splits the text into overlapping chunks sized for embedding models.
+function PdfChunker() {
+  const [file, setFile]   = useState(null);
+  const [chunkSize, setChunkSize] = useState(512);
+  const [overlap, setOverlap]     = useState(50);
+  const [paras, setParas] = useState(null);
+  const [chunks, setChunks] = useState(null);
+  const [busy, setBusy]   = useState(false);
+  const [err, setErr]     = useState(null);
+
+  // Rough but standard heuristic: ~4 characters per token for English text.
+  const toks = (s) => Math.ceil(s.length / 4);
+
+  // A paragraph longer than one whole chunk has to be broken up, or it would
+  // produce a chunk that blows past the size the user asked for. Prefer sentence
+  // boundaries; fall back to a hard character split for a single monster sentence.
+  const splitLong = (p, size) => {
+    if (toks(p.text) <= size) return [p];
+    const sentences = p.text.match(/[^.!?]+[.!?]+\s*|[^.!?]+$/g) || [p.text];
+    const out = [];
+    let cur = '';
+    for (const s of sentences) {
+      if (cur && toks(cur + s) > size) { out.push({ page: p.page, text: cur.trim() }); cur = ''; }
+      if (toks(s) > size) {
+        const maxChars = size * 4;
+        for (let i = 0; i < s.length; i += maxChars) out.push({ page: p.page, text: s.slice(i, i + maxChars).trim() });
+      } else {
+        cur += s;
+      }
+    }
+    if (cur.trim()) out.push({ page: p.page, text: cur.trim() });
+    return out.filter(x => x.text);
+  };
+
+  const buildChunks = (paragraphs, size, ov) => {
+    const paras = paragraphs.flatMap(p => splitLong(p, size));
+    const out = [];
+    let buf = [], bufToks = 0;
+
+    const emit = () => {
+      const text = buf.map(p => p.text).join('\n\n');
+      out.push({ index: out.length, page_start: buf[0].page, page_end: buf[buf.length - 1].page, approx_tokens: toks(text), text });
+    };
+
+    for (const p of paras) {
+      const t = toks(p.text);
+      if (buf.length && bufToks + t > size) {
+        emit();
+        // Carry the tail of this chunk into the next so context isn't cut mid-idea,
+        // taking only whole paragraphs that fit inside the overlap budget.
+        const keep = [];
+        let kept = 0;
+        for (let i = buf.length - 1; i >= 0; i--) {
+          const kt = toks(buf[i].text);
+          if (kept + kt > ov) break;
+          keep.unshift(buf[i]); kept += kt;
+        }
+        buf = keep; bufToks = kept;
+        // If the overlap plus this paragraph would still overflow, drop the overlap.
+        if (bufToks + t > size) { buf = []; bufToks = 0; }
+      }
+      buf.push(p); bufToks += t;
+    }
+    if (buf.length) emit();
+    return out;
+  };
+
+  const handleFile = async (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    setFile(f); setErr(null); setChunks(null); setBusy(true);
+    try {
+      const pdfjsLib = await loadPdfJs();
+      const data  = new Uint8Array(await f.arrayBuffer());
+      const pdf   = await pdfjsLib.getDocument({ data }).promise;
+      const pages = await extractDocLines(pdf);
+
+      // Rebuild paragraphs so chunks break on meaning, not mid-sentence.
+      const paragraphs = [];
+      for (const p of pages) {
+        let cur = [], prevY = null;
+        const push = () => { if (cur.length) { paragraphs.push({ page: p.page, text: cur.join(' ') }); cur = []; } };
+        for (const l of p.lines) {
+          if (prevY !== null && (prevY - l.y) > l.size * 1.9) push();
+          cur.push(l.text);
+          prevY = l.y;
+        }
+        push();
+      }
+      setParas(paragraphs);
+      setChunks(paragraphs.length ? buildChunks(paragraphs, chunkSize, overlap) : []);
+    } catch (ex) {
+      setErr(`Could not read this PDF: ${ex.message}`);
+    }
+    setBusy(false);
+  };
+
+  const rebuild = (size, ov) => { if (paras?.length) setChunks(buildChunks(paras, size, ov)); };
+
+  const json  = chunks ? JSON.stringify(chunks, null, 2) : '';
+  const jsonl = chunks ? chunks.map(c => JSON.stringify(c)).join('\n') : '';
+  const base  = (file?.name || 'document').replace(/\.pdf$/i, '');
+
+  return (
+    <VStack>
+      <div>
+        <Label>Upload PDF File</Label>
+        <input type="file" accept=".pdf" onChange={handleFile} style={{ display:"block", color:C.text, fontSize:13 }} />
+      </div>
+
+      <Grid2>
+        <div>
+          <Label>Chunk size (approx. tokens)</Label>
+          <NumInput value={chunkSize} min={50} onChange={n => { setChunkSize(n); rebuild(n, Math.min(overlap, n - 1)); }} />
+        </div>
+        <div>
+          <Label>Overlap (approx. tokens)</Label>
+          <NumInput value={overlap} min={0} max={chunkSize - 1} onChange={n => { setOverlap(n); rebuild(chunkSize, n); }} />
+        </div>
+      </Grid2>
+
+      {busy && <div style={{ textAlign:"center", color:C.muted }}>Chunking…</div>}
+      <ErrorNote>{err}</ErrorNote>
+      {chunks && chunks.length === 0 && <NoTextLayerNote />}
+
+      {chunks && chunks.length > 0 && (
+        <>
+          <Grid3>
+            <StatBox value={chunks.length} label="Chunks" />
+            <StatBox value={Math.round(chunks.reduce((n, c) => n + c.approx_tokens, 0) / chunks.length)} label="Avg tokens" />
+            <StatBox value={chunks.reduce((n, c) => n + c.approx_tokens, 0).toLocaleString()} label="Total tokens" />
+          </Grid3>
+
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+            <Label>Preview</Label>
+            <div style={{ display:'flex', gap:8 }}>
+              <CopyBtn text={json} />
+              <Btn size="sm" variant="secondary" onClick={() => downloadBlob(json, `${base}-chunks.json`, 'application/json')}>.json</Btn>
+              <Btn size="sm" variant="secondary" onClick={() => downloadBlob(jsonl, `${base}-chunks.jsonl`, 'application/x-ndjson')}>.jsonl</Btn>
+            </div>
+          </div>
+          <Textarea value={json} onChange={() => {}} rows={16} mono style={{ fontSize:12 }} />
+          <InfoNote>Token counts are estimated at ~4 characters per token. Check against your model's tokenizer if you are close to a hard limit.</InfoNote>
+        </>
+      )}
+    </VStack>
   );
 }
 
@@ -2280,6 +3244,10 @@ const TOOL_COMPONENTS = {
   "pdf-cropper": PdfCropper,
   "pdf-bookmarks": PdfBookmarks,
   "pdf-form-filler": PdfFormFiller,
+  "pdf-to-markdown": PdfToMarkdown,
+  "pdf-to-json": PdfToJson,
+  "pdf-table-extractor": PdfTableExtractor,
+  "pdf-chunker": PdfChunker,
 };
 
 function Breadcrumb({ tool, cat }) {
@@ -2356,7 +3324,7 @@ function CategoryHomePage() {
   }, []);
 
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={null}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={null} tools={TOOLS} subcats={CATEGORIES}>
       <CategoryDashboard
         theme={PAGE_THEME}
         tools={TOOLS}
@@ -2372,16 +3340,14 @@ function ToolDetailPage({ toolId }) {
   const tool     = TOOLS.find(t => t.id === toolId);
   const meta     = TOOL_META[toolId];
   const ToolComp = TOOL_COMPONENTS[toolId];
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const acc = PAGE_THEME.color;
 
   useEffect(() => {
     document.title = meta?.title || `${tool?.name} — Free PDF Tool | ToolsRift`;
-    setDrawerOpen(false);
   }, [toolId]);
 
   if (!tool || !ToolComp) return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'} tools={TOOLS} subcats={CATEGORIES}>
       <div style={{ padding:40, textAlign:'center', color:'#64748B', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
         <div style={{ fontSize:48, marginBottom:16 }}>🔍</div>
         <p style={{ color:'#E2E8F0', marginBottom:8, fontSize:16 }}>Tool not found</p>
@@ -2390,8 +3356,8 @@ function ToolDetailPage({ toolId }) {
     </CategoryLayout>
   );
 
-  const sidebarTools = TOOLS.filter(t => t.cat === tool.cat);
   const toolData = {
+    id:          tool.id,
     name:        tool.name,
     description: meta?.desc || tool.desc,
     howTo:       meta?.howTo,
@@ -2399,97 +3365,23 @@ function ToolDetailPage({ toolId }) {
   };
 
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={toolId}>
-      <style>{`
-        .trp-detail{display:grid;grid-template-columns:220px 1fr;gap:24px;padding:16px 0 60px}
-        @media(max-width:768px){.trp-detail{grid-template-columns:1fr;padding:16px 0 96px}}
-        .trp-sidebar{display:block}
-        @media(max-width:768px){.trp-sidebar{display:none}}
-        .trp-mobile-bar{display:none}
-        @media(max-width:768px){.trp-mobile-bar{display:flex}}
-      `}</style>
-
-      <div className="trp-detail">
-        {/* Desktop sidebar */}
-        <aside className="trp-sidebar">
-          <div style={{ position:'sticky', top:72, background:'#0D1117', border:'1px solid rgba(255,255,255,0.06)', borderRadius:12, overflow:'hidden' }}>
-            <div style={{ padding:'12px 16px', borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
-              <div style={{ fontSize:11, fontWeight:700, color:'#475569', textTransform:'uppercase', letterSpacing:'0.06em' }}>
-                {CATEGORIES.find(c => c.id === tool.cat)?.name || 'Tools'}
-              </div>
-            </div>
-            <div style={{ padding:'8px 0', maxHeight:'calc(100vh - 160px)', overflowY:'auto' }}>
-              {sidebarTools.map(t => {
-                const isActive = t.id === toolId;
-                return (
-                  <a
-                    key={t.id}
-                    href={`#/tool/${t.id}`}
-                    style={{
-                      display:'flex', alignItems:'center', gap:10, minHeight:44,
-                      padding:'10px 16px', textDecoration:'none',
-                      background: isActive ? `${acc}18` : 'transparent',
-                      borderLeft: isActive ? `2px solid ${acc}` : '2px solid transparent',
-                      transition:'background 0.15s',
-                    }}
-                    onMouseEnter={e => { if (!isActive) e.currentTarget.style.background='rgba(255,255,255,0.03)'; }}
-                    onMouseLeave={e => { if (!isActive) e.currentTarget.style.background='transparent'; }}
-                  >
-                    <span style={{ fontSize:15, flexShrink:0 }}>{t.icon}</span>
-                    <span style={{ fontSize:13, fontWeight:isActive?600:400, color:isActive?'#F1F5F9':'#94A3B8', lineHeight:1.3, fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
-                      {t.name}
-                    </span>
-                  </a>
-                );
-              })}
-            </div>
-          </div>
-        </aside>
-
-        {/* Main content */}
-        <div style={{ minWidth:0 }}>
-          <a href="#/"
-            style={{ display:'inline-flex', alignItems:'center', gap:6, color:'#64748B', fontSize:13, textDecoration:'none', marginBottom:16, fontFamily:"'Plus Jakarta Sans',sans-serif" }}
-            onMouseEnter={e => e.currentTarget.style.color='#E2E8F0'}
-            onMouseLeave={e => e.currentTarget.style.color='#64748B'}
-          >
-            ← Back to PDF Tools
-          </a>
-          <ToolPageLayout theme={PAGE_THEME} tool={toolData}>
-            <ToolComp />
-          </ToolPageLayout>
-        </div>
-      </div>
-
-      {/* Mobile: floating bottom bar */}
-      <div className="trp-mobile-bar" style={{ position:'fixed', bottom:0, left:0, right:0, zIndex:200, background:'rgba(6,9,15,0.96)', backdropFilter:'blur(12px)', borderTop:'1px solid rgba(255,255,255,0.06)', padding:'12px 16px', justifyContent:'space-between', alignItems:'center' }}>
-        <span style={{ fontSize:13, color:'#94A3B8', fontFamily:"'Plus Jakarta Sans',sans-serif", overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', maxWidth:'60%' }}>
-          {tool.icon} {tool.name}
-        </span>
-        <button
-          onClick={() => setDrawerOpen(d => !d)}
-          style={{ background:acc, color:'#fff', border:'none', borderRadius:8, padding:'8px 16px', fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:"'Plus Jakarta Sans',sans-serif", minHeight:44, flexShrink:0 }}
-        >
-          {drawerOpen ? '✕ Close' : '☰ All Tools'}
-        </button>
-      </div>
-
-      {/* Mobile drawer */}
-      {drawerOpen && (
-        <div style={{ position:'fixed', bottom:0, left:0, right:0, zIndex:199, background:'#0D1117', borderTop:`2px solid ${acc}`, maxHeight:'60vh', overflowY:'auto', padding:'8px 0 80px' }}>
-          {sidebarTools.map(t => {
-            const isActive = t.id === toolId;
-            return (
-              <a key={t.id} href={`#/tool/${t.id}`} onClick={() => setDrawerOpen(false)}
-                style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 20px', minHeight:52, textDecoration:'none', background:isActive?`${acc}18`:'transparent', borderLeft:isActive?`3px solid ${acc}`:'3px solid transparent' }}
-              >
-                <span style={{ fontSize:20 }}>{t.icon}</span>
-                <span style={{ fontSize:14, fontWeight:isActive?600:400, color:isActive?'#F1F5F9':'#94A3B8', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>{t.name}</span>
-              </a>
-            );
-          })}
-        </div>
-      )}
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId} tools={TOOLS} subcats={CATEGORIES}>
+      <a href="#/"
+        style={{ display:'inline-flex', alignItems:'center', gap:6, color:'#64748B', fontSize:13, textDecoration:'none', marginTop:20, fontFamily:"'Plus Jakarta Sans',sans-serif" }}
+        onMouseEnter={e => e.currentTarget.style.color='#E2E8F0'}
+        onMouseLeave={e => e.currentTarget.style.color='#64748B'}
+      >
+        ← Back to PDF Tools
+      </a>
+      <ToolPageLayout
+        theme={PAGE_THEME}
+        tool={toolData}
+        tools={TOOLS}
+        subcats={CATEGORIES}
+        related={TOOLS.filter(t => t.id !== tool.id && t.cat === tool.cat).slice(0, 8)}
+      >
+        <ToolComp />
+      </ToolPageLayout>
     </CategoryLayout>
   );
 }

@@ -224,6 +224,7 @@ const TOOLS = [
   { id:"date-difference", cat:"datetime", name:"Date Difference Calculator", desc:"Days, weeks, months and years between any two dates", icon:"📅", free:true },
   { id:"add-subtract-days", cat:"datetime", name:"Add or Subtract Days", desc:"Add or subtract days from any date and get the exact resulting date and weekday", icon:"➕", free:true },
   { id:"days-until", cat:"datetime", name:"Days Until Calculator", desc:"Count down the days remaining until a birthday, exam, wedding or any event", icon:"⏳", free:true },
+  { id:"world-clock", cat:"datetime", name:"World Clock & Time Zone Converter", desc:"See the current time in major cities worldwide and convert any time between time zones", icon:"🌍", free:true },
   { id:"countdown-timer", cat:"timers", name:"Countdown Timer", desc:"Set minutes and seconds and count down with start, pause and reset controls", icon:"⏲️", free:true },
   { id:"stopwatch", cat:"timers", name:"Online Stopwatch", desc:"Precise stopwatch with lap times, start, pause and reset — works fullscreen", icon:"⏱️", free:true },
   { id:"pomodoro-timer", cat:"timers", name:"Pomodoro Timer", desc:"Focus timer with 25-minute work sessions and 5-minute breaks for productivity", icon:"🍅", free:true },
@@ -272,6 +273,15 @@ const TOOL_META = {
     faq: [
       ["Does today count as a day?", "No — the result is the number of complete days between today and your chosen date."],
       ["What if I pick a past date?", "You'll see how many days have passed since that date instead."],
+    ],
+  },
+  "world-clock": {
+    title: "World Clock & Time Zone Converter – Current Time in Cities | ToolsRift",
+    desc: "See the current local time in major cities worldwide — New York, London, Dubai, India, Tokyo, Sydney and more — and convert any time between time zones. Free, live, no signup.",
+    faq: [
+      ["How is the time kept accurate?", "The clock uses your device's own clock and the browser's built-in IANA time zone database (Intl.DateTimeFormat), so each city shows the correct local time including daylight saving."],
+      ["How does the time zone converter work?", "Enter a time and pick the source city. The tool treats that as the wall-clock time in the source zone and shows the exact matching local time in every other city."],
+      ["Does it need the internet?", "No. All conversions run entirely in your browser with no network calls, so your data never leaves your device."],
     ],
   },
   "countdown-timer": {
@@ -802,11 +812,110 @@ function Scoreboard() {
   );
 }
 
+// ── world clock helpers ──────────────────────────────────────────────────────
+const WORLD_CITIES = [
+  { name: "Los Angeles", tz: "America/Los_Angeles" },
+  { name: "New York", tz: "America/New_York" },
+  { name: "London", tz: "Europe/London" },
+  { name: "Paris", tz: "Europe/Paris" },
+  { name: "Dubai", tz: "Asia/Dubai" },
+  { name: "India (Kolkata)", tz: "Asia/Kolkata" },
+  { name: "Singapore", tz: "Asia/Singapore" },
+  { name: "Tokyo", tz: "Asia/Tokyo" },
+  { name: "Sydney", tz: "Australia/Sydney" },
+];
+const fmtZonedTime = (date, tz) => new Intl.DateTimeFormat("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }).format(date);
+const fmtZonedDate = (date, tz) => new Intl.DateTimeFormat("en-US", { timeZone: tz, weekday: "short", month: "short", day: "numeric" }).format(date);
+const tzOffsetLabel = (date, tz) => {
+  try {
+    const part = new Intl.DateTimeFormat("en-US", { timeZone: tz, timeZoneName: "shortOffset" }).formatToParts(date).find(p => p.type === "timeZoneName");
+    return part ? part.value.replace("GMT", "UTC") : "";
+  } catch { return ""; }
+};
+// Convert a wall-clock time in a given IANA zone to a real UTC timestamp.
+const zonedWallTimeToUTC = (y, mo, d, h, mi, tz) => {
+  const guess = Date.UTC(y, mo, d, h, mi);
+  const asUTC = new Date(new Date(guess).toLocaleString("en-US", { timeZone: "UTC" }));
+  const asTZ = new Date(new Date(guess).toLocaleString("en-US", { timeZone: tz }));
+  const offset = asTZ.getTime() - asUTC.getTime();
+  return guess - offset;
+};
+
+function WorldClock() {
+  const localTz = useMemo(() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch { return "UTC"; } }, []);
+  const cities = useMemo(() => {
+    const list = [...WORLD_CITIES];
+    if (localTz && !list.some(c => c.tz === localTz)) list.unshift({ name: `Your Time (${localTz.split("/").pop().replace(/_/g, " ")})`, tz: localTz, local: true });
+    else list.unshift({ name: "Your Time", tz: localTz, local: true });
+    return list;
+  }, [localTz]);
+
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const nowDate = new Date(now);
+
+  // converter state
+  const [srcTz, setSrcTz] = useState(localTz || "America/New_York");
+  const pad = (n) => String(n).padStart(2, "0");
+  const [convTime, setConvTime] = useState(`${pad(nowDate.getHours())}:${pad(nowDate.getMinutes())}`);
+  const converted = useMemo(() => {
+    const m = /^(\d{1,2}):(\d{2})$/.exec(convTime.trim());
+    if (!m) return null;
+    const h = parseInt(m[1], 10), mi = parseInt(m[2], 10);
+    if (h > 23 || mi > 59) return null;
+    const base = new Date();
+    const ts = zonedWallTimeToUTC(base.getFullYear(), base.getMonth(), base.getDate(), h, mi, srcTz);
+    return new Date(ts);
+  }, [convTime, srcTz]);
+
+  const cityOptions = cities.map(c => [c.tz, c.name]);
+
+  return (
+    <VStack gap={20}>
+      <div>
+        <Label>Current Time Around the World</Label>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 12 }}>
+          {cities.map((c) => (
+            <div key={c.tz + c.name} style={{ background: c.local ? "rgba(99,102,241,0.08)" : "rgba(255,255,255,0.03)", border: `1px solid ${c.local ? "rgba(99,102,241,0.3)" : C.border}`, borderRadius: 12, padding: "14px 16px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                <span style={{ fontSize: 13, fontWeight: 700, color: C.text }}>{c.name}</span>
+                <span style={{ fontSize: 10, color: C.muted, fontFamily: "'JetBrains Mono',monospace" }}>{tzOffsetLabel(nowDate, c.tz)}</span>
+              </div>
+              <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 26, fontWeight: 700, color: c.local ? C.indigo : C.text, letterSpacing: "0.02em" }}>{fmtZonedTime(nowDate, c.tz)}</div>
+              <div style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>{fmtZonedDate(nowDate, c.tz)}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <Card>
+        <Label>Time Zone Converter</Label>
+        <Grid2>
+          <div><Label>Time</Label><input type="time" value={convTime} onChange={e => setConvTime(e.target.value)} style={dateInputStyle} /></div>
+          <div><Label>Source City</Label><SelectInput value={srcTz} onChange={setSrcTz} options={cityOptions} /></div>
+        </Grid2>
+        {converted ? (
+          <div style={{ marginTop: 14 }}>
+            <DataTable
+              columns={["City", "Local Time", "Date", "Offset"]}
+              rows={cities.map(c => [c.name, fmtZonedTime(converted, c.tz), fmtZonedDate(converted, c.tz), tzOffsetLabel(converted, c.tz)])}
+            />
+          </div>
+        ) : <div style={{ marginTop: 14 }}><Result mono={false}>Enter a valid time (HH:MM) to convert across time zones.</Result></div>}
+      </Card>
+    </VStack>
+  );
+}
+
 const TOOL_COMPONENTS = {
   "age-calculator": AgeCalculator,
   "date-difference": DateDifference,
   "add-subtract-days": AddSubtractDays,
   "days-until": DaysUntil,
+  "world-clock": WorldClock,
   "countdown-timer": CountdownTimer,
   "stopwatch": Stopwatch,
   "pomodoro-timer": PomodoroTimer,
@@ -827,7 +936,7 @@ function ToolPage({ toolId }) {
 
   if (!tool || !ToolComp) {
     return (
-      <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'}>
+      <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'} tools={TOOLS} subcats={CATEGORIES}>
         <div style={{ padding:'48px 20px', textAlign:'center', color:'#94A3B8' }}>
           Tool not found. <a href="#/" style={{ color: PAGE_THEME.color }}>← Back to {PAGE_THEME.name}</a>
         </div>
@@ -846,8 +955,8 @@ function ToolPage({ toolId }) {
   const related = TOOLS.filter(t => t.id !== tool.id && t.cat === tool.cat).slice(0, 8);
 
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={toolId}>
-      <ToolPageLayout theme={PAGE_THEME} tool={toolData} related={related}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId} tools={TOOLS} subcats={CATEGORIES}>
+      <ToolPageLayout theme={PAGE_THEME} tool={toolData} tools={TOOLS} subcats={CATEGORIES} related={related}>
         <ToolComp />
       </ToolPageLayout>
     </CategoryLayout>
@@ -902,7 +1011,7 @@ function HomePage() {
     document.title = "Free Everyday Tools – Age Calculator, Timers, Typing Test Online | ToolsRift";
   }, []);
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={null}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={null} tools={TOOLS} subcats={CATEGORIES}>
       <CategoryDashboard
         theme={PAGE_THEME}
         tools={TOOLS}

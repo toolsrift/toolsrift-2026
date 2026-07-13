@@ -43,22 +43,30 @@ function useAppRouter() {
 }
 
 // ─── TOOL DATA ─────────────────────────────────────────────────
+const CATEGORIES = [
+  { id: "documents", name: "Documents & Billing", icon: "🧾", desc: "Invoices, receipts and quotations for clients" },
+  { id: "career",    name: "Career",              icon: "📄", desc: "Resumes, cover letters and business cards" },
+  { id: "strategy",  name: "Strategy",            icon: "📊", desc: "SWOT, marketing plans and buyer personas" },
+  { id: "marketing", name: "Marketing & Copy",    icon: "📢", desc: "Ad copy, sales copy and campaign URLs" },
+  { id: "finance",   name: "Finance",             icon: "💰", desc: "ROI and break-even calculators" },
+];
+
 const TOOLS = [
-  { id: "invoice-gen", name: "Invoice Generator", icon: "🧾", desc: "Create professional invoices with line items, tax, and totals" },
-  { id: "receipt-gen", name: "Receipt Generator", icon: "🧾", desc: "Generate payment receipts with itemized details" },
-  { id: "quotation-gen", name: "Quotation Generator", icon: "📋", desc: "Build professional price quotations for clients" },
-  { id: "business-card-gen", name: "Business Card Generator", icon: "💳", desc: "Design business cards with live preview" },
-  { id: "resume-builder", name: "Resume Builder", icon: "📄", desc: "Build a professional resume with structured sections" },
-  { id: "cover-letter-gen", name: "Cover Letter Generator", icon: "✉️", desc: "Generate tailored cover letters for job applications" },
-  { id: "swot-gen", name: "SWOT Analysis Generator", icon: "📊", desc: "Create a 4-quadrant SWOT matrix for strategic planning" },
-  { id: "marketing-plan-gen", name: "Marketing Plan Generator", icon: "📈", desc: "Build a structured marketing plan from scratch" },
-  { id: "persona-gen", name: "Persona Generator", icon: "👤", desc: "Create detailed buyer persona profiles" },
-  { id: "utm-builder", name: "UTM Campaign Builder", icon: "🔗", desc: "Build UTM-tagged campaign URLs for analytics" },
-  { id: "ad-copy-gen", name: "Ad Copy Generator", icon: "📢", desc: "Generate persuasive ad copy for multiple platforms" },
-  { id: "sales-copy-gen", name: "Sales Copy Generator", icon: "💬", desc: "Create compelling sales copy with proven frameworks" },
-  { id: "landing-copy-gen", name: "Landing Page Copy Generator", icon: "🚀", desc: "Generate landing page sections: hero, features, CTA" },
-  { id: "roi-calculator", name: "ROI Calculator", icon: "💰", desc: "Calculate marketing return on investment" },
-  { id: "break-even-calc", name: "Break Even Calculator", icon: "⚖️", desc: "Find your break-even point in units and revenue" },
+  { id: "invoice-gen", cat: "documents", name: "Invoice Generator", icon: "📃", desc: "Create professional invoices with line items, tax, and totals" },
+  { id: "receipt-gen", cat: "documents", name: "Receipt Generator", icon: "🧾", desc: "Generate payment receipts with itemized details" },
+  { id: "quotation-gen", cat: "documents", name: "Quotation Generator", icon: "📋", desc: "Build professional price quotations for clients" },
+  { id: "business-card-gen", cat: "career", name: "Business Card Generator", icon: "💳", desc: "Design business cards with live preview" },
+  { id: "resume-builder", cat: "career", name: "Resume Builder", icon: "📄", desc: "Build a professional resume with structured sections" },
+  { id: "cover-letter-gen", cat: "career", name: "Cover Letter Generator", icon: "✉️", desc: "Generate tailored cover letters for job applications" },
+  { id: "swot-gen", cat: "strategy", name: "SWOT Analysis Generator", icon: "📊", desc: "Create a 4-quadrant SWOT matrix for strategic planning" },
+  { id: "marketing-plan-gen", cat: "strategy", name: "Marketing Plan Generator", icon: "📈", desc: "Build a structured marketing plan from scratch" },
+  { id: "persona-gen", cat: "strategy", name: "Persona Generator", icon: "👤", desc: "Create detailed buyer persona profiles" },
+  { id: "utm-builder", cat: "marketing", name: "UTM Campaign Builder", icon: "🔗", desc: "Build UTM-tagged campaign URLs for analytics" },
+  { id: "ad-copy-gen", cat: "marketing", name: "Ad Copy Generator", icon: "📢", desc: "Generate persuasive ad copy for multiple platforms" },
+  { id: "sales-copy-gen", cat: "marketing", name: "Sales Copy Generator", icon: "💬", desc: "Create compelling sales copy with proven frameworks" },
+  { id: "landing-copy-gen", cat: "marketing", name: "Landing Page Copy Generator", icon: "🚀", desc: "Generate landing page sections: hero, features, CTA" },
+  { id: "roi-calculator", cat: "finance", name: "ROI Calculator", icon: "💰", desc: "Calculate marketing return on investment" },
+  { id: "break-even-calc", cat: "finance", name: "Break Even Calculator", icon: "⚖️", desc: "Find your break-even point in units and revenue" },
 ];
 
 const SEO = {
@@ -143,7 +151,7 @@ function InvoiceGenerator(){
     <Btn v="secondary" s="sm" onClick={add}>+ Add Line Item</Btn>
     <G2><NumInput label="Tax Rate (%)" value={taxRate} onChange={setTaxRate} placeholder="10"/><div><Lab>Notes</Lab><Input value={notes} onChange={setNotes} placeholder="Payment terms, thank you note..." multiline rows={2}/></div></G2>
     <div style={{borderRadius:10,overflow:"hidden",boxShadow:"0 4px 24px rgba(0,0,0,0.4)"}}>
-      <div style={{background:"white",color:"#1E293B",padding:"32px 40px",borderRadius:"10px 10px 0 0"}}>
+      <div className="tr-print-doc" style={{background:"white",color:"#1E293B",padding:"32px 40px",borderRadius:"10px 10px 0 0"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"start",marginBottom:20,paddingBottom:16,borderBottom:"2px solid #E2E8F0"}}>
           <div>
             <div style={{fontSize:22,fontWeight:800,color:"#0F172A",fontFamily:S.display}}>{from.name||"Your Business"}</div>
@@ -175,7 +183,7 @@ function InvoiceGenerator(){
         </div>
         {notes&&<div style={{marginTop:12,padding:"10px 14px",background:"#F8FAFC",borderRadius:6,fontSize:12,color:"#475569"}}>{notes}</div>}
       </div>
-      <div style={{position:"sticky",bottom:0,background:"rgba(6,9,15,0.92)",backdropFilter:"blur(12px)",padding:"12px 16px",display:"flex",gap:10,alignItems:"center",justifyContent:"flex-end",borderTop:"1px solid rgba(5,150,105,0.2)"}}>
+      <div className="tr-no-print" style={{position:"sticky",bottom:0,background:"rgba(6,9,15,0.92)",backdropFilter:"blur(12px)",padding:"12px 16px",display:"flex",gap:10,alignItems:"center",justifyContent:"flex-end",borderTop:"1px solid rgba(5,150,105,0.2)"}}>
         <span style={{fontSize:12,color:S.muted,marginRight:"auto"}}>Invoice ready</span>
         <Btn s="sm" v="secondary" onClick={()=>{const el=document.createElement("button");el.onclick=()=>window.print();el.click()}}>🖨️ Print / Save PDF</Btn>
         <CopyBtn text={`Invoice #${inv}\n${from.name} → ${to.name}\nSubtotal: ${$(sub)}\nTax: ${$(tax)}\nTotal: ${$(total)}`}/>
@@ -204,7 +212,7 @@ function ReceiptGenerator(){
     <Btn v="secondary" s="sm" onClick={add}>+ Add Item</Btn>
     <div><Lab>Notes</Lab><Input value={notes} onChange={setNotes} placeholder="Thank you for your payment!" multiline rows={2}/></div>
     <div style={{borderRadius:10,overflow:"hidden",boxShadow:"0 4px 24px rgba(0,0,0,0.4)"}}>
-      <div style={{background:"white",color:"#1E293B",padding:"32px 40px",fontFamily:S.font}}>
+      <div className="tr-print-doc" style={{background:"white",color:"#1E293B",padding:"32px 40px",fontFamily:S.font}}>
         <div style={{textAlign:"center",borderBottom:"2px solid #E2E8F0",paddingBottom:16,marginBottom:20}}>
           <div style={{fontSize:22,fontWeight:800,color:"#0F172A",fontFamily:S.display}}>{biz||"Your Business"}</div>
           <div style={{fontSize:12,color:"#64748B",marginTop:4,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase"}}>Receipt</div>
@@ -221,7 +229,7 @@ function ReceiptGenerator(){
         <div style={{display:"flex",justifyContent:"space-between",padding:"12px 10px",background:"#F8FAFC",borderRadius:6,fontWeight:800,fontSize:16,color:"#059669"}}><span>Total Paid ({method})</span><span>{$(total)}</span></div>
         {notes&&<div style={{marginTop:12,textAlign:"center",fontSize:12,color:"#64748B",fontStyle:"italic"}}>{notes}</div>}
       </div>
-      <div style={{position:"sticky",bottom:0,background:"rgba(6,9,15,0.92)",backdropFilter:"blur(12px)",padding:"12px 16px",display:"flex",gap:10,alignItems:"center",justifyContent:"flex-end",borderTop:"1px solid rgba(5,150,105,0.2)"}}>
+      <div className="tr-no-print" style={{position:"sticky",bottom:0,background:"rgba(6,9,15,0.92)",backdropFilter:"blur(12px)",padding:"12px 16px",display:"flex",gap:10,alignItems:"center",justifyContent:"flex-end",borderTop:"1px solid rgba(5,150,105,0.2)"}}>
         <span style={{fontSize:12,color:S.muted,marginRight:"auto"}}>Receipt ready</span>
         <Btn s="sm" v="secondary" onClick={()=>window.print()}>🖨️ Print / Save PDF</Btn>
         <CopyBtn text={`Receipt #${rcpt} — ${biz||"Business"}\nCustomer: ${cust||"Walk-in"}\n${items.filter(it=>it.desc).map(it=>`${it.desc}: ${$(p(it.amt))}`).join("\n")}\nTotal: ${$(total)} (${method})`}/>
@@ -234,13 +242,14 @@ function ReceiptGenerator(){
 function QuotationGenerator(){
   const[from,setFrom]=useState("");const[to,setTo]=useState("");
   const[items,setItems]=useState([{desc:"",qty:1,rate:0}]);
+  const[date,setDate]=useState(new Date().toISOString().split("T")[0]);
   const[valid,setValid]=useState("30");const[notes,setNotes]=useState("This quotation is valid for the period mentioned above.");
   const add=()=>setItems([...items,{desc:"",qty:1,rate:0}]);
   const upd=(i,f,v)=>{const n=[...items];n[i][f]=v;setItems(n)};
   const sub=items.reduce((s,it)=>s+it.qty*p(it.rate),0);
   return(<V>
     <G2><div><Lab>Your Business</Lab><Input value={from} onChange={setFrom} placeholder="Company Name" multiline rows={2}/></div><div><Lab>Client</Lab><Input value={to} onChange={setTo} placeholder="Client Name & Address" multiline rows={2}/></div></G2>
-    <G2><div><Lab>Quote Date</Lab><Input type="date" value={new Date().toISOString().split("T")[0]} onChange={()=>{}}/></div><NumInput label="Valid For (days)" value={valid} onChange={setValid} placeholder="30"/></G2>
+    <G2><div><Lab>Quote Date</Lab><Input type="date" value={date} onChange={setDate}/></div><NumInput label="Valid For (days)" value={valid} onChange={setValid} placeholder="30"/></G2>
     <Lab>Items</Lab>
     {items.map((it,i)=>(<div key={i} style={{display:"flex",gap:8,marginBottom:6}}>
       <div style={{flex:3}}><Input value={it.desc} onChange={v=>upd(i,"desc",v)} placeholder="Description"/></div>
@@ -312,7 +321,7 @@ function ResumeBuilder(){
     {edus.map((e,i)=>(<div key={i} style={{display:"flex",gap:8,marginBottom:6}}><div style={{flex:2}}><Input value={e.school} onChange={v=>updEdu(i,"school",v)} placeholder="University"/></div><div style={{flex:2}}><Input value={e.degree} onChange={v=>updEdu(i,"degree",v)} placeholder="Degree"/></div><div style={{flex:1}}><Input value={e.year} onChange={v=>updEdu(i,"year",v)} placeholder="2020"/></div></div>))}
     <Btn v="secondary" s="sm" onClick={addEdu}>+ Add Education</Btn>
     <div style={{borderRadius:10,overflow:"hidden",boxShadow:"0 4px 24px rgba(0,0,0,0.4)"}}>
-      <div style={{background:"white",color:"#1E293B",padding:"40px",fontFamily:S.font}}>
+      <div className="tr-print-doc" style={{background:"white",color:"#1E293B",padding:"40px",fontFamily:S.font}}>
         <div style={{borderBottom:"3px solid #059669",paddingBottom:16,marginBottom:20}}>
           <div style={{fontSize:28,fontWeight:800,color:"#0F172A",fontFamily:S.display}}>{name||"Your Name"}</div>
           <div style={{fontSize:14,color:"#059669",fontWeight:600,marginBottom:6}}>{title||"Job Title"}</div>
@@ -323,7 +332,7 @@ function ResumeBuilder(){
         {exps.some(e=>e.company)&&<div style={{marginBottom:18}}><div style={{fontSize:11,fontWeight:800,color:"#059669",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:10}}>Experience</div>{exps.filter(e=>e.company).map((e,i)=>(<div key={i} style={{marginBottom:12,paddingLeft:12,borderLeft:"2px solid #D1FAE5"}}><div style={{fontSize:14,fontWeight:700,color:"#0F172A"}}>{e.role} <span style={{color:"#64748B",fontWeight:400}}>@ {e.company}</span></div><div style={{fontSize:11,color:"#94A3B8",marginBottom:4}}>{e.period}</div><div style={{fontSize:12,color:"#475569",lineHeight:1.5}}>{e.desc}</div></div>))}</div>}
         {edus.some(e=>e.school)&&<div><div style={{fontSize:11,fontWeight:800,color:"#059669",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8}}>Education</div>{edus.filter(e=>e.school).map((e,i)=>(<div key={i} style={{fontSize:13,marginBottom:4,color:"#1E293B"}}><span style={{fontWeight:700}}>{e.degree}</span> — {e.school} <span style={{color:"#64748B"}}>({e.year})</span></div>))}</div>}
       </div>
-      <div style={{position:"sticky",bottom:0,background:"rgba(6,9,15,0.92)",backdropFilter:"blur(12px)",padding:"12px 16px",display:"flex",gap:10,alignItems:"center",justifyContent:"flex-end",borderTop:"1px solid rgba(5,150,105,0.2)"}}>
+      <div className="tr-no-print" style={{position:"sticky",bottom:0,background:"rgba(6,9,15,0.92)",backdropFilter:"blur(12px)",padding:"12px 16px",display:"flex",gap:10,alignItems:"center",justifyContent:"flex-end",borderTop:"1px solid rgba(5,150,105,0.2)"}}>
         <span style={{fontSize:12,color:S.muted,marginRight:"auto"}}>Resume preview ready</span>
         <Btn s="sm" v="secondary" onClick={()=>window.print()}>🖨️ Print / Save PDF</Btn>
         <CopyBtn text={`${name||"Name"} — ${title||"Title"}\n${[email,phone].filter(Boolean).join(" | ")}\n\n${summary||""}\n\nSkills: ${skills||""}`}/>
@@ -805,9 +814,17 @@ function ToolsRiftBusiness(){
           .tr-nav-cats{display:none!important}
           .tr-nav-badge{display:none!important}
         }
+        @media print{
+          /* Print/Save-PDF: show ONLY the document being exported, on a clean white page */
+          body *{visibility:hidden!important}
+          .tr-print-doc,.tr-print-doc *{visibility:visible!important}
+          .tr-print-doc{position:absolute!important;left:0!important;top:0!important;width:100%!important;margin:0!important;padding:24px!important;box-shadow:none!important;border-radius:0!important;background:#fff!important;color:#1E293B!important}
+          .tr-no-print{display:none!important}
+          @page{margin:12mm}
+        }
       `}</style>
       {page==="tool"&&activeTool&&ToolComp?(
-        <CategoryLayout theme={PAGE_THEME} currentTool={activeTool.id}>
+        <CategoryLayout theme={PAGE_THEME} currentTool={activeTool.id} tools={TOOLS} subcats={CATEGORIES}>
           <ToolPageLayout
             theme={PAGE_THEME}
             tool={{
@@ -818,16 +835,19 @@ function ToolsRiftBusiness(){
               howTo: seo?.howTo,
               faq: seo?.faq,
             }}
-            related={TOOLS.filter(t=>t.id!==activeTool.id).slice(0,8)}
+            tools={TOOLS}
+            subcats={CATEGORIES}
+            related={TOOLS.filter(t=>t.id!==activeTool.id && t.cat===activeTool.cat).slice(0,8)}
           >
             <ToolComp/>
           </ToolPageLayout>
         </CategoryLayout>
       ):(
-        <CategoryLayout theme={PAGE_THEME} currentTool={null}>
+        <CategoryLayout theme={PAGE_THEME} currentTool={null} tools={TOOLS} subcats={CATEGORIES}>
           <CategoryDashboard
             theme={PAGE_THEME}
             tools={TOOLS}
+            subcats={CATEGORIES}
             searchPlaceholder="Search business tools..."
           />
         </CategoryLayout>

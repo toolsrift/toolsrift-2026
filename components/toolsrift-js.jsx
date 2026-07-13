@@ -172,6 +172,9 @@ const TOOLS = [
   { id:"js-validator", cat:"formatter", name:"JavaScript Validator", desc:"Validate JavaScript syntax and find errors with detailed line numbers and error messages", icon:"✅", free:true },
   { id:"json-to-js", cat:"formatter", name:"JSON to JS Object", desc:"Convert JSON data to JavaScript object literal syntax with proper formatting and structure", icon:"📦", free:true },
   { id:"js-to-json", cat:"formatter", name:"JS Object to JSON", desc:"Convert JavaScript object literals to valid JSON format with proper escaping and structure", icon:"📋", free:true },
+  { id:"js-console-remover", cat:"formatter", name:"Console.log Remover", desc:"Strip console.log, warn, error, info and debug statements from JavaScript without touching strings, comments or regex", icon:"🧹", free:true },
+  { id:"js-comment-remover", cat:"formatter", name:"JS Comment Remover", desc:"Remove line and block comments from JavaScript while preserving URLs and comment syntax inside strings, with optional JSDoc keep", icon:"💬", free:true },
+  { id:"js-import-sorter", cat:"formatter", name:"JS Import Sorter", desc:"Sort and group ES module import statements alphabetically, separating external packages from internal relative imports", icon:"🔤", free:true },
 
   // Converters
   { id:"js-obfuscator", cat:"converter", name:"JavaScript Obfuscator", desc:"Basic JavaScript obfuscation with variable renaming and string encoding to protect code", icon:"🔒", free:true },
@@ -179,6 +182,7 @@ const TOOLS = [
   { id:"js-to-typescript", cat:"converter", name:"JS to TypeScript", desc:"Add TypeScript type annotations to JavaScript functions for better type safety and IDE support", icon:"📘", free:true },
   { id:"regex-tester", cat:"converter", name:"Regex Tester", desc:"Real-time regular expression tester with match highlighting, groups, and detailed match information", icon:"🔍", free:true },
   { id:"js-console-simulator", cat:"converter", name:"JS Console Simulator", desc:"Simulate JavaScript console.log output for code snippets and preview execution results", icon:"💻", free:true },
+  { id:"cjs-esm-converter", cat:"converter", name:"CommonJS ⇄ ESM Converter", desc:"Convert CommonJS require and module.exports to ES module import/export syntax and back for the common static patterns", icon:"🔀", free:true },
 ];
 
 const CATEGORIES = [
@@ -275,6 +279,46 @@ const TOOL_META = {
       ["What JavaScript features are supported?", "Most basic JavaScript features including console.log, variables, functions, loops, and conditionals. Complex features like async/await may not work."],
       ["Is this a full JavaScript runtime?", "No, it's a simple simulator for testing console output. For full JavaScript execution, use browser devtools or online IDEs like CodePen."],
       ["Can I use external libraries?", "No, the simulator runs in isolation without external libraries. It's designed for testing simple code snippets and logic."]
+    ]
+  },
+  "js-console-remover": {
+    title: "Free Console.log Remover – Strip JS Console Statements | ToolsRift",
+    desc: "Remove console.log, warn, error, info and debug calls from JavaScript. String and comment safe so URLs and code inside strings stay intact.",
+    howTo: "Paste your JavaScript, choose which console methods to strip (or select all console.* methods), then click Remove Console Statements and copy the cleaned code.",
+    faq: [
+      ["Will it break strings that contain 'console.log'?", "No. The remover scans character by character and tracks string, comment and regex literals, so a string like \"console.log(1)\" or a URL like \"http://x.com\" is never altered."],
+      ["Can I keep some console methods?", "Yes. Use the checkboxes to strip only specific methods such as console.log while keeping console.error, or choose 'All console.* methods' to remove every one."],
+      ["Does it remove the whole statement?", "Yes. It removes the entire console call including nested parentheses and arguments, plus a trailing semicolon and the now-empty line if the call stood alone."]
+    ]
+  },
+  "js-comment-remover": {
+    title: "Free JavaScript Comment Remover – Strip JS Comments | ToolsRift",
+    desc: "Remove // line comments and /* */ block comments from JavaScript. String and regex aware so http:// URLs inside strings are preserved.",
+    howTo: "Paste your code, optionally enable Preserve JSDoc or Collapse blank lines, then click Remove Comments and copy the result.",
+    faq: [
+      ["Does it strip // inside a URL string?", "No. The scanner tracks string and regex literals, so // inside \"http://example.com\" or inside a regex is kept — only real comments outside strings are removed."],
+      ["Can I keep JSDoc blocks?", "Yes. Enable 'Preserve JSDoc' to keep /** ... */ documentation blocks while still removing ordinary /* */ and // comments."],
+      ["What does Collapse blank lines do?", "After comments are removed, empty leftover lines can remain. Enabling the option collapses those blank lines so the output stays compact."]
+    ]
+  },
+  "js-import-sorter": {
+    title: "Free JS Import Sorter – Sort & Group ES Imports | ToolsRift",
+    desc: "Sort and group ES module imports alphabetically. Separates external packages from internal relative imports with a blank line between groups.",
+    howTo: "Paste a file that begins with import statements, then click Sort & Group Imports. External packages are grouped first, then internal/relative imports, each sorted A–Z.",
+    faq: [
+      ["How are imports grouped?", "Imports are split into two groups: node builtins and external packages first, then internal/relative imports (./, ../, @/), with a blank line separating the groups."],
+      ["Are side-effect imports reordered?", "Side-effect imports like import './styles.css' are preserved in their original order and kept together, since their execution order can matter."],
+      ["Is the rest of my file changed?", "No. Only the leading block of import statements is reordered. Everything below the imports is preserved exactly as written."]
+    ]
+  },
+  "cjs-esm-converter": {
+    title: "Free CommonJS to ESM Converter – require ⇄ import | ToolsRift",
+    desc: "Convert CommonJS require and module.exports to ES module import/export and back. Handles default, named and side-effect forms for static code.",
+    howTo: "Choose the conversion direction, paste your module code, then click Convert. Review the output — static require/import patterns are converted automatically.",
+    faq: [
+      ["Which patterns are converted?", "Default (const x = require('y')), named (const { a } = require('y')), side-effect (require('y')), module.exports and exports.foo — and the reverse import/export forms for ESM to CommonJS."],
+      ["Does it convert dynamic require()?", "No. Only static, top-level patterns are converted. Dynamic or conditional require() calls, re-exports (export ... from) and mixed default+named imports are left unchanged."],
+      ["Is the output ready to run?", "It handles the common cases but is a static text transform, not a bundler. Review edge cases such as interop defaults and mixed imports before shipping."]
     ]
   }
 };
@@ -737,8 +781,24 @@ function JsToTypescript() {
       return `function ${name}(${typedParams})`;
     });
     
-    // Add return type annotations
-    typescript = typescript.replace(/function\s+(\w+)\s*\(([^)]*)\)\s*{/g, 'function $1($2): void {');
+    // Add return type annotations — only annotate `: void` when the function body
+    // has NO value-returning `return`. If the body returns a value (or detection is
+    // uncertain), omit the annotation rather than emit a wrong `: void`.
+    typescript = typescript.replace(/function\s+(\w+)\s*\(([^)]*)\)\s*{/g, (match, name, params, offset, str) => {
+      // Locate the function body by brace-matching from the opening `{` of this match.
+      const braceStart = offset + match.length - 1; // index of the `{`
+      let depth = 0, bodyEnd = -1;
+      for (let i = braceStart; i < str.length; i++) {
+        const ch = str[i];
+        if (ch === '{') depth++;
+        else if (ch === '}') { depth--; if (depth === 0) { bodyEnd = i; break; } }
+      }
+      const body = bodyEnd > braceStart ? str.slice(braceStart + 1, bodyEnd) : str.slice(braceStart + 1);
+      // A value-returning return is `return` followed by whitespace then a real value
+      // char (excludes `return;`, `return ;`, bare `return}`).
+      const returnsValue = /return\s+[^;\s}]/.test(body);
+      return returnsValue ? match : match.replace(/\)\s*{$/, '): void {');
+    });
     
     // Convert var to let/const
     typescript = typescript.replace(/\bvar\b/g, 'let');
@@ -987,6 +1047,429 @@ function JsConsoleSimulator() {
   );
 }
 
+// ===== String / comment / regex-aware JS scanner helpers (shared) =====
+// The console + comment removers walk the source one character at a time and
+// track whether they are inside a string ('  "  `), a line comment, a block
+// comment, or a regex literal. Comment/console syntax that appears INSIDE a
+// string or regex (e.g. the "//" in "http://x.com") is therefore never mistaken
+// for a real comment or call. A naive regex like /\/\/.*$/ would corrupt those.
+const TR_VALUE_CHAR = /[A-Za-z0-9_$)\]]/;
+// After a "value" (identifier, number, ), ]) a `/` is division; otherwise it can
+// start a regex literal. We track that with a rolling boolean.
+function trNextValueState(ch, cur) {
+  if (/\s/.test(ch)) return cur;      // whitespace does not change value state
+  return TR_VALUE_CHAR.test(ch);
+}
+// Returns index just past the closing quote of the string starting at i (handles \ escapes).
+function trScanStringEnd(src, i) {
+  const q = src[i]; let j = i + 1; const n = src.length;
+  while (j < n) {
+    const c = src[j];
+    if (c === '\\') { j += 2; continue; }  // skip escaped char
+    if (c === q) return j + 1;
+    j++;
+  }
+  return n; // unterminated string: consume to end
+}
+// Returns index just past a regex literal (incl. flags) starting at i, or -1 if
+// the `/` does not open a valid single-line regex.
+function trScanRegexEnd(src, i) {
+  let j = i + 1; const n = src.length; let inClass = false, closed = false;
+  while (j < n) {
+    const c = src[j];
+    if (c === '\\') { j += 2; continue; }     // escaped char (e.g. \/ )
+    if (c === '\n') return -1;                // newline before close -> not a regex
+    if (c === '[') { inClass = true; j++; continue; }
+    if (c === ']') { inClass = false; j++; continue; }
+    if (c === '/' && !inClass) { j++; closed = true; break; }
+    j++;
+  }
+  if (!closed) return -1;
+  while (j < n && /[A-Za-z]/.test(src[j])) j++; // consume flags
+  return j;
+}
+
+// Remove // line and /* */ block comments, string/regex-aware.
+function trStripComments(src, opts) {
+  const preserveJsDoc = !!(opts && opts.preserveJsDoc);
+  const collapseBlank = !!(opts && opts.collapseBlank);
+  let out = ''; let i = 0; const n = src.length; let val = false;
+  while (i < n) {
+    const ch = src[i], nx = src[i + 1];
+    // String literal -> copy verbatim (comment syntax inside is data, not a comment)
+    if (ch === '"' || ch === "'" || ch === '`') {
+      const end = trScanStringEnd(src, i); out += src.slice(i, end); i = end; val = true; continue;
+    }
+    // Line comment -> drop, and trim whitespace left before it on this line
+    if (ch === '/' && nx === '/') {
+      out = out.replace(/[ \t]+$/, '');
+      let j = i + 2; while (j < n && src[j] !== '\n') j++;
+      i = j; continue; // leave the newline for the next iteration
+    }
+    // Block comment -> drop (optionally keep JSDoc /** */)
+    if (ch === '/' && nx === '*') {
+      const jsdoc = src[i + 2] === '*';
+      let j = i + 2; while (j < n && !(src[j] === '*' && src[j + 1] === '/')) j++;
+      const end = Math.min(j + 2, n);
+      if (preserveJsDoc && jsdoc) out += src.slice(i, end);
+      else out = out.replace(/[ \t]+$/, '');
+      i = end; continue;
+    }
+    // Regex literal -> copy verbatim so any // or /* inside it survives
+    if (ch === '/' && !val) {
+      const end = trScanRegexEnd(src, i);
+      if (end !== -1) { out += src.slice(i, end); i = end; val = true; continue; }
+    }
+    out += ch; val = trNextValueState(ch, val); i++;
+  }
+  if (collapseBlank) out = out.replace(/(?:[ \t]*\r?\n){2,}/g, '\n');
+  else out = out.replace(/\n{3,}/g, '\n\n');
+  return out;
+}
+
+// Given `open` = index of '(', return index just past its matching ')',
+// skipping strings/comments/regex inside. -1 if unbalanced.
+function trMatchParenEnd(src, open) {
+  let depth = 0; let i = open; const n = src.length; let val = false;
+  while (i < n) {
+    const ch = src[i], nx = src[i + 1];
+    if (ch === '"' || ch === "'" || ch === '`') { i = trScanStringEnd(src, i); val = true; continue; }
+    if (ch === '/' && nx === '/') { let j = i + 2; while (j < n && src[j] !== '\n') j++; i = j; continue; }
+    if (ch === '/' && nx === '*') { let j = i + 2; while (j < n && !(src[j] === '*' && src[j + 1] === '/')) j++; i = Math.min(j + 2, n); continue; }
+    if (ch === '/' && !val) { const e = trScanRegexEnd(src, i); if (e !== -1) { i = e; val = true; continue; } }
+    if (ch === '(') { depth++; i++; val = false; continue; }
+    if (ch === ')') { depth--; i++; if (depth === 0) return i; val = true; continue; }
+    val = trNextValueState(ch, val); i++;
+  }
+  return -1;
+}
+// At index i (which must be the start of the word "console"), match `console.<method>(`.
+function trMatchConsoleAt(src, i) {
+  let j = i + 7; const n = src.length;
+  if (j < n && /[A-Za-z0-9_$]/.test(src[j])) return null; // e.g. "consoleLog"
+  while (j < n && /\s/.test(src[j])) j++;
+  if (src[j] !== '.') return null;
+  j++;
+  while (j < n && /\s/.test(src[j])) j++;
+  let method = '';
+  while (j < n && /[A-Za-z]/.test(src[j])) { method += src[j]; j++; }
+  if (!method) return null;
+  while (j < n && /\s/.test(src[j])) j++;
+  if (src[j] !== '(') return null;
+  return { method, paren: j };
+}
+// Remove console.<method>(...) calls, string/comment/regex-aware.
+// `methods` is either the string 'all' or a Set of method names to strip.
+function trRemoveConsole(src, methods) {
+  let out = ''; let i = 0; const n = src.length; let val = false; let removed = 0;
+  while (i < n) {
+    const ch = src[i], nx = src[i + 1];
+    if (ch === '"' || ch === "'" || ch === '`') { const end = trScanStringEnd(src, i); out += src.slice(i, end); i = end; val = true; continue; }
+    if (ch === '/' && nx === '/') { let j = i + 2; while (j < n && src[j] !== '\n') j++; out += src.slice(i, j); i = j; continue; }
+    if (ch === '/' && nx === '*') { let j = i + 2; while (j < n && !(src[j] === '*' && src[j + 1] === '/')) j++; const end = Math.min(j + 2, n); out += src.slice(i, end); i = end; continue; }
+    if (ch === '/' && !val) { const end = trScanRegexEnd(src, i); if (end !== -1) { out += src.slice(i, end); i = end; val = true; continue; } }
+    if (ch === 'c' && src.startsWith('console', i)) {
+      const pc = i > 0 ? src[i - 1] : '';
+      // Skip member access (a.console.log) and larger identifiers (myconsole) to
+      // avoid leaving dangling code like "a." behind.
+      if (!/[A-Za-z0-9_$.]/.test(pc)) {
+        const m = trMatchConsoleAt(src, i);
+        if (m && (methods === 'all' || methods.has(m.method))) {
+          const closeEnd = trMatchParenEnd(src, m.paren);
+          if (closeEnd !== -1) {
+            let k = closeEnd;
+            while (k < n && (src[k] === ' ' || src[k] === '\t')) k++;
+            if (src[k] === ';') k++;                 // drop dangling semicolon
+            const ls = out.lastIndexOf('\n') + 1;
+            const before = out.slice(ls);
+            if (/^\s*$/.test(before)) {              // statement stood alone on its line
+              out = out.slice(0, ls);                // remove its indentation
+              if (src[k] === '\r') k++;
+              if (src[k] === '\n') k++;              // and the now-empty line
+            }
+            removed++; i = k; val = false; continue;
+          }
+        }
+      }
+    }
+    out += ch; val = trNextValueState(ch, val); i++;
+  }
+  return { code: out, removed };
+}
+
+// Regex-based CommonJS <-> ESM converter (static top-level patterns only).
+function trConvertModules(src, mode) {
+  let out = src;
+  if (mode === 'cjs2esm') {
+    // const { a, b } = require('mod')
+    out = out.replace(/(?:const|let|var)\s*\{\s*([^}]+?)\s*\}\s*=\s*require\(\s*(['"])([^'"]+)\2\s*\)\s*;?/g,
+      (m, names, q, mod) => `import { ${names.split(',').map(s => s.trim()).filter(Boolean).join(', ')} } from '${mod}';`);
+    // const x = require('mod')
+    out = out.replace(/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*require\(\s*(['"])([^'"]+)\2\s*\)\s*;?/g,
+      (m, name, q, mod) => `import ${name} from '${mod}';`);
+    // require('mod');  (side-effect only)
+    out = out.replace(/^\s*require\(\s*(['"])([^'"]+)\1\s*\)\s*;?\s*$/gm,
+      (m, q, mod) => `import '${mod}';`);
+    // module.exports.foo = / exports.foo =
+    out = out.replace(/\bmodule\.exports\.([A-Za-z_$][\w$]*)\s*=\s*/g, 'export const $1 = ');
+    out = out.replace(/\bexports\.([A-Za-z_$][\w$]*)\s*=\s*/g, 'export const $1 = ');
+    // module.exports = x
+    out = out.replace(/\bmodule\.exports\s*=\s*/g, 'export default ');
+    return out;
+  }
+  // esm2cjs
+  // import * as x from 'mod'
+  out = out.replace(/import\s*\*\s*as\s+([A-Za-z_$][\w$]*)\s+from\s*(['"])([^'"]+)\2\s*;?/g,
+    (m, name, q, mod) => `const ${name} = require('${mod}');`);
+  // import { a, b } from 'mod'
+  out = out.replace(/import\s*\{\s*([^}]+?)\s*\}\s*from\s*(['"])([^'"]+)\2\s*;?/g,
+    (m, names, q, mod) => `const { ${names.split(',').map(s => s.trim()).filter(Boolean).join(', ')} } = require('${mod}');`);
+  // import x from 'mod'
+  out = out.replace(/import\s+([A-Za-z_$][\w$]*)\s+from\s*(['"])([^'"]+)\2\s*;?/g,
+    (m, name, q, mod) => `const ${name} = require('${mod}');`);
+  // import 'mod'  (side-effect only)
+  out = out.replace(/import\s*(['"])([^'"]+)\1\s*;?/g,
+    (m, q, mod) => `require('${mod}');`);
+  // export default x
+  out = out.replace(/export\s+default\s+/g, 'module.exports = ');
+  // export const/let/var foo =
+  out = out.replace(/export\s+(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*/g, 'exports.$1 = ');
+  return out;
+}
+
+// Sort & group leading ES import statements.
+function trSortImports(src) {
+  const lines = src.split('\n');
+  const n = lines.length;
+  const isBlank = s => s.trim() === '';
+  const isLineComment = s => /^\s*\/\//.test(s);
+  const isOneLineBlock = s => /^\s*\/\*.*\*\/\s*$/.test(s);
+  // Preserve a leading header of blank lines / single-line comments above imports.
+  let p = 0;
+  while (p < n && (isBlank(lines[p]) || isLineComment(lines[p]) || isOneLineBlock(lines[p]))) p++;
+  if (p >= n || !/^\s*import\b/.test(lines[p])) return src; // no leading import block
+  const preamble = lines.slice(0, p);
+  const items = [];
+  let idx = p;
+  const hasFrom = s => /from\s*['"][^'"]+['"]/.test(s);
+  const isSideEffect = s => /^\s*import\s*['"][^'"]+['"]\s*;?\s*$/.test(s);
+  while (idx < n) {
+    if (isBlank(lines[idx])) { idx++; continue; }   // skip blank lines between imports
+    if (!/^\s*import\b/.test(lines[idx])) break;     // first non-import code -> stop
+    let stmt = lines[idx]; let j = idx;
+    if (!isSideEffect(lines[idx]) && !hasFrom(lines[idx])) {
+      // multi-line import: keep consuming until the line containing `from '...'`
+      while (j + 1 < n && !hasFrom(lines[j])) { j++; stmt += '\n' + lines[j]; }
+    }
+    const source = (stmt.match(/from\s*['"]([^'"]+)['"]/) || stmt.match(/import\s*['"]([^'"]+)['"]/) || [, ''])[1];
+    items.push({ text: stmt, source, sideEffect: isSideEffect(lines[idx]) });
+    idx = j + 1;
+  }
+  const rest = lines.slice(idx);
+  const rel = s => /^(\.\.?\/|@\/|~\/|\/)/.test(s); // internal / relative
+  const side = items.filter(i => i.sideEffect); // preserve order
+  const ext = items.filter(i => !i.sideEffect && !rel(i.source)).sort((a, b) => a.source.localeCompare(b.source));
+  const int = items.filter(i => !i.sideEffect && rel(i.source)).sort((a, b) => a.source.localeCompare(b.source));
+  const groups = [];
+  if (side.length) groups.push(side.map(i => i.text).join('\n'));
+  if (ext.length) groups.push(ext.map(i => i.text).join('\n'));
+  if (int.length) groups.push(int.map(i => i.text).join('\n'));
+  let result = preamble.length ? preamble.join('\n') + '\n' : '';
+  result += groups.join('\n\n');
+  const restStr = rest.join('\n');
+  if (restStr.trim()) result += '\n\n' + restStr.replace(/^\n+/, '');
+  else result += '\n';
+  return result;
+}
+
+// Console.log Remover Component
+function JsConsoleRemover() {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+  const [removed, setRemoved] = useState(null);
+  const [ran, setRan] = useState(false);
+  const [all, setAll] = useState(false);
+  const [methods, setMethods] = useState({ log:true, warn:true, error:true, info:true, debug:true });
+
+  const toggle = k => setMethods(m => ({ ...m, [k]: !m[k] }));
+
+  const run = () => {
+    if (!input.trim()) return;
+    const arg = all ? 'all' : new Set(Object.keys(methods).filter(k => methods[k]));
+    const res = trRemoveConsole(input, arg);
+    setOutput(res.code);
+    setRemoved(res.removed);
+    setRan(true);
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>JavaScript Code</Label>
+        <Textarea value={input} onChange={setInput} rows={10} mono placeholder={"function load(url) {\n  console.log('fetching', url); // debug\n  const u = \"http://api.example.com\";\n  return fetch(u);\n}"} />
+      </div>
+      <div>
+        <Label>Methods to Remove</Label>
+        <label style={{ display:"flex", alignItems:"center", gap:6, cursor:"pointer", fontSize:13, marginBottom:10 }}>
+          <input type="checkbox" checked={all} onChange={e => setAll(e.target.checked)} />
+          <span>All <code style={{ fontFamily:"'JetBrains Mono',monospace" }}>console.*</code> methods</span>
+        </label>
+        <div style={{ display:"flex", gap:16, flexWrap:"wrap", opacity: all ? 0.4 : 1, pointerEvents: all ? "none" : "auto" }}>
+          {['log','warn','error','info','debug'].map(k => (
+            <label key={k} style={{ display:"flex", alignItems:"center", gap:6, cursor:"pointer", fontSize:13 }}>
+              <input type="checkbox" checked={methods[k]} onChange={() => toggle(k)} />
+              <span style={{ fontFamily:"'JetBrains Mono',monospace" }}>console.{k}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+      <Btn onClick={run} disabled={!input.trim()}>Remove Console Statements</Btn>
+      {ran && (
+        <>
+          {removed !== null && (
+            <div style={{ fontSize:12, color: removed > 0 ? C.success : C.muted }}>
+              {removed > 0 ? `✓ Removed ${removed} console statement${removed > 1 ? 's' : ''}` : 'No matching console statements found'}
+            </div>
+          )}
+          <div>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+              <Label>Cleaned JavaScript</Label>
+              <CopyBtn text={output} />
+            </div>
+            <Textarea value={output} onChange={() => {}} rows={10} mono />
+          </div>
+        </>
+      )}
+      <div style={{ padding:12, background:"rgba(59,130,246,0.1)", border:`1px solid rgba(59,130,246,0.3)`, borderRadius:8, fontSize:12, color:C.text }}>
+        💡 String, comment and regex safe — a URL like <code style={{ fontFamily:"'JetBrains Mono',monospace" }}>"http://x.com"</code> or the text <code style={{ fontFamily:"'JetBrains Mono',monospace" }}>"console.log"</code> inside a string is never touched.
+      </div>
+    </VStack>
+  );
+}
+
+// JS Comment Remover Component
+function JsCommentRemover() {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+  const [ran, setRan] = useState(false);
+  const [jsdoc, setJsdoc] = useState(false);
+  const [collapse, setCollapse] = useState(false);
+
+  const run = () => {
+    if (!input.trim()) return;
+    setOutput(trStripComments(input, { preserveJsDoc: jsdoc, collapseBlank: collapse }));
+    setRan(true);
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>JavaScript Code</Label>
+        <Textarea value={input} onChange={setInput} rows={10} mono placeholder={"// config\nconst url = \"http://example.com\"; // keep this URL\n/* block\n   comment */\nfunction go() { return url; }"} />
+      </div>
+      <div style={{ display:"flex", gap:16, flexWrap:"wrap" }}>
+        <label style={{ display:"flex", alignItems:"center", gap:6, cursor:"pointer", fontSize:13 }}>
+          <input type="checkbox" checked={jsdoc} onChange={e => setJsdoc(e.target.checked)} />
+          <span>Preserve JSDoc <code style={{ fontFamily:"'JetBrains Mono',monospace" }}>/** */</code></span>
+        </label>
+        <label style={{ display:"flex", alignItems:"center", gap:6, cursor:"pointer", fontSize:13 }}>
+          <input type="checkbox" checked={collapse} onChange={e => setCollapse(e.target.checked)} />
+          <span>Collapse blank lines</span>
+        </label>
+      </div>
+      <Btn onClick={run} disabled={!input.trim()}>Remove Comments</Btn>
+      {ran && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>Cleaned JavaScript</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={10} mono />
+        </div>
+      )}
+      <div style={{ padding:12, background:"rgba(59,130,246,0.1)", border:`1px solid rgba(59,130,246,0.3)`, borderRadius:8, fontSize:12, color:C.text }}>
+        💡 String and regex aware — the <code style={{ fontFamily:"'JetBrains Mono',monospace" }}>//</code> inside <code style={{ fontFamily:"'JetBrains Mono',monospace" }}>"http://..."</code> or a regex literal is preserved; only real comments are removed.
+      </div>
+    </VStack>
+  );
+}
+
+// CommonJS <-> ESM Converter Component
+function CjsEsmConverter() {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+  const [mode, setMode] = useState('cjs2esm');
+
+  const run = () => {
+    if (!input.trim()) return;
+    setOutput(trConvertModules(input, mode));
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>Conversion Direction</Label>
+        <SelectInput value={mode} onChange={setMode} options={[
+          { value:'cjs2esm', label:'CommonJS → ES Modules' },
+          { value:'esm2cjs', label:'ES Modules → CommonJS' },
+        ]} />
+      </div>
+      <div>
+        <Label>{mode === 'cjs2esm' ? 'CommonJS Code' : 'ES Modules Code'}</Label>
+        <Textarea value={input} onChange={setInput} rows={10} mono placeholder={mode === 'cjs2esm'
+          ? "const fs = require('fs');\nconst { join } = require('path');\nrequire('dotenv/config');\nmodule.exports = main;\nexports.helper = helper;"
+          : "import fs from 'fs';\nimport { join } from 'path';\nimport './setup';\nexport default main;\nexport const helper = helper;"} />
+      </div>
+      <Btn onClick={run} disabled={!input.trim()}>Convert</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>{mode === 'cjs2esm' ? 'ES Modules Output' : 'CommonJS Output'}</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={10} mono />
+        </div>
+      )}
+      <div style={{ padding:12, background:"rgba(245,158,11,0.1)", border:`1px solid rgba(245,158,11,0.3)`, borderRadius:8, fontSize:12, color:C.text }}>
+        ⚠️ Static conversion of common patterns only. Dynamic <code style={{ fontFamily:"'JetBrains Mono',monospace" }}>require()</code> calls, conditional imports, re-exports (<code style={{ fontFamily:"'JetBrains Mono',monospace" }}>export ... from</code>) and mixed default+named imports are not converted.
+      </div>
+    </VStack>
+  );
+}
+
+// JS Import Sorter Component
+function JsImportSorter() {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+
+  const run = () => {
+    if (!input.trim()) return;
+    setOutput(trSortImports(input));
+  };
+
+  return (
+    <VStack>
+      <div>
+        <Label>JavaScript / TypeScript Source</Label>
+        <Textarea value={input} onChange={setInput} rows={12} mono placeholder={"import { useState } from 'react';\nimport Button from './Button';\nimport axios from 'axios';\nimport '../styles.css';\nimport { fmt } from '@/utils';\n\nexport default function App() {}"} />
+      </div>
+      <Btn onClick={run} disabled={!input.trim()}>Sort &amp; Group Imports</Btn>
+      {output && (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <Label>Sorted Imports</Label>
+            <CopyBtn text={output} />
+          </div>
+          <Textarea value={output} onChange={() => {}} rows={12} mono />
+        </div>
+      )}
+      <div style={{ padding:12, background:"rgba(59,130,246,0.1)", border:`1px solid rgba(59,130,246,0.3)`, borderRadius:8, fontSize:12, color:C.text }}>
+        💡 External packages are grouped first, then internal/relative imports (<code style={{ fontFamily:"'JetBrains Mono',monospace" }}>./</code>, <code style={{ fontFamily:"'JetBrains Mono',monospace" }}>../</code>, <code style={{ fontFamily:"'JetBrains Mono',monospace" }}>@/</code>), sorted A–Z within each group. Side-effect imports and code below the import block are preserved.
+      </div>
+    </VStack>
+  );
+}
+
 const TOOL_COMPONENTS = {
   "js-formatter": JsFormatter,
   "js-minifier": JsMinifier,
@@ -998,6 +1481,10 @@ const TOOL_COMPONENTS = {
   "js-to-typescript": JsToTypescript,
   "regex-tester": RegexTester,
   "js-console-simulator": JsConsoleSimulator,
+  "js-console-remover": JsConsoleRemover,
+  "js-comment-remover": JsCommentRemover,
+  "js-import-sorter": JsImportSorter,
+  "cjs-esm-converter": CjsEsmConverter,
 };
 
 function Breadcrumb({ tool, cat }) {
@@ -1031,7 +1518,7 @@ function ToolPage({ toolId }) {
 
   if (!tool || !ToolComp) {
     return (
-      <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'}>
+      <CategoryLayout theme={PAGE_THEME} currentTool={toolId || 'unknown'} tools={TOOLS} subcats={CATEGORIES}>
         <div style={{ padding:'48px 20px', textAlign:'center', color:'#94A3B8' }}>
           Tool not found. <a href="#/" style={{ color: PAGE_THEME.color }}>← Back to {PAGE_THEME.name}</a>
         </div>
@@ -1050,8 +1537,8 @@ function ToolPage({ toolId }) {
   const related = TOOLS.filter(t => t.id !== tool.id && t.cat === tool.cat).slice(0, 8);
 
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={toolId}>
-      <ToolPageLayout theme={PAGE_THEME} tool={toolData} related={related}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={toolId} tools={TOOLS} subcats={CATEGORIES}>
+      <ToolPageLayout theme={PAGE_THEME} tool={toolData} tools={TOOLS} subcats={CATEGORIES} related={related}>
         <ToolComp />
       </ToolPageLayout>
     </CategoryLayout>
@@ -1106,7 +1593,7 @@ function HomePage() {
     document.title = "Free JavaScript Tools – Format, Minify, Validate JS Online | ToolsRift";
   }, []);
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={null}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={null} tools={TOOLS} subcats={CATEGORIES}>
       <CategoryDashboard
         theme={PAGE_THEME}
         tools={TOOLS}
