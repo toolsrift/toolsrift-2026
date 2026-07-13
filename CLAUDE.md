@@ -849,12 +849,13 @@ Every tool now has its own indexable URL: `/{category}/{tool-id}` (e.g. `/text/w
 - `lib/toolRegistry.js` — AUTO-GENERATED registry of all tools (id, name, desc per category). Never edit by hand.
 - `components/CategoryContent.jsx` — renders a server-side link grid to every tool URL (Google discovery paths).
 
-**MANDATORY workflow when adding/removing tools in any category component:**
-1. `python3 scripts/extract-tools.py`   (regenerates lib/toolRegistry.js)
-2. `node scripts/generate-sitemap.js`   (regenerates public/sitemap.xml)
-3. Commit both generated files together with the component change.
+**MANDATORY workflow when adding/removing tools OR editing TOOL_META in any category component:**
+1. `python3 scripts/extract-tools.py`   (regenerates lib/toolRegistry.js — tool id/name/desc)
+2. `node scripts/extract-seo.js`        (regenerates lib/toolSeo.js — per-tool title/desc/keywords/faq/howTo for SERVER-rendered SEO)
+3. `node scripts/generate-sitemap.js`   (regenerates public/sitemap.xml)
+4. Commit all three generated files together with the component change.
 
-Skipping step 1 means new tools get no URL/page. Skipping step 2 means Google is never told about them.
+Skipping step 1 means new tools get no URL/page. Skipping step 2 means the tool's page falls back to a GENERIC server title/description/FAQ (the rich TOOL_META only applies client-side, which Google weights far less). Skipping step 3 means Google is never told about them. NOTE: when adding a NEW CATEGORY, also add its `slug -> component` entry to the hardcoded `MAP` in BOTH `scripts/extract-tools.py` and `scripts/extract-seo.js`, and register it in `pages/[category]/[tool].js` COMPONENTS.
 
 **Rules:**
 - Tool ids must be kebab-case `[a-z0-9-]+` (they become URLs).

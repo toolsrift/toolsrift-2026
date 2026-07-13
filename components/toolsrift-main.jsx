@@ -52,13 +52,13 @@ const WHY_CARDS = [
 ];
 
 const STEPS = [
-  { n: '01', icon: '🔍', title: 'Pick a tool',     desc: 'Browse 23 categories or search by name.' },
+  { n: '01', icon: '🔍', title: 'Pick a tool',     desc: 'Browse 24 categories or search by name.' },
   { n: '02', icon: '⚡', title: 'Use instantly',   desc: 'No download. No account. Works in your browser.' },
   { n: '03', icon: '✅', title: 'Done in seconds', desc: 'Copy, download, or share your results.' },
 ];
 
 const FREE_PILLARS = [
-  { icon: '🛠️', tint: '#3B82F6', title: '947+ Free Tools', desc: 'Every tool is free. No daily limits, no paywalls, no sign-up required.' },
+  { icon: '🛠️', tint: '#3B82F6', title: '957+ Free Tools', desc: 'Every tool is free. No daily limits, no paywalls, no sign-up required.' },
   { icon: '📢', tint: '#F59E0B', title: 'Ad-Supported',       desc: 'ToolsRift is funded by non-intrusive display ads. Fair deal.' },
   { icon: '🔐', tint: '#10B981', title: 'Local Data',         desc: 'All processing happens in your browser. Zero server uploads.' },
 ];
@@ -260,7 +260,7 @@ function HeroSection({ query, setQuery, filteredCount }) {
             }}
           >
             <span style={{ fontSize: 14 }}>✨</span>
-            <CountUp to={947} suffix="+" /> Free Tools · 23 Categories · No signup
+            <CountUp to={957} suffix="+" /> Free Tools · 24 Categories · No signup
           </motion.div>
         </BlurUp>
 
@@ -288,7 +288,7 @@ function HeroSection({ query, setQuery, filteredCount }) {
             margin: '20px auto 0', color: '#94A3B8',
             fontSize: FS.lg, maxWidth: 640, lineHeight: 1.55,
           }}>
-            947+ free online tools — calculators, PDF, image, code, design, dev. Instant results, fully in your browser.
+            957+ free online tools — calculators, PDF, image, code, design, dev. Instant results, fully in your browser.
           </p>
         </FadeUp>
 
@@ -351,7 +351,7 @@ function HeroSection({ query, setQuery, filteredCount }) {
                 boxShadow: '0 8px 32px rgba(99,102,241,0.4)',
                 fontFamily: 'inherit', textDecoration: 'none',
               }}>
-                ⚡ Explore 947+ tools →
+                ⚡ Explore 957+ tools →
               </a>
             </Link>
             <a href="/#why" style={{
@@ -371,8 +371,8 @@ function HeroSection({ query, setQuery, filteredCount }) {
             justifyContent: 'center', gap: 'clamp(16px,5vw,48px)',
           }}>
             {[
-              { v: 947, suffix: '+', label: 'Tools' },
-              { v: 23,   suffix: '',  label: 'Categories' },
+              { v: 957, suffix: '+', label: 'Tools' },
+              { v: 24,   suffix: '',  label: 'Categories' },
               { v: 100,  suffix: '%', label: 'Free' },
               { v: 0,    suffix: '',  label: 'Sign-ups' },
             ].map((s, i) => (
@@ -436,7 +436,7 @@ export function CategoryMosaic({ id, themes, query }) {
     <section id={id} style={{ padding: 'clamp(56px,8vw,96px) clamp(20px,4vw,32px)', maxWidth: 1280, margin: '0 auto' }}>
       <FadeUp>
         <SectionHeading
-          eyebrow="23 Micro-brands"
+          eyebrow="24 Micro-brands"
           title="Browse by category"
           sub="Each category is its own world — themed, animated, and crafted for speed."
         />
@@ -767,7 +767,7 @@ function FinalCTA() {
           Start using <span style={{
             backgroundImage: 'linear-gradient(135deg,#22D3EE,#A78BFA,#F472B6)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-          }}>947 free tools</span> right now.
+          }}>957 free tools</span> right now.
         </h2>
         <p style={{ marginTop: 18, fontSize: FS.lg, color: '#94A3B8', position: 'relative', zIndex: 1 }}>
           No account. No install. No limits. Just open and use.
@@ -818,7 +818,7 @@ export function LandingFooter() {
               <img src="/logo.svg" alt="ToolsRift" style={{ height: 30, display: 'block' }} />
             </a>
             <p style={{ color: '#94A3B8', fontSize: 14, lineHeight: 1.6, margin: 0, maxWidth: 280 }}>
-              947+ free online tools. No signup. No limits. Built with ♥ in India.
+              957+ free online tools. No signup. No limits. Built with ♥ in India.
             </p>
           </div>
           {cols.map((c, ci) => (

@@ -15,7 +15,7 @@ These terms apply to all visitors, users and others who access or use ToolsRift.
   },
   {
     title: '2. Description of Service',
-    content: `ToolsRift is a free online platform offering 947+ web-based tools across categories including text processing, image editing, PDF manipulation, calculators, code formatters, generators, and more.
+    content: `ToolsRift is a free online platform offering 957+ web-based tools across categories including text processing, image editing, PDF manipulation, calculators, code formatters, generators, and more.
 
 All tools run entirely in your web browser using JavaScript and WebAssembly. We do not upload, store or process your files on our servers. The service is provided free of charge and is supported by display advertising.`
   },

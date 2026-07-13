@@ -2,8 +2,8 @@ import { useState } from "react";
 
 const PHASES = [
   {
-    id: "done", name: "✅ Shipped", color: "#22C55E", count: 947,
-    desc: "All 23 categories are live — every tool runs 100% in your browser",
+    id: "done", name: "✅ Shipped", color: "#22C55E", count: 957,
+    desc: "All 24 categories are live — every tool runs 100% in your browser",
     batches: [
       { name: "Everyday & Core Calculators", count: 95, status: "done", tools: "Basic, Scientific, Percentage, Fraction, Ratio, Average, Age, Date Diff, Days Between, Working Days, Countdown, Timezone, GPA, CGPA, Tip, Discount, and many more everyday calculators" },
       { name: "Math Calculators", count: 50, status: "done", tools: "Geometry, Algebra, Trigonometry, Matrix, Number Theory, Statistics, Std Dev, Probability, Permutation/Combination, Quadratic, and more" },
@@ -53,17 +53,17 @@ const PHASES = [
 ];
 
 const TIMELINE = [
-  { month: "Now", tools: 947, total: 947, phase: "Shipped", action: "947 client-side tools live across 23 categories" },
-  { month: "Next", tools: 60, total: 1007, phase: "SEO & Network", action: "DNS, WHOIS, SSL & SEO analysis tools (server-powered)" },
-  { month: "Later", tools: 90, total: 1097, phase: "Technical SEO & Email", action: "Page speed, broken-link and email-validation tools" },
-  { month: "Future", tools: 30, total: 1127, phase: "AI Tools", action: "AI writer, rewriter and code helpers" },
-  { month: "Ongoing", tools: 473, total: 1600, phase: "Community Requests", action: "More free tools toward 1,600+ based on your requests" },
+  { month: "Now", tools: 957, total: 957, phase: "Shipped", action: "957 client-side tools live across 24 categories" },
+  { month: "Next", tools: 60, total: 1017, phase: "SEO & Network", action: "DNS, WHOIS, SSL & SEO analysis tools (server-powered)" },
+  { month: "Later", tools: 90, total: 1107, phase: "Technical SEO & Email", action: "Page speed, broken-link and email-validation tools" },
+  { month: "Future", tools: 30, total: 1137, phase: "AI Tools", action: "AI writer, rewriter and code helpers" },
+  { month: "Ongoing", tools: 463, total: 1600, phase: "Community Requests", action: "More free tools toward 1,600+ based on your requests" },
 ];
 
 function ToolsRiftRoadmap() {
   const [expanded, setExpanded] = useState("done");
   const [view, setView] = useState("overview");
-  const totalBuilt = 947;
+  const totalBuilt = 957;
   const totalPlanned = 1600;
   const pct = ((totalBuilt / totalPlanned) * 100).toFixed(1);
 
@@ -87,7 +87,7 @@ function ToolsRiftRoadmap() {
       {/* Header */}
       <div style={{ textAlign: "center", marginBottom: 40 }}>
         <div style={{ fontSize: 12, fontWeight: 700, color: "#3B82F6", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>ToolsRift Build Roadmap</div>
-        <h1 style={{ fontSize: 36, fontWeight: 800, fontFamily: "'Outfit',sans-serif", marginBottom: 12 }}>947 Tools Shipped — and Growing</h1>
+        <h1 style={{ fontSize: 36, fontWeight: 800, fontFamily: "'Outfit',sans-serif", marginBottom: 12 }}>957 Tools Shipped — and Growing</h1>
         <p style={{ color: "#64748B", fontSize: 15, maxWidth: 600, margin: "0 auto" }}>All 23 client-side categories are live. Everything below is prioritized by search volume and build complexity, with server-powered and AI tools planned next.</p>
       </div>
 
@@ -101,7 +101,7 @@ function ToolsRiftRoadmap() {
           <div style={{ height: "100%", width: `${pct}%`, background: "linear-gradient(90deg, #22C55E, #3B82F6)", borderRadius: 6, transition: "width 1s" }} />
         </div>
         <div style={{ display: "flex", gap: 16, marginTop: 12, flexWrap: "wrap" }}>
-          {[["✅ Shipped", 947, "#22C55E"], ["🔒 Server-Powered (planned)", 200, "#EF4444"], ["🤖 AI (planned)", 30, "#7C3AED"], ["💡 More ideas", 423, "#F59E0B"]].map(([l, c, col]) => (
+          {[["✅ Shipped", 957, "#22C55E"], ["🔒 Server-Powered (planned)", 200, "#EF4444"], ["🤖 AI (planned)", 30, "#7C3AED"], ["💡 More ideas", 413, "#F59E0B"]].map(([l, c, col]) => (
             <div key={l} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12 }}>
               <div style={{ width: 8, height: 8, borderRadius: "50%", background: col }} />
               <span style={{ color: "#94A3B8" }}>{l}: {c}</span>
@@ -194,7 +194,7 @@ function ToolsRiftRoadmap() {
       <div style={{ marginTop: 32, padding: 24, borderRadius: 14, background: "linear-gradient(135deg, rgba(59,130,246,0.08), rgba(139,92,246,0.04))", border: "1px solid rgba(59,130,246,0.15)", textAlign: "center" }}>
         <div style={{ fontSize: 18, fontWeight: 800, fontFamily: "'Outfit',sans-serif", marginBottom: 8 }}>💡 Have a tool in mind?</div>
         <div style={{ color: "#94A3B8", fontSize: 14, lineHeight: 1.6, maxWidth: 600, margin: "0 auto" }}>
-          All 947 client-side tools are free with no sign-up. The next wave adds <strong style={{ color: "#3B82F6" }}>server-powered SEO, network and AI tools</strong>. Missing something you need? Suggestions shape what we build next.
+          All 957 client-side tools are free with no sign-up. The next wave adds <strong style={{ color: "#3B82F6" }}>server-powered SEO, network and AI tools</strong>. Missing something you need? Suggestions shape what we build next.
         </div>
       </div>
 

@@ -16,10 +16,10 @@ export default function Tools() {
   return (
     <>
       <Head>
-        <title>All Free Tools — Browse 23 Categories | ToolsRift</title>
-        <meta name="description" content="Browse every free tool on ToolsRift across 23 categories — calculators, PDF, image, code, design, dev. Pick a category and jump straight in." />
-        <meta property="og:title" content="All Free Tools — Browse 23 Categories | ToolsRift" />
-        <meta property="og:description" content="Browse every free tool on ToolsRift across 23 categories. No signup, instant results." />
+        <title>All Free Tools — Browse 24 Categories | ToolsRift</title>
+        <meta name="description" content="Browse every free tool on ToolsRift across 24 categories — calculators, PDF, image, code, design, dev. Pick a category and jump straight in." />
+        <meta property="og:title" content="All Free Tools — Browse 24 Categories | ToolsRift" />
+        <meta property="og:description" content="Browse every free tool on ToolsRift across 24 categories. No signup, instant results." />
         <meta property="og:url" content="https://toolsrift.com/tools" />
         <meta property="og:site_name" content="ToolsRift" />
         <meta name="twitter:card" content="summary_large_image" />
