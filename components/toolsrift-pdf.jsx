@@ -5,6 +5,7 @@ import CategoryLayout from './shared/CategoryLayout';
 import CategoryDashboard from './shared/CategoryDashboard';
 import ToolCard from './shared/ToolCard';
 import ToolPageLayout from './shared/ToolPageLayout';
+import PdfPrivacyHero from './PdfPrivacyHero';
 // PHASE 2: import UpgradeModal from './UpgradeModal';
 // PHASE 2: import UsageCounter from './UsageCounter';
 
@@ -4030,7 +4031,7 @@ function CategoryHomePage() {
   }, []);
 
   return (
-    <CategoryLayout theme={PAGE_THEME} currentTool={null} tools={TOOLS} subcats={CATEGORIES}>
+    <CategoryLayout theme={PAGE_THEME} currentTool={null} tools={TOOLS} subcats={CATEGORIES} banner={<PdfPrivacyHero />}>
       <CategoryDashboard
         theme={PAGE_THEME}
         tools={TOOLS}

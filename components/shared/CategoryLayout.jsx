@@ -7,7 +7,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { COLORS, FS, MQ, RADIUS } from '../../lib/designTokens';
+import { COLORS, FS, MQ, RADIUS, SPRING } from '../../lib/designTokens';
+import { FadeUp, BlurUp, Stagger, StaggerItem, CountUp, GradientBlob, ParticlesField } from './motion';
+import { SITE_FEATURES } from '../../lib/siteFeatures';
 import SiteFooter from '../SiteFooter';
 import { groupTools } from './ToolNavSidebar';
 import { resolveIcon } from '../../lib/toolIcons';
@@ -195,128 +197,232 @@ function CategoryHeader({ theme, tools, subcats }) {
   );
 }
 
-// ── Compact category banner (replaces the giant hero) ───────────────────────
+// ── Animated category banner (PDF-type hero) ─────────────────────────────────
+// Theme-driven: every category gets the same structure PdfPrivacyHero pioneered
+// — badge, big headline, privacy figure, animated stats, site feature chips and
+// a proof panel — generated from lib/categoryThemes.js. Honest for every
+// category because every ToolsRift tool genuinely runs client-side (the same
+// "100% Private" claim already made on the homepage's Why section). The proof
+// panel deliberately scopes its claim to "your data is never uploaded" rather
+// than "zero network requests", since a few utility tools (e.g. DNS lookup,
+// currency conversion) legitimately fetch external reference data — that is
+// not a privacy issue, so the wording stays true without needing a per-tool
+// audit. A category can still swap this out for something fully bespoke via
+// CategoryLayout's `banner` prop (PDF uses its own PdfPrivacyHero) — this is
+// the shared, theme-driven default for the other 23.
+const BANNER_CSS = `
+.trb-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center}
+.trb-fig{position:relative;height:300px}
+.trb-card{animation:trbFloat 6s ease-in-out infinite}
+@keyframes trbFloat{0%,100%{transform:rotate(-4deg) translateY(0)}50%{transform:rotate(-4deg) translateY(-10px)}}
+.trb-proof{display:grid;grid-template-columns:1fr 1fr}
+.trb-stats{display:flex;flex-wrap:wrap;gap:clamp(18px,4vw,36px);margin-top:28px}
+@media (max-width:820px){
+  .trb-grid{grid-template-columns:1fr}
+  .trb-fig{height:260px;margin-top:8px}
+  .trb-proof{grid-template-columns:1fr}
+  .trb-devtools{border-left:none!important;border-top:1px solid rgba(255,255,255,0.08)}
+}
+@media (prefers-reduced-motion:reduce){.trb-card{animation:none}}
+`;
+
 function CategoryBanner({ theme }) {
+  const accent = theme.accent2 || theme.colorDark || theme.color;
+  const stats = [
+    { v: theme.toolCount, suffix: '', label: 'Tools' },
+    { v: 100, suffix: '%', label: 'Free' },
+    { v: 0, suffix: '', label: 'Signups' },
+  ];
+
   return (
     <section
       style={{
-        position: 'relative',
-        padding: 'clamp(28px, 4vw, 44px) clamp(16px, 4vw, 32px)',
+        position: 'relative', overflow: 'hidden',
+        padding: 'clamp(56px, 8vw, 96px) clamp(20px, 4vw, 32px)',
         borderBottom: `1px solid rgba(255,255,255,0.05)`,
-        background: `linear-gradient(180deg, ${theme.color}0A 0%, transparent 100%)`,
-        overflow: 'hidden',
       }}
     >
+      <style dangerouslySetInnerHTML={{ __html: BANNER_CSS }} />
+
+      {/* Ambient background, tinted per category */}
+      <div aria-hidden style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
+        <GradientBlob color={theme.tint25} color2={theme.tint03} size={520} x="68%" y="-18%" delay={0.1} opacity={0.5} />
+        <GradientBlob color={theme.tint12} color2={theme.tint03} size={380} x="-6%" y="45%" delay={0.3} opacity={0.35} />
+        <ParticlesField color="rgba(255,255,255,0.28)" count={16} />
+      </div>
+
       {/* subtle accent line at bottom */}
       <div
         aria-hidden
         style={{
-          position: 'absolute', left: 0, right: 0, bottom: -1, height: 1,
+          position: 'absolute', left: 0, right: 0, bottom: -1, height: 1, zIndex: 1,
           background: `linear-gradient(90deg, transparent, ${theme.color}88, transparent)`,
         }}
       />
 
-      <div
-        style={{
-          maxWidth: 1280, margin: '0 auto',
-          display: 'flex', alignItems: 'center', gap: 'clamp(14px, 2vw, 22px)',
-          flexWrap: 'wrap',
-        }}
-      >
-        {/* Icon tile */}
-        <div
-          style={{
-            width: 56, height: 56, borderRadius: 14,
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            background: theme.gradient || `linear-gradient(135deg, ${theme.color}, ${theme.colorDark || theme.color})`,
-            fontSize: 28,
-            boxShadow: `0 8px 24px ${theme.color}30`,
-            flexShrink: 0,
-          }}
-          aria-hidden
-        >
-          {theme.icon}
+      <div style={{ position: 'relative', zIndex: 1, maxWidth: 1280, margin: '0 auto' }}>
+        <div className="trb-grid">
+          <div>
+            <BlurUp>
+              <motion.div
+                whileHover={{ scale: 1.04 }}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 8,
+                  background: theme.tint12, border: `1px solid ${theme.tint25}`,
+                  color: accent, borderRadius: 999, padding: '7px 16px',
+                  fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em',
+                  fontFamily: theme.fonts.body, marginBottom: 18,
+                }}
+              >
+                <span aria-hidden style={{ fontSize: 13 }}>{theme.icon}</span>
+                <CountUp to={theme.toolCount} suffix="+" /> {theme.name} · 100% In-Browser
+              </motion.div>
+            </BlurUp>
+
+            <FadeUp delay={0.1}>
+              {/* h2, not h1 — CategoryContent renders the page's one canonical SEO <h1> further down */}
+              <h2
+                style={{
+                  fontFamily: theme.fonts.head, fontWeight: 800,
+                  fontSize: 'clamp(28px, 4vw, 42px)', lineHeight: 1.12, letterSpacing: '-0.02em',
+                  color: COLORS.textBright, margin: '0 0 16px',
+                }}
+              >
+                Your data never leaves this tab.
+              </h2>
+            </FadeUp>
+
+            <FadeUp delay={0.2}>
+              <p
+                style={{
+                  fontFamily: theme.fonts.body, fontSize: 15, color: COLORS.muted,
+                  lineHeight: 1.7, maxWidth: '40ch', margin: 0,
+                }}
+              >
+                {theme.tagline || theme.description} Every tool in this category runs entirely in your browser — no account, no uploads, no exceptions.
+              </p>
+            </FadeUp>
+
+            {/* Animated stat row */}
+            <FadeUp delay={0.3}>
+              <div className="trb-stats">
+                {stats.map((s, i) => (
+                  <div key={i} style={{ textAlign: 'left', minWidth: 60 }}>
+                    <div
+                      style={{
+                        fontSize: 24, fontWeight: 800, fontFamily: theme.fonts.head, letterSpacing: '-0.02em',
+                        background: 'linear-gradient(135deg,#fff,#94A3B8)',
+                        WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+                      }}
+                    >
+                      <CountUp to={s.v} suffix={s.suffix} />
+                    </div>
+                    <div style={{ color: COLORS.dim, fontSize: 10.5, marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>
+                      {s.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </FadeUp>
+
+            {/* Site-wide feature chips */}
+            <Stagger gap={0.05} delay={0.4} style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 22 }}>
+              {SITE_FEATURES.map((f, i) => (
+                <StaggerItem key={i}>
+                  <motion.div
+                    whileHover={{ y: -3 }}
+                    transition={SPRING.smooth}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 8,
+                      padding: '8px 14px 8px 8px', background: 'rgba(255,255,255,0.03)',
+                      border: `1px solid ${COLORS.borderLight}`, borderRadius: 999,
+                    }}
+                  >
+                    <span aria-hidden style={{ width: 26, height: 26, borderRadius: '50%', background: theme.tint12, display: 'grid', placeItems: 'center', fontSize: 13 }}>
+                      {f.icon}
+                    </span>
+                    <span style={{ fontSize: 12.5, fontWeight: 600, color: COLORS.text, fontFamily: theme.fonts.body }}>{f.title}</span>
+                  </motion.div>
+                </StaggerItem>
+              ))}
+            </Stagger>
+          </div>
+
+          {/* Privacy figure — generic device + cloud + severed-network visual, theme-tinted */}
+          <FadeUp delay={0.25} className="trb-fig" aria-hidden="true">
+            <div style={{ position: 'absolute', right: 6, top: 0, width: 110, textAlign: 'center', opacity: 0.5 }}>
+              <svg viewBox="0 0 120 70" style={{ width: 110 }}><path d="M30 50h60a18 18 0 0 0 2-36 24 24 0 0 0-46-4 16 16 0 0 0-16 40z" fill="none" stroke={accent} strokeWidth="2" strokeDasharray="5 5" /></svg>
+              <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 10.5, color: accent, marginTop: 2, fontWeight: 600 }}>server · unreached</div>
+            </div>
+            <div style={{ position: 'absolute', right: 80, top: 96, width: 140, height: 2, background: `repeating-linear-gradient(90deg,${theme.color} 0 8px,transparent 8px 16px)`, opacity: 0.7 }}>
+              <span style={{ position: 'absolute', left: '50%', top: -14, transform: 'translateX(-50%)', width: 30, height: 30, borderRadius: '50%', background: COLORS.bg, border: `2px solid ${theme.color}`, display: 'grid', placeItems: 'center', color: accent, fontSize: 14, fontWeight: 700 }}>✕</span>
+            </div>
+            <div style={{ position: 'absolute', left: 0, bottom: 0, width: 220, height: 230, borderRadius: 20, background: 'linear-gradient(180deg,#0F1626,#0A0F1A)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 40px 80px -30px rgba(0,0,0,.8)' }}>
+              <div style={{ height: 32, borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: 6, padding: '0 12px' }}>
+                {[0, 1, 2].map(i => <span key={i} style={{ width: 8, height: 8, borderRadius: '50%', background: '#2a3550' }} />)}
+              </div>
+            </div>
+            <div
+              className="trb-card"
+              style={{
+                position: 'absolute', left: 28, top: 56, width: 130, height: 150, borderRadius: 12,
+                background: theme.gradient || `linear-gradient(135deg, ${theme.color}, ${theme.colorDark || theme.color})`,
+                boxShadow: '0 20px 40px -14px rgba(0,0,0,.6)',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8,
+              }}
+            >
+              <span style={{ fontSize: 44 }}>{theme.icon}</span>
+              <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 9, color: 'rgba(255,255,255,0.85)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                {theme.name}
+              </span>
+            </div>
+          </FadeUp>
         </div>
 
-        {/* Title + tagline */}
-        <div style={{ flex: '1 1 280px', minWidth: 0 }}>
-          <h1
-            style={{
-              fontFamily: theme.fonts.head,
-              fontWeight: 700,
-              fontSize: 'clamp(22px, 2.2vw + 14px, 32px)',
-              color: COLORS.textBright,
-              margin: '0 0 6px',
-              letterSpacing: '-0.02em',
-              lineHeight: 1.15,
-            }}
-          >
-            {theme.name}
-          </h1>
-          <p
-            style={{
-              fontFamily: theme.fonts.body,
-              fontSize: 'clamp(13px, 0.8vw + 11px, 15px)',
-              color: COLORS.muted,
-              margin: 0,
-              lineHeight: 1.5,
-              maxWidth: 620,
-            }}
-          >
-            {theme.tagline || theme.description}
-          </p>
-        </div>
-
-        {/* Meta pills (right side on desktop) */}
-        <div
-          style={{
-            display: 'flex', gap: 6, flexWrap: 'wrap',
-            alignItems: 'center',
-          }}
-        >
-          <Stat label="Tools" value={theme.toolCount} accent={theme.color} />
-          <Stat label="Free" value="100%" />
-          <Stat label="Mode" value="In-browser" />
-        </div>
+        {/* Proof panel */}
+        <FadeUp delay={0.2}>
+          <div className="trb-proof" style={{ marginTop: 40, background: COLORS.surface, border: `1px solid ${COLORS.border}`, borderRadius: 18, overflow: 'hidden' }}>
+            <div style={{ padding: 32 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: accent, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8, fontFamily: theme.fonts.body }}>
+                <span aria-hidden>🔒</span>Don&rsquo;t take our word for it
+              </div>
+              <h3 style={{ fontFamily: theme.fonts.head, fontWeight: 800, fontSize: 'clamp(20px,2.6vw,26px)', lineHeight: 1.2, margin: '0 0 12px', color: COLORS.textBright }}>
+                Drop in and watch the network.
+              </h3>
+              <p style={{ fontFamily: theme.fonts.body, fontSize: 14, color: COLORS.muted, lineHeight: 1.7, margin: 0 }}>
+                Open DevTools &rarr; Network, then use any tool on this page. You&rsquo;ll see exactly how much of your data is uploaded: nothing. Every tool processes your input locally, right in this tab.
+              </p>
+            </div>
+            <div className="trb-devtools" style={{ background: '#0A0D14', borderLeft: `1px solid ${COLORS.border}`, fontFamily: "'JetBrains Mono',monospace", fontSize: 12 }}>
+              <div style={{ display: 'flex', gap: 14, padding: '9px 16px', borderBottom: `1px solid ${COLORS.borderLight}`, color: COLORS.muted }}>
+                <span style={{ color: COLORS.text, borderBottom: `2px solid ${theme.color}`, paddingBottom: 8, marginBottom: -10 }}>Network</span><span>Fetch/XHR</span><span>Uploads</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1.6fr .8fr .7fr .9fr', gap: 8, padding: '8px 16px', color: COLORS.muted, borderBottom: `1px solid ${COLORS.borderLight}`, fontSize: 10.5, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <span>Name</span><span>Method</span><span>Type</span><span>Size</span>
+              </div>
+              <div style={{ padding: '30px 16px', textAlign: 'center', color: COLORS.muted }}>
+                <span style={{ fontSize: 34, color: '#34D399', fontFamily: theme.fonts.head, fontWeight: 800, display: 'block', marginBottom: 6 }}>0</span>
+                bytes of your data uploaded while using {theme.name}
+              </div>
+              <div style={{ padding: '10px 16px', borderTop: `1px solid ${COLORS.borderLight}`, color: '#34D399' }}>&#9679; Your data never leaves the device &mdash; nothing you enter is ever uploaded</div>
+            </div>
+          </div>
+        </FadeUp>
       </div>
     </section>
   );
 }
 
-function Stat({ label, value, accent }) {
-  return (
-    <div
-      style={{
-        display: 'inline-flex', alignItems: 'baseline', gap: 6,
-        padding: '7px 12px',
-        background: COLORS.surface,
-        border: `1px solid ${COLORS.borderLight}`,
-        borderRadius: 10,
-        fontFamily: "'JetBrains Mono', monospace",
-      }}
-    >
-      <span style={{
-        fontSize: 13, fontWeight: 700,
-        color: accent || COLORS.textBright,
-        lineHeight: 1,
-      }}>{value}</span>
-      <span style={{
-        fontSize: 10, fontWeight: 600,
-        color: COLORS.dim, textTransform: 'uppercase',
-        letterSpacing: '0.08em',
-        lineHeight: 1,
-      }}>{label}</span>
-    </div>
-  );
-}
-
 // ── Root ────────────────────────────────────────────────────────────────────
-export default function CategoryLayout({ theme, currentTool, tools, subcats, children }) {
+export default function CategoryLayout({ theme, currentTool, tools, subcats, children, banner }) {
   return (
     <div style={{ minHeight: '100vh', background: COLORS.bg, display: 'flex', flexDirection: 'column' }}>
       <CategoryHeader theme={theme} tools={tools} subcats={subcats} />
 
-      {!currentTool && <CategoryBanner theme={theme} />}
+      {/* `banner` lets a specific category (e.g. PDF) swap in a bespoke hero in
+          place of the default compact banner. Omit the prop and every other
+          category keeps the standard CategoryBanner — unaffected. */}
+      {!currentTool && (banner || <CategoryBanner theme={theme} />)}
 
       <main
         style={{
