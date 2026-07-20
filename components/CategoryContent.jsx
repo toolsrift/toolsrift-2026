@@ -1,7 +1,5 @@
 import Head from 'next/head'
-import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import TOOL_REGISTRY from '../lib/toolRegistry'
 import SiteFooter from './SiteFooter'
 
 const C = {
@@ -173,37 +171,6 @@ export default function CategoryContent({ data }) {
         </Section>
 
         <Divider />
-
-        {/* ALL TOOLS — server-rendered links to every tool's own URL.
-            This is how Google DISCOVERS the /[category]/[tool] pages:
-            crawlable <a href> links in the initial HTML. Without this
-            block the tool pages would exist but never get found. */}
-        {TOOL_REGISTRY[categorySlug]?.tools?.length > 0 && (
-          <>
-            <Section maxWidth={1100}>
-              <Eyebrow color={C.emerald}>All {categoryName}</Eyebrow>
-              <H2>Browse every tool in this category</H2>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-                gap: 12, marginTop: 8,
-              }}>
-                {TOOL_REGISTRY[categorySlug].tools.map(t => (
-                  <Link key={t.id} href={`/${categorySlug}/${t.id}`} style={{
-                    display: 'block', padding: '12px 16px', background: C.surface,
-                    border: `1px solid ${C.borderLight}`, borderRadius: 10,
-                    textDecoration: 'none',
-                  }}>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: C.text, marginBottom: 3 }}>{t.name}</div>
-                    <div style={{ fontSize: 12.5, color: C.dim, lineHeight: 1.5 }}>{t.desc}</div>
-                  </Link>
-                ))}
-              </div>
-            </Section>
-
-            <Divider />
-          </>
-        )}
 
         {/* WHY TOOLSRIFT */}
         <Section>
