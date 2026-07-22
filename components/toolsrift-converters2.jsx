@@ -61,9 +61,10 @@ function Input({ value, onChange, placeholder, type = "text" }) {
   return <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} style={{ width: "100%", background: "rgba(255,255,255,0.04)", border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px", color: C.text, fontSize: 13 }} />;
 }
 function SelectInput({ value, onChange, options }) {
+  const norm = (options || []).map((o) => Array.isArray(o) ? { value: o[0], label: o[1] } : (typeof o === "string" ? { value: o, label: o } : o));
   return (
     <select value={value} onChange={(e) => onChange(e.target.value)} style={{ width: "100%", background: "rgba(255,255,255,0.04)", border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px", color: C.text, fontSize: 13 }}>
-      {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+      {norm.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
     </select>
   );
 }

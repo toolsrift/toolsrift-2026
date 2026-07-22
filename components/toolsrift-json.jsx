@@ -86,10 +86,11 @@ function Textarea({ value, onChange, placeholder, rows=8, mono=true, readOnly=fa
 }
 
 function SelectInput({ value, onChange, options, style={} }) {
+  const norm = options.map((o) => Array.isArray(o) ? { value: o[0], label: o[1] } : (typeof o === "string" ? { value: o, label: o } : o));
   return (
     <select value={value} onChange={e=>onChange(e.target.value)}
       style={{background:"rgba(255,255,255,0.04)",border:`1px solid ${C.border}`,borderRadius:8,padding:"9px 14px",color:C.text,fontSize:13,fontFamily:"'Plus Jakarta Sans',sans-serif",outline:"none",cursor:"pointer",...style}}>
-      {options.map(o=><option key={o.value||o} value={o.value||o}>{o.label||o}</option>)}
+      {norm.map((o)=><option key={o.value} value={o.value}>{o.label}</option>)}
     </select>
   );
 }
