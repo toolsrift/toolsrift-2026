@@ -92,7 +92,7 @@ function SelectInput({ value, onChange, options, style={} }) {
   return (
     <select value={value} onChange={e => onChange(e.target.value)}
       style={{ background:"rgba(255,255,255,0.04)", border:`1px solid ${C.border}`, borderRadius:8, padding:"9px 14px", color:C.text, fontSize:13, fontFamily:"'Plus Jakarta Sans',sans-serif", outline:"none", cursor:"pointer", ...style }}>
-      {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+      {options.map((o) => Array.isArray(o) ? { value:o[0], label:o[1] } : (typeof o === "string" ? { value:o, label:o } : o)).map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
     </select>
   );
 }
@@ -1033,7 +1033,7 @@ function TextSorter() {
   return (
     <VStack>
       <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
-        <SelectInput value={mode} onChange={setMode} options={[{value:"asc",label:"A —' Z"},{value:"desc",label:"Z —' A"},{value:"length",label:"By Length"},{value:"numeric",label:"Numeric"},{value:"random",label:"Random Shuffle"}]} />
+        <SelectInput value={mode} onChange={setMode} options={[{value:"asc",label:"A → Z"},{value:"desc",label:"Z → A"},{value:"length",label:"By Length"},{value:"numeric",label:"Numeric"},{value:"random",label:"Random Shuffle"}]} />
         <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", fontSize:13, color:C.text }}>
           <input type="checkbox" checked={removeDups} onChange={e=>setRemoveDups(e.target.checked)} /> Remove duplicates
         </label>

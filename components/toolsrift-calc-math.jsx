@@ -129,6 +129,9 @@ function Input({ value, onChange, placeholder, type = "text", style = {} }) {
 }
 
 function SelectInput({ value, onChange, options }) {
+  const norm = (options || []).map((o) =>
+    Array.isArray(o) ? { value: o[0], label: o[1] } : (typeof o === "string" ? { value: o, label: o } : o)
+  );
   return (
     <select
       value={value}
@@ -143,7 +146,7 @@ function SelectInput({ value, onChange, options }) {
         outline: "none",
       }}
     >
-      {options.map((o) => (
+      {norm.map((o) => (
         <option key={o.value} value={o.value}>
           {o.label}
         </option>
