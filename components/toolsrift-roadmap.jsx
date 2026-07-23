@@ -2,8 +2,8 @@ import { useState } from "react";
 
 const PHASES = [
   {
-    id: "done", name: "✅ Shipped", color: "#22C55E", count: 957,
-    desc: "All 24 categories are live — every tool runs 100% in your browser",
+    id: "done", name: "✅ Shipped", color: "#22C55E", count: 1136,
+    desc: "All 29 categories are live — every tool runs 100% in your browser",
     batches: [
       { name: "Everyday & Core Calculators", count: 95, status: "done", tools: "Basic, Scientific, Percentage, Fraction, Ratio, Average, Age, Date Diff, Days Between, Working Days, Countdown, Timezone, GPA, CGPA, Tip, Discount, and many more everyday calculators" },
       { name: "Math Calculators", count: 50, status: "done", tools: "Geometry, Algebra, Trigonometry, Matrix, Number Theory, Statistics, Std Dev, Probability, Permutation/Combination, Quadratic, and more" },
@@ -27,7 +27,13 @@ const PHASES = [
       { name: "Content Generators", count: 55, status: "done", tools: "Privacy Policy, Terms of Service, SVG Pattern Art, Marketing Copy, Lorem, and more" },
       { name: "Dev Config Generators", count: 39, status: "done", tools: ".gitignore, Dockerfile, nginx config, package.json, .env templates, and more" },
       { name: "Developer Tools", count: 70, status: "done", tools: "Regex Tester, JSON Diff, JWT Debugger, Cron Builder, chmod Calculator, Color Scheme Generator, and more" },
-      { name: "Business & Marketing", count: 20, status: "done", tools: "Invoice, Receipt, Quotation, Business Card, Resume, Cover Letter, SWOT, UTM Builder, and more" },
+      { name: "Business & Marketing", count: 41, status: "done", tools: "Invoice, Receipt, Quotation, Payslip, Rent Receipt, Offer/Appointment/Experience Letters, Credit/Debit Notes, Profit & Loss, Balance Sheet, Resume, Cover Letter, SWOT, UTM Builder, and more" },
+      { name: "Randomizers & Games", count: 40, status: "done", tools: "Spinner Wheel, Dice Roller, Random Picker, Lottery Numbers, Tournament Bracket, Would You Rather, Trivia, Tarot Card, and more" },
+      { name: "Audio Tools", count: 30, status: "done", tools: "Trimmer, Merger, Converter, Voice Recorder, Text to Speech, Waveform Viewer, BPM Detector, Tone & Noise Generators, and more — 100% in-browser, nothing uploaded" },
+      { name: "Office & Productivity", count: 25, status: "done", tools: "vCard QR, WiFi QR, iCal Event Generator, Notepad, To-Do List, Kanban Board, Signature Pad, Label Sheets, Certificates, and more" },
+      { name: "Charts & Data Tools", count: 25, status: "done", tools: "Bar, Line, Pie, Donut, Area, Scatter and Gantt charts, CSV Viewer, Cleaner, Merger, Splitter, Pivot Table, and more" },
+      { name: "Study & Education Tools", count: 30, status: "done", tools: "Flashcards, Quiz Generator, Citation Generator, Grade Calculator, Periodic Table, Molar Mass Calculator, Equation Balancer, and more" },
+      { name: "Video Tools", count: 25, status: "done", tools: "Trim, Merge, Rotate, Crop, Compress, Convert, Video to GIF, Frame Extractor, Contact Sheet, Webcam & Screen Recorder, and more — 100% in-browser via FFmpeg WebAssembly, nothing uploaded" },
     ]
   },
   {
@@ -53,17 +59,17 @@ const PHASES = [
 ];
 
 const TIMELINE = [
-  { month: "Now", tools: 957, total: 957, phase: "Shipped", action: "957 client-side tools live across 24 categories" },
-  { month: "Next", tools: 60, total: 1017, phase: "SEO & Network", action: "DNS, WHOIS, SSL & SEO analysis tools (server-powered)" },
-  { month: "Later", tools: 90, total: 1107, phase: "Technical SEO & Email", action: "Page speed, broken-link and email-validation tools" },
-  { month: "Future", tools: 30, total: 1137, phase: "AI Tools", action: "AI writer, rewriter and code helpers" },
-  { month: "Ongoing", tools: 463, total: 1600, phase: "Community Requests", action: "More free tools toward 1,600+ based on your requests" },
+  { month: "Now", tools: 1136, total: 1136, phase: "Shipped", action: "1,136 client-side tools live across 29 categories" },
+  { month: "Next", tools: 60, total: 1196, phase: "SEO & Network", action: "DNS, WHOIS, SSL & SEO analysis tools (server-powered)" },
+  { month: "Later", tools: 90, total: 1286, phase: "Technical SEO & Email", action: "Page speed, broken-link and email-validation tools" },
+  { month: "Future", tools: 30, total: 1316, phase: "AI Tools", action: "AI writer, rewriter and code helpers" },
+  { month: "Ongoing", tools: 284, total: 1600, phase: "Community Requests", action: "More free tools toward 1,600+ based on your requests" },
 ];
 
 function ToolsRiftRoadmap() {
   const [expanded, setExpanded] = useState("done");
   const [view, setView] = useState("overview");
-  const totalBuilt = 957;
+  const totalBuilt = 1136;
   const totalPlanned = 1600;
   const pct = ((totalBuilt / totalPlanned) * 100).toFixed(1);
 
@@ -87,8 +93,8 @@ function ToolsRiftRoadmap() {
       {/* Header */}
       <div style={{ textAlign: "center", marginBottom: 40 }}>
         <div style={{ fontSize: 12, fontWeight: 700, color: "#3B82F6", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>ToolsRift Build Roadmap</div>
-        <h1 style={{ fontSize: 36, fontWeight: 800, fontFamily: "'Outfit',sans-serif", marginBottom: 12 }}>957 Tools Shipped — and Growing</h1>
-        <p style={{ color: "#64748B", fontSize: 15, maxWidth: 600, margin: "0 auto" }}>All 23 client-side categories are live. Everything below is prioritized by search volume and build complexity, with server-powered and AI tools planned next.</p>
+        <h1 style={{ fontSize: 36, fontWeight: 800, fontFamily: "'Outfit',sans-serif", marginBottom: 12 }}>1,136 Tools Shipped — and Growing</h1>
+        <p style={{ color: "#64748B", fontSize: 15, maxWidth: 600, margin: "0 auto" }}>All 29 client-side categories are live. Everything below is prioritized by search volume and build complexity, with server-powered and AI tools planned next.</p>
       </div>
 
       {/* Progress Bar */}
@@ -101,7 +107,7 @@ function ToolsRiftRoadmap() {
           <div style={{ height: "100%", width: `${pct}%`, background: "linear-gradient(90deg, #22C55E, #3B82F6)", borderRadius: 6, transition: "width 1s" }} />
         </div>
         <div style={{ display: "flex", gap: 16, marginTop: 12, flexWrap: "wrap" }}>
-          {[["✅ Shipped", 957, "#22C55E"], ["🔒 Server-Powered (planned)", 200, "#EF4444"], ["🤖 AI (planned)", 30, "#7C3AED"], ["💡 More ideas", 413, "#F59E0B"]].map(([l, c, col]) => (
+          {[["✅ Shipped", 1136, "#22C55E"], ["🔒 Server-Powered (planned)", 200, "#EF4444"], ["🤖 AI (planned)", 30, "#7C3AED"], ["💡 More ideas", 234, "#F59E0B"]].map(([l, c, col]) => (
             <div key={l} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12 }}>
               <div style={{ width: 8, height: 8, borderRadius: "50%", background: col }} />
               <span style={{ color: "#94A3B8" }}>{l}: {c}</span>
@@ -194,7 +200,7 @@ function ToolsRiftRoadmap() {
       <div style={{ marginTop: 32, padding: 24, borderRadius: 14, background: "linear-gradient(135deg, rgba(59,130,246,0.08), rgba(139,92,246,0.04))", border: "1px solid rgba(59,130,246,0.15)", textAlign: "center" }}>
         <div style={{ fontSize: 18, fontWeight: 800, fontFamily: "'Outfit',sans-serif", marginBottom: 8 }}>💡 Have a tool in mind?</div>
         <div style={{ color: "#94A3B8", fontSize: 14, lineHeight: 1.6, maxWidth: 600, margin: "0 auto" }}>
-          All 957 client-side tools are free with no sign-up. The next wave adds <strong style={{ color: "#3B82F6" }}>server-powered SEO, network and AI tools</strong>. Missing something you need? Suggestions shape what we build next.
+          All 1,136 client-side tools are free with no sign-up. The next wave adds <strong style={{ color: "#3B82F6" }}>server-powered SEO, network and AI tools</strong>. Missing something you need? Suggestions shape what we build next.
         </div>
       </div>
 

@@ -68,6 +68,11 @@ const COMPONENTS = {
   random:      dynamic(() => import('../../components/toolsrift-random'),        { ssr: false, loading: WidgetLoading }),
   text:        dynamic(() => import('../../components/toolsrift-text'),          { ssr: false, loading: WidgetLoading }),
   units:       dynamic(() => import('../../components/toolsrift-units'),         { ssr: false, loading: WidgetLoading }),
+  audio:       dynamic(() => import('../../components/toolsrift-audio'),         { ssr: false, loading: WidgetLoading }),
+  office:      dynamic(() => import('../../components/toolsrift-office'),        { ssr: false, loading: WidgetLoading }),
+  data:        dynamic(() => import('../../components/toolsrift-data'),          { ssr: false, loading: WidgetLoading }),
+  study:       dynamic(() => import('../../components/toolsrift-study'),         { ssr: false, loading: WidgetLoading }),
+  video:       dynamic(() => import('../../components/toolsrift-video'),         { ssr: false, loading: WidgetLoading }),
 }
 
 const C = {
