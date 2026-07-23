@@ -27,6 +27,8 @@ const MAP = {
   html: 'toolsrift-html', images: 'toolsrift-images', js: 'toolsrift-js', json: 'toolsrift-json',
   mathcalc: 'toolsrift-calc-math', pdf: 'toolsrift-pdf', random: 'toolsrift-random',
   text: 'toolsrift-text', units: 'toolsrift-units',
+  audio: 'toolsrift-audio', office: 'toolsrift-office', data: 'toolsrift-data',
+  study: 'toolsrift-study', video: 'toolsrift-video',
 }
 
 // Read a balanced expression starting at `start` (which must point at an

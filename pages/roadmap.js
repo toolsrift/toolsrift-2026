@@ -6,9 +6,9 @@ export default function Roadmap() {
     <>
       <Head>
         <title>Roadmap — ToolsRift Development Plans</title>
-        <meta name="description" content="ToolsRift development roadmap — 957+ free online tools already built across 24 categories, with more coming soon." />
+        <meta name="description" content="ToolsRift development roadmap — 1,136+ free online tools already built across 29 categories, with more coming soon." />
         <meta property="og:title" content="Roadmap — ToolsRift Development Plans" />
-        <meta property="og:description" content="ToolsRift development roadmap — 957+ free online tools already built, with more coming soon." />
+        <meta property="og:description" content="ToolsRift development roadmap — 1,136+ free online tools already built, with more coming soon." />
         <meta property="og:url" content="https://toolsrift.com/roadmap" />
         <meta property="og:site_name" content="ToolsRift" />
         <meta name="twitter:card" content="summary_large_image" />
