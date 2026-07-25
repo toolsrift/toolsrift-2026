@@ -45,3 +45,13 @@ yarn-error.log*
 
 # stale scratch files
 *.jsx.new
+
+# marketing-automation: regenerated per run by the daily automation pipeline —
+# only master-plan.json, state.json, and hand-written actions/ are tracked.
+content/social/queue.json
+content/social/queue-verify.json
+content/social/briefs/
+content/social/capture/
+content/social/hf/
+content/social/renders/
+content/social/audio-configs/
