@@ -1,0 +1,127 @@
+{
+  "id": "images-qr-code-generator",
+  "generated_at": "2026-07-26T06:19:29.926Z",
+  "generator": "toolsrift-marketing-video/gemini-creative.mjs",
+  "model": "gemini-3.5-flash-lite",
+  "attempts": 1,
+  "tool": {
+    "id": "qr-code-generator",
+    "name": "QR Code Generator",
+    "category": "images",
+    "categoryName": "Image Tools",
+    "url": "https://toolsrift.com/images/qr-code-generator"
+  },
+  "context": {
+    "format": "real-problem",
+    "aspect": "9:16",
+    "seconds": 30,
+    "motion_feel": "cinematic",
+    "skin_label": "Monospace header bar, dark inset footage, typed-in text"
+  },
+  "grounding": {
+    "registry_desc": true,
+    "seo_desc": true,
+    "how_to": false,
+    "faq_count": 3,
+    "live_page": true
+  },
+  "video_prompt": "This 30-second vertical promotional video uses a cinematic dark mode interface style with monospace fonts to demonstrate the QR Code Generator tool on ToolsRift. The video opens on a problem hook, cuts to a real screen recording of the tool being used in a browser, transitions to a list of core benefits, and finishes with a direct call to action. The single idea to land is that creating custom QR codes requires no signups or software installations and happens entirely inside your browser.",
+  "vo": [
+    {
+      "slot": "hook",
+      "text": "Need a custom QR code right now?",
+      "at": 0.6,
+      "ends_by": 4.85,
+      "max_words": 9,
+      "words": 7
+    },
+    {
+      "slot": "demo",
+      "text": "Select your settings and watch the code generate instantly.",
+      "at": 5.4,
+      "ends_by": 10.2,
+      "max_words": 11,
+      "words": 9
+    },
+    {
+      "slot": "editorial",
+      "text": "Your files stay entirely local because nothing uploads to any server.",
+      "at": 10.4,
+      "ends_by": 15.9,
+      "max_words": 12,
+      "words": 11
+    },
+    {
+      "slot": "benefit",
+      "text": "Completely free with no daily limits.",
+      "at": 16.4,
+      "ends_by": 19.4,
+      "max_words": 7,
+      "words": 6
+    },
+    {
+      "slot": "proof",
+      "text": "No sign-up required to use it.",
+      "at": 19.6,
+      "ends_by": 22.9,
+      "max_words": 7,
+      "words": 6
+    },
+    {
+      "slot": "cta",
+      "text": "Generate your next QR code right now on ToolsRift at toolsrift.com.",
+      "at": 23.4,
+      "ends_by": 29.4,
+      "max_words": 14,
+      "words": 11
+    }
+  ],
+  "vo_total_words": 50,
+  "on_screen": {
+    "hook": "Stop wasting time on software.",
+    "demo_title": "Instant QR Generation",
+    "caption": "Runs 100 percent in your browser",
+    "ben_title": "Built for speed and privacy",
+    "benefits": [
+      "No sign up needed",
+      "No daily limits",
+      "Local processing"
+    ],
+    "cta_headline": "Try it now",
+    "cta_tags": "Free · Secure · Browser based",
+    "action_badge": "Download Image"
+  },
+  "editorial": "By processing everything locally inside your browser, this utility ensures your generation requests never touch an external server for complete data privacy.",
+  "editorial_similarity": 0.6,
+  "broll": [
+    {
+      "scene": "hook",
+      "image_prompt": "Minimalist dark abstract background with glowing geometric grid lines and subtle light leak.",
+      "motion_prompt": "Slow camera push forward through the grid lines."
+    },
+    {
+      "scene": "cta",
+      "image_prompt": "Clean dark workspace surface with subtle shadow play and minimalist lighting.",
+      "motion_prompt": "Slow horizontal pan across the dark surface."
+    }
+  ],
+  "music_prompt": "Low-fi instrumental electronic beat with a steady pulse and warm atmospheric pads, no vocals.",
+  "sfx": [
+    {
+      "cue": "whoosh",
+      "at": 0,
+      "why": "Transition into the hook scene."
+    },
+    {
+      "cue": "chime",
+      "at": 5,
+      "why": "Transition into the live demo scene."
+    },
+    {
+      "cue": "pop",
+      "at": 23,
+      "why": "Hit the final call to action."
+    }
+  ],
+  "warnings": []
+}

@@ -1,0 +1,110 @@
+{
+  "id": "images-qr-code-generator",
+  "seq": 1,
+  "generated_at": "2026-07-25T07:11:51.337Z",
+  "generator": "toolsrift-marketing-video/build-brief.mjs",
+  "tool": {
+    "id": "qr-code-generator",
+    "name": "QR Code Generator",
+    "category": "images",
+    "url": "https://toolsrift.com/images/qr-code-generator"
+  },
+  "format": "myth-check",
+  "aspect": "9:16",
+  "width": 1080,
+  "height": 1920,
+  "target_seconds": [
+    15,
+    25
+  ],
+  "design": {
+    "motion_feel": "cinematic",
+    "color": "#F04E9E",
+    "accent": "#F779BB",
+    "color_dark": "#DC1075",
+    "category_color": "#EC4899",
+    "hue_offset": 0,
+    "font_head": "'Sora', sans-serif",
+    "type_scale": 0.92,
+    "bg": "#06090F",
+    "icon": "🖼️"
+  },
+  "layout": {
+    "skin": "device-frame",
+    "skin_label": "Recording inside a rounded browser/phone chrome, title above it",
+    "title_pos": "above-frame",
+    "footage_treatment": "framed",
+    "text_anim": "fade",
+    "transition": "push",
+    "grade": "cool",
+    "fingerprint": "myth-check|device-frame|3|images"
+  },
+  "hook": "You do not need an app to make a QR code.",
+  "editorial": "The QR is drawn on a canvas right in your browser, so the link you encode never leaves your device or touches a server.",
+  "beats": [
+    {
+      "step": 1,
+      "text": "QR Code Generator: Use our free qr code generator tool to generate qr codes as downloadable images"
+    }
+  ],
+  "beats_source": "desc",
+  "faq_seed": [
+    {
+      "q": "How do I use this qr code generator?",
+      "a": "Simply select your image or enter your settings, and the tool will instantly process your request right in your browser."
+    }
+  ],
+  "cta": {
+    "text": "toolsrift.com/images/qr-code-generator",
+    "url": "https://toolsrift.com/images/qr-code-generator"
+  },
+  "audio": {
+    "narration": null,
+    "voiceover_file": null,
+    "bgm_file": null,
+    "policy": "silent-first. Add Instagram's in-app audio at post time; keep the YouTube upload silent or use your own licensed track."
+  },
+  "footage": {
+    "source": "first-party screen capture of the creator's own website",
+    "url": "https://toolsrift.com/images/qr-code-generator",
+    "captured_at": "2026-07-25T07:11:08.123Z",
+    "scripted": true,
+    "aspect": "9:16",
+    "pixel_size": [
+      1800,
+      3200
+    ],
+    "native_resolution": true,
+    "realtime": null,
+    "stills": [
+      "D:\\toolsrift-2026-main\\content\\social\\capture\\images-qr-code-generator\\still-01.png",
+      "D:\\toolsrift-2026-main\\content\\social\\capture\\images-qr-code-generator\\still-02.png",
+      "D:\\toolsrift-2026-main\\content\\social\\capture\\images-qr-code-generator\\still-03.png"
+    ],
+    "recording": "D:\\toolsrift-2026-main\\content\\social\\capture\\images-qr-code-generator\\demo.webm"
+  },
+  "compliance": {
+    "first_party_footage": true,
+    "ai_generated_media": false,
+    "synthetic_voice": false,
+    "requires_ai_disclosure": false,
+    "own_product": true,
+    "paid_partnership": false
+  },
+  "captions": {
+    "youtube": {
+      "title": "You do not need an app to make a QR code. — QR Code Generator",
+      "description": "The QR is drawn on a canvas right in your browser, so the link you encode never leaves your device or touches a server.\n\nTry it free (no signup, runs in your browser): https://toolsrift.com/images/qr-code-generator\n\nBuilt and recorded by me. Everything on ToolsRift runs client-side — nothing you enter is uploaded.",
+      "tags": [
+        "code",
+        "generator",
+        "image"
+      ]
+    },
+    "instagram": {
+      "caption": "You do not need an app to make a QR code.\n\nThe QR is drawn on a canvas right in your browser, so the link you encode never leaves your device or touches a server.\n\nFull tool: toolsrift.com/images/qr-code-generator\n\n#code #generator #image",
+      "note": "No clickable links in IG captions. Put the URL in your bio link and reference it here."
+    }
+  },
+  "status": "ready-for-render"
+}

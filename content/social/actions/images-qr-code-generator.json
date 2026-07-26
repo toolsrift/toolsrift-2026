@@ -1,0 +1,14 @@
+{
+  "steps": [
+    { "wait": 1400 },
+    { "shot": "tool" },
+    { "clickText": "Process Image" },
+    { "waitFor": "img[alt='Preview']", "timeout": 8000 },
+    { "wait": 700 },
+    { "shot": "result" },
+    { "scroll": 260 },
+    { "wait": 500 },
+    { "clickText": "Download Image" },
+    { "wait": 600 }
+  ]
+}

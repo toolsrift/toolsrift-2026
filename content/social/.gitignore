@@ -1,0 +1,33 @@
+# Generated marketing-video artifacts. Tracked vs ignored is decided by SIZE and
+# REPRODUCIBILITY, not by whether the file is useful.
+#
+# docs/social-automation-plan.md is explicit about the reason: "every MP4 enters
+# git history permanently. Deleting the file later does not shrink the history."
+# At ~2-3 MB per 30s render across 1,136 tools that is several GB of permanent
+# history, so rendered video and its intermediates stay out. Everything ignored
+# here is regenerable from what is tracked, plus the live site.
+
+# Rendered MP4s. The publisher uploads these to Zernio (7-day auto-delete) and
+# they are never needed again.
+renders/
+
+# HyperFrames project folders — scaffold, staged media, captured PNG frame
+# sequences and per-render output. By far the largest directory (63 MB for two
+# tools) and fully rebuilt by make-video.mjs on every run.
+hf/
+
+# Screenshots + demo.webm per tool. Re-capturable at any time with capture.mjs,
+# and deliberately re-captured rather than reused so footage matches the current UI.
+capture/
+
+# Generated voiceover / SFX / music working files.
+audio-configs/
+
+# TRACKED ON PURPOSE, listed here so nobody "tidies" them into the ignore list:
+#   actions/        hand-written click scripts — real human work, not regenerable
+#   briefs/         the publisher's input contract
+#   creative/       per-video Gemini prompt + voiceover script; the editorial
+#                   record of what each video actually claimed
+#   master-plan.json, state.json   what has posted; the runner reads these to
+#                   avoid reposting, and daily-post.yml commits them back
+#   queue.json      the current one-item working queue
