@@ -1,0 +1,11 @@
+{
+  "$comment": "Hand-curated stacked-workflow chains — see toolsrift-automation/marketing-video/scripts/lib/chains.mjs for why this is never auto-generated. A tool only gets the stacked-workflow format if it appears here as 'primary'. Add a chain only when you know real people actually do these steps together, in this order, on the same artifact — not because the tools share a category.",
+  "chains": [
+    {
+      "primary": "images-image-compressor",
+      "secondary": ["images-exif-remover", "images-image-base64"],
+      "job": "Compress an image, strip its EXIF metadata, then base64-encode it for a stylesheet or email template.",
+      "added": "2026-07-27"
+    }
+  ]
+}
