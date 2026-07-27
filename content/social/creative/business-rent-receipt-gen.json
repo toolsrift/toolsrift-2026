@@ -1,0 +1,135 @@
+{
+  "id": "business-rent-receipt-gen",
+  "generated_at": "2026-07-26T06:41:23.270Z",
+  "generator": "toolsrift-marketing-video/gemini-creative.mjs",
+  "model": "gemini-3.5-flash-lite",
+  "attempts": 2,
+  "tool": {
+    "id": "rent-receipt-gen",
+    "name": "Rent Receipt Generator",
+    "category": "business",
+    "categoryName": "Business Tools",
+    "url": "https://toolsrift.com/business/rent-receipt-gen"
+  },
+  "context": {
+    "format": "before-after",
+    "aspect": "9:16",
+    "seconds": 30,
+    "motion_feel": "smooth",
+    "skin_label": "Oversized editorial headline up top, footage as a lower third"
+  },
+  "grounding": {
+    "registry_desc": true,
+    "seo_desc": true,
+    "how_to": true,
+    "faq_count": 3,
+    "live_page": true
+  },
+  "video_prompt": "A vertical 9:16 promotional video showcasing the Rent Receipt Generator on ToolsRift. The video uses a before-after editorial format with an oversized headline up top and screen recordings in the lower third. At 0s, the hook displays a frustrated person gathering paperwork. At 5s, a screen recording shows typing tenant details, selecting frequency, and entering landlord PAN. At 16s, clean text highlights key benefits like automatic revenue stamp notes and full year stacking. At 23s, the call to action reveals the tool name and website. The tone is clean, precise, and practical.",
+  "vo": [
+    {
+      "slot": "hook",
+      "text": "Struggling to put together rent receipts for your HRA.",
+      "at": 0.6,
+      "ends_by": 4.85,
+      "max_words": 9,
+      "words": 9
+    },
+    {
+      "slot": "demo",
+      "text": "Enter tenant, landlord, and property details along with rent per month.",
+      "at": 5.4,
+      "ends_by": 10.2,
+      "max_words": 11,
+      "words": 11
+    },
+    {
+      "slot": "editorial",
+      "text": "High annual rent requires a landlord PAN and revenue stamp note automatically.",
+      "at": 10.4,
+      "ends_by": 15.9,
+      "max_words": 12,
+      "words": 12
+    },
+    {
+      "slot": "benefit",
+      "text": "Print a full year at once.",
+      "at": 16.4,
+      "ends_by": 19.4,
+      "max_words": 7,
+      "words": 6
+    },
+    {
+      "slot": "proof",
+      "text": "Runs directly inside your browser.",
+      "at": 19.6,
+      "ends_by": 22.9,
+      "max_words": 7,
+      "words": 5
+    },
+    {
+      "slot": "cta",
+      "text": "Find the Rent Receipt Generator on ToolsRift to get your stack ready.",
+      "at": 23.4,
+      "ends_by": 29.4,
+      "max_words": 14,
+      "words": 12
+    }
+  ],
+  "vo_total_words": 55,
+  "on_screen": {
+    "hook": "HRA Filing Hassles",
+    "demo_title": "Fill Details",
+    "caption": "Type property, tenant, and landlord info.",
+    "ben_title": "Built for HRA Claims",
+    "benefits": [
+      "Landlord PAN included",
+      "Automatic revenue stamps",
+      "Up to 24 receipts"
+    ],
+    "cta_headline": "Generate Rent Receipts",
+    "cta_tags": "Free utility · No signup · Browser based",
+    "action_badge": "Print / Save"
+  },
+  "editorial": "When annual rent crosses the tax threshold, adding a landlord PAN and revenue stamp note is handled automatically based on your payment settings.",
+  "editorial_similarity": 0.563,
+  "broll": [
+    {
+      "scene": "hook",
+      "image_prompt": "A messy stack of paper documents and receipts on a wooden desk, soft ambient lighting, high angle close up",
+      "motion_prompt": "Slow push in towards the papers with a gentle blur shift"
+    },
+    {
+      "scene": "benefit",
+      "image_prompt": "Clean minimalist office desk setup with a printer and organized folders, top down perspective",
+      "motion_prompt": "Slow pan from left to right across the clean desk surface"
+    },
+    {
+      "scene": "cta",
+      "image_prompt": "A glowing browser window outline on a dark solid background, smooth abstract tech feel",
+      "motion_prompt": "Subtle breathing scale pulse on the window frame"
+    }
+  ],
+  "music_prompt": "Subtle, neutral lo-fi electronic background track, steady beat, no vocals, smooth transitions.",
+  "sfx": [
+    {
+      "cue": "whoosh",
+      "at": 0,
+      "why": "Transition for hook start"
+    },
+    {
+      "cue": "pop",
+      "at": 5,
+      "why": "Transition into live demo"
+    },
+    {
+      "cue": "chime",
+      "at": 23,
+      "why": "Call to action reveal"
+    }
+  ],
+  "warnings": [
+    "TRIMMED \"hook\" from 10 to 9 words (budget 9) — CHECK IT STILL MEANS WHAT IT SHOULD",
+    "on_screen.action_badge trimmed to 3 words"
+  ]
+}

@@ -1,0 +1,120 @@
+{
+  "id": "business-balance-sheet-gen",
+  "seq": 1,
+  "generated_at": "2026-07-25T14:00:38.093Z",
+  "generator": "toolsrift-marketing-video/build-brief.mjs",
+  "tool": {
+    "id": "balance-sheet-gen",
+    "name": "Balance Sheet Generator",
+    "category": "business",
+    "url": "https://toolsrift.com/business/balance-sheet-gen"
+  },
+  "format": "before-after",
+  "aspect": "9:16",
+  "width": 1080,
+  "height": 1920,
+  "target_seconds": [
+    12,
+    20
+  ],
+  "design": {
+    "motion_feel": "smooth",
+    "color": "#058C52",
+    "accent": "#0FB08D",
+    "color_dark": "#023E24",
+    "category_color": null,
+    "hue_offset": -7,
+    "font_head": "'Outfit', sans-serif",
+    "type_scale": 1.15,
+    "bg": "#06090F",
+    "icon": "💼"
+  },
+  "layout": {
+    "skin": "card-first",
+    "skin_label": "Centred statement card, footage revealed underneath it",
+    "title_pos": "center-card",
+    "footage_treatment": "reveal",
+    "text_anim": "scale-in",
+    "transition": "zoom",
+    "grade": "warm",
+    "fingerprint": "before-after|card-first|2|business"
+  },
+  "hook": "You don't need an app for this — Balance Sheet Generator, free.",
+  "editorial": "It's one of the free Business Tools tools — opens instantly, no account, no install.",
+  "beats": [
+    {
+      "step": 1,
+      "text": "Enter the business name, the as-of date and your currency, then list current assets, non-current assets, current and non-current liabilities and equity lines."
+    },
+    {
+      "step": 2,
+      "text": "The totals, the balance check and the ratios update as you type."
+    },
+    {
+      "step": 3,
+      "text": "Print or save the sheet as a PDF."
+    }
+  ],
+  "beats_source": "howTo",
+  "faq_seed": [
+    {
+      "q": "What does a balance sheet show?",
+      "a": "It is a snapshot of what a business owns and owes on one specific date. Assets appear on one side, liabilities and owner's equity on the…"
+    }
+  ],
+  "cta": {
+    "text": "toolsrift.com/business/balance-sheet-gen",
+    "url": "https://toolsrift.com/business/balance-sheet-gen"
+  },
+  "audio": {
+    "narration": null,
+    "voiceover_file": null,
+    "bgm_file": null,
+    "policy": "silent-first. Add Instagram's in-app audio at post time; keep the YouTube upload silent or use your own licensed track."
+  },
+  "footage": {
+    "source": "first-party screen capture of the creator's own website",
+    "url": "https://toolsrift.com/business/balance-sheet-gen",
+    "captured_at": "2026-07-25T14:00:37.758Z",
+    "scripted": false,
+    "aspect": "9:16",
+    "pixel_size": [
+      1290,
+      2796
+    ],
+    "native_resolution": true,
+    "realtime": null,
+    "stills": [
+      "D:\\toolsrift-2026-main\\content\\social\\capture\\business-balance-sheet-gen\\still-01.png",
+      "D:\\toolsrift-2026-main\\content\\social\\capture\\business-balance-sheet-gen\\still-02.png",
+      "D:\\toolsrift-2026-main\\content\\social\\capture\\business-balance-sheet-gen\\still-03.png"
+    ],
+    "recording": "D:\\toolsrift-2026-main\\content\\social\\capture\\business-balance-sheet-gen\\demo.webm"
+  },
+  "compliance": {
+    "first_party_footage": true,
+    "ai_generated_media": false,
+    "synthetic_voice": false,
+    "requires_ai_disclosure": false,
+    "own_product": true,
+    "paid_partnership": false
+  },
+  "captions": {
+    "youtube": {
+      "title": "You don't need an app for this — Balance Sheet Generator, free. — Balance Sheet Generator",
+      "description": "It's one of the free Business Tools tools — opens instantly, no account, no install.\n\nTry it free (no signup, runs in your browser): https://toolsrift.com/business/balance-sheet-gen\n\nBuilt and recorded by me. Everything on ToolsRift runs client-side — nothing you enter is uploaded.",
+      "tags": [
+        "balance",
+        "sheet",
+        "generator",
+        "format",
+        "statement"
+      ]
+    },
+    "instagram": {
+      "caption": "You don't need an app for this — Balance Sheet Generator, free.\n\nIt's one of the free Business Tools tools — opens instantly, no account, no install.\n\nFull tool: toolsrift.com/business/balance-sheet-gen\n\n#balance #sheet #generator #format #statement",
+      "note": "No clickable links in IG captions. Put the URL in your bio link and reference it here."
+    }
+  },
+  "status": "ready-for-render"
+}

@@ -1,0 +1,116 @@
+{
+  "id": "study-citation-generator",
+  "seq": 1,
+  "generated_at": "2026-07-26T06:55:08.408Z",
+  "generator": "toolsrift-marketing-video/build-brief.mjs",
+  "tool": {
+    "id": "citation-generator",
+    "name": "Citation Generator",
+    "category": "study",
+    "url": "https://toolsrift.com/study/citation-generator"
+  },
+  "format": "speed-run",
+  "aspect": "9:16",
+  "width": 1080,
+  "height": 1920,
+  "target_seconds": [
+    10,
+    15
+  ],
+  "design": {
+    "motion_feel": "smooth",
+    "color": "#646DEF",
+    "accent": "#807DFC",
+    "color_dark": "#1825EA",
+    "category_color": null,
+    "hue_offset": -7,
+    "font_head": "'Sora', sans-serif",
+    "type_scale": 1.35,
+    "bg": "#06090F",
+    "icon": "🎓"
+  },
+  "layout": {
+    "skin": "poster",
+    "skin_label": "Oversized editorial headline up top, footage as a lower third",
+    "title_pos": "oversize-top",
+    "footage_treatment": "lower-third",
+    "text_anim": "stagger",
+    "transition": "flip",
+    "grade": "saturated",
+    "fingerprint": "speed-run|poster|2|study"
+  },
+  "hook": "Staring at a blank bibliography is frustrating.",
+  "editorial": "Generating three different style formats simultaneously allows students to instantly check and compare references before copying them directly into their research papers.",
+  "beats": [
+    {
+      "step": 1,
+      "text": "Choose the source type, fill in the author, year, title and publication details you have, and the APA, MLA and Chicago versions build as you type."
+    },
+    {
+      "step": 2,
+      "text": "Copy the style your department asks for straight into your reference list."
+    }
+  ],
+  "beats_source": "howTo",
+  "faq_seed": [
+    {
+      "q": "Which styles and source types are supported?",
+      "a": "APA 7th edition, MLA 9th edition and Chicago notes-bibliography style, each for books, journal articles, websites, chapters in edited…"
+    }
+  ],
+  "cta": {
+    "text": "toolsrift.com/study/citation-generator",
+    "url": "https://toolsrift.com/study/citation-generator"
+  },
+  "audio": {
+    "narration": null,
+    "voiceover_file": null,
+    "bgm_file": null,
+    "policy": "silent-first. Add Instagram's in-app audio at post time; keep the YouTube upload silent or use your own licensed track."
+  },
+  "footage": {
+    "source": "first-party screen capture of the creator's own website",
+    "url": "https://toolsrift.com/study/citation-generator",
+    "captured_at": "2026-07-26T06:53:21.607Z",
+    "scripted": false,
+    "aspect": "9:16",
+    "pixel_size": [
+      1290,
+      2796
+    ],
+    "native_resolution": true,
+    "realtime": null,
+    "stills": [
+      "D:\\toolsrift-2026-main\\content\\social\\capture\\study-citation-generator\\still-01.png",
+      "D:\\toolsrift-2026-main\\content\\social\\capture\\study-citation-generator\\still-02.png",
+      "D:\\toolsrift-2026-main\\content\\social\\capture\\study-citation-generator\\still-03.png"
+    ],
+    "recording": "D:\\toolsrift-2026-main\\content\\social\\capture\\study-citation-generator\\demo.webm"
+  },
+  "compliance": {
+    "first_party_footage": true,
+    "ai_generated_media": false,
+    "synthetic_voice": false,
+    "requires_ai_disclosure": false,
+    "own_product": true,
+    "paid_partnership": false
+  },
+  "captions": {
+    "youtube": {
+      "title": "Staring at a blank bibliography is frustrating. — Citation Generator",
+      "description": "Generating three different style formats simultaneously allows students to instantly check and compare references before copying them directly into their research papers.\n\nTry it free (no signup, runs in your browser): https://toolsrift.com/study/citation-generator\n\nBuilt and recorded by me. Everything on ToolsRift runs client-side — nothing you enter is uploaded.",
+      "tags": [
+        "citation",
+        "generator",
+        "apa",
+        "7",
+        "mla"
+      ]
+    },
+    "instagram": {
+      "caption": "Staring at a blank bibliography is frustrating.\n\nGenerating three different style formats simultaneously allows students to instantly check and compare references before copying them directly into their research papers.\n\nFull tool: toolsrift.com/study/citation-generator\n\n#citation #generator #apa #7 #mla",
+      "note": "No clickable links in IG captions. Put the URL in your bio link and reference it here."
+    }
+  },
+  "status": "ready-for-render"
+}

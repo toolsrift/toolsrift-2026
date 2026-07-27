@@ -1,0 +1,135 @@
+{
+  "id": "business-balance-sheet-gen",
+  "generated_at": "2026-07-26T06:41:57.948Z",
+  "generator": "toolsrift-marketing-video/gemini-creative.mjs",
+  "model": "gemini-3.5-flash-lite",
+  "attempts": 1,
+  "tool": {
+    "id": "balance-sheet-gen",
+    "name": "Balance Sheet Generator",
+    "category": "business",
+    "categoryName": "Business Tools",
+    "url": "https://toolsrift.com/business/balance-sheet-gen"
+  },
+  "context": {
+    "format": "before-after",
+    "aspect": "9:16",
+    "seconds": 30,
+    "motion_feel": "smooth",
+    "skin_label": "Centred statement card, footage revealed underneath it"
+  },
+  "grounding": {
+    "registry_desc": true,
+    "seo_desc": true,
+    "how_to": true,
+    "faq_count": 3,
+    "live_page": true
+  },
+  "video_prompt": "This 9:16 vertical video uses a before-after editorial format to highlight the Balance Sheet Generator on ToolsRift. The video opens with a centred statement card over clean abstract financial motion graphics. At five seconds, it cuts to a real screen recording of the balance sheet being filled out with assets and liabilities, showing totals update live. At sixteen seconds, it transitions to benefits and proof, ending with a call to action on the ToolsRift domain. The tone is practical, calm, and grounded.",
+  "vo": [
+    {
+      "slot": "hook",
+      "text": "Struggling to get your balance sheet to balance?",
+      "at": 0.6,
+      "ends_by": 4.85,
+      "max_words": 9,
+      "words": 8
+    },
+    {
+      "slot": "demo",
+      "text": "List your assets and liabilities and watch the totals update.",
+      "at": 5.4,
+      "ends_by": 10.2,
+      "max_words": 11,
+      "words": 10
+    },
+    {
+      "slot": "editorial",
+      "text": "The tool shows the exact difference so you can hunt down the.",
+      "at": 10.4,
+      "ends_by": 15.9,
+      "max_words": 12,
+      "words": 12
+    },
+    {
+      "slot": "benefit",
+      "text": "Key liquidity ratios update automatically.",
+      "at": 16.4,
+      "ends_by": 19.4,
+      "max_words": 7,
+      "words": 5
+    },
+    {
+      "slot": "proof",
+      "text": "Runs right in your browser with no.",
+      "at": 19.6,
+      "ends_by": 22.9,
+      "max_words": 7,
+      "words": 7
+    },
+    {
+      "slot": "cta",
+      "text": "Generate your free statement of financial position now at ToolsRift.",
+      "at": 23.4,
+      "ends_by": 29.4,
+      "max_words": 14,
+      "words": 10
+    }
+  ],
+  "vo_total_words": 52,
+  "on_screen": {
+    "hook": "Fix Unbalanced Books",
+    "demo_title": "Live Balance Check",
+    "caption": "Totals update as you type.",
+    "ben_title": "Built-In Financial Ratios",
+    "benefits": [
+      "Automatic balance check",
+      "Working capital calculation",
+      "Debt-to-equity ratio"
+    ],
+    "cta_headline": "Build Yours Free",
+    "cta_tags": "No signup · Free browser tool · Instant PDF",
+    "action_badge": "Save PDF"
+  },
+  "editorial": "When books refuse to match up, hunting for missing retained earnings or miscategorized loans becomes simple because this generator pinpoints the exact numeric gap.",
+  "editorial_similarity": 0.469,
+  "broll": [
+    {
+      "scene": "hook",
+      "image_prompt": "Clean minimalist desk surface with crisp paper documents and subtle lighting.",
+      "motion_prompt": "Slow downward drift across the surface."
+    },
+    {
+      "scene": "benefit",
+      "image_prompt": "Abstract digital data grid showing clean lines and structured columns.",
+      "motion_prompt": "Gentle upward pan revealing structured grid rows."
+    },
+    {
+      "scene": "cta",
+      "image_prompt": "Simple modern browser window frame on a neutral dark background.",
+      "motion_prompt": "Subtle scale in toward the centre of the frame."
+    }
+  ],
+  "music_prompt": "Subtle, ambient electronic background track with a steady, reassuring pulse and no dominant melodic hook.",
+  "sfx": [
+    {
+      "cue": "whoosh",
+      "at": 0,
+      "why": null
+    },
+    {
+      "cue": "chime",
+      "at": 5,
+      "why": null
+    },
+    {
+      "cue": "pop",
+      "at": 16,
+      "why": null
+    }
+  ],
+  "warnings": [
+    "TRIMMED \"editorial\" from 13 to 12 words (budget 12) — CHECK IT STILL MEANS WHAT IT SHOULD",
+    "TRIMMED \"proof\" from 8 to 7 words (budget 7) — CHECK IT STILL MEANS WHAT IT SHOULD"
+  ]
+}

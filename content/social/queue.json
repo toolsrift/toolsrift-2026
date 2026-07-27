@@ -1,0 +1,61 @@
+{
+  "generated_at": "2026-07-26T06:52:01.290Z",
+  "generator": "manual-integration-test",
+  "base_url": "https://toolsrift.com",
+  "batch_size": 1,
+  "category_locked": "study",
+  "formats_used": [
+    "speed-run"
+  ],
+  "skins_used": [
+    "poster"
+  ],
+  "categories_used": [
+    "study"
+  ],
+  "distinct_colors": 1,
+  "missing_howto": [],
+  "skipped": [],
+  "queue": [
+    {
+      "seq": 1,
+      "category": "study",
+      "categoryName": "Study & Education Tools",
+      "tool": "citation-generator",
+      "name": "Citation Generator",
+      "url": "https://toolsrift.com/study/citation-generator",
+      "path": "/study/citation-generator",
+      "format": "speed-run",
+      "aspect": "9:16",
+      "target_seconds": [
+        10,
+        15
+      ],
+      "rank_score": 102,
+      "motion_feel": "smooth",
+      "color": "#646DEF",
+      "accent": "#807DFC",
+      "color_dark": "#1825EA",
+      "hue_bucket": 2,
+      "hue_offset": -7,
+      "skin": "poster",
+      "skin_label": "Oversized editorial headline up top, footage as a lower third",
+      "title_pos": "oversize-top",
+      "footage_treatment": "lower-third",
+      "text_anim": "stagger",
+      "transition": "flip",
+      "grade": "saturated",
+      "type_scale": 1.35,
+      "style_fingerprint": "speed-run|poster|2|study",
+      "font_head": "'Sora', sans-serif",
+      "icon": "🎓",
+      "has_howto": true,
+      "hook": "Staring at a blank bibliography is frustrating.",
+      "editorial": "Generating three different style formats simultaneously allows students to instantly check and compare references before copying them directly into their research papers.",
+      "editorial_source": "gemini-creative",
+      "vo_demo": "Citation Generator, right in your browser.",
+      "scheduled_date": "2026-07-29",
+      "status": "draft"
+    }
+  ]
+}

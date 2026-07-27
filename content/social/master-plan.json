@@ -99,9 +99,18 @@
       "posted_at": "2026-07-25T14:08:56.570Z",
       "manifest": "D:/toolsrift-publisher/manifests/manifest-2026-07-25T14-02-15-455Z.json",
       "zernio_post_ids": {
-        "youtube": "6a64c364481ab04b186771cb",
-        "instagram": "6a64c366c214534f4fe3e53e"
-      }
+        "youtube": "6a64f1d521c13775c1f54a2b",
+        "instagram": "6a64f1d921c13775c1f54b9d"
+      },
+      "audio_fixed_at": "2026-07-25T16:51:17.147Z",
+      "note": "original post (broken VO, Windows npx/shell argv truncation bug) deleted and recreated with corrected audio",
+      "fixes_applied": [
+        "capture-duration bug (screencast now waits full requested seconds)",
+        "card-first skin (was device-frame-only template)",
+        "tall viewport capture (was truncating this tool 2-col form at mobile width)",
+        "synthesized music fallback (MusicGen had repeated memory blowups this session)"
+      ],
+      "corrected_at": "2026-07-25T17:27:03.908Z"
     },
     {
       "seq": 2,

@@ -1,0 +1,129 @@
+{
+  "id": "business-payslip-gen",
+  "generated_at": "2026-07-26T07:13:11.174Z",
+  "generator": "toolsrift-marketing-video/gemini-creative.mjs",
+  "model": "gemini-3.5-flash-lite",
+  "attempts": 1,
+  "tool": {
+    "id": "payslip-gen",
+    "name": "Payslip / Salary Slip Generator",
+    "category": "business",
+    "categoryName": "Business Tools",
+    "url": "https://toolsrift.com/business/payslip-gen"
+  },
+  "context": {
+    "format": "before-after",
+    "aspect": "9:16",
+    "seconds": 30,
+    "motion_feel": "smooth",
+    "skin_label": "Vertical pan down the tool, sticky caption pinned to the top"
+  },
+  "grounding": {
+    "registry_desc": true,
+    "seo_desc": true,
+    "how_to": true,
+    "faq_count": 3,
+    "live_page": true
+  },
+  "video_prompt": "A 30-second vertical social promo for ToolsRift's Payslip Generator. The video uses a before-after emotional angle, targeting business owners and HR managers who need clean payroll documents. At 0s, the hook shows a blank document. At 5s, the video cuts to a screen recording of the payslip generator in action, showing live editing of earnings and deductions. At 16s, the benefits are displayed on screen. At 23s, the final call to action appears. The visual style features smooth vertical pans down the browser interface, with clean UI typography and a persistent caption pinned to the top.",
+  "vo": [
+    {
+      "slot": "hook",
+      "text": "Struggling to format a professional salary slip from scratch?",
+      "at": 0.6,
+      "ends_by": 4.85,
+      "max_words": 9,
+      "words": 9
+    },
+    {
+      "slot": "demo",
+      "text": "Fill in the employee details and watch the totals calculate instantly.",
+      "at": 5.4,
+      "ends_by": 10.2,
+      "max_words": 11,
+      "words": 11
+    },
+    {
+      "slot": "editorial",
+      "text": "Choose from five currencies and switch your number formatting system automatically.",
+      "at": 10.4,
+      "ends_by": 15.9,
+      "max_words": 12,
+      "words": 11
+    },
+    {
+      "slot": "benefit",
+      "text": "Export a clean A4 payslip.",
+      "at": 16.4,
+      "ends_by": 19.4,
+      "max_words": 7,
+      "words": 5
+    },
+    {
+      "slot": "proof",
+      "text": "Runs right in your browser.",
+      "at": 19.6,
+      "ends_by": 22.9,
+      "max_words": 7,
+      "words": 5
+    },
+    {
+      "slot": "cta",
+      "text": "Create your free payslip right now at ToolsRift dot com.",
+      "at": 23.4,
+      "ends_by": 29.4,
+      "max_words": 14,
+      "words": 10
+    }
+  ],
+  "vo_total_words": 51,
+  "on_screen": {
+    "hook": "Stop wasting time on payroll formatting",
+    "demo_title": "Live Payslip Builder",
+    "caption": "Gross and net pay calculate automatically.",
+    "ben_title": "Built for Global Payroll",
+    "benefits": [
+      "Editable earnings and deductions",
+      "Five currency options",
+      "Net amount in words"
+    ],
+    "cta_headline": "Generate Your Payslip",
+    "cta_tags": "Free · No Signup · Browser Based",
+    "action_badge": "Print or Save"
+  },
+  "editorial": "The tool handles complex regional requirements by automatically switching amount-in-words formatting between the international billion system and the Indian lakh system based on your currency selection.",
+  "editorial_similarity": 0.694,
+  "broll": [
+    {
+      "scene": "hook",
+      "image_prompt": "Minimalist minimalist desk setup with a laptop displaying a blank document, soft morning light, clean corporate aesthetic, no text, no faces",
+      "motion_prompt": "Slow continuous zoom in towards the center of the desk"
+    },
+    {
+      "scene": "benefit",
+      "image_prompt": "Abstract close up of glowing digital interface lines and grid patterns, modern UI design elements, clean dark mode, no text",
+      "motion_prompt": "Smooth vertical pan downward across the geometric lines"
+    }
+  ],
+  "music_prompt": "A smooth and minimal lofi electronic instrumental bed with a steady mid-tempo beat, warm synth pads, and no competing melodic hooks.",
+  "sfx": [
+    {
+      "cue": "whoosh",
+      "at": 0,
+      "why": "Transition into the hook line"
+    },
+    {
+      "cue": "chime",
+      "at": 16,
+      "why": "Highlight the transition to the benefits section"
+    },
+    {
+      "cue": "riser",
+      "at": 23,
+      "why": "Build anticipation for the final call to action"
+    }
+  ],
+  "warnings": [
+    "on_screen.action_badge trimmed to 3 words"
+  ]
+}

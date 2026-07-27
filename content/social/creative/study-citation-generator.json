@@ -1,0 +1,132 @@
+{
+  "id": "study-citation-generator",
+  "generated_at": "2026-07-26T06:54:58.381Z",
+  "generator": "toolsrift-marketing-video/gemini-creative.mjs",
+  "model": "gemini-3.5-flash-lite",
+  "attempts": 2,
+  "tool": {
+    "id": "citation-generator",
+    "name": "Citation Generator",
+    "category": "study",
+    "categoryName": "Study & Education Tools",
+    "url": "https://toolsrift.com/study/citation-generator"
+  },
+  "context": {
+    "format": "speed-run",
+    "aspect": "9:16",
+    "seconds": 30,
+    "motion_feel": "smooth",
+    "skin_label": "Oversized editorial headline up top, footage as a lower third"
+  },
+  "grounding": {
+    "registry_desc": true,
+    "seo_desc": true,
+    "how_to": true,
+    "faq_count": 3,
+    "live_page": true
+  },
+  "video_prompt": "A vertical thirty-second promotional video using a speed-run editorial format. The visual construction features an oversized editorial headline up top with a lower-third screen recording of the citation generator in action. At zero seconds, a clean hook screen appears. At five seconds, the video cuts to a real screen recording showing source details being typed into the tool. At sixteen seconds, the layout shifts to show output formatting. At twenty-three seconds, the video displays the call to action with the web address. The emotional angle focuses on the relief of finishing a reference list without formatting mistakes.",
+  "vo": [
+    {
+      "slot": "hook",
+      "text": "Staring at a blank bibliography is frustrating.",
+      "at": 0.6,
+      "ends_by": 4.85,
+      "max_words": 9,
+      "words": 7
+    },
+    {
+      "slot": "demo",
+      "text": "Type your source details and watch references build.",
+      "at": 5.4,
+      "ends_by": 10.2,
+      "max_words": 11,
+      "words": 8
+    },
+    {
+      "slot": "editorial",
+      "text": "All three styles generate at once so you can compare them.",
+      "at": 10.4,
+      "ends_by": 15.9,
+      "max_words": 12,
+      "words": 11
+    },
+    {
+      "slot": "benefit",
+      "text": "Get the exact format you need.",
+      "at": 16.4,
+      "ends_by": 19.4,
+      "max_words": 7,
+      "words": 6
+    },
+    {
+      "slot": "proof",
+      "text": "No signup required to use it.",
+      "at": 19.6,
+      "ends_by": 22.9,
+      "max_words": 7,
+      "words": 6
+    },
+    {
+      "slot": "cta",
+      "text": "Build your references free at toolsrift.com/study/citation-generator.",
+      "at": 23.4,
+      "ends_by": 29.4,
+      "max_words": 14,
+      "words": 6
+    }
+  ],
+  "vo_total_words": 44,
+  "on_screen": {
+    "hook": "Dreading your bibliography page?",
+    "demo_title": "Instant Formatting",
+    "caption": " APA 7, MLA 9, and Chicago styles build as you type.",
+    "ben_title": "Everything you need",
+    "benefits": [
+      "Books and videos",
+      "Automatic author rules",
+      "Plain text copy"
+    ],
+    "cta_headline": "Format your references today",
+    "cta_tags": "Free to use · No registration · Instant copy",
+    "action_badge": "Copy citation"
+  },
+  "editorial": "Generating three different style formats simultaneously allows students to instantly check and compare references before copying them directly into their research papers.",
+  "editorial_similarity": 0.385,
+  "broll": [
+    {
+      "scene": "hook",
+      "image_prompt": "A minimalist workspace with an open notebook and a clean modern laptop on a wooden desk.",
+      "motion_prompt": "Slow cinematic push-in toward the laptop screen."
+    },
+    {
+      "scene": "benefit",
+      "image_prompt": "An organized academic desk with a cup of coffee and neat stacks of paper.",
+      "motion_prompt": "Gentle lateral pan across the desk surface."
+    },
+    {
+      "scene": "cta",
+      "image_prompt": "A glowing browser window graphic on a clean dark background with soft accent lighting.",
+      "motion_prompt": "Subtle zoom and fade into the center."
+    }
+  ],
+  "music_prompt": "A smooth lo-fi instrumental bed featuring clean electric piano chords and a steady muted drum beat.",
+  "sfx": [
+    {
+      "cue": "whoosh",
+      "at": 0,
+      "why": "Introduces the hook screen smoothly."
+    },
+    {
+      "cue": "pop",
+      "at": 5,
+      "why": "Accents the transition into the live product demo."
+    },
+    {
+      "cue": "chime",
+      "at": 23,
+      "why": "Signals the final call to action screen."
+    }
+  ],
+  "warnings": []
+}
