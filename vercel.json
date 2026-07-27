@@ -4,6 +4,9 @@
   "devCommand": "next dev",
   "installCommand": "npm install",
   "regions": ["bom1"],
+  "crons": [
+    { "path": "/api/cron/submit-search-engines", "schedule": "0 3 * * *" }
+  ],
   "headers": [
     {
       "source": "/.well-known/assetlinks.json",
