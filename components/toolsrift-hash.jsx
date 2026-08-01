@@ -365,8 +365,47 @@ const CATEGORIES = [
   {id:"crypto",   name:"Crypto Utilities",icon:"⚡", desc:"Passwords, UUIDs, tokens, OTP, ciphers"},
 ];
 
-const TOOL_META = {
-  "hash-all":       {title:"Hash Generator — MD5 SHA1 SHA256 SHA512 Online",  desc:"Generate MD5, SHA-1, SHA-256, SHA-512 and SHA-384 hashes simultaneously from any text input.", faq:[["What is a cryptographic hash?","A one-way function that maps arbitrary data to a fixed-size digest. Changing one character produces a completely different hash."],["Which hash should I use?","SHA-256 or SHA-512 for security. MD5 and SHA-1 are broken for security use but fine for checksums."],["Are these hashes reversible?","No — hash functions are one-way. You cannot recover the input from the hash."]]},
+// Per-tool "how to use" text, keyed by tool id.
+const HOWTO = {
+"hash-all":"Type or paste your text, and the tool generates MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes all at once, live.",
+"md5-hash":"Type or paste your text, and the tool generates its MD5 checksum instantly.",
+"sha1-hash":"Type or paste your text, and the tool generates its SHA-1 hash digest instantly.",
+"sha256-hash":"Type or paste your text, and the tool generates its SHA-256 hash digest instantly.",
+"sha512-hash":"Type or paste your text, and the tool generates its SHA-512 hash digest instantly.",
+"sha384-hash":"Type or paste your text, and the tool generates its SHA-384 hash digest instantly.",
+"hmac-generator":"Type your message and a secret key, and the tool generates the HMAC-SHA256 signature for that pair.",
+"hash-compare":"Paste two hashes, and the tool compares them character by character and tells you instantly whether they match.",
+"crc32":"Type or paste your text, and the tool calculates its CRC32 cyclic redundancy check value.",
+"adler32":"Type or paste your text, and the tool computes its Adler-32 checksum.",
+"fnv-hash":"Type or paste your text, and the tool generates its FNV-1a 32-bit non-cryptographic hash value.",
+"djb2-hash":"Type or paste your text, and the tool computes its classic DJB2 string hash.",
+"crc16":"Type or paste your text, and the tool calculates its CRC-16/ARC (IBM) cyclic redundancy check value.",
+"luhn-validator":"Enter a credit card or IMEI number, and the tool validates it against the Luhn algorithm and computes the correct check digit.",
+"isbn-validator":"Enter an ISBN-10 or ISBN-13, and the tool validates it and computes the correct check digit.",
+"password-generator":"Set your length and character-set rules, and the tool generates a strong random password that updates live.",
+"passphrase-gen":"Set how many words you want, and the tool combines random dictionary words into a memorable diceware-style passphrase.",
+"password-strength":"Type a password, and the tool analyzes its strength live and estimates how long it would take to crack.",
+"random-string":"Set a length and character set, and the tool generates a cryptographically random string or token.",
+"uuid-generator":"Click generate, and the tool creates an RFC 4122 version 4 UUID/GUID — generate as many as you need.",
+"hash-file":"Upload a file, and the tool calculates its MD5, SHA-1, and SHA-256 hashes entirely in your browser.",
+"bcrypt-hash":"Type a password and set the cost factor, and the tool generates a real bcrypt hash with a random salt.",
+"token-generator":"Set your length and format, and the tool generates a secure API key or bearer token.",
+"otp-generator":"Enter a Base32 TOTP secret, and the tool generates the current real RFC 6238 code, matching what Google Authenticator would show.",
+"caesar-hash":"Type or paste your text, and the tool computes it through several non-cryptographic hash algorithms side by side for comparison.",
+"xor-cipher":"Type your text and a key, and the tool encrypts or decrypts it with a bitwise XOR operation.",
+"binary-converter":"Enter a number and its base, and the tool converts it between binary, octal, decimal, and hexadecimal live.",
+"color-hash":"Type any text, and the tool deterministically hashes it into a color swatch — the same text always produces the same color.",
+"pbkdf2-generator":"Enter a password, salt, and iteration count, and the tool derives a key using PBKDF2-HMAC with your chosen SHA algorithm.",
+"sha3-keccak":"Type or paste your text, and the tool generates SHA3-256, SHA3-384, SHA3-512, and Keccak-256 digests.",
+"hash-identifier":"Paste a hash digest, and the tool identifies its likely algorithm based on its length and character format.",
+};
+function mergeHowTo(meta) {
+  for (const id in HOWTO) if (meta[id] && !meta[id].howTo) meta[id].howTo = HOWTO[id];
+  return meta;
+}
+
+const TOOL_META = mergeHowTo({
+  "hash-all":       {title:"Hash Generator — MD5 SHA1 SHA256 SHA512 Online", desc:"Generate MD5, SHA-1, SHA-256, SHA-512 and SHA-384 hashes simultaneously from any text input.", faq:[["What is a cryptographic hash?","A one-way function that maps arbitrary data to a fixed-size digest. Changing one character produces a completely different hash."],["Which hash should I use?","SHA-256 or SHA-512 for security. MD5 and SHA-1 are broken for security use but fine for checksums."],["Are these hashes reversible?","No — hash functions are one-way. You cannot recover the input from the hash."]]},
   "md5-hash":       {title:"MD5 Hash Generator — Free Online MD5 Checksum Tool", desc:"Generate MD5 hashes from text. MD5 produces a 128-bit (32 hex char) digest. Fast for checksums, not secure for passwords.", faq:[["Is MD5 secure for passwords?","No — MD5 is cryptographically broken. Use bcrypt, Argon2, or scrypt for password hashing."],["What is MD5 used for?","File integrity checksums, database fingerprinting, non-security deduplication."],["How long is an MD5 hash?","32 hexadecimal characters (128 bits)."]]},
   "sha256-hash":    {title:"SHA-256 Hash Generator — Free Online SHA256 Tool",   desc:"Generate SHA-256 cryptographic hashes. SHA-256 is part of SHA-2 family, producing 256-bit (64 hex char) digests.", faq:[["Is SHA-256 secure?","Yes — SHA-256 is still considered secure for general cryptographic use."],["What uses SHA-256?","Bitcoin mining, TLS certificates, code signing, and Git commit hashes."],["How long is a SHA-256 hash?","64 hexadecimal characters (256 bits)."]]},
   "password-generator":{title:"Strong Password Generator — Free Online Tool",   desc:"Generate strong, random passwords with custom length and character sets. Cryptographically secure random generation.", faq:[["How long should my password be?","At least 16 characters. 20+ characters significantly increases security."],["What characters should I include?","Use uppercase, lowercase, numbers, and symbols for maximum entropy."],["Is this generator truly random?","Yes — it uses window.crypto.getRandomValues() which is cryptographically secure."]]},
@@ -397,7 +436,7 @@ const TOOL_META = {
   "pbkdf2-generator":{title:"PBKDF2 Key Derivation — Derive Keys Online", desc:"Derive a key from a password using PBKDF2-HMAC with SHA-256, SHA-384 or SHA-512, a salt and configurable iterations. Runs in-browser.", keywords:"pbkdf2 generator, key derivation, pbkdf2 hmac", howTo:"Enter a password and salt, pick the hash and iteration count, and PBKDF2 derives a hex key locally using the Web Crypto API.", faq:[["What is PBKDF2?","Password-Based Key Derivation Function 2 stretches a password with many HMAC iterations and a salt to produce a strong cryptographic key."],["Why increase the iteration count?","More iterations slow down each guess, making brute-force attacks against the derived key far more expensive."],["What salt should I use?","A unique random salt per password. It prevents rainbow-table attacks and should be stored alongside the derived key."]]},
   "sha3-keccak":    {title:"SHA-3 / Keccak Hash Generator — SHA3 & Keccak-256", desc:"Generate SHA3-256, SHA3-384, SHA3-512 and Keccak-256 digests from text. Keccak-256 is the hash used across Ethereum.", keywords:"sha-3 generator, keccak-256, ethereum hash", howTo:"Paste your text and choose a variant to compute its SHA-3 or Keccak-256 digest instantly, shown as a hex string to copy.", faq:[["How is SHA-3 different from SHA-2?","SHA-3 uses the sponge-based Keccak construction rather than the Merkle–Damgård design of SHA-2, giving it a different security profile."],["What is Keccak-256 used for?","Ethereum uses Keccak-256 for addresses, function selectors and state hashing. Note it differs slightly from the final SHA3-256 standard."],["Are SHA-3 hashes reversible?","No — like all cryptographic hashes they are one-way and cannot be reversed to the original input."]]},
   "hash-identifier":{title:"Hash Identifier — Detect Hash Type Online", desc:"Identify the likely algorithm behind a hash from its length and character set. Quickly tell MD5, SHA-1, SHA-256, bcrypt and more apart.", keywords:"hash identifier, detect hash type, identify hash algorithm", howTo:"Paste a hash and the tool inspects its length and format to list the most likely algorithms that could have produced it.", faq:[["How does it identify a hash?","It examines the length, character set and any prefix (like $2b$ for bcrypt) to shortlist the algorithms that match."],["Can it be certain of the type?","Not always — many algorithms share the same length. A 32-character hex string could be MD5 or an NTLM hash, so it lists candidates."],["Does it crack the hash?","No — it only guesses the algorithm from the format; it does not attempt to reverse or crack the value."]]},
-};
+});
 
 // �"����� WORD LIST for passphrases �����������������������������������������������������������������������������������������������"�
 const WORDS = ["apple","bridge","cloud","dance","eagle","flame","grape","house","ivory","jungle","kite","lemon","magic","night","ocean","piano","queen","river","storm","tiger","umbrella","valley","water","xenon","yacht","zebra","amber","blaze","coral","drift","ember","frost","glade","haven","inkwell","jewel","knack","lunar","maple","noble","orbit","pearl","quest","ridge","solar","tower","ultra","vivid","woven","xylem","yield","azure","brick","creep","dusk","epoch","flint","gloom","hatch","index","joust","kneel","lance","mirth","notch","oxide","prism","quill","realm","shore","tryst","unveil","verse","wrath","xyster","young","zonal"];

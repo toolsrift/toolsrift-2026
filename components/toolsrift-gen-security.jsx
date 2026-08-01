@@ -1054,15 +1054,126 @@ const CATEGORIES = [
 { id:"fakedata", name:"Fake Data Generators", icon:"🧪", desc:"Create realistic fake names, addresses, phone numbers, dates, and bulk mock datasets." },
 ];
 
-const TOOL_META = Object.fromEntries(TOOLS.map(t => [t.id, {
-title:`Free ${t.name} – Generate Online | ToolsRift`,
-desc:t.desc,
-faq:[
-["Is this tool free to use?", "Yes. This tool is completely free to use with no daily limits and no signup required."],
-["Does this tool send my data to a server?", "No. Processing runs in your browser for fast, private generation and analysis."],
-["Can I copy or export generated output?", "Yes. Most generators include Copy, Copy All, and download options for quick workflows."]
-]
-}]));
+// Per-tool "how to use" text and a unique first FAQ question, keyed by tool
+// id. The three FAQ questions used to be one identical array shared by all
+// 43 tools — same words, same order, on every page. Q1 is now specific to
+// what each tool actually generates and how it's validated; Q2/Q3 vary by
+// generator family (security credential, ID/token, or fake test data)
+// instead of being byte-identical across all three families.
+const HOWTO = {
+"strong-password-gen":"Set the length and toggle uppercase, numbers, symbols, and ambiguous-character exclusion, and the tool generates a random password that updates live as you adjust the options.",
+"passphrase-gen":"Choose how many words you want and a separator character, and the tool combines random dictionary words into a memorable passphrase you can copy straight into a password manager.",
+"pin-gen":"Pick a length of 4, 6, or 8 digits, and the tool generates a random numeric PIN with an instant strength rating based on repeated or sequential digits.",
+"api-key-gen":"Choose hex, UUID, or base58 format and a length, and the tool generates a random API key string ready to copy into your app's environment variables or config.",
+"encryption-key-gen":"Pick AES or RSA-sized key material and hex or base64 output, and the tool generates cryptographically random key bytes ready for use in your encryption workflow.",
+"bulk-password-gen":"Set your password policy (length, character sets) and how many you need, and the tool generates a batch of passwords at once with one-click export for the whole list.",
+"uuid-gen":"Choose single or bulk mode and how many you need, and the tool generates RFC 4122 version 4 UUIDs with one click to copy one or the whole list.",
+"guid-gen":"Toggle whether to wrap the value in braces, and the tool generates a Windows-style GUID string formatted the way .NET and Windows registry entries expect.",
+"nanoid-gen":"Set a custom alphabet and length, and the tool generates a compact, URL-safe Nano ID using your chosen character set.",
+"random-number-gen":"Enter a minimum and maximum, choose integer or decimal, and set how many you need, and the tool generates random numbers within that exact range.",
+"random-string-gen":"Choose your character set (letters, digits, symbols) and a length, and the tool generates a random string built only from the characters you selected.",
+"random-hex-gen":"Set the byte length you need, and the tool generates a random hexadecimal string of that length, useful as an ID, seed, or salt.",
+"serial-number-gen":"Enter a prefix and a format pattern like TR-XXXX-YYYY, and the tool fills the X and Y placeholders with random characters to generate serial numbers matching your pattern.",
+"cuid-gen":"Click generate, and the tool builds a collision-resistant CUID — a timestamp-based, readable identifier designed for use across multiple clients without a central counter.",
+"hash-id-gen":"Enter a number and an optional salt, and the tool encodes it into a short, non-sequential hash ID using hashids-style alphabet mapping — good for hiding database IDs in URLs.",
+"fake-name-gen":"Choose a gender and locale, and the tool picks a realistic first and last name from that locale's name bank — generate as many as you need for test data.",
+"fake-address-gen":"Choose US, UK, or IN format, and the tool generates a fake street address with a matching city, region, and postal code style for that country.",
+"fake-email-gen":"Pick a naming style (first.last, initials, random), and the tool generates a fake email address in that format using a mock domain safe for testing.",
+"fake-phone-gen":"Choose US, UK, IN, or AU format, and the tool generates a fake phone number matching that country's digit pattern and formatting.",
+"fake-ip-gen":"Choose IPv4 or IPv6, and the tool generates a random address in valid dotted or colon-separated notation for use in test logs or documentation.",
+"fake-mac-gen":"Choose colon, dash, or dot format, and the tool generates a random 6-byte MAC address formatted the way you selected.",
+"fake-date-gen":"Set a start and end date, and the tool generates a random date within that range in your chosen format.",
+"fake-data-bulk":"Choose which fields you need (name, email, phone, address), set how many rows, and the tool generates a full batch and exports it as CSV.",
+"random-country-gen":"Click generate, and the tool picks a random country along with its real ISO code, capital city, and currency for use in localization tests or mock dashboards.",
+"random-color-gen":"Click generate, and the tool picks a random color and shows it as a swatch alongside its HEX, RGB, and HSL values, ready to copy in whichever format you need.",
+"totp-secret-gen":"Click generate, and the tool creates a cryptographically random Base32 secret plus an otpauth:// URI you can scan into Google Authenticator, Authy, or any TOTP app.",
+"rsa-key-pair-gen":"Choose a key size and click generate, and the tool uses your browser's native WebCrypto API to create a real RSA public/private key pair in PEM format — no server involved.",
+"ulid-gen":"Click generate, and the tool builds a ULID — a 26-character, timestamp-prefixed identifier in Crockford Base32 that sorts lexicographically by creation time.",
+"objectid-gen":"Click generate, and the tool builds a valid MongoDB ObjectId with a real Unix timestamp prefix and a random tail, ready to use as a test document id.",
+"credit-card-test-gen":"Choose a card network (Visa, Mastercard, Amex, Discover), and the tool generates a Luhn-valid test number in that network's format for payment sandbox testing.",
+"imei-generator":"Click generate, and the tool builds a 15-digit IMEI number with a correctly computed Luhn check digit, valid in format for device-testing forms.",
+"iban-generator":"Choose a country, and the tool generates a structurally valid fake IBAN with correct ISO 13616 mod-97 check digits for that country's format.",
+"vin-generator":"Click generate, and the tool builds a 17-character Vehicle Identification Number with a correctly computed ISO 3779 check digit.",
+"license-plate-gen":"Choose US, UK, German, or Indian format, and the tool generates a random plate number matching that region's real formatting pattern.",
+"ean13-generator":"Click generate, and the tool builds a 13-digit EAN-13 barcode number with a correctly computed GS1 mod-10 checksum digit.",
+"ean8-generator":"Click generate, and the tool builds an 8-digit EAN-8 barcode number with a correctly computed mod-10 check digit, sized for small packaging.",
+"upc-a-generator":"Click generate, and the tool builds a 12-digit UPC-A barcode number with a correctly computed mod-10 checksum, used on North American retail products.",
+"isbn13-generator":"Click generate, and the tool builds a valid ISBN-13 with a 978 or 979 prefix and a correctly computed check digit.",
+"isbn10-generator":"Click generate, and the tool builds a valid legacy ISBN-10 with a correctly computed mod-11 check digit, including X where required.",
+"isin-generator":"Choose a country prefix, and the tool builds a 12-character ISIN securities identifier with a correctly computed Luhn check digit.",
+"coupon-code-gen":"Set a prefix, segment count, and length, and the tool generates a batch of unique coupon codes matching that pattern, ready to export.",
+"order-number-gen":"Set a prefix and choose whether to include the date, and the tool generates sequential order numbers in that pattern for test data or seed records.",
+"invoice-number-gen":"Set a prefix, starting year, and counter width, and the tool generates zero-padded sequential invoice numbers, e.g. INV-2026-0001.",
+};
+
+const FAQ1 = {
+"strong-password-gen":["How strong is the generated password?", "Strength depends on the length and character sets you enable — 16+ characters with symbols and numbers turned on gives you a password resistant to brute-force attacks for decades."],
+"passphrase-gen":["Are passphrases more secure than random passwords?", "For the same length, a random password has more entropy per character, but a longer passphrase is easier to remember correctly and type without errors — both are strong if long enough."],
+"pin-gen":["Does the strength rating check for weak patterns?", "Yes. It flags PINs like repeated digits (1111) or simple runs (1234), since those are the first ones attackers try."],
+"api-key-gen":["Which format should I use?", "Hex is the most universally compatible; UUID is common where keys double as identifiers; base58 avoids visually ambiguous characters (0/O, l/I) in keys users may need to type."],
+"encryption-key-gen":["Is this key generated securely enough for real encryption?", "Yes. It uses your browser's cryptographically secure random number generator (Web Crypto API), the same source used for real encryption keys, not Math.random()."],
+"bulk-password-gen":["Are all the generated passwords unique?", "Yes, each one is generated independently from your policy settings, so duplicates are effectively impossible at any reasonable batch size."],
+"uuid-gen":["Are these UUIDs guaranteed unique?", "They're version 4 (random) UUIDs — the chance of a collision is astronomically small (about 1 in 5.3×10^36), which is why they're used as database primary keys."],
+"guid-gen":["Is a GUID different from a UUID?", "No — GUID is Microsoft's name for the same UUID format. This generator adds the optional curly braces Windows tooling and .NET conventionally expect."],
+"nanoid-gen":["Why use Nano ID instead of UUID?", "Nano IDs are shorter (customizable length vs UUID's fixed 36 characters) while remaining URL-safe and collision-resistant, which is why they're popular for short public IDs."],
+"random-number-gen":["Can I generate decimals, not just whole numbers?", "Yes, toggle to decimal mode and the tool will generate numbers with fractional values within your min-max range."],
+"random-string-gen":["Can I exclude confusing characters like 0 and O?", "Choose a custom character set that leaves out characters you don't want — the tool only draws from whatever set you select."],
+"random-hex-gen":["What length should I use for a security salt?", "16 bytes (32 hex characters) is a common minimum for password salts; use more for cryptographic keys depending on your algorithm's requirements."],
+"serial-number-gen":["Can I control which characters fill the X and Y placeholders?", "The tool fills X with random alphanumeric characters and Y with random digits by default, matching common serial number conventions."],
+"cuid-gen":["Why would I use a CUID instead of a UUID?", "CUIDs are designed to be collision-resistant across distributed clients without coordination, while staying shorter and more URL-friendly than a standard UUID."],
+"hash-id-gen":["Can this be reversed back to the original number?", "With the same alphabet and salt used to encode it, yes — that's the point of hashids: a reversible, non-sequential stand-in for a numeric database ID."],
+"fake-name-gen":["Are these real people's names?", "No. Names are drawn from generic first/last name banks per locale — they're not tied to real individuals, so they're safe to use in demos and test data."],
+"fake-address-gen":["Are these real, deliverable addresses?", "No. They follow the correct format and structure for the chosen country but are not real deliverable addresses — safe for testing forms without contacting real locations."],
+"fake-email-gen":["Will emails sent to these addresses actually deliver?", "No, they use mock domains that aren't live mailboxes — they're meant for populating test data and UI, not for sending real email."],
+"fake-phone-gen":["Are these real phone numbers?", "No. They follow each country's correct digit pattern and formatting but are not assigned to real people — safe to use in test forms and demos."],
+"fake-ip-gen":["Can I get an address in a specific private range?", "The generator produces valid-format public-looking addresses for general testing; for a specific private/reserved range, adjust the octets manually after generating."],
+"fake-mac-gen":["Are these real hardware MAC addresses?", "No, they're randomly generated in valid format — not tied to any real network device, so they're safe for documentation and parser testing."],
+"fake-date-gen":["Does it avoid impossible dates like February 30th?", "Yes, the generator only produces valid calendar dates within your chosen range and format."],
+"fake-data-bulk":["Can I choose which fields are included?", "Yes, tick only the fields you need — name, email, phone, address, or all of them — before generating your batch."],
+"random-country-gen":["Is the country data accurate?", "Yes, the ISO code, capital, and currency shown are the real, current values for whichever country is randomly selected."],
+"random-color-gen":["Can I lock the generator to a certain color range?", "This generator picks a fully random color each time; for controlled palettes, ToolsRift's color category has dedicated palette and gradient generators."],
+"totp-secret-gen":["Is the generated secret cryptographically secure?", "Yes, it's generated with your browser's Web Crypto API, the same secure random source real authenticator apps rely on."],
+"rsa-key-pair-gen":["Is my private key ever sent anywhere?", "No. The key pair is generated and stays entirely in your browser tab using WebCrypto — nothing is transmitted to any server."],
+"ulid-gen":["Why would I pick ULID over UUID?", "ULIDs sort correctly by creation time when ordered as strings, which UUIDs don't — useful for database indexes where insertion order matters."],
+"objectid-gen":["Is this a real, usable MongoDB ObjectId?", "Yes, it follows MongoDB's exact 12-byte format (4-byte timestamp, 5-byte random, 3-byte counter) and works as a valid _id value."],
+"credit-card-test-gen":["Can these numbers be used for real purchases?", "No. They pass the Luhn checksum a payment form validates against, but they are not linked to any real account or funds — for sandbox and QA testing only."],
+"imei-generator":["Is this a real device's IMEI?", "No, it's a randomly generated number with a valid check digit — not registered to any real device, intended only for testing form validation."],
+"iban-generator":["Will this IBAN pass a real bank's validation?", "It passes the standard mod-97 structural checksum test, but it is not a real account — use it only for testing form validation, not real transfers."],
+"vin-generator":["Is this a real vehicle's VIN?", "No, it's randomly generated with a valid check digit but is not tied to any real manufactured vehicle."],
+"license-plate-gen":["Are these real, registered plates?", "No, they follow the correct formatting pattern for the selected region but are not tied to any real registered vehicle."],
+"ean13-generator":["Will this barcode scan correctly?", "Yes, the checksum digit is computed correctly so any standard barcode scanner will read it as valid — it is simply not registered to a real product."],
+"ean8-generator":["When is EAN-8 used instead of EAN-13?", "EAN-8 is used on very small packaging where a full 13-digit barcode won't fit, such as small confectionery or cosmetics."],
+"upc-a-generator":["Is UPC-A the same as EAN-13?", "UPC-A is a 12-digit code used mainly in North America; EAN-13 is its 13-digit international superset — most modern scanners read both."],
+"isbn13-generator":["Can I convert this to ISBN-10?", "Only ISBNs with a 978 prefix can convert to ISBN-10; ToolsRift's ISBN-10 generator produces a separate, independently valid legacy-format number."],
+"isbn10-generator":["Why does the check digit sometimes show as X?", "ISBN-10's mod-11 checksum can require a value of 10, which is conventionally written as the letter X in the final position."],
+"isin-generator":["What does the country prefix mean?", "The first two letters are the ISO 3166 country code of the issuing country — for example US for United States-issued securities."],
+"coupon-code-gen":["Can I generate more than one batch without repeats?", "Each generation run is independently randomized, so re-running with the same settings will very rarely repeat a prior code, but for guaranteed uniqueness keep each batch's codes together."],
+"order-number-gen":["Can I control the starting number in the sequence?", "The pattern and prefix are yours to set; regenerate to continue the sequence manually, or use the bulk options to produce a consecutive run at once."],
+"invoice-number-gen":["Does numbering reset each year?", "You control the year segment directly — set it in the pattern, and start the counter at 0001 whenever you want a new year's sequence to begin."],
+};
+
+const FAQ_BY_SUBCAT = {
+security: ["Is this generated securely enough to actually use?", "Yes. Generation uses your browser's cryptographically secure random source (Web Crypto API), not a predictable pseudo-random function.",
+           "Does this tool send anything to a server?", "No. Everything is generated entirely client-side in your browser — nothing you generate is ever transmitted anywhere."],
+ids:      ["Is this tool free to use?", "Yes. This tool is completely free to use with no daily limits and no signup required.",
+           "Can I generate more than one at a time?", "Most ID generators here support a bulk mode — set the count and copy the whole list at once."],
+fakedata: ["Is this tool free to use?", "Yes. This tool is completely free to use with no daily limits and no signup required.",
+           "Is the generated data safe to use in a public demo?", "Yes. It's synthetic — not drawn from real individuals or accounts — so it's safe for demos, screenshots, and shared test environments."],
+};
+
+const TOOL_META = Object.fromEntries(TOOLS.map(t => {
+  const sub = FAQ_BY_SUBCAT[t.cat] || FAQ_BY_SUBCAT.ids
+  return [t.id, {
+    title:`Free ${t.name} – Generate Online | ToolsRift`,
+    desc:t.desc,
+    howTo:HOWTO[t.id],
+    faq:[
+      FAQ1[t.id] || ["Is this tool free to use?", "Yes. This tool is completely free to use with no daily limits and no signup required."],
+      [sub[0], sub[1]],
+      [sub[2], sub[3]],
+    ],
+  }]
+}));
 
 // ─── Base32 (RFC 4648) encode — for TOTP secrets ───
 const B32_ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";

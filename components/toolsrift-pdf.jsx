@@ -360,7 +360,55 @@ const CATEGORIES = [
   { id:"data", name:"Data & AI", icon:"🤖", desc:"Turn PDFs into Markdown, JSON, CSV and RAG-ready chunks" },
 ];
 
-const TOOL_META = {
+// Per-tool "how to use" text, keyed by tool id.
+const HOWTO = {
+"pdf-viewer":"Upload a PDF, and it renders instantly in the browser with zoom, page navigation, and full-screen controls.",
+"pdf-page-count":"Upload a PDF, and the tool instantly reports how many pages it contains, without opening it in a reader.",
+"pdf-metadata":"Upload a PDF, and the tool reads and displays its metadata — title, author, creation date, and more.",
+"pdf-text-extractor":"Upload a PDF, and the tool extracts all its text content, ready to copy or download for editing or analysis.",
+"pdf-merger":"Upload multiple PDF files, drag them into your preferred order, and the tool combines them into a single document.",
+"pdf-splitter":"Upload a PDF and set your page ranges, and the tool splits it into separate smaller PDF documents.",
+"pdf-page-extractor":"Upload a PDF and choose the specific pages you want, and the tool extracts them into a new, separate document.",
+"pdf-rotator":"Upload a PDF, choose 90, 180, or 270 degrees and a direction, and the tool rotates the pages and gives you a download.",
+"pdf-reorder":"Upload a PDF, then drag and drop the page thumbnails into your desired order, and the tool rebuilds the document in that sequence.",
+"pdf-delete-pages":"Upload a PDF and select the pages you want gone, and the tool removes them and gives you the cleaned-up document.",
+"pdf-to-jpg":"Upload a PDF and set your resolution and quality, and the tool converts each page into a JPG image.",
+"pdf-to-png":"Upload a PDF, and the tool converts each page into a PNG image, preserving transparency where present.",
+"jpg-to-pdf":"Upload one or more JPG images, choose a page size and orientation, and the tool wraps them into a PDF.",
+"png-to-pdf":"Upload one or more PNG images, and the tool wraps them into a PDF, preserving transparency and image quality.",
+"pdf-to-text":"Upload a PDF, and the tool extracts all its text content and gives you a downloadable plain .txt file.",
+"word-to-pdf":"Upload a Word document, and the tool converts it into a PDF while preserving the original formatting.",
+"pdf-password-protect":"Upload a PDF and set a password, and the tool encrypts it so it can only be opened with that password.",
+"pdf-unlock":"Upload a password-protected PDF and enter the correct password, and the tool removes the protection and gives you an unlocked copy.",
+"pdf-watermark":"Upload a PDF, type your watermark text, and set its position and opacity, and the tool stamps it onto every page.",
+"pdf-redact":"Upload a PDF, draw boxes over the sensitive content, and the tool permanently blacks it out and removes it from the file.",
+"pdf-compressor":"Upload a PDF and set a compression level, and the tool shrinks the file size while keeping the content readable.",
+"pdf-optimizer":"Upload a PDF, and the tool linearizes it for fast page-by-page loading, ideal for viewing over the web.",
+"pdf-metadata-editor":"Upload a PDF and edit the title, author, subject, keywords, and creator fields, and the tool writes the updated metadata back into the file.",
+"pdf-page-numbering":"Upload a PDF, choose the position and number format, and the tool adds page numbers to every page.",
+"pdf-margin-adder":"Upload a PDF and set your margin size, and the tool adds that margin around every page for printing or binding.",
+"pdf-cropper":"Upload a PDF and drag the crop box to the area you want, and the tool trims the borders and whitespace from every page.",
+"pdf-bookmarks":"Upload a PDF, and the tool shows its existing bookmarks/table of contents, letting you add, edit, and reorder them.",
+"pdf-form-filler":"Upload a PDF with fillable fields, and the tool lets you type into text fields, tick checkboxes, and pick from dropdowns directly.",
+"pdf-to-markdown":"Upload a PDF, and the tool converts its content into clean Markdown, ready for notes, static sites, or feeding to an LLM.",
+"pdf-to-json":"Upload a PDF, and the tool extracts the text as structured JSON, including each item's page, position, and font data.",
+"pdf-table-extractor":"Upload a PDF containing tables, and the tool detects them and exports each one as a CSV spreadsheet.",
+"pdf-chunker":"Upload a PDF and set your chunk size and overlap, and the tool splits the text into overlapping token-sized chunks ready for embeddings or RAG.",
+"pdf-add-blank-page":"Upload a PDF and choose where to insert it, and the tool adds one or more blank pages sized to match the document or a standard A4/Letter size.",
+"pdf-reverse-pages":"Upload a PDF, and the tool reverses the page order so the last page becomes the first.",
+"pdf-duplicate-pages":"Upload a PDF, choose a page and how many copies you need, and the tool duplicates it right after the original.",
+"pdf-rotate-range":"Upload a PDF and enter a page number or range, and the tool rotates just those pages, leaving the rest untouched.",
+"pdf-nup-2up":"Upload a PDF, and the tool places two pages side by side on each output sheet to save paper when printing.",
+"pdf-nup-4up":"Upload a PDF, and the tool arranges four pages in a 2x2 grid on each output sheet for compact handouts.",
+"pdf-resize-pages":"Upload a PDF and choose A4 or Letter, and the tool resizes every page to that standard size, scaling the content to fit.",
+"pdf-remove-metadata":"Upload a PDF, and the tool strips the title, author, subject, keywords, and producer metadata, returning a cleaned copy for privacy.",
+};
+function mergeHowTo(meta) {
+  for (const id in HOWTO) if (meta[id] && !meta[id].howTo) meta[id].howTo = HOWTO[id];
+  return meta;
+}
+
+const TOOL_META = mergeHowTo({
   "pdf-viewer": {
     title: "Free PDF Viewer — View PDF Files Online in Browser | ToolsRift",
     desc: "View and preview PDF documents directly in your browser with zoom, page navigation, and full-screen mode. No installation required, 100% free.",
@@ -755,7 +803,7 @@ const TOOL_META = {
       ["Is my file uploaded anywhere?", "No. The PDF is read and rewritten entirely in your browser, so your document and its metadata never leave your device."]
     ]
   }
-};
+});
 
 // PDF Viewer Component
 function PdfViewer() {

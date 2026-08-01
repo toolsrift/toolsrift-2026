@@ -247,7 +247,56 @@ const CATEGORIES = [
   { id:"special", name:"Special Formats", icon:"🔐", desc:"JWT, Quoted-Printable and more" },
 ];
 
-const TOOL_META = {
+// Per-tool "how to use" text, keyed by tool id.
+const HOWTO = {
+"base64-encode":"Type or paste your text (or drop a file), and the tool encodes it to a Base64 string live.",
+"base64-decode":"Paste a Base64 string, and the tool decodes it back to plain text or binary live.",
+"base64-image":"Upload an image, and the tool encodes it into a Base64 data URI ready to paste into CSS or HTML.",
+"base32-encode":"Type or paste your text, and the tool encodes it using RFC 4648 Base32 live.",
+"base32-decode":"Paste a Base32-encoded string, and the tool decodes it back to plain text.",
+"url-encode":"Type or paste your text, and the tool percent-encodes every character unsafe for a URL.",
+"url-decode":"Paste a percent-encoded URL or string, and the tool decodes it back to readable text.",
+"html-encode":"Type or paste your text, and the tool encodes special characters like & and < into their HTML entity references.",
+"html-decode":"Paste HTML-entity-encoded text, and the tool decodes it back to plain characters.",
+"binary-encode":"Type your text, and the tool converts every character to its 8-bit binary representation.",
+"binary-decode":"Paste binary (0s and 1s), and the tool decodes it back to readable text.",
+"hex-encode":"Type your text, and the tool converts it to hexadecimal (base 16) byte values.",
+"hex-decode":"Paste hexadecimal values, and the tool decodes them back to readable text.",
+"ascii-table":"Type a character to see its ASCII code, or type a code to see its character — the table updates live either way.",
+"octal-encode":"Type your text, and the tool encodes each character as an octal (base 8) number.",
+"unicode-encode":"Type your text, and the tool encodes it into \\u escape-sequence Unicode code points.",
+"unicode-decode":"Paste \\u escape sequences, and the tool decodes them back to readable text.",
+"unicode-lookup":"Enter a code point (like U+0041) or search by character name, and the tool looks up the matching Unicode character.",
+"jwt-decoder":"Paste a JWT token, and the tool decodes and displays its header, payload, and signature without verifying it against a secret.",
+"caesar-cipher":"Type your text and set a shift amount, and the tool encodes or decodes it using the classic Caesar shift cipher.",
+"vigenere-cipher":"Type your text and a keyword, and the tool encrypts or decrypts it using the Vigenère polyalphabetic cipher.",
+"atbash-cipher":"Type your text, and the tool encodes it by mirroring each letter through the alphabet (A↔Z, B↔Y) with the Atbash cipher.",
+"morse-encoder":"Type your text, and the tool converts it to Morse code, with an option to play it back as audio beeps.",
+"quoted-printable":"Type or paste your text, and the tool encodes it using MIME quoted-printable encoding for email compatibility.",
+"xml-encode":"Type or paste your text, and the tool encodes or decodes XML special characters like < and & safely.",
+"base64url":"Type or paste your text, and the tool encodes it as URL-safe Base64 (using - and _ instead of + and /, with no padding).",
+"base58":"Type or paste your text, and the tool encodes or decodes it using Bitcoin-alphabet Base58, preserving leading zeros.",
+"hex-dump":"Paste your text, and the tool renders it as a hexdump -C style view with offset, hex bytes, and ASCII columns.",
+"data-uri-generator":"Paste your text, SVG, CSS, or HTML, choose base64 or URL-encoded, and the tool builds a data: URI.",
+"base45":"Type or paste your text, and the tool encodes or decodes it using RFC 9285 Base45, the format used in EU COVID QR certificates.",
+"ascii85":"Type or paste your text, and the tool encodes or decodes it using Adobe Ascii85, with the z shortcut and <~ ~> delimiters supported.",
+"z85":"Paste 4-byte-aligned binary data (as text), and the tool encodes or decodes it using ZeroMQ's Z85 (RFC 32) base85 format.",
+"base62":"Type or paste your text, and the tool encodes or decodes it using compact 0-9A-Za-z Base62 — ideal for short IDs and URLs.",
+"base64-to-hex":"Paste Base64 or hexadecimal, and the tool converts directly between the two formats.",
+"punycode":"Type an internationalized domain name, and the tool encodes it to its xn-- Punycode ASCII form, or decode a Punycode string back.",
+"rot47-cipher":"Type your text, and the tool rotates every printable ASCII character by 47 places — running the result through again restores the original.",
+"rot18-cipher":"Type your text, and the tool applies ROT13 to letters and ROT5 to digits — running the result through again restores the original.",
+"decimal-entities":"Type or paste your text, and the tool encodes it into decimal or hex numeric HTML entities (&#NN;), or decodes them back.",
+"url-encode-all":"Type or paste your text, and the tool percent-encodes every single character as %XX, with no exceptions.",
+"uuencode":"Paste your text, and the tool encodes it using classic Unix uuencode with a begin/end wrapper, or decodes a uuencoded payload back.",
+"xxencode":"Paste your text, and the tool encodes it using the portable XXencode alphabet, or decodes an XXencoded payload back.",
+};
+function mergeHowTo(meta) {
+  for (const id in HOWTO) if (meta[id] && !meta[id].howTo) meta[id].howTo = HOWTO[id];
+  return meta;
+}
+
+const TOOL_META = mergeHowTo({
   "base64-encode": { title:"Free Base64 Encoder — Encode Text to Base64 Online", desc:"Encode any text or binary data to Base64 string format. Supports standard and URL-safe Base64 encoding.", faq:[["What is Base64?","Base64 encodes binary data into 64 ASCII characters (A—Z, a'z, 0–9, +, /) making it safe to transmit in text-based protocols."],["When is Base64 used?","Embedding images in HTML/CSS, encoding email attachments (MIME), and transmitting binary data in JSON/XML APIs."],["Does Base64 encrypt data?","No — Base64 is encoding, not encryption. Anyone can decode it. Use it only for format compatibility, not security."]] },
   "base64-decode": { title:"Free Base64 Decoder — Decode Base64 Strings Online", desc:"Instantly decode Base64 encoded strings back to plain text. Supports standard and URL-safe Base64.", faq:[["Why does Base64 use = padding?","Padding aligns output to multiples of 4 characters. Some implementations omit it — the decoder handles both."],["What if my Base64 has line breaks?","This decoder strips line breaks before decoding — common in MIME-encoded email content."],["Can I decode Base64 images?","Paste the Base64 data (after the data:image/png;base64, prefix) to see the raw data."]] },
   "base64-image": { title:"Image to Base64 Converter — Encode Images as Data URIs", desc:"Convert PNG, JPEG, GIF, SVG images to Base64 data URIs for use in HTML, CSS, and JavaScript.", faq:[["What is a Base64 data URI?","A self-contained URL that embeds file data directly: data:image/png;base64,iVBOR..."],["When should I use Base64 images?","For small icons or logos to eliminate HTTP requests. Avoid for large images as Base64 is ~33% larger than binary."],["What formats are supported?","PNG, JPEG, GIF, WebP, SVG, BMP, ICO and most common web image formats."]] },
@@ -289,7 +338,7 @@ const TOOL_META = {
   "url-encode-all": { title:"URL Encode All Characters — Full Percent Escape", desc:"Percent-encode every character of a string as %XX, escaping even letters and digits. Useful for aggressive URL escaping and obfuscation.", howTo:"Pick Encode or Decode and enter your text. Encoding turns each UTF-8 byte into an uppercase %XX sequence; decoding restores the original text.", faq:[["How is this different from a normal URL encoder?","A standard encoder leaves safe characters (A-Z, a-z, 0-9, -_.~) untouched. This tool escapes every character, so even 'A' becomes %41."],["When is full encoding useful?","For maximum-compatibility escaping, lightweight obfuscation of query values, or when a target parser demands fully-encoded input."],["Does it handle Unicode?","Yes — text is encoded as UTF-8 first, so 'é' becomes %C3%A9 and decodes back correctly."]] },
   "uuencode": { title:"Uuencode & Uudecode — Classic Unix Encoding Online", desc:"Encode text with classic Unix uuencode (begin/end wrapper) and decode uuencoded payloads back to text. Runs fully in your browser.", howTo:"Choose Encode or Decode. Encoding wraps your text in a begin 644 … / end block using the traditional uuencode alphabet; decoding reads that block back to text.", faq:[["What is uuencode?","A historic Unix encoding that packs 3 bytes into 4 printable characters (each 6-bit value plus 0x20), used to send binary data over text-only email and Usenet."],["What do the begin and end lines mean?","'begin <mode> <name>' starts the stream with a file permission mode and name; a line with a single grave and 'end' close it. This tool includes them automatically."],["Does it handle the space/backtick quirk?","Yes — zero values may be written as a backtick instead of a space, and the decoder accepts both."]] },
   "xxencode": { title:"XXencode & XXdecode — Portable Encoding Online", desc:"Encode and decode XXencode, a uuencode sibling using the safer +-0-9A-Za-z alphabet that survives EBCDIC and character-set translation.", howTo:"Pick Encode or Decode. Encoding wraps text in a begin/end block using the XXencode alphabet; decoding reverses it back to the original text.", faq:[["How does XXencode differ from uuencode?","It packs bytes the same 3-into-4 way but maps 6-bit values onto the alphabet +-0-9A-Za-z instead of raw ASCII offsets, so it survives non-ASCII mail gateways."],["Why choose XXencode?","Its alphabet avoids characters that older EBCDIC systems and some mailers mangled, making transfers more reliable than uuencode in those environments."],["Is the output still a begin/end block?","Yes — like uuencode it uses a 'begin <mode> <name>' header and an 'end' trailer, so the format is familiar."]] },
-};
+});
 
 // �"����� MORSE TABLE �������������������������������������������������������������������������������������������������������������������������"�
 const MORSE_MAP = {A:"•-",B:"-•••",C:"-•-•",D:"-••",E:"•",F:"••-•",G:"--•",H:"••••",I:"••",J:"•---",K:"-•-",L:"•-••",M:"--",N:"-•",O:"---",P:"•--•",Q:"--•-",R:"•-•",S:"•••",T:"-",U:"••-",V:"•••-",W:"•--",X:"-••-",Y:"-•--",Z:"--••","0":"-----","1":"•----","2":"••---","3":"•••--","4":"••••-","5":"•••••","6":"-••••","7":"--•••","8":"---••","9":"----•",".":"•-•-•-",",":" --••--","?":"••--••","'":"•----•","!":"-•-•--","/":"-••-•","(":"-•--•",")":"-•--•-","&":"•-•••",":":"---•••",";":"-•-•-•","=":"-•••-","+":"•-•-•","-":"-••••-","_":"••--•-",'"':"•-••-•","$":"•••-••-","@":"•--•-•"," ":"/"};

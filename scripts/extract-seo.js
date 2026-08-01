@@ -92,13 +92,15 @@ function skipTemplate(src, i) {
 }
 
 // Capture `const TOOLS = [ ... ]` source (the array literal, with brackets).
+// Also returns the index just past its closing bracket, so callers can scan
+// the region between TOOLS and the meta declaration for helper consts.
 function extractToolsArray(src) {
   const k = src.indexOf('const TOOLS')
   if (k < 0) return null
   const b = src.indexOf('[', k)
   if (b < 0) return null
   const end = readBalanced(src, b)
-  return src.slice(b, end + 1)
+  return { src: src.slice(b, end + 1), endIdx: end + 1 }
 }
 
 // Capture the RHS expression of `const <NAME> = <RHS>;` (object literal,
@@ -134,8 +136,79 @@ function extractMetaExpr(src, name) {
   return src.slice(i, j).trim()
 }
 
-function evalMeta(toolsSrc, metaSrc) {
-  const code = `(function(){ const TOOLS = ${toolsSrc}; const M = ${metaSrc}; return M; })()`
+// Capture top-level `const IDENT = ...;` declarations between the end of
+// `const TOOLS = [...]` and the start of the meta declaration (e.g.
+// `const TOOL_META = ...`) — but ONLY the ones the meta expression actually
+// references by name (checked against metaSrc after this returns; see
+// caller). TOOL_META is allowed to reference a helper lookup table of
+// per-tool `howTo` text or FAQ questions, for instance, instead of being
+// forced into one giant inline literal.
+//
+// This file's region between TOOLS and TOOL_META often also holds things
+// TOOL_META does NOT reference — e.g. a TOOL_COMPONENTS map wiring tool ids
+// to component functions defined earlier in the file. Sweeping those in
+// unconditionally breaks the eval (the component functions aren't part of
+// this isolated sandbox), so the caller filters this list down to only the
+// names that appear as identifiers in metaSrc.
+function extractHelperConsts(src, toolsEnd, metaStart) {
+  const region = src.slice(toolsEnd, metaStart)
+  const decls = []
+  const N = region.length
+  // A `const NAME = ` data lookup, or a `function name(...) { ... }` helper
+  // (e.g. a small mergeHowTo() that stitches a howTo lookup onto a
+  // hand-written TOOL_META literal without touching every entry).
+  const constRe = /^const\s+([A-Z][A-Za-z0-9_]*)\s*=\s*/
+  const fnRe = /^function\s+([A-Za-z][A-Za-z0-9_]*)\s*\(/
+  let i = 0
+  let depth = 0 // brace/paren/bracket nesting relative to this region's start
+  while (i < N) {
+    const ch = region[i]
+    if (ch === "'" || ch === '"') { i = skipString(region, i, ch); continue }
+    if (ch === '`') { i = skipTemplate(region, i); continue }
+    if (ch === '/' && region[i + 1] === '/') { i = region.indexOf('\n', i); if (i < 0) i = N; continue }
+    if (ch === '/' && region[i + 1] === '*') { i = region.indexOf('*/', i + 2) + 2; continue }
+    // Only look for a top-level declaration when we are NOT nested inside
+    // some other block — e.g. inside a component function's body, which is
+    // exactly where an unrelated local `const P = ...` (loan-math scratch
+    // variables, etc.) would otherwise be misread as a helper declaration.
+    if (depth === 0) {
+      const cm = constRe.exec(region.slice(i))
+      if (cm) {
+        let j = i + cm[0].length
+        let d2 = 0
+        while (j < N) {
+          const c = region[j]
+          if (c === "'" || c === '"') { j = skipString(region, j, c); continue }
+          if (c === '`') { j = skipTemplate(region, j); continue }
+          if (c === '(' || c === '[' || c === '{') d2++
+          else if (c === ')' || c === ']' || c === '}') d2--
+          else if (c === ';' && d2 === 0) break
+          j++
+        }
+        decls.push({ name: cm[1], code: `const ${cm[1]} = ${region.slice(i + cm[0].length, j).trim()};` })
+        i = j + 1
+        continue
+      }
+      const fm = fnRe.exec(region.slice(i))
+      if (fm) {
+        const braceIdx = region.indexOf('{', i)
+        if (braceIdx >= 0) {
+          const end = readBalanced(region, braceIdx)
+          decls.push({ name: fm[1], code: region.slice(i, end + 1) })
+          i = end + 1
+          continue
+        }
+      }
+    }
+    if (ch === '(' || ch === '[' || ch === '{') depth++
+    else if (ch === ')' || ch === ']' || ch === '}') depth--
+    i++
+  }
+  return decls
+}
+
+function evalMeta(toolsSrc, helperSrc, metaSrc) {
+  const code = `(function(){ const TOOLS = ${toolsSrc}; ${helperSrc}\n const M = ${metaSrc}; return M; })()`
   const sandbox = {}
   return vm.runInNewContext(code, sandbox, { timeout: 5000 })
 }
@@ -160,15 +233,44 @@ let files = 0, tools = 0, skipped = []
 for (const [slug, comp] of Object.entries(MAP)) {
   const file = `components/${comp}.jsx`
   const src = fs.readFileSync(file, 'utf8')
-  const toolsSrc = extractToolsArray(src)
+  const toolsArr = extractToolsArray(src)
   // Prefer TOOL_META; fall back to SEO (business file).
   const name = /const\s+TOOL_META\s*=/.test(src) ? 'TOOL_META'
              : /const\s+SEO\s*=/.test(src) ? 'SEO' : null
-  if (!toolsSrc || !name) { skipped.push(`${slug} (no ${!toolsSrc ? 'TOOLS' : 'meta'})`); continue }
+  if (!toolsArr || !name) { skipped.push(`${slug} (no ${!toolsArr ? 'TOOLS' : 'meta'})`); continue }
+  const metaDeclMatch = new RegExp('const\\s+' + name + '\\s*=').exec(src)
   const metaSrc = extractMetaExpr(src, name)
+  // Only keep helper consts/functions that are actually reachable from
+  // TOOL_META's own expression — see extractHelperConsts for why an
+  // unfiltered sweep is unsafe. Reachability is transitive: a helper
+  // function (e.g. a small mergeHowTo() that stitches a howTo lookup onto a
+  // hand-written TOOL_META literal) is referenced by name in metaSrc, but
+  // the HOWTO lookup it actually uses is only referenced from *inside that
+  // function's own body* — so this is a fixed-point walk, not a single pass.
+  const helperDecls = metaDeclMatch
+    ? extractHelperConsts(src, toolsArr.endIdx, metaDeclMatch.index)
+    : []
+  const included = new Set()
+  let frontier = metaSrc
+  let grew = true
+  while (grew) {
+    grew = false
+    for (const d of helperDecls) {
+      if (included.has(d.name)) continue
+      if (new RegExp('\\b' + d.name + '\\b').test(frontier)) {
+        included.add(d.name)
+        frontier += '\n' + d.code
+        grew = true
+      }
+    }
+  }
+  const helperSrc = helperDecls
+    .filter(d => included.has(d.name))
+    .map(d => d.code)
+    .join('\n')
   let obj
   try {
-    obj = evalMeta(toolsSrc, metaSrc)
+    obj = evalMeta(toolsArr.src, helperSrc, metaSrc)
   } catch (e) {
     skipped.push(`${slug} (eval failed: ${e.message})`); continue
   }

@@ -197,7 +197,43 @@ const CATEGORIES = [
   { id:"encoding", name:"Text Encoding & Decoding", icon:"🔐", desc:"Convert text between various encoding formats and cipher systems" },
 ];
 
-const TOOL_META = {
+// Per-tool "how to use" text, keyed by tool id.
+const HOWTO = {
+"morse-code":"Type your text, and the tool converts it to Morse dots and dashes live — switch to decode mode and paste Morse to hear it played back and converted to text.",
+"nato-alphabet":"Type your text, and the tool converts each letter to its NATO phonetic word (Alpha, Bravo, Charlie) for clear radio-style communication.",
+"binary-text":"Type your text, and the tool converts every character to its 8-bit binary representation — paste binary in decode mode to convert it back.",
+"hex-text":"Type your text, and the tool converts it to hexadecimal byte values — paste hex in decode mode to convert it back to text.",
+"octal-text":"Type your text, and the tool converts each character to its octal representation — paste octal in decode mode to convert it back.",
+"rot13":"Type your text, and the tool shifts every letter 13 places through the alphabet — running the result through again restores the original.",
+"rot47":"Type your text, and the tool shifts every printable ASCII character (including numbers and symbols) by 47 places — running it again restores the original.",
+"caesar-cipher":"Type your text and set a shift amount from 1 to 25, and the tool encrypts it by shifting every letter that many places through the alphabet.",
+"text-to-ascii":"Type your text, and the tool converts every character to its ASCII code number — paste codes in decode mode to convert them back to text.",
+"text-to-unicode":"Type your text, and the tool converts every character to its Unicode code point in U+0048 format — paste code points in decode mode to convert them back.",
+"braille-translator":"Type your text, and the tool converts it to Braille Unicode characters — paste Braille in decode mode to convert it back to readable text.",
+"leetspeak-translator":"Type your text and choose light or heavy substitution, and the tool converts it to leetspeak (l33t) by swapping letters for lookalike numbers and symbols.",
+"a1z26-cipher":"Type your text, and the tool converts each letter to its position number (A=1, Z=26) — paste numbers in decode mode to convert them back to letters.",
+"rail-fence-cipher":"Type your text and set the number of rails (2-10), and the tool encrypts it by writing it in a zigzag pattern across that many rows.",
+"bacon-cipher":"Type your text, and the tool encodes each letter as a 5-character group of a's and b's — paste a Baconian group in decode mode to convert it back.",
+"affine-cipher":"Type your text and set a multiplier (coprime to 26) and a shift key, and the tool encrypts it using the affine cipher formula.",
+"polybius-square":"Type your text, and the tool converts each letter into its row-column coordinate pair on a 5×5 Polybius square (I and J share a cell).",
+"tap-code":"Type your text, and the tool converts each letter into its row,column tap-code pair (with K mapped to C) used historically by prisoners to communicate through walls.",
+"beaufort-cipher":"Type your text and a keyword, and the tool encrypts it with the reciprocal Beaufort cipher — running it through again with the same keyword decrypts it.",
+"gronsfeld-cipher":"Type your text and a numeric digit key, and the tool encrypts it by shifting each letter by the corresponding digit in a repeating sequence.",
+"vigenere-cipher":"Type your text and a keyword, and the tool encrypts it with the classic Vigenère polyalphabetic cipher, shifting each letter by the keyword's repeating letters.",
+"autokey-vigenere":"Type your text and a starting keyword, and the tool encrypts it with the autokey cipher, where your own plaintext extends the key stream after the keyword runs out.",
+"playfair-cipher":"Type your text and a keyword, and the tool encrypts it in letter pairs using a 5×5 Playfair square built from that keyword (I and J merged).",
+"columnar-transposition-cipher":"Type your text and a keyword, and the tool encrypts it by writing it into columns and reading them back out in the keyword's alphabetical order.",
+"scytale-cipher":"Type your text and set the rod diameter (number of rows), and the tool encrypts it the way the ancient Spartan scytale cipher wrapped a strip around a rod.",
+"keyword-substitution-cipher":"Type your text and a keyword, and the tool builds a mixed cipher alphabet from that keyword and substitutes every letter through it.",
+"bifid-cipher":"Type your text and a keyword, and the tool encrypts it with the Bifid cipher, combining a Polybius square with coordinate fractionation.",
+"four-square-cipher":"Type your text and two keywords, and the tool encrypts it in letter pairs using two keyword squares and two plain squares.",
+};
+function mergeHowTo(meta) {
+  for (const id in HOWTO) if (meta[id] && !meta[id].howTo) meta[id].howTo = HOWTO[id];
+  return meta;
+}
+
+const TOOL_META = mergeHowTo({
   "morse-code": {
     title: "Free Morse Code Translator – Convert Text to Morse Online | ToolsRift",
     desc: "Convert text to Morse code and decode Morse back to text. Includes audio playback feature to hear Morse code beeps. Free online translator.",
@@ -450,7 +486,7 @@ const TOOL_META = {
       ["Does it round-trip exactly?", "Yes. Encoding then decoding an even-length letter message with the same two keywords restores it exactly (J is merged into I, output uppercased)."]
     ]
   }
-};
+});
 
 // Morse Code mapping
 const MORSE_CODE = {

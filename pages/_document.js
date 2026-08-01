@@ -61,7 +61,7 @@ export default function MyDocument({ manifest }) {
         <meta property="og:image:width" content="1500" />
         <meta property="og:image:height" content="782" />
         <meta property="og:image:type" content="image/png" />
-        <meta property="og:image:alt" content="ToolsRift — 957+ Free Online Tools" />
+        <meta property="og:image:alt" content="ToolsRift — 1,136+ Free Online Tools" />
 
         {/* ============================================
             Twitter Card Defaults
@@ -69,7 +69,7 @@ export default function MyDocument({ manifest }) {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@toolsrift" />
         <meta name="twitter:image" content="https://toolsrift.com/og-image.png" />
-        <meta name="twitter:image:alt" content="ToolsRift — 957+ Free Online Tools" />
+        <meta name="twitter:image:alt" content="ToolsRift — 1,136+ Free Online Tools" />
 
         {/* ============================================
             Global Schema — WebSite with SearchAction
@@ -82,7 +82,7 @@ export default function MyDocument({ manifest }) {
               '@type': 'WebSite',
               name: 'ToolsRift',
               url: 'https://toolsrift.com',
-              description: '957+ free online tools for everyone',
+              description: '1,136+ free online tools for everyone',
               inLanguage: 'en-US',
               potentialAction: {
                 '@type': 'SearchAction',
@@ -103,8 +103,21 @@ export default function MyDocument({ manifest }) {
               '@context': 'https://schema.org',
               '@type': 'Organization',
               name: 'ToolsRift',
+              // Google currently autocorrects a "toolsrift" search to "toolswift"
+              // and serves toolswift.ca — it does not yet recognise the brand as a
+              // distinct entity. alternateName spells out the real variants so the
+              // knowledge graph has something to bind the name to; the only other
+              // lever is genuine off-site mentions (see docs/SEO-ACTION-PLAN).
+              alternateName: ['ToolsRift.com', 'Tools Rift', 'toolsrift'],
               url: 'https://toolsrift.com',
-              logo: 'https://toolsrift.com/logo.svg',
+              logo: {
+                '@type': 'ImageObject',
+                url: 'https://toolsrift.com/logo.svg',
+              },
+              description:
+                'ToolsRift is a free online tools platform. Every tool runs entirely in the browser — no sign-up, no uploads, no limits.',
+              foundingDate: '2026',
+              email: 'contact@toolsrift.com',
               sameAs: [
                 'https://twitter.com/toolsrift',
               ],

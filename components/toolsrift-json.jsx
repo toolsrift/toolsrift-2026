@@ -281,7 +281,45 @@ const CATEGORIES = [
   {id:"analyze", name:"Analyze & Transform",icon:"🧬", desc:"Diff, query, sort, flatten and merge JSON"},
 ];
 
-const TOOL_META = {
+// Per-tool "how to use" text, keyed by tool id.
+const HOWTO = {
+"json-formatter":"Paste your JSON, choose 2, 4, or tab indentation, and the tool formats it with syntax highlighting and line numbers.",
+"json-minifier":"Paste your JSON, and the tool strips all whitespace and produces the minified, spec-compliant output.",
+"json-validator":"Paste your JSON, and the tool checks its syntax and reports the exact line and reason for any error it finds.",
+"json-escape":"Paste your text, and the tool escapes special characters for safe embedding inside a JSON string — or paste an escaped string to unescape it.",
+"json-size":"Paste your JSON, and the tool analyzes its structure depth, key count, and byte size.",
+"json-to-csv":"Paste a JSON array, and the tool converts it into a CSV table ready for spreadsheet import.",
+"csv-to-json":"Paste your CSV data, and the tool parses it into structured JSON.",
+"json-to-xml":"Paste your JSON, and the tool converts it into a well-formed XML document.",
+"xml-to-json":"Paste your XML, and the tool parses it and converts it into clean JSON.",
+"json-to-yaml":"Paste your JSON, and the tool converts it into YAML, ready for configs and manifests.",
+"yaml-to-json":"Paste your YAML, and the tool converts it back into JSON.",
+"json-to-typescript":"Paste a sample JSON object, and the tool generates matching TypeScript interfaces from its structure.",
+"json-to-table":"Paste a JSON array, and the tool renders it as an interactive HTML table.",
+"json-to-markdown":"Paste a JSON array, and the tool converts it into a GitHub-flavored Markdown table.",
+"json-to-env":"Paste a flat JSON object, and the tool converts its keys and values into .env environment variable format.",
+"json-diff":"Paste two JSON objects, and the tool compares them and highlights every difference between them.",
+"json-path":"Paste your JSON and a JSONPath expression, and the tool extracts and shows the matching values live.",
+"json-schema":"Paste your JSON data and a JSON Schema (draft-7), and the tool validates the data against it and reports any violations.",
+"json-sorter":"Paste your JSON, and the tool sorts every object's keys alphabetically, at every nesting level.",
+"json-flatten":"Paste nested JSON, and the tool flattens it into a single-level object with dot-notation keys.",
+"json-unflatten":"Paste flat dot-notation JSON, and the tool expands it back into its nested structure.",
+"json-keys":"Paste your JSON, and the tool extracts every key, its full path, and its value into a list.",
+"json-merger":"Paste two JSON objects, and the tool deep-merges them, letting you choose how conflicting keys are resolved.",
+"json-array-tools":"Paste a JSON array, and the tool lets you filter, sort, map, and paginate it interactively.",
+"json-query":"Paste a JSON array and set your field conditions, and the tool filters and transforms it to match.",
+"json-repair":"Paste broken JSON — with trailing commas, single quotes, unquoted keys, or comments — and the tool fixes it into valid JSON.",
+"jsonl-converter":"Paste a JSON array, and the tool converts it to JSONL/NDJSON (one object per line) — or paste JSONL to convert it back to an array.",
+"json-to-go":"Paste a sample JSON object, and the tool generates a matching Go struct with json tags.",
+"json-to-python":"Paste a sample JSON object, and the tool generates a matching Python TypedDict class.",
+"json-to-sql":"Paste a JSON array of objects and a table name, and the tool generates the matching SQL INSERT statements.",
+};
+function mergeHowTo(meta) {
+  for (const id in HOWTO) if (meta[id] && !meta[id].howTo) meta[id].howTo = HOWTO[id];
+  return meta;
+}
+
+const TOOL_META = mergeHowTo({
   "json-formatter":     {title:"JSON Formatter & Beautifier — Pretty Print JSON Online", desc:"Format and beautify JSON with syntax highlighting, line numbers, and indentation control. Instant validation included.", faq:[["What indentation should I use?","2 or 4 spaces is standard. Tab indentation is preferred by some style guides like Google's."],["Does it validate while formatting?","Yes — invalid JSON triggers an error before formatting is attempted."],["Can I format minified JSON?","Yes — paste minified JSON and it will be expanded and formatted instantly."]]},
   "json-minifier":      {title:"JSON Minifier — Compress and Minify JSON Online",        desc:"Minify JSON by stripping all whitespace. Reduces JSON payload size for API responses and storage.", faq:[["How much does minification reduce size?","Typically 20–40%. Deeply indented JSON with long keys benefits the most."],["Is minified JSON still valid?","Yes — whitespace is not meaningful in JSON. Minified JSON is fully spec-compliant."],["Should I minify production API responses?","Yes — always minify JSON in production APIs to reduce bandwidth."]]},
   "json-validator":     {title:"JSON Validator — Validate JSON Syntax Online",           desc:"Validate JSON files and strings. Get line-accurate error messages for syntax issues.", faq:[["What makes JSON invalid?","Trailing commas, single quotes instead of double quotes, unquoted keys, and comments all make JSON invalid."],["Does it check JSON Schema?","No — this tool checks JSON syntax only. Use the JSON Schema Validator for structure validation."],["Why is my JSON failing?","Common causes: trailing commas after the last item, missing quotes around keys, or using undefined/NaN."]]},
@@ -312,7 +350,7 @@ const TOOL_META = {
   "json-merger":        {title:"JSON Merger — Deep Merge Two JSON Objects Online", desc:"Deep merge two JSON objects with configurable conflict resolution. Combine configs and defaults with overrides in one step.", keywords:"json merger, deep merge json, combine json objects", howTo:"Paste two JSON objects and the merger deep-combines them, letting the second override the first where keys collide.", faq:[["How does a deep merge work?","Nested objects are merged recursively rather than replaced, so only the specific keys that overlap are combined or overridden."],["Which object wins on conflicts?","By default the second object overrides the first for conflicting keys, ideal for applying overrides on top of defaults."],["How are arrays merged?","Arrays are typically replaced rather than concatenated, since merging list items by position is often ambiguous."]]},
   "json-array-tools":   {title:"JSON Array Tools — Filter, Sort, Map & Paginate Online", desc:"Filter, sort, map and paginate JSON arrays interactively. Reshape arrays of objects without writing any code.", keywords:"json array tools, filter json array, sort json array", howTo:"Paste a JSON array of objects, then apply filter, sort, map and pagination controls to transform it and copy the result.", faq:[["What operations are available?","Filtering by field conditions, sorting by any key, mapping to selected fields, and paginating into pages of a chosen size."],["Do transformations stack?","Yes — you can filter, then sort, then paginate, and the operations apply in sequence to the array."],["Is the original data changed?","No — transformations are non-destructive; your pasted array stays intact and only the output view changes."]]},
   "json-query":         {title:"JSON Query & Filter — Filter JSON Arrays by Field", desc:"Filter and transform JSON arrays with simple field conditions. Extract just the records and fields you need, instantly.", keywords:"json query, filter json, json where clause", howTo:"Paste a JSON array and define field conditions; matching objects are returned so you can copy just the data you want.", faq:[["How do conditions work?","You specify a field and a comparison — such as equals, contains or greater-than — and only matching objects are kept."],["Can I combine conditions?","Yes — multiple field conditions can be applied together to narrow the results to exactly what you need."],["Does it change the source JSON?","No — filtering produces a new result set while leaving your original array untouched."]]},
-};
+});
 
 // �"����� YAML HELPERS �������������������������������������������������������������������������������������������������������������������������"�
 function jsonToYaml(obj, indent=0) {

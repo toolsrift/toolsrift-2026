@@ -14,6 +14,7 @@ import { Pill, ThemedButton } from './ui';
 import { groupTools } from './ToolNavSidebar';
 import { resolveIcon } from '../../lib/toolIcons';
 import { toolHref, shouldInterceptClick } from './toolLink';
+import { TOOLS_PLUS, TOTAL_CATEGORIES } from '../../lib/siteStats';
 
 // ── Themed tool tile (style varies per anim feel) ───────────────────────────
 function ThemedToolTile({ theme, tool, onClick, index = 0 }) {
@@ -280,7 +281,7 @@ function ExploreOthers({ theme }) {
           <div style={{
             fontFamily: theme.fonts.head, fontSize: FS.xl, fontWeight: 700,
             color: COLORS.textBright, letterSpacing: '-0.015em',
-          }}>957+ free tools across 24 categories</div>
+          }}>{TOOLS_PLUS} free tools across {TOTAL_CATEGORIES} categories</div>
         </div>
         <div style={{
           display: 'grid', gap: 10,

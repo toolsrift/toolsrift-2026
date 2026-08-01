@@ -5,6 +5,7 @@
 // so the footer is always the LAST thing on the page — never stranded mid-page.
 
 import CATEGORY_THEMES from '../lib/categoryThemes';
+import { TOOLS_PLUS, TOTAL_CATEGORIES } from '../lib/siteStats';
 
 // Every category, sourced from the theme registry so this never drifts.
 // The footer is server-rendered on every page, so this is what puts each
@@ -71,7 +72,7 @@ export default function SiteFooter({ accent = '#3B82F6', fonts }) {
               <img src="/logo.svg" alt="ToolsRift" style={{ height: 28 }} />
             </a>
             <p style={{ color: C.muted, fontSize: 13, lineHeight: 1.65, margin: 0, maxWidth: 280 }}>
-              1,100+ free online tools across {CATEGORY_LINKS.length} categories. Runs in your
+              {TOOLS_PLUS} free online tools across {TOTAL_CATEGORIES} categories. Runs in your
               browser. No sign-up.
             </p>
             <a

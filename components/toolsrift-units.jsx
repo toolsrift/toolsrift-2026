@@ -684,7 +684,52 @@ const CATEGORIES = [
   {id:"everyday", name:"Everyday",     icon:"🍳", desc:"Cooking measurements, fuel economy"},
 ];
 
-const TOOL_META = {
+// Per-tool "how to use" text, keyed by tool id.
+const HOWTO = {
+"length-converter":"Enter a value and pick its unit (km, m, cm, mm, miles, feet, inches, nautical miles), and the tool converts it to every other length unit live as you type.",
+"weight-converter":"Enter a value and pick its unit (kg, g, pounds, ounces, stones, metric tons), and the tool converts it to every other weight unit live.",
+"temperature-converter":"Enter a value and pick Celsius, Fahrenheit, Kelvin, Rankine, or Réaumur, and the tool converts it to the others instantly.",
+"area-converter":"Enter a value and pick its unit (m², km², acres, hectares, square feet, square miles), and the tool converts it to every other area unit live.",
+"volume-converter":"Enter a value and pick its unit (liters, gallons, cubic meters, cups, fluid ounces), and the tool converts it to every other volume unit live.",
+"speed-converter":"Enter a value and pick its unit (m/s, km/h, mph, knots, Mach), and the tool converts it to every other speed unit live.",
+"pressure-converter":"Enter a value and pick its unit (Pa, kPa, bar, PSI, atm, Torr, inHg), and the tool converts it to every other pressure unit live.",
+"energy-converter":"Enter a value and pick its unit (Joules, kWh, BTU, calories, electronvolts, ergs), and the tool converts it to every other energy unit live.",
+"power-converter":"Enter a value and pick its unit (Watts, kilowatts, horsepower, BTU/hr), and the tool converts it to every other power unit live.",
+"digital-converter":"Enter a value and pick its unit (bits, bytes, KB, MB, GB, TB, Mbps, Kbps), and the tool converts it to every other data unit live.",
+"time-converter":"Enter a value and pick its unit (nanoseconds through centuries), and the tool converts it to every other time unit live.",
+"angle-converter":"Enter a value and pick degrees, radians, gradians, arcminutes, or arcseconds, and the tool converts it to the others instantly.",
+"frequency-converter":"Enter a value and pick its unit (Hz, kHz, MHz, GHz, RPM, rad/s), and the tool converts it to every other frequency unit live.",
+"fuel-converter":"Enter a value and pick MPG (US or UK), km/L, or L/100km, and the tool converts it to the other fuel efficiency units instantly.",
+"torque-converter":"Enter a value and pick its unit (N·m, lb·ft, lb·in, kg·m), and the tool converts it to every other torque unit live.",
+"force-converter":"Enter a value and pick its unit (Newtons, pound-force, kilogram-force, dynes), and the tool converts it to every other force unit live.",
+"illuminance-converter":"Enter a value and pick lux, foot-candles, or phot, and the tool converts it to the other light-intensity units instantly.",
+"density-converter":"Enter a value and pick its unit (kg/m³, g/cm³, g/mL, lb/ft³, lb/in³), and the tool converts it to every other density unit live.",
+"flow-converter":"Enter a value and pick its unit (m³/s, L/min, GPM, CFM), and the tool converts it to every other flow-rate unit live.",
+"cooking-converter":"Enter a value and pick cups, tablespoons, teaspoons, fluid oz, mL, or liters, and the tool converts it to the other cooking-measurement units instantly.",
+"typography-converter":"Enter a value and pick px, pt, em, rem, mm, cm, vw, or vh, and the tool converts it to every other typography unit live.",
+"numbase-converter":"Enter a number and pick its base (binary, octal, decimal, hex, or base 36), and the tool converts it to every other base live.",
+"acceleration-converter":"Enter a value and pick its unit (m/s², ft/s², g-force, Gal), and the tool converts it to every other acceleration unit live.",
+"radiation-converter":"Enter a value and pick its unit (Sievert, Gray, rem, rad, Becquerel, Curie), and the tool converts it to every other radiation unit live.",
+"voltage-converter":"Enter a value and pick its unit (Volts, millivolts, kilovolts, megavolts, microvolts), and the tool converts it to every other voltage unit live.",
+"running-pace-converter":"Enter a value and pick min/km, min/mi, km/h, or mph, and the tool converts it to the other pace and speed units instantly, including swim/row pace.",
+"data-rate-converter":"Enter a value and pick its unit (bits/s, Mbps, Gbps, bytes/s, MB/s, GB/s), and the tool converts it to every other bandwidth unit live.",
+"current-converter":"Enter a value and pick its unit (amperes, milliamps, microamps, kiloamps, abampere, statampere), and the tool converts it to every other current unit live.",
+"charge-converter":"Enter a value and pick its unit (coulombs, ampere-hours, mAh, faraday), and the tool converts it to every other electric-charge unit live.",
+"resistance-converter":"Enter a value and pick its unit (ohms, milliohms, kilohms, megohms, gigohms), and the tool converts it to every other resistance unit live.",
+"capacitance-converter":"Enter a value and pick its unit (farads, millifarads, microfarads, nanofarads, picofarads), and the tool converts it to every other capacitance unit live.",
+"inductance-converter":"Enter a value and pick its unit (henries, millihenries, microhenries, nanohenries, kilohenries), and the tool converts it to every other inductance unit live.",
+"magnetic-field-converter":"Enter a value and pick its unit (tesla, millitesla, microtesla, gauss, milligauss, kilogauss), and the tool converts it to every other magnetic-field unit live.",
+"magnetic-flux-converter":"Enter a value and pick its unit (weber, milliweber, microweber, maxwell, kiloweber), and the tool converts it to every other magnetic-flux unit live.",
+"dynamic-viscosity-converter":"Enter a value and pick its unit (pascal-second, poise, centipoise, micropoise, lbf·s/ft²), and the tool converts it to every other viscosity unit live.",
+"kinematic-viscosity-converter":"Enter a value and pick its unit (m²/s, mm²/s, cm²/s, stokes, centistokes, ft²/s), and the tool converts it to every other unit live.",
+"blood-sugar-converter":"Enter a value and pick mg/dL, mmol/L, g/L, or µmol/L, and the tool converts it to the other blood glucose units instantly.",
+};
+function mergeHowTo(meta) {
+  for (const id in HOWTO) if (meta[id] && !meta[id].howTo) meta[id].howTo = HOWTO[id];
+  return meta;
+}
+
+const TOOL_META = mergeHowTo({
   "length-converter":      {title:"Length Converter – Free Online Distance Unit Converter",    desc:"Convert between all length units: kilometers, meters, feet, inches, miles, nautical miles, light years and more.", faq:[["How many feet in a meter?","1 meter = 3.28084 feet."],["How many km in a mile?","1 mile = 1.60934 kilometers."],["What is a nautical mile?","A nautical mile equals 1,852 meters (1.151 statute miles). Used in aviation and maritime navigation."]]},
   "weight-converter":      {title:"Weight & Mass Converter – kg to lbs, grams to ounces",     desc:"Convert kg, grams, pounds, ounces, stones, metric tons and more. Bidirectional conversion with all units shown.", faq:[["How many pounds in a kilogram?","1 kilogram = 2.20462 pounds."],["How many ounces in a pound?","1 pound = 16 ounces."],["What is a stone in kg?","1 stone = 14 pounds = 6.35029 kilograms."]]},
   "temperature-converter": {title:"Temperature Converter – Celsius, Fahrenheit, Kelvin Online", desc:"Convert between Celsius, Fahrenheit, Kelvin, Rankine, Réaumur and Rømer temperature scales.", faq:[["How to convert Celsius to Fahrenheit?","F = (C × 9/5) + 32. So 100°C = 212°F."],["What is absolute zero?","Absolute zero is 0 Kelvin = -273.15°C = -459.67°F."],["What is normal body temperature?","37°C (98.6°F), or 310.15 K."]]},
@@ -722,7 +767,7 @@ const TOOL_META = {
   "acceleration-converter": {title:"Acceleration Converter – m/s², ft/s², g-force", desc:"Convert acceleration between meters per second squared, feet per second squared, standard gravity (g) and Gal.", faq:[["How many m/s² is 1g?","1 standard g-force = 9.80665 m/s² = 32.174 ft/s²."],["What acceleration do astronauts experience at launch?","Rocket launches typically subject astronauts to 3–4g (about 29–39 m/s²) of sustained acceleration."],["What is a Gal?","The Gal (named after Galileo) is a CGS unit of acceleration equal to 1 cm/s² (0.01 m/s²), used in geophysics."]]},
   "radiation-converter":    {title:"Radiation Converter – Sievert, Gray, rem, rad", desc:"Convert radiation dose between sievert, millisievert, rem, gray, rad, becquerel and curie.", faq:[["How many millisieverts in a rem?","1 rem = 10 millisieverts (mSv); 1 sievert (Sv) = 100 rem."],["What is a typical annual radiation dose?","Natural background radiation is roughly 2–3 mSv per year for most people, varying by location and altitude."],["What is the difference between sievert and gray?","Gray measures absorbed radiation energy per kilogram; sievert weights that dose by biological harm — for most X-rays and gamma rays, 1 Gy ≈ 1 Sv."]]},
   "voltage-converter":      {title:"Voltage Converter – Volts, mV, kV, MV, µV", desc:"Convert electrical voltage between volts, millivolts, microvolts, kilovolts and megavolts.", faq:[["How many millivolts in a volt?","1 volt (V) = 1,000 millivolts (mV) = 1,000,000 microvolts (µV)."],["What voltage is a household outlet?","Household mains voltage is typically 120V (North America) or 220–240V (most of Europe, Asia and Africa)."],["How many volts in a kilovolt?","1 kilovolt (kV) = 1,000 volts, commonly used for power transmission lines."]]},
-};
+});
 
 // ─── TOOL COMPONENTS ─────────────────────────────────────────────────────────
 // Each tool is just a UnitConverter wrapper with its unit set
