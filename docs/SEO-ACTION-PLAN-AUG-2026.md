@@ -368,7 +368,35 @@ Then manually request indexing in GSC for the 20 highest-value URLs in §6.
 
 ---
 
-### Week 2 (Aug 8 – 14) — P1. Depth where the impressions already are.
+### Week 2 (Aug 8 – 14) — P1. ✅ Content gaps closed 2026-08-01
+
+The full-site content audit (see prompt history) found: 618 tools (54.4%) had no
+`howTo` and fell back to identical boilerplate ("Open the tool above... Enter
+your input... Get your result") on every one of those pages; 134 tools across
+3 categories (`devgen`, `generators`, `generators2`) shared one **byte-identical**
+FAQ block verbatim; 27 `business` tools had no meta description at all.
+
+All three are now fixed, verified end-to-end in the built HTML:
+
+| Metric | Before | After |
+|---|---|---|
+| Tools missing `howTo` | 618 (54.4%) | **0** |
+| Tools missing meta description | 27 | **0** |
+| Duplicate (byte-identical) FAQ groups | 3 groups / 134 tools | **0** |
+
+Every `howTo` was written per-tool, grounded in that tool's own (already
+accurate, already-unique) description — not templated. `scripts/extract-seo.js`
+was extended to support two new authoring patterns so this scales:
+a `HOWTO` lookup object + `mergeHowTo()` helper for hand-written `TOOL_META`
+literals, and a `HOWTO[t.id]` reference inline for computed
+(`TOOLS.reduce`/`.map`) ones. Confirmed live: `/business/invoice-gen` (the
+page originally caught rendering the fallback) now serves its own real
+how-to; zero pages sitewide still contain the fallback string.
+
+Item #9 (missing `howTo` coverage) from the original P1 list is therefore
+done in full, not just "top 100 by impressions." Remaining Week 2 items:
+
+
 
 **8. Deepen the top 40 pages by impressions.** Not all 1,136 — the 40 that already have
 demand. Target 800–1,200 words of *genuinely useful* content each: worked examples,

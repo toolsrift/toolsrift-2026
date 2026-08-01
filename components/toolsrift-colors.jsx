@@ -383,7 +383,52 @@ const CATEGORIES = [
   {id:"reference", name:"Reference",         icon:"📋", desc:"CSS names, Tailwind palette"},
 ];
 
-const TOOL_META = {
+// Per-tool "how to use" text, keyed by tool id.
+const HOWTO = {
+"color-picker":"Click the color swatch and pick any color, and the tool shows the matching HEX, RGB, HSL, HSV, and CMYK values live, each with a copy button.",
+"color-converter":"Enter a color in any format — HEX, RGB, HSL, HSV, CMYK, LAB, or a CSS name — and the tool converts it to all the others live.",
+"color-contrast":"Pick a foreground and background color, and the tool calculates the contrast ratio and shows whether it passes WCAG AA and AAA.",
+"wcag-checker":"Pick a foreground and background color, and the tool tests the contrast against every WCAG 2.1 text-size requirement with pass/fail badges.",
+"color-mixer":"Pick two colors and drag the ratio slider, and the tool blends them and shows a live preview of the mixed result.",
+"color-shades":"Pick a base color, and the tool generates a full range of tints (toward white) and shades (toward black) from it.",
+"color-gradient":"Pick two endpoint colors and set how many steps you want, and the tool generates that many evenly-spaced colors between them.",
+"color-harmonies":"Pick a base color, and the tool generates complementary, triadic, analogous, and other color-theory harmony palettes from it.",
+"color-palette":"Click generate, and the tool creates a random, aesthetically balanced color palette — keep clicking until you find one you like.",
+"color-opacity":"Pick a color and drag the alpha slider, and the tool gives you the matching rgba() value with that transparency.",
+"image-colors":"Upload an image, and the tool analyzes the pixels and extracts its dominant color palette.",
+"color-blindness":"Pick or upload a palette, and the tool simulates how it looks under different types of color blindness.",
+"color-name":"Enter a hex value, and the tool finds the nearest matching CSS named color.",
+"css-color-names":"Browse the complete table of all 148 CSS named colors with their hex values, and click any swatch to copy it.",
+"tailwind-colors":"Browse the complete Tailwind CSS color palette by shade, and click any swatch to copy its class name or hex value.",
+"color-distance":"Enter two hex colors, and the tool calculates the perceptual difference between them using the ΔE CIEDE2000 metric.",
+"color-temperature":"Pick a color, and the tool visualizes its warm/cool temperature and generates a matching palette.",
+"hex-rgba":"Enter a hex color and set the alpha percentage, and the tool converts it to the matching rgba() value.",
+"color-sorter":"Paste a list of hex colors, choose to sort by hue, saturation, or lightness, and the tool reorders them accordingly.",
+"color-scheme":"Pick your primary color, and the tool builds a complete UI color scheme with semantic roles (primary, success, warning, error, and more) assigned.",
+"contrast-grid":"Paste a list of colors, and the tool checks the WCAG contrast ratio for every foreground/background pair in the palette at once.",
+"oklch-converter":"Enter a HEX or RGB color, and the tool converts it to and from OKLCH and OKLab, the CSS Color 4 perceptual color spaces.",
+"material-palette":"Pick a base color, and the tool generates a full 50–900 tonal scale from it, ready for a Material-style design system.",
+"complementary-color":"Enter a hex value, and the tool calculates the exact complementary (opposite) color on the color wheel.",
+"color-inverter":"Enter a color, and the tool inverts it to its RGB negative by subtracting each channel from 255.",
+"lighten-darken":"Enter a color and a percentage, and the tool lightens or darkens it by that precise amount.",
+"hsl-adjuster":"Pick a color and drag the hue, saturation, and lightness sliders, and the tool updates the preview and value live.",
+"alpha-blend":"Pick a translucent foreground color and a background color, and the tool composites them into the equivalent solid hex color.",
+"cmyk-rgb-converter":"Enter CMYK percentages or an RGB/hex value, and the tool converts between the two print and screen color models.",
+"grayscale-converter":"Enter a color, and the tool converts it to perceptual grayscale using Rec.601 luma weighting.",
+"sepia-converter":"Enter a color, and the tool applies the classic sepia photo-tone matrix to it.",
+"hex-shorthand":"Enter a hex code, and the tool expands 3-digit shorthand to 6-digit, or shortens a 6-digit code back down when it's collapsible.",
+"pastel-generator":"Enter a bold color, and the tool softens it into a pastel version instantly.",
+"css-color-mix":"Pick two colors and a mix percentage, and the tool builds the matching CSS color-mix() function and previews the computed result.",
+"nearest-tailwind":"Enter a hex value, and the tool finds the closest matching Tailwind CSS color name and shade.",
+"blend-modes":"Pick two colors and a blend mode (multiply, screen, overlay, and more), and the tool computes and previews the blended result.",
+"rgb-percentage":"Enter a hex color, and the tool converts it to percentage rgb(), 0–1 float, and 8-bit integer forms.",
+};
+function mergeHowTo(meta) {
+  for (const id in HOWTO) if (meta[id] && !meta[id].howTo) meta[id].howTo = HOWTO[id];
+  return meta;
+}
+
+const TOOL_META = mergeHowTo({
   "color-picker":    {title:"Color Picker – Free Online Color Picker Tool", desc:"Pick any color visually and instantly get HEX, RGB, HSL, HSV, CMYK and LAB values. Copy any format with one click.", faq:[["What color formats are shown?","HEX, RGB, HSL, HSV, CMYK, and CIE-LAB. Each can be copied individually."],["What is HSL?","Hue-Saturation-Lightness — a more intuitive model where hue is a 0–360° color wheel, S is vividness, and L is brightness."],["What is CMYK?","Cyan-Magenta-Yellow-Key(Black) — the color model used in color printing."]]},
   "color-contrast":  {title:"Color Contrast Checker – WCAG AA/AAA Compliance", desc:"Check foreground/background color contrast ratios against WCAG 2.1 AA and AAA standards for accessibility compliance.", faq:[["What is WCAG?","Web Content Accessibility Guidelines — standards ensuring web content is accessible to people with disabilities."],["What contrast ratio is required?","WCAG AA requires 4.5:1 for normal text, 3:1 for large text. AAA requires 7:1 and 4.5:1 respectively."],["What counts as large text?","18pt (24px) or 14pt bold (approximately 18.67px bold) is considered large text."]]},
   "color-harmonies": {title:"Color Harmonies Generator – Complementary, Triadic & More", desc:"Generate color palettes based on color theory harmony rules: complementary, analogous, triadic, tetradic and split-complementary.", faq:[["What is a complementary color?","The color directly opposite on the color wheel, 180° away. Creates maximum contrast."],["What is a triadic harmony?","Three colors evenly spaced 120° apart on the color wheel. Creates vibrant, balanced palettes."],["What is analogous?","Colors that are adjacent on the color wheel (within 30°). Creates harmonious, natural-looking palettes."]]},
@@ -421,7 +466,7 @@ const TOOL_META = {
   "contrast-grid": {title:"Contrast Grid Checker — Every Pair in a Palette", desc:"Check WCAG contrast for every foreground and background pair in a palette at once. A full grid shows which color combinations pass AA and AAA.", keywords:"contrast grid, palette contrast, wcag grid, color pair contrast, accessibility grid", howTo:"Enter your palette colors and read the grid — each cell shows the contrast ratio and whether that foreground/background pair passes WCAG.", faq:[["What does the contrast grid show?","A matrix of every color paired against every other color, with each cell's contrast ratio and WCAG pass/fail status."],["Why check all pairs at once?","It reveals which text-on-background combinations in your palette are accessible and which to avoid, in a single view."],["Which WCAG levels are shown?","Each cell indicates whether the pair meets AA and AAA thresholds for normal and large text."]]},
   "oklch-converter": {title:"OKLCH Color Converter — HEX & RGB to OKLCH / OKLab", desc:"Convert HEX and RGB colors to and from OKLCH and OKLab, the perceptually uniform CSS Color 4 spaces. Copy modern oklch() values with a live preview.", keywords:"oklch converter, oklab, css color 4, perceptual color, oklch to hex", howTo:"Enter a color as HEX, RGB or OKLCH; the tool converts between OKLCH, OKLab and hex and shows a live swatch to copy.", faq:[["What is OKLCH?","A perceptually uniform color space (Lightness, Chroma, Hue) from CSS Color 4 where equal numeric changes look like equal visual changes."],["Why use OKLCH over HSL?","OKLCH keeps perceived lightness consistent across hues, so palettes and gradients look smoother and more even than in HSL."],["Do browsers support oklch()?","Yes — the oklch() function is supported in all current major browsers; a hex fallback is still wise for older ones."]]},
   "material-palette": {title:"Material Tonal Palette — 50–900 Scale from One Color", desc:"Generate a Material Design tonal palette (shades 50 through 900) from a single base color. Get a ready-to-use design-system color scale you can copy.", keywords:"material palette, tonal palette, material design colors, 50 900 shades, color scale", howTo:"Pick a base color and the tool builds the full 50–900 tonal scale; click any shade to copy its hex value.", faq:[["What is a Material tonal palette?","A scale of tones from 50 (lightest) to 900 (darkest) generated from one base color, used across Material Design components."],["Which shade is the base color?","The base typically anchors the 500 tone, with lighter tones above and darker tones below it in the scale."],["How do I use the palette?","Copy the shades into your theme as tokens — for example 500 for primary, 700 for hover, and 100 for subtle backgrounds."]]},
-};
+});
 
 // ─── TOOL COMPONENTS ─────────────────────────────────────────────────────────
 

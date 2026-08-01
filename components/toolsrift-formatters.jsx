@@ -210,7 +210,52 @@ const CATEGORIES = [
   { id:"tools", name:"Code Utilities", icon:"🔧", desc:"Analyze, compare, and transform code structure" },
 ];
 
-const TOOL_META = {
+// Per-tool "how to use" text, keyed by tool id.
+const HOWTO = {
+"css-formatter":"Paste your CSS, and the tool re-indents it with consistent spacing, one declaration per line, live as you paste.",
+"css-minifier":"Paste your CSS, and the tool strips whitespace, comments, and unnecessary characters, showing the minified output and the size saved.",
+"sql-formatter":"Paste your SQL query, and the tool capitalizes keywords and re-indents it with line breaks between clauses.",
+"xml-formatter":"Paste your XML, and the tool re-indents it with proper nesting so the structure is easy to read and debug.",
+"xml-minifier":"Paste your XML, and the tool strips whitespace and line breaks, producing compact output.",
+"yaml-formatter":"Paste your YAML, and the tool validates it and re-indents it with consistent spacing.",
+"toml-formatter":"Paste your TOML, and the tool re-formats it with proper structure and indentation.",
+"graphql-formatter":"Paste your GraphQL query or schema, and the tool re-indents it with consistent structure.",
+"php-formatter":"Paste your PHP code, and the tool re-indents it and normalizes bracket placement toward PSR conventions.",
+"python-formatter":"Paste your Python code, and the tool converts tabs to spaces, trims trailing whitespace, and tidies up blank lines.",
+"java-formatter":"Paste your Java code, and the tool re-indents it and normalizes bracket placement toward standard Java conventions.",
+"cpp-formatter":"Paste your C or C++ code, and the tool re-indents it with consistent bracket placement.",
+"csharp-formatter":"Paste your C# code, and the tool re-indents it toward Microsoft's standard coding conventions.",
+"scss-formatter":"Paste your SCSS, LESS, or CSS, and the tool re-indents it by brace nesting with one declaration per line.",
+"ini-formatter":"Paste your INI config, and the tool normalizes section headers, adds consistent spacing around equals signs, and tidies blank lines.",
+"properties-formatter":"Paste your Java .properties file, and the tool normalizes every line to key=value form, groups comments, and can sort keys alphabetically.",
+"sql-minifier":"Paste your SQL, and the tool strips comments and collapses whitespace while keeping string literals intact.",
+"json-to-xml":"Paste your JSON, and the tool converts it into XML with matching tags and nested structure.",
+"xml-to-json":"Paste your XML, and the tool converts it into JSON, preserving the data hierarchy.",
+"json-to-yaml":"Paste your JSON, and the tool converts it into YAML with proper indentation.",
+"yaml-to-json":"Paste your YAML, and the tool parses and validates it, converting it into JSON.",
+"json-to-csv":"Paste a JSON array, and the tool converts it into a CSV table ready for spreadsheet import.",
+"csv-to-json":"Paste your CSV data, and the tool parses the rows and converts them into a JSON array.",
+"json-to-toml":"Paste your JSON, and the tool converts it into TOML configuration syntax.",
+"toml-to-json":"Paste your TOML, and the tool validates it and converts it into JSON.",
+"tsv-to-csv":"Paste tab-separated values, and the tool converts them to CSV, properly quoting any fields that contain commas or quotes.",
+"csv-to-markdown":"Paste your CSV data, and the tool converts it into a clean, aligned GitHub-flavored Markdown table with a header row.",
+"jsonc-to-json":"Paste JSONC with comments and trailing commas, and the tool strips them, validates the result, and outputs clean JSON.",
+"json-to-query-string":"Paste a flat JSON object, and the tool converts it into a URL-encoded query string, repeating keys for array values.",
+"line-counter":"Paste your code, and the tool counts total lines, blank lines, and comment lines, with character statistics alongside.",
+"code-diff":"Paste your original code on one side and the modified version on the other, and the tool highlights every addition and deletion between them.",
+"indentation-converter":"Paste your code, choose tabs or spaces and a tab size, and the tool converts the indentation throughout.",
+"code-beautifier":"Paste any code snippet, and the tool applies generic bracket-aware indentation regardless of the programming language.",
+"csv-column-aligner":"Paste your CSV data, and the tool aligns every column into an even monospace table so it's easy to scan.",
+"env-file-sorter":"Paste your .env file, and the tool sorts the keys alphabetically, keeps comments grouped with their variables, and drops empty lines.",
+"whitespace-normalizer":"Paste your text or code, and the tool normalizes line endings to LF, strips trailing whitespace, and collapses trailing blank lines.",
+"blank-line-collapser":"Paste your text, and the tool collapses any run of consecutive blank lines down to a single blank line.",
+};
+function mergeHowTo(meta) {
+  for (const id in HOWTO) if (meta[id] && !meta[id].howTo) meta[id].howTo = HOWTO[id];
+  return meta;
+}
+
+const TOOL_META = mergeHowTo({
   "css-formatter": {
     title: "Free CSS Formatter – Beautify CSS Code Online | ToolsRift",
     desc: "Format and beautify CSS with proper indentation. Clean up messy CSS code with our free online formatter. Supports nested selectors and media queries.",
@@ -544,7 +589,7 @@ const TOOL_META = {
       ["Does it change line endings?", "It normalizes line endings to LF while collapsing blanks, so the output is consistent across editors and platforms."]
     ]
   }
-};
+});
 
 // Basic brace-and-statement indenter for C-family languages (C/C++/C#/Java/PHP).
 // Breaks lines on block braces and on statement-terminating `;`, but keeps `;`

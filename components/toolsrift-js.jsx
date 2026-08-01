@@ -196,7 +196,39 @@ const CATEGORIES = [
   { id:"converter", name:"Converters & Tools", icon:"🔧", desc:"Obfuscate, transpile, test regex, and run JS code" },
 ];
 
-const TOOL_META = {
+// Per-tool "how to use" text, keyed by tool id.
+const HOWTO = {
+"js-formatter":"Paste your JavaScript, and the tool re-indents it with consistent spacing and structure, live as you paste.",
+"js-minifier":"Paste your JavaScript, and the tool strips whitespace and comments and shortens variable names to reduce the file size.",
+"js-validator":"Paste your JavaScript, and the tool checks its syntax and reports the exact line and error message for anything invalid.",
+"json-to-js":"Paste your JSON, and the tool converts it into a JavaScript object literal, ready to paste into your source code.",
+"js-to-json":"Paste a JavaScript object literal, and the tool converts it into valid JSON with proper key quoting and escaping.",
+"js-console-remover":"Paste your JavaScript, and the tool strips every console.log, warn, error, info, and debug call, without touching strings, comments, or regex.",
+"js-comment-remover":"Paste your JavaScript, and the tool strips line and block comments, while leaving URLs and comment-like syntax inside strings untouched — JSDoc comments can be kept optionally.",
+"js-import-sorter":"Paste your ES module imports, and the tool sorts and groups them alphabetically, separating external packages from relative imports.",
+"js-obfuscator":"Paste your JavaScript, and the tool renames variables and encodes strings to make the code harder to read.",
+"es6-to-es5":"Paste modern ES6+ code (arrow functions, let/const, template literals), and the tool converts it into ES5-compatible JavaScript for legacy browsers.",
+"js-to-typescript":"Paste your JavaScript function, and the tool adds inferred TypeScript type annotations to its parameters and return value.",
+"regex-tester":"Type your regular expression and a test string, and the tool highlights every match live, showing groups and detailed match information.",
+"js-console-simulator":"Paste a JavaScript snippet, and the tool simulates its console.log output and shows you the execution result without running it in a real browser.",
+"cjs-esm-converter":"Paste CommonJS code (require/module.exports) or ES module code (import/export), and the tool converts it to the other format for common static patterns.",
+"js-string-escaper":"Paste your raw text, and the tool escapes it into a valid JavaScript string literal — or paste a literal to unescape it back to plain text.",
+"js-unicode-escaper":"Paste text with non-ASCII characters, and the tool escapes them into \\uXXXX sequences — or paste escaped sequences to decode them back to text.",
+"js-regex-escape":"Paste a literal string, and the tool escapes its special characters so it matches literally inside a RegExp, with an option to also escape forward slashes.",
+"js-template-to-concat":"Paste an ES6 template literal with ${expr} interpolation, and the tool converts it into equivalent string concatenation.",
+"js-ternary-to-if":"Paste a ternary expression (assignment, declaration, or return), and the tool expands it into a readable if/else block, safely skipping ?? and ?. operators.",
+"js-array-from-list":"Paste a list of lines, comma-, or space-separated values, and the tool builds a JavaScript array literal with quoting, trimming, and optional de-duplication.",
+"js-variable-name-validator":"Type a name, and the tool checks whether it's a valid JavaScript identifier, explaining any problem — digits at the start, symbols, spaces, or reserved keywords.",
+"js-quote-normalizer":"Paste your JavaScript and choose single or double quotes, and the tool converts every string's quote style, string/comment/regex aware, re-escaping as needed.",
+"js-object-key-sorter":"Paste your JSON object, choose ascending or descending, and the tool recursively sorts all its keys alphabetically.",
+"js-var-to-let":"Paste your JavaScript, and the tool replaces every var keyword with let or const, string/comment/regex aware so text like \"var\" inside a string stays untouched.",
+};
+function mergeHowTo(meta) {
+  for (const id in HOWTO) if (meta[id] && !meta[id].howTo) meta[id].howTo = HOWTO[id];
+  return meta;
+}
+
+const TOOL_META = mergeHowTo({
   "js-formatter": {
     title: "Free JavaScript Formatter – Beautify JS Code Online | ToolsRift",
     desc: "Format and beautify JavaScript with proper indentation. Clean up messy JS code with our free online formatter. Supports ES6+, customizable spacing.",
@@ -427,7 +459,7 @@ const TOOL_META = {
       ["Does it rename identifiers like 'variable'?", "No. Replacement is whole-word only, so identifiers that merely contain the letters var, such as variable or avar, are left unchanged."]
     ]
   }
-};
+});
 
 // JS Formatter Component
 function JsFormatter() {

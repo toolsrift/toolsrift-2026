@@ -229,7 +229,53 @@ const CATEGORIES = [
   {id:"components",  name:"Components",            icon:"🔘", desc:"Buttons, typography, scrollbars, CSS variables"},
 ];
 
-const TOOL_META = {
+// Per-tool "how to use" text, keyed by tool id.
+const HOWTO = {
+"css-gradient":"Pick linear, radial, or conic and add color stops, and the tool renders a live preview with the matching CSS to copy.",
+"css-box-shadow":"Adjust the X/Y offset, blur, spread, color, and inset toggle, and the tool renders a live preview with the matching box-shadow CSS.",
+"css-text-shadow":"Type sample text and adjust the offset, blur, and color, and the tool renders a live preview with the matching text-shadow CSS.",
+"css-border-radius":"Drag each corner's radius independently, and the tool renders a live preview with the matching border-radius CSS.",
+"css-flexbox":"Set flex-direction, justify-content, align-items, and the other flex properties, and the tool renders a live preview with the matching CSS.",
+"css-grid":"Set your rows, columns, and gaps, and the tool renders a live grid preview with the matching CSS grid-template code.",
+"css-animation":"Choose keyframes, duration, easing, and timing, and the tool renders a live animated preview with the matching @keyframes CSS.",
+"css-filter":"Combine blur, brightness, contrast, and other filter functions with sliders, and the tool renders a live preview with the matching filter CSS.",
+"css-transform":"Chain rotate, scale, translate, and skew values, and the tool renders a live preview with the matching transform CSS.",
+"css-transition":"Set the property, duration, and easing, and the tool renders a live preview with the matching transition CSS.",
+"css-button":"Adjust colors, padding, border, and hover state, and the tool renders a live button preview with the matching CSS.",
+"css-typography":"Pick fonts, sizes, and line heights, and the tool renders a live type preview with the matching CSS.",
+"css-clip-path":"Drag the shape points or choose a preset, and the tool renders a live preview with the matching clip-path CSS.",
+"css-glassmorphism":"Adjust the blur, transparency, and border glow sliders, and the tool renders a live frosted-glass preview with the matching CSS.",
+"css-neumorphism":"Adjust the light and dark shadow offsets and blur, and the tool renders a live soft-UI preview with the matching CSS.",
+"css-scrollbar":"Set the scrollbar width, track color, and thumb color, and the tool renders the matching webkit-scrollbar CSS.",
+"css-variables":"Enter your design tokens (colors, spacing, fonts), and the tool generates a :root block of CSS custom properties.",
+"css-loader":"Choose a spinner style and adjust size, color, and speed, and the tool renders a live animated preview with the matching CSS.",
+"css-triangle":"Set the direction, size, and color, and the tool renders a live preview of a border-trick CSS triangle or arrow.",
+"css-color-palette":"Pick a base color and a harmony rule, and the tool generates a matching palette as CSS custom properties.",
+"px-to-rem-converter":"Enter a pixel or rem value and set your root font size, and the tool converts between the two live.",
+"css-specificity-calculator":"Paste a CSS selector, and the tool scores its specificity as an (a, b, c) triple and explains how it was calculated.",
+"css-pattern-generator":"Choose a pattern style and colors, and the tool builds a pure-CSS background pattern from gradients — no images needed.",
+"cubic-bezier-editor":"Drag the two control points on the curve, and the tool shows a live animated preview alongside the matching cubic-bezier() CSS.",
+"css-text-stroke":"Type sample text and set the stroke width and color, and the tool renders a live preview with the matching -webkit-text-stroke CSS.",
+"css-outline":"Set the outline width, style, color, and offset, and the tool renders a live preview with the matching CSS.",
+"css-backdrop-filter":"Adjust blur, brightness, and saturation sliders, and the tool renders a live preview with the matching backdrop-filter CSS.",
+"css-blend-mode":"Choose a mix-blend-mode value, and the tool previews it live on two overlapping shapes with the matching CSS.",
+"css-mask-fade":"Set the fade direction and distance, and the tool renders a live preview with the matching mask-image gradient CSS.",
+"css-perspective":"Adjust the perspective distance and rotation on X/Y/Z, and the tool renders a live 3D preview with the matching CSS.",
+"css-aspect-ratio":"Enter your ratio (like 16:9), and the tool gives you the modern aspect-ratio CSS plus the padding-hack fallback for older browsers.",
+"css-columns":"Set the column count and gap, and the tool renders a live newspaper-style column preview with the matching CSS.",
+"css-object-fit":"Upload an image and choose an object-fit and object-position value, and the tool previews it live with the matching CSS.",
+"css-line-clamp":"Paste your text and set the max number of lines, and the tool renders a live truncated preview with the matching -webkit-line-clamp CSS.",
+"css-writing-mode":"Choose a writing-mode and text-orientation value, and the tool previews your text live with the matching CSS.",
+"css-image-rendering":"Upload an image and toggle pixelated vs smooth, and the tool previews the difference live with the matching CSS.",
+"css-type-scale":"Set a base size and a scale ratio, and the tool generates a full modular type scale as CSS custom properties.",
+"css-hex-to-rgba":"Enter a hex color and adjust the alpha slider, and the tool converts it to the matching rgba() value live.",
+};
+function mergeHowTo(meta) {
+  for (const id in HOWTO) if (meta[id] && !meta[id].howTo) meta[id].howTo = HOWTO[id];
+  return meta;
+}
+
+const TOOL_META = mergeHowTo({
   "css-gradient":      {title:"CSS Gradient Generator – Linear, Radial & Conic Online", desc:"Generate CSS linear, radial and conic gradients with a live preview. Copy production-ready CSS instantly.", faq:[["What is a CSS gradient?","A CSS gradient is an image created by transitioning between two or more colors. It uses the gradient() CSS function family."],["What are the types of CSS gradients?","Linear (direction-based), radial (circular/elliptical from center), and conic (rotating around a point)."],["Can I use multiple color stops?","Yes — add as many color stop positions as needed between 0% and 100%."]]},
   "css-box-shadow":    {title:"CSS Box Shadow Generator – Live Preview Online",         desc:"Create single and multi-layered CSS box shadows. Adjust X/Y offset, blur, spread, color and inset.", faq:[["What is box-shadow?","A CSS property that adds shadow effects around an element's frame. You can set multiple shadows separated by commas."],["What is inset shadow?","An inset shadow is drawn inside the element's border, creating a recessed effect."],["How many shadows can I add?","CSS supports multiple comma-separated shadows. The first shadow is drawn on top."]]},
   "css-flexbox":       {title:"CSS Flexbox Generator – Visual Flexbox Builder Online",  desc:"Build Flexbox layouts visually. Control flex-direction, justify-content, align-items and all flex properties.", faq:[["What is Flexbox?","A one-dimensional CSS layout model that distributes space and aligns items in a container."],["When should I use Flexbox vs Grid?","Flexbox is ideal for one-dimensional layouts (rows OR columns). CSS Grid is better for two-dimensional layouts."],["What is flex-grow?","flex-grow determines how much a flex item grows relative to siblings when extra space is available."]]},
@@ -268,7 +314,7 @@ const TOOL_META = {
   "css-loader": {title:"CSS Loader Generator — Pure CSS Spinners", desc:"Create pure-CSS loading spinners and animated indicators with adjustable size, color and speed. No images or JavaScript — copy the animated CSS.", keywords:"css loader, css spinner, loading animation, pure css loader, spinner generator", howTo:"Pick a loader style, set its size, color and speed, preview the animation, and copy the CSS and keyframes.", faq:[["Are these loaders images?","No — every loader is built from CSS and @keyframes animations, so there is nothing to download and they stay crisp."],["Can I change the speed?","Yes — adjust the animation duration to make the spinner rotate faster or slower."],["Do the loaders need JavaScript?","No — they animate purely with CSS keyframes, so they work anywhere CSS runs."]]},
   "css-triangle": {title:"CSS Triangle Generator — Border-Trick Arrows", desc:"Generate CSS triangles and arrows using the classic border trick. Choose direction, size and color for tooltips and speech-bubble tails, then copy the CSS.", keywords:"css triangle, border triangle, css arrow, triangle generator, tooltip arrow", howTo:"Choose the direction, size and color; the tool builds the border-trick triangle and gives you the copyable CSS.", faq:[["How does the CSS triangle trick work?","A zero-size element with thick borders shows only one colored border edge as a triangle while the others stay transparent."],["What are CSS triangles used for?","Tooltip and speech-bubble tails, dropdown carets, and simple arrow indicators without images."],["Can I point the triangle any direction?","Yes — choose up, down, left or right and the border widths and colors adjust to point that way."]]},
   "css-color-palette": {title:"CSS Color Palette Generator — Tokens from Harmony", desc:"Generate a harmonious color palette from a base color and export it as CSS custom properties. Get coordinated colors ready to drop into your stylesheet.", keywords:"css color palette, palette custom properties, color tokens, palette generator, css colors", howTo:"Pick a base color, generate the harmonious palette, and copy the CSS custom properties for your stylesheet.", faq:[["How is the palette generated?","A base color seeds a set of harmonious colors using color-theory rules, then each is emitted as a CSS variable."],["What output do I get?","A block of CSS custom properties like --color-primary and --color-accent that you paste under :root."],["How is this different from the random palette tool?","This tool focuses on exporting a coordinated palette as ready-to-use CSS variables rather than just showing swatches."]]},
-};
+});
 
 // ─── TOOL COMPONENTS ─────────────────────────────────────────────────────────
 

@@ -305,7 +305,53 @@ const convertToUnicode = (text, map) => {
   return result;
 };
 
-const TOOL_META = {
+// Per-tool "how to use" text, keyed by tool id.
+const HOWTO = {
+"bold-text-generator":"Type your text, and the tool converts every letter to its Unicode bold mathematical alphanumeric equivalent, live as you type — copy it straight into any app that supports Unicode.",
+"italic-text-generator":"Type your text, and the tool converts it to Unicode italic letters live — copy it into a caption, bio, or message where real italic formatting isn't available.",
+"bold-italic-generator":"Type your text, and the tool converts it to Unicode bold italic letters, combining both styles at once.",
+"underline-text":"Type your text, and the tool adds a Unicode combining underline character after every letter, so it displays underlined anywhere Unicode is supported.",
+"strikethrough-text":"Type your text, and the tool adds a Unicode strikethrough combining character through every letter, ready to copy anywhere.",
+"bubble-text":"Type your text, and the tool converts each letter to its circled Unicode equivalent for a bubble-letter effect.",
+"square-text":"Type your text, and the tool converts each letter to its squared Unicode equivalent for a bold, geometric look.",
+"small-caps":"Type your text, and the tool converts lowercase letters to small-capital Unicode letters for a refined typographic style.",
+"superscript-text":"Type your text, and the tool converts supported characters to Unicode superscript, useful for footnotes and simple math notation.",
+"subscript-text":"Type your text, and the tool converts supported characters to Unicode subscript, useful for chemical formulas like H₂O.",
+"upside-down-text":"Type your text, and the tool flips it upside down character by character using lookalike Unicode glyphs.",
+"mirror-text":"Type your text, and the tool mirrors and reverses the characters using lookalike Unicode glyphs for a flipped effect.",
+"glitch-text":"Type your text and set the intensity, and the tool layers random Unicode combining diacritics above, below, and through each letter for a Zalgo glitch effect.",
+"cursive-text":"Type your text, and the tool converts it to a Unicode cursive script font for an elegant handwritten look.",
+"double-struck":"Type your text, and the tool converts it to Unicode double-struck letters, the blackboard-bold style used for number sets in math.",
+"fraktur-text":"Type your text, and the tool converts it to Unicode Fraktur Gothic letters for a medieval, old-world look.",
+"monospace-text":"Type your text, and the tool converts it to Unicode monospace letters so it displays like code even outside a code block.",
+"text-to-emoji":"Type your sentence, and the tool scans it for recognizable words and inserts a matching emoji next to each one.",
+"fancy-text-all":"Type your text once, and the tool generates every fancy style at once in a list, each with its own copy button.",
+"unicode-text-art":"Type your text, and the tool wraps it in a decorative Unicode box border, ready to copy as simple text art.",
+"fullwidth-text":"Type your text, and the tool converts every character to its Unicode fullwidth equivalent for a spaced-out, vaporwave-style look.",
+"cool-symbols":"Browse the board of arrows, stars, hearts, math symbols, currency signs, and kaomoji, and click any one to copy it instantly.",
+"discord-formatter":"Type your message and select bold, italic, spoiler, or a color from the ANSI palette, and the tool wraps it in the matching Discord markdown syntax.",
+"emoji-letters":"Type your text, and the tool converts each letter to a regional-indicator or squared-Latin emoji letter.",
+"serif-bold-text":"Type your text, and the tool converts it to Unicode serif bold letters for a classic, heavy typographic look.",
+"negative-circled-text":"Type your text, and the tool converts it to solid black circled Unicode letters for bold, high-contrast styling.",
+"parenthesized-text":"Type your text, and the tool wraps each letter in Unicode parentheses, useful for list or label styling.",
+"double-underline-text":"Type your text, and the tool adds a Unicode double-underline combining character beneath every letter for strong emphasis.",
+"overline-text":"Type your text, and the tool adds a Unicode overline combining character above every letter for a bar-over, math-like appearance.",
+"slashthrough-text":"Type your text, and the tool overlays a diagonal Unicode long-solidus stroke through every letter for a slashed effect.",
+"wide-spaced-text":"Type your text, and the tool inserts a space between every character to create a l e t t e r  s p a c e d - o u t title.",
+"spongebob-mocking-case":"Type your text, and the tool alternates the case of every letter for the mOcKiNg sPoNgEbOb meme style.",
+"flip-case":"Type your text, and the tool swaps every uppercase letter to lowercase and every lowercase letter to uppercase.",
+"reverse-words":"Type your sentence, and the tool reverses the order of the words while keeping each individual word spelled normally.",
+"leetspeak-generator":"Type your text, and the tool swaps letters for lookalike numbers and symbols to produce 1337 h4x0r leetspeak.",
+"faux-cyrillic-text":"Type your text, and the tool swaps certain Latin letters for lookalike Cyrillic characters for a faux-Russian aesthetic.",
+"clap-text":"Type your sentence, and the tool inserts a 👏 clap emoji between every word for emphatic, meme-style messages.",
+"sparkle-text":"Type your text, and the tool wraps each word with ✨ sparkle emoji for a cute, aesthetic look.",
+};
+function mergeHowTo(meta) {
+  for (const id in HOWTO) if (meta[id] && !meta[id].howTo) meta[id].howTo = HOWTO[id];
+  return meta;
+}
+
+const TOOL_META = mergeHowTo({
   "bold-text-generator": {
     title: "Free Bold Text Generator – Unicode Bold Letters | ToolsRift",
     desc: "Convert text to Unicode bold letters for social media posts, messages, and formatting. Copy bold text instantly with our free generator.",
@@ -648,7 +694,7 @@ const TOOL_META = {
       ["Does sparkle text work everywhere?", "Yes, the ✨ emoji is standard Unicode and displays on virtually all modern devices, apps and social platforms."]
     ]
   }
-};
+});
 
 // Bold Text Generator
 function BoldTextGenerator() {

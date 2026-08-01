@@ -264,7 +264,88 @@ const CATEGORIES = [
   { id:"convert",   name:"Text Conversion", icon:"🔄", desc:"Convert between text formats" },
 ];
 
-const TOOL_META = {
+// Per-tool "how to use" text, keyed by tool id. TOOL_META's titles, meta
+// descriptions and FAQs were already written individually per tool — only
+// howTo was missing, so every one of these 66 pages fell back to the same
+// generic 3-step template ("Open the tool above... Enter your input... Get
+// your result") instead of describing what this specific tool actually does.
+const HOWTO = {
+"word-counter-pro":"Paste or type your text into the box, and the counts for words, characters, sentences, paragraphs, and estimated reading time update live as you type.",
+"character-counter":"Paste your text, and the tool shows the character count with and without spaces alongside limit checks for Twitter, SMS, and meta description lengths.",
+"reading-time":"Paste your article, speech, or script, and the tool estimates reading time and speaking time based on average WPM — adjust the custom WPM fields to match your audience.",
+"word-frequency":"Paste your text, and the tool ranks every word by how often it appears, showing counts, percentages, and a frequency bar for each.",
+"text-statistics":"Paste your text, and the tool generates a full report — word and character counts, average sentence length, syllable count, and a Flesch Reading Ease score.",
+"unique-words":"Paste your text, and the tool extracts every distinct word, letting you sort the list alphabetically, by frequency, or by length.",
+"palindrome-checker":"Type a word, number, or phrase, and the tool checks instantly whether it reads the same forwards and backwards, ignoring spaces, punctuation, and case.",
+"anagram-checker":"Enter two words or phrases, and the tool checks whether one is a letter-for-letter rearrangement of the other, ignoring spaces, punctuation, and case.",
+"count-occurrences":"Paste your text and enter the word, character, or phrase to search for, and the tool counts how many times it appears, with case-sensitive and overlapping-match options.",
+"duplicate-word-finder":"Paste your text, and the tool lists every word that appears more than once, ranked from most to least frequent.",
+"text-reverser":"Paste your text, choose to reverse by character or by word, and the tool flips the order instantly.",
+"text-sorter":"Paste your lines, choose alphabetical, reverse, or random order, and the tool sorts them instantly.",
+"remove-duplicates":"Paste your lines, and the tool strips out every line that repeats, keeping only the first occurrence of each.",
+"remove-empty-lines":"Paste your text, and the tool removes every blank or whitespace-only line, leaving just the content lines.",
+"remove-extra-spaces":"Paste your text, and the tool collapses repeated spaces and trims stray whitespace so everything is normalized to single spaces.",
+"trim-lines":"Paste your text, and the tool strips leading and trailing spaces from the start and end of every line.",
+"text-repeater":"Enter your text, set how many times to repeat it and a separator, and the tool builds the repeated output instantly.",
+"find-replace":"Paste your text, enter what to find and what to replace it with (plain text or a regex pattern), and the tool applies the replacement across the whole text.",
+"rot13":"Paste your text, and the tool shifts every letter 13 places through the alphabet — running it a second time on the result restores the original.",
+"pig-latin":"Enter English text, and the tool converts each word to Pig Latin — run it again on Pig Latin text to convert it back.",
+"text-randomizer":"Paste your text, choose to shuffle by word, sentence, or line, and the tool randomizes the order instantly.",
+"punctuation-remover":"Paste your text, and the tool strips every punctuation mark, leaving just the words and spacing.",
+"case-converter":"Paste your text, pick UPPERCASE, lowercase, Title Case, camelCase, snake_case, or another format, and the tool converts it instantly.",
+"remove-accents":"Paste text containing accented letters, and the tool strips the accents and diacritics (café → cafe) and transliterates ligatures to plain ASCII.",
+"invisible-char-remover":"Paste text that may contain hidden characters, and the tool strips zero-width spaces, BOM markers, and other invisible characters, returning clean text.",
+"strip-html-tags":"Paste HTML markup, and the tool removes every tag and decodes entities like &amp; and &lt;, leaving just the clean, readable text.",
+"remove-numbers":"Paste your text, and the tool strips every digit — or switch modes to keep only the numbers and strip everything else.",
+"remove-line-breaks":"Paste multi-line text, and the tool collapses the line breaks into spaces (or joins everything into one line) so it reads as continuous text.",
+"url-slug":"Enter a title or heading, and the tool converts it into a lowercase, hyphenated, SEO-friendly URL slug instantly.",
+"add-line-numbers":"Paste your text, and the tool prefixes every line with a sequential number.",
+"remove-line-numbers":"Paste numbered text, and the tool strips the leading line numbers, leaving just the plain content.",
+"text-wrapper":"Paste your text and set a column width, and the tool wraps long lines to that width without breaking words mid-word.",
+"text-unwrapper":"Paste wrapped text, and the tool joins the broken lines back into single continuous lines per paragraph.",
+"text-truncator":"Paste your text and set a max length, and the tool cuts it to that length and appends an ellipsis.",
+"text-padder":"Enter your text and a target width, choose left, right, or center alignment, and the tool pads it with spaces (or a custom character) to that width.",
+"tab-to-spaces":"Paste text containing tabs and choose 2, 4, or 8 spaces, and the tool converts every tab character to that many spaces.",
+"spaces-to-tab":"Paste text with space-based indentation and set the group size, and the tool converts each matching group of spaces back into a tab character.",
+"text-joiner":"Paste multiple lines and choose a separator, and the tool joins them into a single line with that separator between each.",
+"text-splitter":"Paste your text and choose a delimiter (comma, space, line break, or custom), and the tool splits it into separate lines at every match.",
+"text-to-bullets":"Paste your lines, and the tool prefixes each one with a bullet character, turning plain lines into a formatted bullet list.",
+"bullets-to-text":"Paste a bulleted list, and the tool strips the bullet markers, returning plain text lines.",
+"text-to-numbered":"Paste your lines, and the tool converts them into a numbered list, prefixing each line with 1., 2., 3., and so on.",
+"numbered-to-text":"Paste a numbered list, and the tool strips the numbering, returning plain unnumbered lines.",
+"number-extractor":"Paste text containing numbers mixed with words, and the tool pulls out every number and integer into its own list.",
+"email-extractor":"Paste any block of text, and the tool scans it and extracts every valid email address it finds.",
+"url-extractor":"Paste any block of text, and the tool scans it and extracts every URL and link it finds.",
+"hashtag-extractor":"Paste social media text, and the tool extracts every #hashtag and @mention into separate lists.",
+"sentence-splitter":"Paste a paragraph, and the tool splits it into individual sentences, one per line.",
+"extract-column":"Paste delimited CSV or TSV lines and choose a column index, and the tool pulls out just that column from every row.",
+"text-to-morse":"Type English text, and the tool converts every letter and number into Morse code dots and dashes.",
+"morse-to-text":"Paste Morse code (dots, dashes, and spaces), and the tool decodes it back into readable English text.",
+"text-diff":"Paste your original text on one side and the changed version on the other, and the tool highlights every addition, deletion, and change between them.",
+"number-to-words":"Enter any number, and the tool spells it out in full written word form, e.g. 1,024 becomes 'one thousand twenty-four'.",
+"words-to-number":"Type a number written out in words, and the tool converts it back into digits.",
+"letter-frequency":"Paste your text, and the tool counts how often each letter A–Z appears, showing the results as ranked bars.",
+"vowel-consonant-counter":"Paste your text, and the tool breaks it down into counts of vowels, consonants, digits, spaces, and punctuation.",
+"acronym-generator":"Enter a phrase, and the tool takes the first letter of each word to build an acronym.",
+"alphabetize-words":"Paste your text, and the tool sorts every word into A–Z or Z–A order.",
+"censor-words":"Enter your custom list of words to censor and paste your text, and the tool masks every match with asterisks or a symbol of your choice.",
+"space-between-letters":"Enter your text, and the tool inserts a space (or custom separator) between every single character.",
+"remove-specific-chars":"Enter the characters you want gone and paste your text, and the tool deletes every occurrence of those characters.",
+"reverse-each-word":"Paste your text, and the tool reverses the letters inside every word while keeping the word order unchanged.",
+"remove-duplicate-words":"Paste your text, and the tool deletes repeated words, keeping only the first occurrence of each.",
+"add-prefix-suffix":"Paste your lines and enter a prefix and/or suffix, and the tool adds that text to the start and end of every line.",
+"initials-extractor":"Enter a full name (or list of names), and the tool converts each one into initials, e.g. John Doe becomes J.D.",
+"capitalized-words":"Paste your text, and the tool pulls out every capitalized word — useful for spotting names, places, and proper nouns.",
+};
+
+// Attaches the matching howTo string onto each entry of a hand-written
+// TOOL_META object, keyed by id.
+function mergeHowTo(meta) {
+  for (const id in HOWTO) if (meta[id]) meta[id].howTo = HOWTO[id];
+  return meta;
+}
+
+const TOOL_META = mergeHowTo({
   "word-counter-pro": {
     title:"Free Word Counter Pro — Words, Characters & Sentences",
     desc:"Count words, characters, sentences, paragraphs and get reading time instantly. Free online word counter with detailed text statistics.",
@@ -595,7 +676,7 @@ const TOOL_META = {
     desc:"Extract every capitalized word from your text — useful for pulling out names, places, brands, and key terms. Optionally keep only unique words.",
     faq:[["What counts as a capitalized word?","Any word that begins with an uppercase letter A–Z, which usually captures names, places, and other proper nouns."],["Are duplicates removed?","By default only unique capitalized words are shown, in the order they first appear. You can toggle this off to keep every match."],["Will it catch sentence-start words too?","Yes — words capitalized only because they start a sentence are also matched, since the tool can't know intent from capitalization alone."]]
   },
-};
+});
 
 // �"����� MORSE CODE TABLE �����������������������������������������������������������������������������������������������������������������"�
 const MORSE = {

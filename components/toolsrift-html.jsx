@@ -219,7 +219,58 @@ const CATEGORIES = [
   { id:"tools", name:"Tools & Utilities", icon:"🔧", desc:"HTML analysis, extraction and manipulation utilities" },
 ];
 
-const TOOL_META = {
+// Per-tool "how to use" text, keyed by tool id.
+const HOWTO = {
+"html-formatter":"Paste your messy HTML, and the tool re-indents it with consistent spacing and line breaks between elements, live as you paste.",
+"html-minifier":"Paste your HTML, and the tool strips whitespace, comments, and unnecessary characters, showing the minified output and the size reduction.",
+"html-validator":"Paste your HTML, and the tool checks it for syntax errors, unclosed tags, and invalid attributes, listing every issue it finds.",
+"html-cleaner":"Paste your HTML — including messy Word-exported markup — and the tool strips unwanted tags, inline styles, and junk, returning clean code.",
+"html-compressor":"Paste your HTML, and the tool compresses it and reports the percentage of space saved compared to the original.",
+"html-to-text":"Paste your HTML, and the tool strips every tag and decodes entities, returning just the plain text content.",
+"html-to-markdown":"Paste your HTML, and the tool converts the markup into clean Markdown syntax ready for documentation or a content editor.",
+"markdown-to-html":"Paste your Markdown, and the tool converts it into semantic HTML markup with the formatting preserved.",
+"html-to-jsx":"Paste plain HTML, and the tool converts it to React JSX — swapping class for className, converting attributes to camelCase, and closing self-closing tags.",
+"html-entities-encode":"Paste your text, and the tool encodes special characters like &, <, >, and \" into their HTML entity equivalents for safe display.",
+"html-entities-decode":"Paste HTML-entity-encoded text, and the tool decodes it back into readable characters and symbols.",
+"html-to-pdf-preview":"Paste your HTML code, and the tool renders it live inside a sandboxed iframe so you can see exactly how it will look in a browser.",
+"html-table-to-csv":"Paste an HTML table's markup, and the tool parses the rows and cells into CSV or JSON, auto-escaping commas, quotes, and newlines.",
+"html-nl2br":"Paste plain text with line breaks, and the tool converts each break into an HTML <br> tag — toggle XHTML mode for self-closing tags, or reverse the conversion.",
+"html-data-uri":"Paste text, SVG, or CSS, choose base64 or URL-encoded, and the tool builds a data URI you can embed inline with no external file.",
+"meta-tag-generator":"Enter your page title, description, and social image, and the tool generates the complete set of SEO meta tags including Open Graph and Twitter Cards.",
+"og-tag-generator":"Enter your title, description, image, and URL, and the tool generates Open Graph and Twitter Card meta tags for social sharing previews.",
+"html-table-generator":"Enter your rows and columns of data, and the tool generates a semantic HTML table with the matching structure and optional styling.",
+"html-list-generator":"Paste your lines of text, choose ordered or unordered, and the tool wraps them into a proper HTML list.",
+"html-color-codes":"Pick a color, and the tool generates the matching code snippets in hex, RGB, RGBA, and HSL formats with usage examples.",
+"html-link-generator":"Enter your URL, link text, and target/rel options, and the tool assembles a complete anchor tag with every attribute set.",
+"html-image-tag":"Enter your image src, alt text, dimensions, and loading behavior, and the tool assembles a complete img tag with srcset support.",
+"html-button-generator":"Enter your button text and choose classes and attributes, and the tool generates the styled HTML button code.",
+"iframe-generator":"Enter the embed URL, width, height, and sandbox options, and the tool assembles a complete iframe tag.",
+"html-input-generator":"Choose an input type and enter a label and validation rules, and the tool generates a form field with matching accessibility attributes.",
+"schema-json-ld-generator":"Choose a schema type (Article, Product, FAQPage, and more), fill in the fields, and the tool builds valid schema.org JSON-LD ready to paste into your page.",
+"html-boilerplate-generator":"Fill in your page title, meta tags, and options like a CSS reset, and the tool generates a complete HTML5 starter document.",
+"srcset-generator":"Enter a filename pattern with {w} as the width placeholder, list your target widths, and the tool builds the matching img srcset and picture markup.",
+"html-form-generator":"List your form fields (label, type, required), set the method and action, and the tool builds a complete HTML form with a submit button.",
+"html-select-generator":"Enter one option per line (value|label pairs work too), and the tool builds a select dropdown with a name and optional multiple attribute.",
+"html-video-tag":"Enter your video source URLs and toggle controls, autoplay, loop, and poster image, and the tool assembles a complete HTML5 video tag.",
+"html-audio-tag":"Enter your audio source URLs (MP3/OGG/WAV) and toggle controls, autoplay, and loop, and the tool assembles a complete HTML5 audio element.",
+"html-figure-generator":"Enter your image and a caption, and the tool wraps them in a semantic figure and figcaption for accessible, captioned images.",
+"html-details-accordion":"Enter a title and content block for each item, and the tool builds native details/summary accordion markup, with the first item optionally open by default.",
+"html-definition-list":"Enter term: definition pairs, one per line, and the tool builds a semantic dl with matching dt and dd elements.",
+"html-semantic5-wrapper":"Click generate, and the tool outputs a full semantic HTML5 page skeleton with header, nav, main, article, aside, section, and footer landmarks.",
+"html-blockquote-generator":"Enter your quote text, an optional cite URL, and the author, and the tool builds a semantic blockquote with attribution.",
+"html-nav-menu-generator":"Enter label|url pairs, one per line, and the tool builds an accessible nav menu wrapped in a nav element and unordered list.",
+"html-tag-counter":"Paste your HTML, and the tool counts every tag type used and shows a breakdown of how many times each one appears.",
+"html-attribute-extractor":"Paste your HTML and choose an element type, and the tool extracts every attribute name and value from matching elements.",
+"html-comment-remover":"Paste your HTML, and the tool strips out every comment — including multi-line and conditional comments — leaving clean code.",
+"html-attribute-remover":"Paste your HTML and choose to strip all attributes or just one named attribute (like class or style), and the tool removes them.",
+"html-char-entity-finder":"Paste your text, and the tool scans it for special and non-ASCII characters and lists each one's named, decimal, and hexadecimal HTML entity codes.",
+};
+function mergeHowTo(meta) {
+  for (const id in HOWTO) if (meta[id] && !meta[id].howTo) meta[id].howTo = HOWTO[id];
+  return meta;
+}
+
+const TOOL_META = mergeHowTo({
   "html-formatter": {
     title: "Free HTML Formatter – Beautify HTML Code Online | ToolsRift",
     desc: "Format and beautify messy HTML with proper indentation. Clean up unreadable HTML code with our free online formatter. Instant results, no signup required.",
@@ -611,7 +662,7 @@ const TOOL_META = {
       ["Why encode special characters as entities?", "Encoding reserved characters prevents them from breaking your markup or being misread as tags, and numeric entities let unusual symbols display reliably regardless of file encoding."]
     ]
   }
-};
+});
 
 // HTML Formatter Component
 function HtmlFormatter() {

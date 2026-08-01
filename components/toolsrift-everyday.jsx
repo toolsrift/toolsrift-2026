@@ -244,7 +244,42 @@ const CATEGORIES = [
   { id:"fun", name:"Games & Random Tools", icon:"🎲", desc:"Typing test, dice, coin flip, name picker and scoreboard." },
 ];
 
-const TOOL_META = {
+// Per-tool "how to use" text, keyed by tool id.
+const HOWTO = {
+"age-calculator":"Enter your date of birth, and the tool calculates your exact age in years, months, and days, plus a countdown to your next birthday.",
+"date-difference":"Enter a start and end date, and the tool calculates the difference between them in days, weeks, months, and years.",
+"add-subtract-days":"Enter a starting date and how many days to add or subtract, and the tool calculates the exact resulting date and its weekday.",
+"days-until":"Enter a future date — a birthday, exam, wedding, or event — and the tool counts down the days remaining until it arrives.",
+"world-clock":"Search for a city or add it from the list, and the tool shows its current local time alongside any other cities you've added, updating live.",
+"countdown-timer":"Set the minutes and seconds, and the tool counts down with start, pause, and reset controls.",
+"stopwatch":"Press start, and the tool times elapsed seconds precisely, with a lap button to record split times and pause/reset controls.",
+"pomodoro-timer":"Press start, and the tool runs a 25-minute focus session followed automatically by a 5-minute break, repeating the cycle.",
+"typing-speed-test":"Press start and type the displayed passage as accurately and quickly as you can, and the tool measures your words-per-minute and accuracy live.",
+"random-name-picker":"Paste your list of names, one per line, and click pick, and the tool randomly selects one winner from the list.",
+"dice-roller":"Choose how many dice and how many sides each has (4 to 20), and the tool rolls them and shows the result instantly.",
+"coin-flip":"Click flip, and the tool randomly lands on heads or tails, keeping a history of your previous flips.",
+"scoreboard":"Enter each team's name, and the tool tracks their score with simple increment and reset controls for the game.",
+"leap-year-checker":"Enter any year, and the tool tells you instantly whether it's a leap year, plus the next and previous leap years.",
+"iso-week-number":"Enter a date, and the tool calculates its ISO 8601 week number, day of year, and week-year.",
+"day-of-week-finder":"Enter any date, and the tool calculates which day of the week it falls on using Zeller's congruence — works for any year.",
+"moon-phase":"Enter a date, and the tool calculates the moon's phase, illumination percentage, and lunar age, with a matching emoji icon.",
+"business-days-between":"Enter a start and end date, and the tool counts the working days (Monday through Friday) between them, excluding weekends.",
+"days-in-month":"Enter a month and year, and the tool tells you exactly how many days are in it, correctly accounting for leap-year February.",
+"easter-date":"Enter a year, and the tool calculates the exact date of Easter Sunday for that year using the Computus algorithm.",
+"unix-timestamp-converter":"Enter a Unix epoch timestamp, and the tool converts it to a human-readable date in both UTC and your local time zone — or enter a date to convert it back.",
+"weekday-counter":"Enter a start date, end date, and a weekday, and the tool counts how many times that weekday falls between them.",
+"half-birthday":"Enter your date of birth, and the tool calculates your half birthday — exactly six months from your birth date.",
+"zodiac-sign":"Enter your birthday, and the tool identifies your Western star sign, its element, and the date range it covers.",
+"chinese-zodiac":"Enter your birth year, and the tool identifies your Chinese zodiac animal and its associated traits.",
+"generation-finder":"Enter your birth year, and the tool identifies which generation you belong to — Boomer, Gen X, Millennial, Gen Z, and more.",
+"next-friday-13":"Click generate, and the tool finds the next Friday the 13th from today and lists several upcoming ones with a day countdown for each.",
+};
+function mergeHowTo(meta) {
+  for (const id in HOWTO) if (meta[id] && !meta[id].howTo) meta[id].howTo = HOWTO[id];
+  return meta;
+}
+
+const TOOL_META = mergeHowTo({
   "age-calculator": {
     title: "Free Age Calculator – Exact Age in Years, Months & Days | ToolsRift",
     desc: "Calculate your exact age from your date of birth — in years, months, days, and total days lived — with a countdown to your next birthday. Free, instant, no signup.",
@@ -477,7 +512,7 @@ const TOOL_META = {
       ["How is the next one found?", "The tool checks the 13th of each upcoming month and reports the next one that falls on a Friday, then lists several that follow."],
     ],
   },
-};
+});
 
 // ── date helpers ─────────────────────────────────────────────────────────────
 const fmtDate = (d) => d.toLocaleDateString("en-IN", { weekday: "long", year: "numeric", month: "long", day: "numeric" });

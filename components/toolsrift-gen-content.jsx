@@ -1480,15 +1480,136 @@ const CATEGORIES = [
 { id:"content", name:"Content & Marketing Copy Generators", icon:"🧠", desc:"Generate titles, captions, bios, descriptions, CTAs, slogans, and naming ideas without API calls." },
 ];
 
-const TOOL_META = Object.fromEntries(TOOLS.map(t => [t.id, {
-title:`Free ${t.name} – Generate Online | ToolsRift`,
-desc:t.desc,
-faq:[
-["Is the generated content editable?", "Yes. You can copy the generated output and adjust wording to fit your specific legal, brand, or platform requirements."],
-["Is this tool client-side only?", "Yes. All generation runs in your browser with no external API calls required for output creation."],
-["Can I download results?", "Yes. Legal and SVG tools include download options, and content tools include copy controls for each generated option."]
-]
-}]));
+// Per-tool "how to use" text and a unique first FAQ question, keyed by tool
+// id. The three FAQ questions used to be one identical array shared by all
+// 48 tools — same words, same order, on every page, whether the tool draws
+// up a privacy policy or renders an SVG blob. Q1 is now specific to each
+// tool; Q2/Q3 vary by family (legal document, SVG/background art, or
+// marketing copy) instead of being byte-identical across all three.
+const HOWTO = {
+"privacy-policy-gen":"Enter your company name, site URL, and what data you collect (cookies, analytics, forms), and the tool assembles a full privacy policy with the matching clauses.",
+"terms-conditions-gen":"Enter your business name, jurisdiction, and the rules you want to set (acceptable use, service limits), and the tool drafts a terms and conditions page around them.",
+"cookie-policy-gen":"List the cookie categories you use — essential, analytics, preference — and the tool generates a GDPR-ready cookie policy disclosing each one.",
+"disclaimer-gen":"Enter your site name and the areas you want covered (liability, external links, informational use), and the tool drafts a disclaimer with matching clauses.",
+"return-policy-gen":"Set your return window, refund method, and any exclusions, and the tool generates a return and refund policy for your storefront.",
+"nda-gen":"Choose mutual or one-way, enter both parties' names and the effective date, and the tool drafts a simple non-disclosure agreement with standard confidentiality terms.",
+"copyright-notice-gen":"Enter the year and owner name, and the tool formats a © copyright notice line with the standard 'all rights reserved' wording ready to paste into your footer.",
+"dmca-notice-gen":"Enter the infringing URL, your original work details, and your contact information, and the tool drafts a DMCA takedown notice in the standard required format.",
+"gdpr-compliance-gen":"Enter your lawful basis for processing and the data subject rights you support, and the tool drafts a GDPR data processing notice covering retention and rights.",
+"eula-gen":"Enter your software or app name and the restrictions you want to set, and the tool drafts an End User License Agreement covering license scope and warranty terms.",
+"affiliate-disclosure-gen":"Enter which programs you're part of (e.g. Amazon Associates), and the tool drafts an FTC-style affiliate disclosure statement to place near your affiliate links.",
+"shipping-policy-gen":"Enter your processing time, delivery estimates, and whether you ship internationally, and the tool drafts a shipping policy covering customs and lost-parcel handling.",
+"acceptable-use-policy-gen":"List the activities you want to prohibit and your enforcement approach, and the tool drafts an acceptable use policy with content-standards and security clauses.",
+"warranty-policy-gen":"Enter your coverage period and what's excluded, and the tool drafts a warranty policy with claim steps and liability limitations.",
+"svg-wave-gen":"Adjust the height, amplitude, frequency, and color sliders, and the tool renders a layered SVG wave live — copy the SVG code or download the file once it looks right.",
+"svg-blob-gen":"Click randomize to generate an organic blob shape, then pick a color, and the tool renders the SVG live for you to copy or download.",
+"svg-pattern-gen":"Choose a pattern style — dots, stripes, grid, zigzag, hexagon — and set the spacing and color, and the tool renders a tileable SVG pattern to copy or download.",
+"gradient-gen":"Add color stops and choose linear or radial, then adjust the angle or position, and the tool generates the matching CSS gradient code to copy.",
+"mesh-gradient-gen":"Pick several colors to blend, and the tool renders a soft mesh gradient background as SVG/CSS for you to copy or download.",
+"noise-texture-gen":"Adjust the turbulence and opacity settings, and the tool renders an SVG noise texture live for subtle background grain — copy the code when you like the result.",
+"geometric-pattern-gen":"Choose a shape (triangles, circles, lines) and a color scheme, and the tool renders a repeating geometric SVG pattern to copy or download.",
+"abstract-bg-gen":"Adjust the shape layers and color harmony, and the tool renders an abstract SVG background live — copy the code or download the file for your web section.",
+"svg-spinner-gen":"Set the color, size, and rotation speed, and the tool renders an animated SVG loading spinner you can copy straight into your site's loading state.",
+"svg-divider-gen":"Choose a divider style — curve, tilt, triangle — and toggle flip, and the tool renders an SVG section divider to copy between two page sections.",
+"svg-checkmark-gen":"Choose success or error, and the tool renders an animated SVG checkmark or cross inside a colored circle badge, ready to copy into a confirmation state.",
+"svg-badge-gen":"Enter a label and message and pick a color, and the tool renders a shields.io-style status badge as SVG for your README or docs.",
+"svg-avatar-gen":"Enter any name, email, or seed string, and the tool deterministically generates the same symmetric identicon avatar every time from that input.",
+"blog-title-gen":"Enter a topic keyword, and the tool generates a list of blog title ideas using proven high-click headline formulas built around that keyword.",
+"youtube-title-gen":"Enter your video topic, and the tool generates a list of title ideas written with engaging hooks aimed at video discovery.",
+"youtube-description-gen":"Enter your title and key points, and the tool assembles a readable video description with a call-to-action prompt built in.",
+"youtube-tags-gen":"Enter your niche topic, and the tool generates 20-30 relevant tags to help YouTube categorize your video correctly.",
+"instagram-caption-gen":"Enter your topic and mood, and the tool generates caption options with matching hashtags for stronger engagement.",
+"instagram-hashtag-gen":"Enter your niche topic, and the tool generates a set of 30 relevant hashtags to support discoverability.",
+"twitter-bio-gen":"Enter your profession and interests, and the tool generates concise bio options for your X/Twitter profile.",
+"linkedin-summary-gen":"Enter your role, key skills, and experience, and the tool generates an About summary written in a professional storytelling style.",
+"product-description-gen":"Enter your product name and key features, and the tool generates description options suited to landing pages and storefront listings.",
+"headline-gen":"Enter your topic, and the tool generates attention-grabbing headline options using proven marketing and editorial structures.",
+"slogan-gen":"Enter your brand or product positioning keywords, and the tool generates a list of catchy slogan and tagline options.",
+"cta-gen":"Enter your campaign goal, and the tool generates call-to-action button text options written with conversion-focused phrasing.",
+"subject-line-gen":"Enter your email's topic and goal, and the tool generates subject line ideas aimed at a stronger open rate.",
+"business-name-gen":"Enter your industry and a few keywords, and the tool generates brandable business name ideas built around them.",
+"username-gen":"Enter a name or keyword, and the tool generates username variants in several common styles.",
+"elevator-pitch-gen":"Enter your role and value proposition, and the tool generates a 30-second elevator pitch for networking or interviews.",
+"about-us-gen":"Enter your company name, founding year, what you offer, and your values, and the tool drafts an About Us page around them.",
+"faq-schema-gen":"Enter your questions and answers, and the tool generates valid FAQPage JSON-LD structured data ready to paste into your page's <head> for Google rich results.",
+"email-signature-gen":"Enter your name, title, and contact details, and pick an accent color, and the tool builds an HTML email signature with a live preview as you edit.",
+"mission-vision-gen":"Enter your company, industry, audience, and goal, and the tool drafts mission, vision, and values statements around them.",
+"cookie-consent-banner-gen":"Set your banner text and accept/decline button labels, and the tool generates copy-paste HTML with styling and localStorage logic that remembers the visitor's choice.",
+};
+
+const FAQ1 = {
+"privacy-policy-gen":["Is this legally sufficient on its own?", "It's a solid, clause-complete starting point — for a business handling sensitive data or facing real legal exposure, have a lawyer review the final text."],
+"terms-conditions-gen":["Can I set my own governing jurisdiction?", "Yes, enter your jurisdiction and it's used directly in the governing-law clause of the generated document."],
+"cookie-policy-gen":["Does it distinguish essential from optional cookies?", "Yes, essential, analytics, and preference cookies each get their own disclosure section, which GDPR and most consent frameworks expect."],
+"disclaimer-gen":["What sections does it cover?", "By default it covers liability limitation, external link disclaimers, and informational-use statements — you can trim any section you don't need."],
+"return-policy-gen":["Can I set a different window for different product types?", "The generator produces one policy per run — generate separate versions if you need different return windows for different categories."],
+"nda-gen":["Is a generated NDA enforceable?", "It uses standard confidentiality language, but enforceability depends on your jurisdiction and the specifics of what's being protected — have counsel review it for high-stakes agreements."],
+"copyright-notice-gen":["Do I need to register a copyright for this notice to matter?", "No, copyright exists automatically once you create original work — the notice simply signals your claim to anyone reading it."],
+"dmca-notice-gen":["Does sending this guarantee content removal?", "No, it's a properly formatted notice you send to the host or platform — removal depends on their DMCA process, not the notice itself."],
+"gdpr-compliance-gen":["Does this make my site fully GDPR compliant?", "It generates the required notice text — full compliance also depends on your actual data practices, consent mechanisms, and processing agreements."],
+"eula-gen":["Do I need this in addition to a Terms of Service?", "A EULA specifically governs software/app licensing terms, while Terms of Service covers your site or service broadly — many products use both."],
+"affiliate-disclosure-gen":["Where should I place this disclosure?", "The FTC requires it to be clear and conspicuous near the affiliate links themselves, not buried in a separate page only."],
+"shipping-policy-gen":["Can I include different rules for international orders?", "Yes, fill in the customs and international delivery fields and the tool includes a dedicated section covering cross-border shipments."],
+"acceptable-use-policy-gen":["How is this different from Terms of Conditions?", "An AUP focuses specifically on prohibited behavior and content standards, while Terms & Conditions cover the broader relationship — many sites publish both."],
+"warranty-policy-gen":["Can I set different coverage periods for different products?", "Generate a separate policy for each product line if your coverage periods or exclusions differ."],
+"svg-wave-gen":["Can I use multiple wave layers with different colors?", "Yes, generate one layer, copy its code, then adjust the color and amplitude and generate again to layer a second wave on top."],
+"svg-blob-gen":["Does every click produce a completely different shape?", "Yes, randomize picks new control points each time, so you can keep clicking until you land on a shape you like."],
+"svg-pattern-gen":["Does the pattern tile seamlessly?", "Yes, each pattern is built to repeat edge-to-edge without visible seams when used as a CSS background-repeat."],
+"gradient-gen":["Can I copy this as a Tailwind class instead of raw CSS?", "The output is raw CSS gradient syntax — paste the color stops into Tailwind's arbitrary value syntax if you need a utility class."],
+"mesh-gradient-gen":["How many colors can I blend?", "You can add several color points; more points create smoother, more complex blending across the mesh."],
+"noise-texture-gen":["Will this look pixelated when scaled up?", "No, it's SVG-based turbulence, so it stays crisp at any size unlike a raster noise PNG."],
+"geometric-pattern-gen":["Can I change the pattern density?", "Yes, adjust the shape size and spacing controls to make the pattern sparser or denser."],
+"abstract-bg-gen":["Is the output good for large hero sections?", "Yes, since it's vector SVG it scales cleanly to any hero or section size without quality loss."],
+"svg-spinner-gen":["Will this work without any extra CSS?", "Yes, the SVG has its own embedded animation, so it spins as soon as you paste it into your page — no separate CSS keyframes needed."],
+"svg-divider-gen":["Can I flip the divider to use it at both the top and bottom of a section?", "Yes, toggle flip and generate again to get the mirrored version for the opposite edge."],
+"svg-checkmark-gen":["Does the draw animation replay every time it's shown?", "It plays once on mount by default — wrap it in a key-changing React element or reset the animation manually if you need it to replay."],
+"svg-badge-gen":["Is this compatible with shields.io-style badges in a README?", "Yes, the output follows the same visual convention (label, message, color) so it drops into a README the same way a shields.io badge does."],
+"svg-avatar-gen":["Will the same input always produce the same avatar?", "Yes, generation is deterministic — the same name, email, or seed string always produces the identical identicon."],
+"blog-title-gen":["How many title options does it generate?", "It generates a batch of options per topic so you can pick the strongest one or mix elements from a few."],
+"youtube-title-gen":["Does it consider YouTube's title length limit?", "Titles are kept within YouTube's practical display length so they don't get cut off in search results and suggestions."],
+"youtube-description-gen":["Does it include space for links?", "Yes, the structure leaves room for you to drop in links, timestamps, and social handles after generating the base description."],
+"youtube-tags-gen":["Should I use all 20-30 tags?", "Use the ones most relevant to your specific video — tag relevance matters more to YouTube's algorithm than tag count."],
+"instagram-caption-gen":["Are the hashtags included automatically usable?", "Yes, they're generated to match your topic and mood alongside the caption, ready to copy together."],
+"instagram-hashtag-gen":["Should I use all 30 hashtags on every post?", "Instagram allows up to 30, but many creators find a smaller, more targeted set performs better — test what works for your audience."],
+"twitter-bio-gen":["Does it respect X's bio character limit?", "Yes, options are generated to fit within the standard 160-character bio limit."],
+"linkedin-summary-gen":["How long is the generated summary?", "It's written at a length suited to LinkedIn's About section — long enough to tell a story, short enough to actually get read."],
+"product-description-gen":["Can I generate different tones for different platforms?", "Yes, run it again with different feature emphasis to get a version suited to a different platform or audience."],
+"headline-gen":["What headline formulas does it use?", "It draws on proven patterns like numbered lists, how-to framing, and curiosity gaps — the same structures used across marketing and editorial writing."],
+"slogan-gen":["How short should a good slogan be?", "Most effective slogans are under 6-8 words — the generator favors concise, memorable phrasing by default."],
+"cta-gen":["Does it generate CTAs for different funnel stages?", "Enter your specific campaign goal (sign-up, purchase, download) and the options generated are phrased for that stage."],
+"subject-line-gen":["Does it avoid spam-trigger words?", "It's written to avoid common promotional spam patterns (excessive caps, exclamation marks) that hurt deliverability."],
+"business-name-gen":["Does it check domain availability?", "No, it generates naming ideas only — check your favorites against a domain registrar before committing to one."],
+"username-gen":["Does it check if the username is already taken?", "No, it generates style variants only — check availability on the specific platform before using one."],
+"elevator-pitch-gen":["How long is a 30-second pitch in words?", "Roughly 75-90 words at a natural speaking pace, which is the length the generator targets."],
+"about-us-gen":["Can I edit the tone afterward?", "Yes, the output is a draft — adjust the wording to match your brand voice, whether more formal or more casual."],
+"faq-schema-gen":["Will this guarantee a rich snippet in Google?", "No schema guarantees a rich result — Google decides whether to show it — but valid FAQPage JSON-LD is a prerequisite for being eligible."],
+"email-signature-gen":["Does it work in Gmail and Outlook?", "Yes, the HTML is built with inline styles for compatibility across major email clients including Gmail and Outlook."],
+"mission-vision-gen":["What's the difference between mission and vision?", "Mission describes what you do right now; vision describes the future state you're working toward — the tool drafts both distinctly."],
+"cookie-consent-banner-gen":["Does it actually block cookies until consent?", "The generated banner remembers the visitor's choice via localStorage — you still need to wire your actual cookie-setting scripts to check that stored choice before running."],
+};
+
+const FAQ_BY_SUBCAT = {
+legal:  ["Is the generated content editable?", "Yes. Copy the generated text and adjust wording to fit your specific business, jurisdiction, and legal requirements.",
+         "Is this legal advice?", "No. This tool generates a starting-point document based on the details you enter — for anything with real legal exposure, have a lawyer review the final text."],
+svg:    ["Is this tool client-side only?", "Yes. The SVG is rendered entirely in your browser as you adjust the controls — nothing is uploaded to generate it.",
+         "Can I download the SVG file, not just copy the code?", "Yes. Every generator here includes a download option alongside the copy button."],
+content: ["Is this tool client-side only?", "Yes. All options are generated in your browser from templates and patterns — no external API call is made to produce them.",
+         "Can I regenerate for more options?", "Yes. Click generate again for a fresh batch if none of the first set feel right."],
+};
+
+const TOOL_META = Object.fromEntries(TOOLS.map(t => {
+  const sub = FAQ_BY_SUBCAT[t.cat] || FAQ_BY_SUBCAT.content
+  return [t.id, {
+    title:`Free ${t.name} – Generate Online | ToolsRift`,
+    desc:t.desc,
+    howTo:HOWTO[t.id],
+    faq:[
+      FAQ1[t.id] || ["Is this tool free to use?", "Yes. This tool is completely free to use with no daily limits and no signup required."],
+      [sub[0], sub[1]],
+      [sub[2], sub[3]],
+    ],
+  }]
+}));
 
 const TOOL_COMPONENTS = {
 "privacy-policy-gen": PrivacyPolicyGen,

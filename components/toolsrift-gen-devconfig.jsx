@@ -689,15 +689,132 @@ const CATEGORIES = [
 { id:"web", name:"Web & API", icon:"🌐", desc:"Generate robots, sitemap, schema, OpenAPI, CSP, and auth helper files." },
 ];
 
-const TOOL_META = Object.fromEntries(TOOLS.map(t => [t.id, {
-title:`Free ${t.name} – Generate Config Online | ToolsRift`,
-desc:t.desc,
-faq:[
-["Can I use these generated files directly in production?", "Yes, as a starting point. Review and adjust values for your environment, security policy, and deployment constraints."],
-["Do these tools call any external API?", "No. Generation happens completely client-side in your browser."],
-["Can I download the output with proper extension?", "Yes. Every tool includes Copy and Download actions with suitable filenames and extensions."]
-]
-}]));
+// Per-tool "how to use" text and a unique first FAQ question, keyed by tool id.
+// The three questions used to be one identical array shared by all 43 tools —
+// same words, same order, on every page — which is exactly the kind of
+// templated block Google's helpful-content systems flag as duplicate content
+// across a domain's own pages. Q1 below is now specific to what each tool
+// actually generates; Q2/Q3 vary by the artifact family (git file, JSON/JS
+// config, server config, CSS, or web/API file) instead of being identical
+// across all five families.
+const HOWTO = {
+"gitignore-gen":"Tick the tech stacks and tools your project uses (Node, Python, macOS, VS Code, and more), and the tool merges their standard ignore rules into one deduplicated .gitignore ready to copy or download.",
+"readme-gen":"Fill in the project name, description, install and usage commands, tech stack, and license, and the tool assembles a formatted README.md with headings and code blocks in the right order.",
+"github-profile-gen":"Enter your name, bio, skills, and social links, then toggle badge and stats-widget shields, and the tool builds a GitHub profile README.md ready to paste into your username/username repo.",
+"license-gen":"Pick a license (MIT, Apache 2.0, GPL v3, BSD, or ISC), enter the copyright year and holder name, and the tool fills in the official license text with your details in the right placeholders.",
+"changelog-gen":"Enter a version number and date, then list Added/Changed/Fixed bullet points, and the tool formats them into a Keep a Changelog-style CHANGELOG.md entry you can prepend to your file.",
+"github-actions-gen":"Choose Node, Python, or Docker and set your branch and version, and the tool generates a ready-to-commit .github/workflows YAML file with the matching install, build, and test steps.",
+"gitcommit-gen":"Pick a commit type (feat, fix, chore, and more), enter an optional scope and the change description, and the tool formats a properly structured Conventional Commit message to paste into git commit.",
+"packagejson-gen":"Fill in the name, version, and description, then list your npm scripts as key:value lines and dependencies as name:version lines, and the tool assembles a complete package.json.",
+"tsconfig-gen":"Choose the strict, web, node, react, or next preset that matches your project, and the tool outputs the matching compilerOptions block for your tsconfig.json.",
+"eslint-config-gen":"Select your stack — React, TypeScript, Airbnb style, or Next.js — and the tool generates the matching .eslintrc.json with the right extends and plugin entries.",
+"prettier-config-gen":"Set your preferred tabs or spaces, quote style, semicolons, print width, and trailing commas, and the tool writes the matching .prettierrc.",
+"env-gen":"List your environment variable names, one per line, and the tool builds a .env.example with placeholder values so teammates know exactly what to fill in without exposing real secrets.",
+"editorconfig-gen":"Choose your indent style and size, charset, line ending, and whether to trim trailing whitespace, and the tool outputs a ready .editorconfig for consistent formatting across editors.",
+"browserslist-gen":"Pick a modern, broad, or legacy support target, and the tool outputs the matching browserslist query string for your package.json or .browserslistrc.",
+"dockerfile-gen":"Choose Node.js, Python, or a static site, and the tool writes an optimized multi-stage Dockerfile with the right base image, install step, and exposed port for that stack.",
+"dockercompose-gen":"Tick the services your app needs — web, database, redis, nginx — and the tool assembles a docker-compose.yml wiring them together with sensible ports and volumes.",
+"nginx-config-gen":"Choose reverse proxy, static hosting, or SSL redirect, enter your domain and upstream details, and the tool generates the matching nginx.conf server block.",
+"htaccess-gen":"Pick the redirects, caching rules, or security headers you need, and the tool assembles an Apache .htaccess file with the matching directives.",
+"tailwind-config-gen":"Enter your custom colors, fonts, and breakpoints, and the tool generates a tailwind.config.js theme.extend block with your palette and plugins wired in.",
+"css-variables-gen":"Enter your color palette and spacing scale, and the tool converts them into a :root block of CSS custom properties ready to drop into your stylesheet.",
+"css-reset-gen":"Choose minimal, normalize-style, or modern, and the tool outputs the matching CSS reset block to paste at the top of your stylesheet.",
+"media-query-gen":"Pick a breakpoint system (mobile-first or common device widths), and the tool generates the matching @media query blocks with your target widths filled in.",
+"css-animation-gen":"Choose an animation — fade, slide, bounce, spin, or pulse — and set the duration and easing, and the tool outputs the @keyframes rule plus the animation shorthand to apply it.",
+"robots-txt-gen":"Set your allow and disallow paths per bot and your sitemap URL, and the tool assembles a robots.txt with the matching User-agent blocks.",
+"sitemap-gen":"Paste your URL list, then set a priority and changefreq per entry, and the tool generates a valid XML sitemap ready to upload to your site root.",
+"htpasswd-gen":"Enter a username and password, choose bcrypt or SHA-1, and the tool computes a real password hash formatted as an .htpasswd entry for Apache or nginx basic auth.",
+"json-schema-gen":"Paste a sample JSON payload, and the tool infers the types and required fields to generate a matching JSON Schema document.",
+"openapi-gen":"Enter your API endpoints, methods, and parameters, and the tool assembles an OpenAPI 3.0 YAML skeleton you can extend into full API documentation.",
+"csp-header-gen":"Tick the sources you need to allow — scripts, styles, images, fonts, connections — and the tool builds a Content-Security-Policy header value with the matching directives.",
+"codeowners-gen":"List path patterns and their owners, and the tool formats them into a GitHub CODEOWNERS file, adding the @ prefix to usernames automatically.",
+"funding-yml-gen":"Enter your GitHub Sponsors, Patreon, Ko-fi, Open Collective, or custom funding links, and the tool assembles a .github/FUNDING.yml with the matching keys.",
+"dependabot-yml-gen":"Choose your package ecosystems — npm, pip, Docker, GitHub Actions — and an update schedule, and the tool generates a dependabot.yml v2 with one update block per ecosystem.",
+"commitlint-config-gen":"Pick your allowed conventional commit types and any custom rules, and the tool outputs a commitlint.config.js ready to wire into a commit-msg hook.",
+"security-md-gen":"Enter your supported versions, contact email, and disclosure process, and the tool assembles a SECURITY.md policy file for your repository.",
+"contributing-md-gen":"Fill in your setup steps, branch naming convention, commit style, and PR process, and the tool assembles a CONTRIBUTING.md guide for new contributors.",
+"pr-template-gen":"Choose the sections you want — summary, change-type checklist, review checklist — and the tool assembles a GitHub pull_request_template.md.",
+"issue-template-gen":"Pick bug report or feature request, and the tool generates a Markdown GitHub issue template with the matching fields pre-structured.",
+"makefile-gen":"Enter target and command pairs, one per line, and the tool formats them into a correctly tab-indented Makefile with an automatic .PHONY line.",
+"jest-config-gen":"Choose your test environment, whether to use the ts-jest preset, and coverage collection options, and the tool outputs a jest.config.js.",
+"babel-config-gen":"Tick the presets you need — env, react, typescript — and the tool assembles a babel.config.json with the matching preset list.",
+"vite-config-gen":"Choose React, Vue, or vanilla, and set a dev server port, and the tool generates a vite.config.js with the matching plugin and server settings.",
+"stylelint-config-gen":"Choose which configs to extend — standard, SCSS, Prettier compatibility — and the tool outputs a .stylelintrc.json with the matching extends array.",
+"procfile-gen":"Enter process type and command pairs — web, worker, and more — and the tool formats them into a Heroku/Foreman Procfile.",
+};
+
+const FAQ1 = {
+"gitignore-gen":["Does it cover multiple tech stacks at once?", "Yes. Select as many stacks as your project actually uses and the tool merges every matching rule set into one file with duplicates removed."],
+"readme-gen":["Does it support Markdown formatting like code blocks and badges?", "Yes. The output uses proper Markdown headings, fenced code blocks for commands, and a badge row if you fill in the badge fields."],
+"github-profile-gen":["Where do I put the generated README?", "Create a public repository with the exact same name as your GitHub username, then paste this file in as its README.md — GitHub shows it on your profile automatically."],
+"license-gen":["Which license should I pick?", "MIT and ISC are the most permissive for open source; Apache 2.0 adds patent protection; GPL v3 requires derivative works to stay open source. Pick based on how you want your code reused."],
+"changelog-gen":["Does it follow a standard changelog format?", "Yes. Entries follow the Keep a Changelog convention — versioned headings with Added, Changed, and Fixed sections — which most changelog readers expect."],
+"github-actions-gen":["Will the workflow run automatically once I commit it?", "Yes, once the YAML is saved to .github/workflows/ in your repository, GitHub Actions picks it up and runs it on the triggers you configured."],
+"gitcommit-gen":["Why use the Conventional Commits format?", "It lets tools like semantic-release and changelog generators parse your commit history automatically to determine version bumps and build changelogs."],
+"packagejson-gen":["Can I add more fields after generating it?", "Yes. The output is standard JSON — open it in any editor afterward to add fields like repository, engines, or additional metadata npm supports."],
+"tsconfig-gen":["What is the difference between the presets?", "Web adds DOM types for browser code, node adds Node.js types for server code, and react/next layer on JSX and framework-specific module resolution."],
+"eslint-config-gen":["Do I still need to install the ESLint plugins myself?", "Yes. The generated config references the plugins for your stack, but you still need to npm install them — the file tells you which rules and extends it expects."],
+"prettier-config-gen":["Does this replace my ESLint config?", "No. Prettier only handles formatting (spacing, quotes, line width); ESLint handles code-quality rules. Most projects use both together."],
+"env-gen":["Should I commit the generated file to git?", "Yes, commit .env.example with placeholder values so teammates know what to set — but keep your actual .env with real secrets in .gitignore."],
+"editorconfig-gen":["Does every editor respect this file automatically?", "Most modern editors (VS Code, JetBrains IDEs, Sublime) read .editorconfig natively or with a common extension, applying the rules per file type."],
+"browserslist-gen":["Where does this config get used?", "Tools like Autoprefixer, Babel, and PostCSS read your browserslist target to decide which vendor prefixes and polyfills to include in the build."],
+"dockerfile-gen":["Is the generated Dockerfile production-ready?", "It is a solid, optimized starting point using multi-stage builds — review the base image version and exposed port against your deployment target before shipping."],
+"dockercompose-gen":["Can I edit the ports or volumes after generating?", "Yes. The output is plain YAML — open it and adjust port mappings, volume paths, or environment variables to match your local setup."],
+"nginx-config-gen":["Do I need to reload nginx after adding this config?", "Yes. Save it into your sites-available (or conf.d) directory, symlink it if required, then run nginx -t to test and systemctl reload nginx to apply it."],
+"htaccess-gen":["Does .htaccess work on all hosting?", "It only applies on Apache servers with AllowOverride enabled — nginx and most static hosts ignore it entirely, so check your host's server software first."],
+"tailwind-config-gen":["Do I need to restart my dev server after using this?", "Yes, after replacing tailwind.config.js restart your dev server (or rebuild) so Tailwind's JIT compiler picks up the new theme values."],
+"css-variables-gen":["Can I use these variables with a dark mode toggle?", "Yes. Wrap a second block of the same variable names under a [data-theme=\"dark\"] or prefers-color-scheme selector to swap values per theme."],
+"css-reset-gen":["Which reset style should I pick?", "Minimal removes just margins and box-sizing quirks; normalize-style fixes cross-browser inconsistencies; modern also resets forms, lists, and media elements."],
+"media-query-gen":["Should breakpoints be mobile-first or desktop-first?", "Mobile-first (min-width queries) is the modern default and generally produces smaller, simpler CSS — pick desktop-first only if your codebase already follows that pattern."],
+"css-animation-gen":["Can I change the animation duration after generating it?", "Yes. The output is plain CSS — edit the duration and timing-function values directly in the animation shorthand line."],
+"robots-txt-gen":["Does this block a page from Google entirely?", "Disallow in robots.txt only stops crawling — a previously indexed page can still appear in search results. Use a noindex meta tag to remove it from the index."],
+"sitemap-gen":["Where do I upload the generated sitemap?", "Place it at your site root (e.g. yoursite.com/sitemap.xml) and submit that URL in Google Search Console and your robots.txt Sitemap line."],
+"htpasswd-gen":["Is the password hash computed for real, or just a template?", "It's a real hash — bcrypt or SHA-1 is computed from the password you enter in your browser, so the .htpasswd line is ready to use immediately."],
+"json-schema-gen":["Does it infer required fields correctly?", "It marks every key present in your sample payload as required by default — remove any keys from the required array afterward that should actually be optional."],
+"openapi-gen":["Can I import this into Swagger or Postman?", "Yes. The output is standard OpenAPI 3.0 YAML, which Swagger UI, Postman, and most API documentation and testing tools import directly."],
+"csp-header-gen":["Where do I actually apply this header?", "Set it as an HTTP response header (Content-Security-Policy) from your server or reverse proxy config — pasting it into HTML alone will not enforce it."],
+"codeowners-gen":["Where does GitHub look for this file?", "Place it at .github/CODEOWNERS, docs/CODEOWNERS, or the repo root — GitHub checks all three locations and uses the first one it finds."],
+"funding-yml-gen":["Where does this file need to live?", "Save it as .github/FUNDING.yml in your repository — GitHub then shows a Sponsor button on the repo page automatically."],
+"dependabot-yml-gen":["Can I combine multiple ecosystems in one file?", "Yes. The generated file includes one update block per ecosystem you selected — Dependabot runs each on its own schedule."],
+"commitlint-config-gen":["Do I need a Git hook for this to run?", "Yes. Install husky (or similar) and wire commitlint --edit $1 into a commit-msg hook so this config is actually enforced on every commit."],
+"security-md-gen":["Where should this file live in my repo?", "Place it at the repository root or in .github/SECURITY.md — GitHub links to it automatically from the repo's Security tab."],
+"contributing-md-gen":["Does this replace a code of conduct?", "No. CONTRIBUTING.md covers the how-to of contributing; a separate CODE_OF_CONDUCT.md covers community behavior expectations — many repos have both."],
+"pr-template-gen":["Where do I save this file?", "Save it as .github/pull_request_template.md and GitHub will pre-fill it into the description box every time someone opens a new pull request."],
+"issue-template-gen":["Can I have both bug report and feature request templates?", "Yes, generate one of each and save them separately under .github/ISSUE_TEMPLATE/ — GitHub will let reporters pick which one to use."],
+"makefile-gen":["Does indentation matter in the output?", "Yes, and the tool handles it — Make requires literal tab characters (not spaces) before each command line, which the generated file uses correctly."],
+"jest-config-gen":["Do I need ts-jest installed separately?", "Yes, if you enable the ts-jest preset, install ts-jest and typescript as dev dependencies — the config alone does not install them."],
+"babel-config-gen":["Do I need to install the presets separately?", "Yes. The config references @babel/preset-env, preset-react, or preset-typescript by name — install whichever ones you selected as dev dependencies."],
+"vite-config-gen":["Can I add more plugins after generating this?", "Yes. The output is a plain vite.config.js — import and add more entries to the plugins array as your project grows."],
+"stylelint-config-gen":["Do I need the underlying packages installed?", "Yes. The extends array references packages like stylelint-config-standard or stylelint-config-scss — install whichever ones you selected."],
+"procfile-gen":["Does this work outside of Heroku?", "Yes. Foreman and several other process managers (and platforms like Railway) also read the same Procfile format for local development and deploys."],
+};
+
+const FAQ_BY_SUBCAT = {
+git:    ["Can I use this file directly in my repository?", "Yes, as a starting point — review names, paths, and details against your actual project before committing.",
+         "Does generating this file upload anything to GitHub?", "No. Everything is built client-side in your browser; nothing is sent anywhere until you commit it yourself."],
+config:  ["Can I use this config file as-is in my project?", "Yes, as a starting point — adjust the values to match your actual project structure and tooling versions.",
+         "Is this config validated against the real tool's schema?", "It follows the tool's documented format, but always run your build once after adding it to confirm your specific setup is happy."],
+docker: ["Is this configuration production-ready as written?", "It is a solid, secure-by-default starting point — review ports, paths, and credentials for your actual server before deploying.",
+         "Does this tool send my configuration anywhere?", "No. Everything is generated client-side in your browser; nothing is uploaded to any server."],
+css:    ["Can I paste this directly into my existing stylesheet?", "Yes. The output is plain CSS — add it to any stylesheet or CSS-in-JS setup that accepts raw CSS.",
+         "Will this override my existing styles?", "Only where selectors or property names match. Check specificity and load order if you see conflicts with existing rules."],
+web:    ["Can I use this file directly on my live site?", "Yes, as a starting point — double-check paths, URLs, and directives against your actual domain before deploying.",
+         "Does this tool call any external API to generate the file?", "No. Everything is built client-side in your browser from the values you enter."],
+};
+
+const TOOL_META = Object.fromEntries(TOOLS.map(t => {
+  const sub = FAQ_BY_SUBCAT[t.cat] || FAQ_BY_SUBCAT.config;
+  return [t.id, {
+    title:`Free ${t.name} – Generate Config Online | ToolsRift`,
+    desc:t.desc,
+    howTo:HOWTO[t.id],
+    faq:[
+      FAQ1[t.id] || ["Is this tool free to use?", "Yes. This tool is completely free with no daily limits and no signup required."],
+      [sub[0], sub[1]],
+      [sub[2], sub[3]],
+    ],
+  }];
+}));
 function PackagejsonGen() {
 const [name, setName] = useState("my-app");
 const [version, setVersion] = useState("1.0.0");
