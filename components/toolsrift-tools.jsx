@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import CATEGORY_THEMES from '../lib/categoryThemes';
+import { TOTAL_CATEGORIES } from '../lib/siteStats';
 import { COLORS, FS } from '../lib/designTokens';
 import { FadeUp, BlurUp } from './shared/motion';
 import { LandingNav, CategoryMosaic, LandingFooter } from './toolsrift-main';
@@ -52,7 +53,7 @@ export default function ToolsRiftAllTools() {
 
         <FadeUp delay={0.3}>
           <p style={{ margin: '16px auto 0', color: '#94A3B8', fontSize: FS.lg, maxWidth: 620, lineHeight: 1.55 }}>
-            Browse all 24 categories of free online tools. Click any category to dive in.
+            Browse all {TOTAL_CATEGORIES} categories of free online tools. Click any category to dive in.
           </p>
         </FadeUp>
 
