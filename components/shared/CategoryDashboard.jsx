@@ -13,6 +13,7 @@ import { FadeUp, Stagger, StaggerItem, ScanlineOverlay } from './motion';
 import { Pill, ThemedButton } from './ui';
 import { groupTools } from './ToolNavSidebar';
 import { resolveIcon } from '../../lib/toolIcons';
+import { toolHref, shouldInterceptClick } from './toolLink';
 
 // ── Themed tool tile (style varies per anim feel) ───────────────────────────
 function ThemedToolTile({ theme, tool, onClick, index = 0 }) {
@@ -28,16 +29,19 @@ function ThemedToolTile({ theme, tool, onClick, index = 0 }) {
     : 'none';
 
   return (
-    <motion.div
-      role="button"
-      tabIndex={0}
-      onClick={onClick}
-      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onClick?.()}
+    <motion.a
+      // A REAL href — this is the only crawl path Google has to the tool page.
+      // The onClick below still gives an instant in-app switch for plain clicks.
+      href={toolHref(theme, tool.id)}
+      onClick={(e) => { if (shouldInterceptClick(e, theme.pageRoute)) { e.preventDefault(); onClick?.(); } }}
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       whileTap={{ scale: 0.97 }}
       transition={SPRING.smooth}
       style={{
+        display: 'block',
+        textDecoration: 'none',
+        color: 'inherit',
         position: 'relative',
         background: hov ? theme.tint12 : COLORS.surface,
         border: `1px solid ${hov ? theme.color : 'rgba(255,255,255,0.08)'}`,
@@ -110,7 +114,7 @@ function ThemedToolTile({ theme, tool, onClick, index = 0 }) {
       }}>
         {tool.desc || tool.description || ''}
       </div>
-    </motion.div>
+    </motion.a>
   );
 }
 
@@ -225,9 +229,10 @@ function TrendingStrip({ theme, tools, onToolClick }) {
           display: 'flex', flexWrap: 'wrap', gap: 8,
         }}>
           {tools.slice(0, 6).map((t) => (
-            <button
+            <a
               key={t.id}
-              onClick={() => onToolClick?.(t.id)}
+              href={toolHref(theme, t.id)}
+              onClick={(e) => { if (shouldInterceptClick(e, theme.pageRoute)) { e.preventDefault(); onToolClick?.(t.id); } }}
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 7,
                 minHeight: 36, padding: '7px 14px',
@@ -237,6 +242,7 @@ function TrendingStrip({ theme, tools, onToolClick }) {
                 color: COLORS.text, fontSize: 13, fontWeight: 500,
                 fontFamily: theme.fonts.body,
                 whiteSpace: 'nowrap', cursor: 'pointer',
+                textDecoration: 'none',
                 transition: 'all .15s',
               }}
               onMouseEnter={e => {
@@ -252,7 +258,7 @@ function TrendingStrip({ theme, tools, onToolClick }) {
             >
               <span style={{ fontSize: 13, opacity: 0.85 }}>{resolveIcon(t, theme)}</span>
               <span>{t.name}</span>
-            </button>
+            </a>
           ))}
         </div>
       </div>

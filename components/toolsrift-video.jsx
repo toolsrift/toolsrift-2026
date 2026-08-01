@@ -7,6 +7,7 @@ import CategoryLayout from './shared/CategoryLayout';
 import CategoryDashboard from './shared/CategoryDashboard';
 import ToolPageLayout from './shared/ToolPageLayout';
 
+import { resolveAppRoute } from '../lib/appRoute';
 const THEME = getCategoryById("video");
 const PAGE_THEME = getCategoryById("video");
 const BRAND = { name: "ToolsRift", tagline: "Video Tools" };
@@ -207,15 +208,7 @@ const shuffle = (arr) => {
 };
 
 function useAppRouter() {
-  const parse = () => {
-    const h = window.location.hash || "#/";
-    const path = h.replace(/^#/, "") || "/";
-    const parts = path.split("/").filter(Boolean);
-    if (!parts.length) return { page:"home" };
-    if (parts[0]==="tool" && parts[1]) return { page:"tool", toolId:parts[1] };
-    if (parts[0]==="category" && parts[1]) return { page:"category", catId:parts[1] };
-    return { page:"home" };
-  };
+  const parse = () => resolveAppRoute({ categoryRoute: true });
   const [route, setRoute] = useState(parse);
   useEffect(() => {
     const onHash = () => setRoute(parse());
@@ -1937,7 +1930,7 @@ function CategoryPage({ catId }) {
       </div>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(280px, 1fr))", gap:16 }}>
         {catTools.map(tool => (
-          <a key={tool.id} href={`#/tool/${tool.id}`} style={{ textDecoration:"none", display:"block" }}>
+          <a key={tool.id} href={`/video/${tool.id}`} style={{ textDecoration:"none", display:"block" }}>
             <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:12, padding:20, transition:"all .2s", cursor:"pointer" }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = C.accent; e.currentTarget.style.transform = "translateY(-2px)"; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.transform = "translateY(0)"; }}>

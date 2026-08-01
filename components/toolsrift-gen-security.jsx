@@ -7,6 +7,7 @@ import CategoryLayout from './shared/CategoryLayout';
 import CategoryDashboard from './shared/CategoryDashboard';
 import ToolPageLayout, { ToolSchemas } from './shared/ToolPageLayout';
 
+import { resolveAppRoute } from '../lib/appRoute';
 const THEME = getCategoryById("hash");
 const PAGE_THEME = getCategoryById('generators');
 const BRAND = { name: "ToolsRift", tagline: "Security & Data Generators" };
@@ -141,15 +142,7 @@ return (
 }
 
 function useAppRouter() {
-const parse = () => {
-const h = window.location.hash || "#/";
-const path = h.replace(/^#/, "") || "/";
-const parts = path.split("/").filter(Boolean);
-if (!parts.length) return { page:"home" };
-if (parts[0]==="tool" && parts[1]) return { page:"tool", toolId:parts[1] };
-if (parts[0]==="category" && parts[1]) return { page:"home" };
-return { page:"home" };
-};
+const parse = () => resolveAppRoute();
 const [route, setRoute] = useState(parse);
 useEffect(() => {
 const onHash = () => setRoute(parse());
@@ -1723,7 +1716,7 @@ return (
 </div>
 <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))", gap:14 }}>
 {items.map(t => (
-<a key={t.id} href={`#/tool/${t.id}`} style={{ textDecoration:"none" }}>
+<a key={t.id} href={`/generators/${t.id}`} style={{ textDecoration:"none" }}>
 <Card style={{ height:"100%" }}>
 <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
 <div style={{ fontSize:22 }}>{t.icon}</div>

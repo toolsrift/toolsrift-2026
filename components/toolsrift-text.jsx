@@ -5,6 +5,7 @@ import CategoryLayout from './shared/CategoryLayout';
 import CategoryDashboard from './shared/CategoryDashboard';
 import ToolCard from './shared/ToolCard';
 import ToolPageLayout from './shared/ToolPageLayout';
+import { resolveAppRoute } from '../lib/appRoute';
 // PHASE 2: import UpgradeModal from './UpgradeModal';
 // PHASE 2: import UsageCounter from './UsageCounter';
 
@@ -157,15 +158,7 @@ function StatBox({ value, label }) {
 
 // �"����� ROUTER �������������������������������������������������������������������������������������������������������������������������������������"�
 function useAppRouter() {
-  const parse = () => {
-    const h = window.location.hash || "#/";
-    const path = h.replace(/^#/, "") || "/";
-    const parts = path.split("/").filter(Boolean);
-    if (!parts.length) return { page:"home" };
-    if (parts[0]==="tool" && parts[1]) return { page:"tool", toolId:parts[1] };
-    if (parts[0]==="category" && parts[1]) return { page:"home" };
-    return { page:"home" };
-  };
+  const parse = () => resolveAppRoute();
   const [route, setRoute] = useState(parse);
   useEffect(() => {
     const onHash = () => setRoute(parse());
@@ -2881,7 +2874,7 @@ function RelatedTools({ currentId }) {
       <h2 style={{ ...T.h2, marginBottom:14 }}>Related Text Tools</h2>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(2,1fr)", gap:10 }}>
         {related.map(t=>(
-          <a key={t.id} href={`#/tool/${t.id}`} style={{ display:"flex", alignItems:"center", gap:10, padding:"10px 14px", background:"rgba(255,255,255,0.02)", border:`1px solid ${C.border}`, borderRadius:8, textDecoration:"none", transition:"border-color .15s" }}
+          <a key={t.id} href={`/text/${t.id}`} style={{ display:"flex", alignItems:"center", gap:10, padding:"10px 14px", background:"rgba(255,255,255,0.02)", border:`1px solid ${C.border}`, borderRadius:8, textDecoration:"none", transition:"border-color .15s" }}
             onMouseEnter={e=>e.currentTarget.style.borderColor="rgba(59,130,246,0.4)"} onMouseLeave={e=>e.currentTarget.style.borderColor=C.border}>
             <span style={{ fontSize:20 }}>{t.icon}</span>
             <div>
@@ -2966,7 +2959,7 @@ function CategoryPage({ catId }) {
       <p style={{ fontSize:14, color:C.muted, marginBottom:28 }}>{cat.desc} — {tools.length} free tools</p>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))", gap:12 }}>
         {tools.map(t=>(
-          <a key={t.id} href={`#/tool/${t.id}`} style={{ display:"flex", gap:12, padding:"14px 16px", background:C.surface, border:`1px solid ${C.border}`, borderRadius:10, textDecoration:"none", alignItems:"flex-start", transition:"border-color .15s, transform .1s" }}
+          <a key={t.id} href={`/text/${t.id}`} style={{ display:"flex", gap:12, padding:"14px 16px", background:C.surface, border:`1px solid ${C.border}`, borderRadius:10, textDecoration:"none", alignItems:"flex-start", transition:"border-color .15s, transform .1s" }}
             onMouseEnter={e=>{e.currentTarget.style.borderColor="rgba(59,130,246,0.4)";e.currentTarget.style.transform="translateY(-1px)"}} onMouseLeave={e=>{e.currentTarget.style.borderColor=C.border;e.currentTarget.style.transform=""}}>
             <span style={{ fontSize:24, marginTop:2 }}>{t.icon}</span>
             <div>

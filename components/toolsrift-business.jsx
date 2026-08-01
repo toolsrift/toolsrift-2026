@@ -3,6 +3,7 @@ import { getCategoryById } from '../lib/categoryThemes';
 import CategoryLayout from './shared/CategoryLayout';
 import CategoryDashboard from './shared/CategoryDashboard';
 import ToolPageLayout, { ToolSchemas } from './shared/ToolPageLayout';
+import { resolveAppRoute } from '../lib/appRoute';
 // PHASE 1: import { trackUse, isLimitReached, getRemaining, DAILY_LIMIT } from '../lib/usage';
 // PHASE 2: import UpgradeModal from './UpgradeModal';
 // PHASE 2: import UsageCounter from './UsageCounter';
@@ -29,7 +30,14 @@ function useAppRouter() {
       const h = window.location.hash || "";
       if (h.startsWith("#/tool/")) { setPage("tool"); setToolId(h.replace("#/tool/", "")); window.scrollTo(0, 0); }
       else if (h === "#/tools") { setPage("dashboard"); setToolId(null); }
-      else { setPage("landing"); setToolId(null); }
+      else {
+        // No hash — fall back to the clean URL (/business/invoice-gen). Without
+        // this, a cold load whose hash was stripped before mount fell through to
+        // the landing page, so the tool's own URL rendered the category index.
+        const r = resolveAppRoute();
+        if (r.page === "tool") { setPage("tool"); setToolId(r.toolId); }
+        else { setPage("landing"); setToolId(null); }
+      }
     };
     onHash();
     document.addEventListener("click", handler, true);
