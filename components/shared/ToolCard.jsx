@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { toolHref, shouldInterceptClick } from './toolLink';
 
 const F = {
   sans: "'Plus Jakarta Sans', sans-serif",
@@ -35,6 +36,9 @@ export default function ToolCard({ tool, theme, onClick, isActive, index = 0 }) 
     animation:     `fadeUp 0.5s ease ${delay}s both`,
     minWidth:      0,
     userSelect:    'none',
+    display:       'block',
+    textDecoration:'none',
+    color:         'inherit',
   };
 
   const iconWrapStyle = {
@@ -51,15 +55,13 @@ export default function ToolCard({ tool, theme, onClick, isActive, index = 0 }) 
   };
 
   return (
-    <div
+    <a
+      href={toolHref(theme, tool.id)}
       style={cardStyle}
-      onClick={onClick}
+      onClick={e => { if (shouldInterceptClick(e, theme?.pageRoute)) { e.preventDefault(); onClick?.(); } }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      role="button"
-      tabIndex={0}
-      onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && onClick?.()}
-      aria-pressed={isActive}
+      aria-current={isActive ? 'page' : undefined}
     >
       {/* Icon */}
       <div style={iconWrapStyle}>
@@ -94,6 +96,6 @@ export default function ToolCard({ tool, theme, onClick, isActive, index = 0 }) 
       }}>
         {tool.description}
       </div>
-    </div>
+    </a>
   );
 }

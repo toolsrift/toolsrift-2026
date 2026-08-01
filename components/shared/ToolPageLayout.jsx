@@ -2,18 +2,29 @@
 // Universal tool page shell. Mobile-first, theme-aware, app-ready.
 // Injects WebApplication, BreadcrumbList, and FAQPage JSON-LD schemas.
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Head from 'next/head';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COLORS, RADIUS, FS, MQ, SPRING } from '../../lib/designTokens';
 import { FadeUp, Stagger, StaggerItem } from './motion';
 import ToolNavSidebar from './ToolNavSidebar';
 import { resolveIcon } from '../../lib/toolIcons';
+import { isArticleOwnedByPage } from '../../lib/appRoute';
 
 // ── JSON-LD schema injection ────────────────────────────────────────────────
 export function ToolSchemas({ theme, tool }) {
   const baseUrl   = 'https://toolsrift.com';
-  const toolUrl   = `${baseUrl}${theme.pageRoute}#/tool/${tool.id}`;
+  // The clean, canonical URL — this used to be `${pageRoute}#/tool/${id}`, which
+  // Google reads as the CATEGORY page, so every tool in a category declared
+  // itself to be the same entity and contradicted the page's own canonical tag.
+  const toolUrl   = `${baseUrl}${theme.pageRoute}/${tool.id}`;
+
+  // A /[category]/[tool] page emits its own SoftwareApplication, BreadcrumbList
+  // and FAQPage blocks against the canonical URL. Emitting a second set here left
+  // two conflicting descriptions of the same page in the markup.
+  const [ownedByPage, setOwnedByPage] = useState(false);
+  useEffect(() => { setOwnedByPage(isArticleOwnedByPage()); }, [tool.id]);
+  if (ownedByPage) return null;
 
   const webApp = {
     '@context': 'https://schema.org',
@@ -297,7 +308,7 @@ function RelatedTools({ theme, related = [] }) {
           {related.slice(0, 8).map((t) => (
             <StaggerItem key={t.id}>
               <motion.a
-                href={`${theme.pageRoute}#/tool/${t.id}`}
+                href={`${theme.pageRoute}/${t.id}`}
                 onClick={(e) => fastHashNav(e, theme.pageRoute, t.id)}
                 whileHover={{ y: -3, borderColor: theme.color, background: theme.tint06 }}
                 transition={SPRING.smooth}
@@ -384,7 +395,7 @@ function ToolSidebar({ theme, tool, related = [] }) {
         {siblings.map(t => (
           <a
             key={t.id}
-            href={`${theme.pageRoute}#/tool/${t.id}`}
+            href={`${theme.pageRoute}/${t.id}`}
             onClick={(e) => fastHashNav(e, theme.pageRoute, t.id)}
             style={{
               display: 'flex', alignItems: 'center', gap: 10, minHeight: 40,
@@ -448,6 +459,12 @@ function ToolSidebar({ theme, tool, related = [] }) {
 export default function ToolPageLayout({ theme, tool, tools, subcats, related, children }) {
   const hasFullNav = Array.isArray(tools) && tools.length > 1;
   const hasSidebar = hasFullNav || (related && related.length > 1);
+  // On a /[category]/[tool] URL the page itself server-renders the how-to, FAQ
+  // and related-tool links, so rendering them again here would show each twice.
+  // Deferring to the page also means the crawlable copy is the one in raw HTML,
+  // rather than one that only exists after JavaScript runs.
+  const [pageOwnsArticle, setPageOwnsArticle] = useState(false);
+  useEffect(() => { setPageOwnsArticle(isArticleOwnedByPage()); }, [tool.id]);
 
   return (
     <div style={{ padding: '32px 0 96px' }}>
@@ -479,9 +496,9 @@ export default function ToolPageLayout({ theme, tool, tools, subcats, related, c
         <div style={{ minWidth: 0 }}>
           <ToolHeader theme={theme} tool={tool} />
           <ToolCard theme={theme}>{children}</ToolCard>
-          {tool.howTo && <HowToUse theme={theme} text={tool.howTo} />}
-          <FAQSection theme={theme} faq={tool.faq} />
-          <RelatedTools theme={theme} related={related} />
+          {!pageOwnsArticle && tool.howTo && <HowToUse theme={theme} text={tool.howTo} />}
+          {!pageOwnsArticle && <FAQSection theme={theme} faq={tool.faq} />}
+          {!pageOwnsArticle && <RelatedTools theme={theme} related={related} />}
         </div>
       </div>
     </div>

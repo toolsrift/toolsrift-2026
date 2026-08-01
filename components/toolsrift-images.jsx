@@ -5,6 +5,7 @@ import CategoryLayout from './shared/CategoryLayout';
 import CategoryDashboard from './shared/CategoryDashboard';
 import ToolCard from './shared/ToolCard';
 import ToolPageLayout from './shared/ToolPageLayout';
+import { resolveAppRoute } from '../lib/appRoute';
 // PHASE 2: import UpgradeModal from './UpgradeModal';
 // PHASE 2: import UsageCounter from './UsageCounter';
 
@@ -151,15 +152,7 @@ function StatBox({ value, label }) {
 }
 
 function useAppRouter() {
-  const parse = () => {
-    const h = window.location.hash || "#/";
-    const path = h.replace(/^#/, "") || "/";
-    const parts = path.split("/").filter(Boolean);
-    if (!parts.length) return { page:"home" };
-    if (parts[0]==="tool" && parts[1]) return { page:"tool", toolId:parts[1] };
-    if (parts[0]==="category" && parts[1]) return { page:"home" };
-    return { page:"home" };
-  };
+  const parse = () => resolveAppRoute();
   const [route, setRoute] = useState(parse);
   useEffect(() => {
     const onHash = () => setRoute(parse());
@@ -1313,7 +1306,7 @@ function CategoryPage({ catId }) {
       </div>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:16 }}>
         {tools.map(t => (
-          <a key={t.id} href={`#/tool/${t.id}`} className="fade-in" style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:12, padding:20, textDecoration:"none", color:"inherit", display:"block", transition:"transform 0.2s" }} onMouseEnter={e=>e.currentTarget.style.transform="translateY(-2px)"} onMouseLeave={e=>e.currentTarget.style.transform="translateY(0)"}>
+          <a key={t.id} href={`/images/${t.id}`} className="fade-in" style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:12, padding:20, textDecoration:"none", color:"inherit", display:"block", transition:"transform 0.2s" }} onMouseEnter={e=>e.currentTarget.style.transform="translateY(-2px)"} onMouseLeave={e=>e.currentTarget.style.transform="translateY(0)"}>
             <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:8 }}>
               <div style={{ fontSize:24 }}>{t.icon}</div>
               <h3 style={{ ...T.h2, margin:0 }}>{t.name}</h3>

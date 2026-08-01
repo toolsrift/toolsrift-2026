@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import SiteFooter from './SiteFooter'
+import TOOL_REGISTRY from '../lib/toolRegistry'
 
 const C = {
   bg: '#06090F',
@@ -125,6 +126,7 @@ export default function CategoryContent({ data }) {
     intro = [], whyToolsRift = [], howToUse = [],
     useCases = [], faqs = [], related = [],
   } = data
+  const categoryTools = (TOOL_REGISTRY[categorySlug] && TOOL_REGISTRY[categorySlug].tools) || []
 
   return (
     <>
@@ -313,6 +315,40 @@ export default function CategoryContent({ data }) {
               </div>
             </Section>
 
+            <Divider />
+          </>
+        )}
+
+        {/* EVERY TOOL IN THIS CATEGORY — server-rendered crawl paths.
+            The interactive grid above is client-only and its tiles used to be
+            <div role="button">, so this category page linked to none of its own
+            tools in the HTML Google receives. That left them reachable only via
+            sitemap.xml, which is why so many sat in "Discovered – currently not
+            indexed". This list is plain HTML and always present. */}
+        {categoryTools.length > 0 && (
+          <>
+            <Section>
+              <Eyebrow color="#3B82F6">Full Index</Eyebrow>
+              <H2>All {categoryTools.length} {categoryName.toLowerCase()}</H2>
+              <Paragraph dim>
+                Every tool in this category. All free, no signup, and everything runs in your browser.
+              </Paragraph>
+              <ul style={{
+                listStyle: 'none', margin: '24px 0 0', padding: 0,
+                display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(230px,1fr))',
+                gap: '9px 18px',
+              }}>
+                {categoryTools.map(t => (
+                  <li key={t.id}>
+                    <a href={`/${categorySlug}/${t.id}`} style={{
+                      color: C.muted, textDecoration: 'none', fontSize: 13.5, lineHeight: 1.6,
+                    }}>
+                      {t.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </Section>
             <Divider />
           </>
         )}

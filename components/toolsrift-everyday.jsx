@@ -7,6 +7,7 @@ import CategoryLayout from './shared/CategoryLayout';
 import CategoryDashboard from './shared/CategoryDashboard';
 import ToolPageLayout, { ToolSchemas } from './shared/ToolPageLayout';
 
+import { resolveAppRoute } from '../lib/appRoute';
 const THEME = getCategoryById("everyday");
 const PAGE_THEME = getCategoryById('everyday');
 const BRAND = { name: "ToolsRift", tagline: "Everyday Tools" };
@@ -187,15 +188,7 @@ function StatBox({ value, label }) {
 }
 
 function useAppRouter() {
-  const parse = () => {
-    const h = window.location.hash || "#/";
-    const path = h.replace(/^#/, "") || "/";
-    const parts = path.split("/").filter(Boolean);
-    if (!parts.length) return { page:"home" };
-    if (parts[0]==="tool" && parts[1]) return { page:"tool", toolId:parts[1] };
-    if (parts[0]==="category" && parts[1]) return { page:"home" };
-    return { page:"home" };
-  };
+  const parse = () => resolveAppRoute();
   const [route, setRoute] = useState(parse);
   useEffect(() => {
     const onHash = () => setRoute(parse());
@@ -1691,7 +1684,7 @@ function CategoryPage({ catId }) {
       </div>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(280px, 1fr))", gap:16 }}>
         {catTools.map(tool => (
-          <a key={tool.id} href={`#/tool/${tool.id}`} style={{ textDecoration:"none", display:"block" }}>
+          <a key={tool.id} href={`/everyday/${tool.id}`} style={{ textDecoration:"none", display:"block" }}>
             <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:12, padding:20, transition:"all .2s", cursor:"pointer" }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = C.indigo; e.currentTarget.style.transform = "translateY(-2px)"; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.transform = "translateY(0)"; }}>

@@ -4,17 +4,17 @@
 // (CategoryContent, HomepageContent) and on tool detail pages via CategoryLayout,
 // so the footer is always the LAST thing on the page — never stranded mid-page.
 
+import CATEGORY_THEMES from '../lib/categoryThemes';
+
+// Every category, sourced from the theme registry so this never drifts.
+// The footer is server-rendered on every page, so this is what puts each
+// category one hop from anywhere on the site — it used to name only four,
+// leaving the other 25 reachable from the homepage not at all.
+const CATEGORY_LINKS = CATEGORY_THEMES
+  .map(t => [t.name, t.pageRoute])
+  .sort((a, b) => a[0].localeCompare(b[0]));
+
 const LINK_GROUPS = [
-  {
-    title: 'Tools',
-    links: [
-      ['All categories', '/'],
-      ['PDF Tools', '/pdf'],
-      ['Image Tools', '/images'],
-      ['Text Tools', '/text'],
-      ['Developer Tools', '/devtools'],
-    ],
-  },
   {
     title: 'Company',
     links: [
@@ -71,8 +71,15 @@ export default function SiteFooter({ accent = '#3B82F6', fonts }) {
               <img src="/logo.svg" alt="ToolsRift" style={{ height: 28 }} />
             </a>
             <p style={{ color: C.muted, fontSize: 13, lineHeight: 1.65, margin: 0, maxWidth: 280 }}>
-              957+ free online tools across 24 categories. Runs in your browser. No sign-up.
+              1,100+ free online tools across {CATEGORY_LINKS.length} categories. Runs in your
+              browser. No sign-up.
             </p>
+            <a
+              href="/tools"
+              style={{ display: 'inline-block', marginTop: 14, color: C.text, fontSize: 13, fontWeight: 600, textDecoration: 'none' }}
+            >
+              Browse all tools →
+            </a>
           </div>
 
           {LINK_GROUPS.map((g) => (
@@ -99,6 +106,26 @@ export default function SiteFooter({ accent = '#3B82F6', fonts }) {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* All categories — one hop from every page on the site */}
+        <div style={{ paddingTop: 4, marginBottom: 32 }}>
+          <div
+            style={{
+              color: C.text, fontSize: 12, fontWeight: 700,
+              textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14,
+              fontFamily: head,
+            }}
+          >
+            All tool categories
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px 20px' }}>
+            {CATEGORY_LINKS.map(([label, href]) => (
+              <a key={href} href={href} style={{ color: C.muted, fontSize: 13, textDecoration: 'none' }}>
+                {label}
+              </a>
+            ))}
+          </div>
         </div>
 
         <div

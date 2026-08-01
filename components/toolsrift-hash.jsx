@@ -5,6 +5,7 @@ import CategoryLayout from './shared/CategoryLayout';
 import CategoryDashboard from './shared/CategoryDashboard';
 import ToolCard from './shared/ToolCard';
 import ToolPageLayout from './shared/ToolPageLayout';
+import { resolveAppRoute } from '../lib/appRoute';
 // PHASE 2: import UpgradeModal from './UpgradeModal';
 // PHASE 2: import UsageCounter from './UsageCounter';
 
@@ -168,7 +169,7 @@ function ModeToggle({ mode, setMode, options }) {
 
 // �"����� ROUTER �������������������������������������������������������������������������������������������������������������������������������������"�
 function useAppRouter() {
-  const parse=()=>{ const h=window.location.hash||"#/"; const path=h.replace(/^#/,"")||"/"; const parts=path.split("/").filter(Boolean); if(!parts.length) return{page:"home"}; if(parts[0]==="tool"&&parts[1]) return{page:"tool",toolId:parts[1]}; if(parts[0]==="category"&&parts[1]) return{page:"home"}; return{page:"home"}; };
+  const parse = () => resolveAppRoute();
   const [route,setRoute]=useState(parse);
   useEffect(()=>{ const fn=()=>setRoute(parse()); window.addEventListener("hashchange",fn); return()=>window.removeEventListener("hashchange",fn); },[]);
   useEffect(()=>{ const fn=e=>{ const a=e.target.closest("a[href]"); if(!a) return; const h=a.getAttribute("href"); if(h&&h.startsWith("#/")){e.preventDefault();window.location.hash=h;} }; document.addEventListener("click",fn); return()=>document.removeEventListener("click",fn); },[]);
@@ -1729,7 +1730,7 @@ function RelatedTools({ currentId }) {
       <h2 style={{...T.h2,marginBottom:14}}>Related Tools</h2>
       <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:10}}>
         {related.map(t=>(
-          <a key={t.id} href={`#/tool/${t.id}`} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:"rgba(255,255,255,0.02)",border:`1px solid ${C.border}`,borderRadius:8,textDecoration:"none",transition:"border-color .15s"}}
+          <a key={t.id} href={`/hash/${t.id}`} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:"rgba(255,255,255,0.02)",border:`1px solid ${C.border}`,borderRadius:8,textDecoration:"none",transition:"border-color .15s"}}
             onMouseEnter={e=>e.currentTarget.style.borderColor="rgba(124,58,237,0.4)"} onMouseLeave={e=>e.currentTarget.style.borderColor=C.border}>
             <span style={{fontSize:20}}>{t.icon}</span>
             <div><div style={{fontSize:13,fontWeight:600,color:C.text}}>{t.name}</div><div style={{fontSize:11,color:C.muted}}>{t.desc}</div></div>
@@ -1795,7 +1796,7 @@ function CategoryPage({ catId }) {
       <p style={{fontSize:14,color:C.muted,marginBottom:28}}>{cat.desc} — {tools.length} free tools</p>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:12}}>
         {tools.map(t=>(
-          <a key={t.id} href={`#/tool/${t.id}`} style={{display:"flex",gap:12,padding:"14px 16px",background:C.surface,border:`1px solid ${C.border}`,borderRadius:10,textDecoration:"none",alignItems:"flex-start",transition:"all .15s"}}
+          <a key={t.id} href={`/hash/${t.id}`} style={{display:"flex",gap:12,padding:"14px 16px",background:C.surface,border:`1px solid ${C.border}`,borderRadius:10,textDecoration:"none",alignItems:"flex-start",transition:"all .15s"}}
             onMouseEnter={e=>{e.currentTarget.style.borderColor="rgba(124,58,237,0.4)";e.currentTarget.style.transform="translateY(-1px)";}} onMouseLeave={e=>{e.currentTarget.style.borderColor=C.border;e.currentTarget.style.transform="";}}>
             <span style={{fontSize:24,marginTop:2}}>{t.icon}</span>
             <div><div style={{fontSize:13,fontWeight:600,color:C.text,marginBottom:3}}>{t.name}</div><div style={{fontSize:12,color:C.muted,lineHeight:1.5}}>{t.desc}</div></div>

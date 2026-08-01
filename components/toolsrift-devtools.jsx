@@ -5,6 +5,7 @@ import CategoryLayout from './shared/CategoryLayout';
 import CategoryDashboard from './shared/CategoryDashboard';
 import ToolCard from './shared/ToolCard';
 import ToolPageLayout from './shared/ToolPageLayout';
+import { resolveAppRoute } from '../lib/appRoute';
 // PHASE 2: import UpgradeModal from "./UpgradeModal";
 // PHASE 2: import UsageCounter from "./UsageCounter";
 
@@ -815,15 +816,7 @@ const TOOL_COMPONENTS = {};
 
 /* ---- Router + pages ---- */
 function useAppRouter() {
-  const parse = () => {
-    const h = window.location.hash || "#/";
-    const path = h.replace(/^#/, "") || "/";
-    const parts = path.split("/").filter(Boolean);
-    if (!parts.length) return { page: "home" };
-    if (parts[0] === "tool" && parts[1]) return { page: "tool", toolId: parts[1] };
-    if (parts[0] === "category" && parts[1]) return { page: "category", catId: parts[1] };
-    return { page: "home" };
-  };
+  const parse = () => resolveAppRoute({ categoryRoute: true });
   const [route, setRoute] = useState(parse);
   useEffect(() => {
     const onHash = () => setRoute(parse());
@@ -912,7 +905,7 @@ function ToolPage({ toolId }) {
         <h2 style={{ fontSize:17, fontWeight:700, color:'#F1F5F9', margin:'0 0 14px', fontFamily:"'Sora', sans-serif" }}>🔗 Related Tools</h2>
         <div style={{ display:'flex', flexWrap:'wrap', gap:10 }}>
           {TOOLS.filter(t => t.cat === tool.cat && t.id !== tool.id).slice(0,6).map(t => (
-            <a key={t.id} href={`#/tool/${t.id}`} style={{ padding:'8px 16px', borderRadius:20, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', color:'#94A3B8', textDecoration:'none', fontSize:13, fontWeight:500 }}>{t.name}</a>
+            <a key={t.id} href={`/devtools/${t.id}`} style={{ padding:'8px 16px', borderRadius:20, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', color:'#94A3B8', textDecoration:'none', fontSize:13, fontWeight:500 }}>{t.name}</a>
           ))}
         </div>
       </div>
@@ -931,7 +924,7 @@ function CategoryPage({ catId }) {
       <p style={{ color: C.muted, marginTop: 8, marginBottom: 14 }}>{cat.desc}</p>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 12 }}>
         {items.map((t) => (
-          <a key={t.id} href={`#/tool/${t.id}`} style={{ textDecoration: "none" }}>
+          <a key={t.id} href={`/devtools/${t.id}`} style={{ textDecoration: "none" }}>
             <Card>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
                 <div style={{ fontSize: 20 }}>{t.icon}</div>

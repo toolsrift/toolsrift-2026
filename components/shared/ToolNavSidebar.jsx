@@ -43,7 +43,7 @@ function ToolLink({ tool, theme, isActive, onNavigate, innerRef }) {
   return (
     <a
       ref={innerRef}
-      href={`${theme.pageRoute}#/tool/${tool.id}`}
+      href={`${theme.pageRoute}/${tool.id}`}
       onClick={e => onNavigate(e, tool.id)}
       aria-current={isActive ? 'page' : undefined}
       style={{

@@ -13,6 +13,7 @@ import { SITE_FEATURES } from '../../lib/siteFeatures';
 import SiteFooter from '../SiteFooter';
 import { groupTools } from './ToolNavSidebar';
 import { resolveIcon } from '../../lib/toolIcons';
+import { isArticleOwnedByPage } from '../../lib/appRoute';
 
 // ── "All <category> tools" mega-menu ────────────────────────────────────────
 // Every tool in the category, grouped by subcategory — reachable from the header
@@ -95,7 +96,7 @@ function ToolsMegaMenu({ theme, tools, subcats }) {
                 {g.tools.map(t => (
                   <a
                     key={t.id}
-                    href={`${theme.pageRoute}#/tool/${t.id}`}
+                    href={`${theme.pageRoute}/${t.id}`}
                     onClick={e => go(e, t.id)}
                     style={{
                       display: 'flex', alignItems: 'center', gap: 8,
@@ -415,6 +416,9 @@ function CategoryBanner({ theme }) {
 
 // ── Root ────────────────────────────────────────────────────────────────────
 export default function CategoryLayout({ theme, currentTool, tools, subcats, children, banner }) {
+  const [pageOwnsArticle, setPageOwnsArticle] = useState(false);
+  useEffect(() => { setPageOwnsArticle(isArticleOwnedByPage()); }, [currentTool]);
+
   return (
     <div style={{ minHeight: '100vh', background: COLORS.bg, display: 'flex', flexDirection: 'column' }}>
       <CategoryHeader theme={theme} tools={tools} subcats={subcats} />
@@ -439,10 +443,13 @@ export default function CategoryLayout({ theme, currentTool, tools, subcats, chi
         {children}
       </main>
 
-      {/* Footer renders here ONLY on tool detail pages. On category LANDING
-          pages the footer is rendered at the END of the server-side SEO block
-          (CategoryContent) so it is never stranded above that content. */}
-      {currentTool && <SiteFooter accent={theme.color} fonts={theme.fonts} />}
+      {/* Footer renders here ONLY on tool detail pages reached by in-app hash
+          navigation. On a /[category]/[tool] URL the page server-renders both
+          the article and the footer below this widget, so rendering one here too
+          would show two. On category LANDING pages the footer comes from the end
+          of the server-side SEO block (CategoryContent) so it is never stranded
+          above that content. */}
+      {currentTool && !pageOwnsArticle && <SiteFooter accent={theme.color} fonts={theme.fonts} />}
     </div>
   );
 }
