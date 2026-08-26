@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic'
 import { useEffect } from 'react'
 import TOOL_REGISTRY from '../../lib/toolRegistry'
 import TOOL_SEO from '../../lib/toolSeo'
+import CORE_TOOLS from '../../lib/coreTools'
 import { publishToolHint } from '../../lib/appRoute'
 import SiteFooter from '../../components/SiteFooter'
 
@@ -146,6 +147,13 @@ export default function ToolPage({ category, categoryName, tool, related, seo, c
   // Canonical points to the tool's primary category so duplicate cross-listings
   // consolidate their ranking signal onto one URL.
   const canonicalUrl = `https://toolsrift.com/${canonicalCategory || category}/${tool.id}`
+  // Aug 2026 site-wide deindexing (see lib/coreTools.js): 1,136 near-duplicate,
+  // client-rendered tool pages read as scaled thin content. Only the curated
+  // core is asked to be indexed; every other tool page stays fully working for
+  // visitors but tells crawlers not to index it, and it's left out of the
+  // sitemap. Promote a tool out of this state by adding its id to coreTools.js
+  // once it has earned real search demand, not before.
+  const isCoreTool = CORE_TOOLS.has(tool.id)
   // Unique per-tool title/description from the component's TOOL_META (lifted
   // into lib/toolSeo.js at build time); fall back to a generic template.
   const rawTitle = (seo && seo.title) || `${tool.name} — Free Online Tool | ToolsRift`
@@ -192,6 +200,7 @@ export default function ToolPage({ category, categoryName, tool, related, seo, c
         <title>{title}</title>
         <meta name="description" content={description} />
         {seo && seo.keywords && <meta name="keywords" content={seo.keywords} />}
+        {!isCoreTool && <meta name="robots" content="noindex, follow" />}
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
