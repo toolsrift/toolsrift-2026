@@ -1,0 +1,1137 @@
+tier,category,tool_id,tool_name,clicks_90d,impressions_90d,avg_position
+INVEST,financecalc,investment-return-calc,Investment Return Calculator,0,777,87.9
+INVEST,video,video-merger,Video Merger,3,776,86.1
+INVEST,devtools,cidr-calc,CIDR Calculator,0,561,79.5
+INVEST,text,number-to-words,Number to Words,0,542,82.0
+INVEST,mathcalc,percentage-change-calculator,Percentage Change Calculator,0,488,73.7
+INVEST,financecalc,student-loan-calc,Student Loan Calculator,0,443,78.3
+INVEST,text,reading-time,Reading Time Calculator,0,359,76.6
+INVEST,units,data-rate-converter,Data Transfer Rate Converter,0,358,54.6
+INVEST,video,video-reverse,Video Reverser,4,318,67.1
+INVEST,converters2,paper-size-converter,Paper Size Converter,0,314,55.4
+INVEST,video,video-speed,Video Speed Changer,9,294,71.5
+INVEST,business,payslip-gen,Payslip / Salary Slip Generator,0,270,86.0
+INVEST,converters2,blood-glucose-converter,Blood Glucose Converter,0,266,71.9
+INVEST,generators,iban-generator,IBAN Generator,0,234,74.5
+INVEST,study,significant-figures-counter,Significant Figures Calculator,0,227,58.6
+INVEST,converters2,wire-gauge-converter,Wire Gauge Converter,0,212,75.1
+INVEST,business,roi-calculator,ROI Calculator,0,198,79.9
+INVEST,fancy,mirror-text,Mirror Text Generator,0,192,81.2
+INVEST,encoding,hex-text,Hex Text Converter,0,181,78.8
+INVEST,encoding,caesar-cipher,Caesar Cipher,2,180,88.8
+INVEST,study,scientific-notation-converter,Scientific Notation Converter,0,165,47.4
+INVEST,video,video-crop,Video Cropper,0,161,89.5
+INVEST,images,image-color-replace,Image Color Replace,0,159,92.6
+INVEST,hash,crc32,CRC32 Checksum,0,138,74.7
+INVEST,formatters,line-counter,Line Counter,0,136,58.6
+INVEST,encoders,hex-encode,Text to Hex,0,135,74.8
+INVEST,mathcalc,sequence-calc,Sequence Calculator,0,135,79.6
+INVEST,images,image-blur,Image Blur,0,134,88.0
+INVEST,generators,serial-number-gen,Serial Number Generator,1,133,66.5
+INVEST,random,random-word-generator,Random Word Generator,0,127,81.0
+INVEST,html,html-table-generator,HTML Table Generator,0,125,76.8
+INVEST,video,video-rotate,Video Rotator,0,125,76.3
+INVEST,audio,hearing-test,Hearing Frequency Test,0,124,74.0
+INVEST,random,random-date-generator,Random Date Generator,1,122,69.8
+INVEST,random,random-food-generator,Random Food Generator,1,115,64.1
+INVEST,generators,encryption-key-gen,Encryption Key Generator,0,113,68.3
+INVEST,fancy,italic-text-generator,Italic Text Generator,0,110,80.9
+INVEST,financecalc,loan-prepayment-calc,Loan Prepayment Calculator,0,105,92.2
+INVEST,css,css-flexbox,CSS Flexbox Generator,0,104,58.1
+INVEST,html,html-link-generator,HTML Link Generator,0,104,77.5
+INVEST,text,words-to-number,Words to Number,0,102,84.5
+INVEST,office,checklist-maker,Printable Checklist Maker,0,100,79.4
+INVEST,js,es6-to-es5,ES6 to ES5 Converter,1,75,28.0
+INVEST,devgen,openapi-gen,OpenAPI Generator,1,47,55.1
+INVEST,video,video-loop,Video Looper,2,39,55.8
+INVEST,text,text-to-numbered,Text to Numbered List,1,37,37.6
+INVEST,random,random-seed-generator,Seeded Random Generator,3,36,37.9
+INVEST,everyday,scoreboard,Online Scoreboard,1,36,69.2
+INVEST,mathcalc,prime-factorization,Prime Factorization,1,32,77.8
+INVEST,random,lottery-number-generator,Lottery Number Generator,4,28,73.5
+INVEST,pdf,pdf-to-text,PDF to Text Converter,1,22,83.2
+INVEST,generators,license-plate-gen,License Plate Generator,2,14,34.9
+INVEST,devtools,text-shadow-gen,Text Shadow Generator,1,14,92.2
+INVEST,generators2,affiliate-disclosure-gen,Affiliate Disclosure Generator,1,13,72.5
+INVEST,audio,audio-channel-splitter,Audio Channel Splitter,1,11,20.4
+INVEST,hash,fnv-hash,FNV Hash,1,11,26.9
+INVEST,html,html-audio-tag,HTML Audio Tag Generator,1,9,35.7
+INVEST,audio,binaural-beat-generator,Binaural Beat Generator,1,8,43.8
+INVEST,encoders,z85,Z85 Encoder / Decoder,1,8,7.6
+INVEST,mathcalc,set-theory-calc,Set Theory Calculator,1,8,77.4
+INVEST,text,censor-words,Word Censor / Bad Word Filter,1,7,36.4
+INVEST,video,video-compressor,Video Compressor,1,7,67.4
+INVEST,random,dice-roller-3d,RPG Dice Roller,1,6,40.0
+INVEST,text,numbered-to-text,Numbered List to Text,1,5,17.2
+INVEST,everyday,world-clock,World Clock & Time Zone Converter,1,2,125.5
+INVEST,generators,fake-date-gen,Fake Date Generator,1,2,15.5
+INVEST,devgen,dependabot-yml-gen,Dependabot Config Generator,1,1,4.0
+KEEP,js,js-validator,JavaScript Validator,0,98,68.5
+KEEP,random,random-charades-generator,Random Charades Generator,0,98,72.6
+KEEP,pdf,pdf-margin-adder,PDF Margin Tool,0,92,59.0
+KEEP,business,swot-gen,SWOT Analysis Generator,0,88,85.3
+KEEP,hash,sha512-hash,SHA-512 Hash Generator,0,88,67.8
+KEEP,study,equation-balancer,Chemical Equation Balancer,0,86,84.8
+KEEP,pdf,pdf-page-numbering,PDF Page Numbering,0,85,80.7
+KEEP,business,quotation-gen,Quotation Generator,0,84,69.6
+KEEP,text,remove-duplicates,Remove Duplicate Lines,0,80,62.3
+KEEP,study,exam-countdown,Exam Countdown,0,78,23.5
+KEEP,video,video-to-gif,Video to GIF Converter,0,77,78.5
+KEEP,generators,strong-password-gen,Strong Password Generator,0,76,70.4
+KEEP,hash,hash-file,File Hash Calculator,0,74,69.4
+KEEP,encoding,text-to-unicode,Text to Unicode Points,0,72,77.2
+KEEP,generators2,youtube-description-gen,YouTube Description Generator,0,71,105.3
+KEEP,devtools,basic-auth-generator,Basic Auth Generator,0,70,57.4
+KEEP,fancy,small-caps,Small Caps Generator,0,70,69.0
+KEEP,converters2,ring-size-converter,Ring Size Converter,0,69,83.4
+KEEP,images,image-border,Image Border,0,69,82.3
+KEEP,js,js-obfuscator,JavaScript Obfuscator,0,69,87.6
+KEEP,data,csv-viewer,CSV Viewer,0,68,73.6
+KEEP,encoders,binary-decode,Binary to Text,0,68,79.8
+KEEP,everyday,dice-roller,Dice Roller,0,66,66.7
+KEEP,html,html-cleaner,HTML Cleaner,0,66,73.1
+KEEP,converters2,fuel-economy-converter,Fuel Economy Converter,0,63,67.4
+KEEP,study,molar-mass-calculator,Molar Mass Calculator,0,62,83.8
+KEEP,office,ical-event-generator,iCal Event Generator (.ics),0,59,76.8
+KEEP,data,csv-merger,CSV Merger,0,58,76.4
+KEEP,encoders,binary-encode,Text to Binary,0,56,72.5
+KEEP,html,iframe-generator,iFrame Generator,0,56,75.9
+KEEP,video,video-fps-changer,Video Frame Rate Changer,0,56,77.6
+KEEP,financecalc,irr-calc,IRR Calculator,0,55,84.4
+KEEP,everyday,day-of-week-finder,Day of the Week Finder,0,54,80.2
+KEEP,devtools,css-units-ref,CSS Units Ref,0,52,67.9
+KEEP,js,js-console-simulator,JS Console Simulator,0,52,46.1
+KEEP,formatters,code-diff,Code Diff Viewer,0,51,77.1
+KEEP,text,space-between-letters,Space Between Letters,0,51,47.0
+KEEP,units,blood-sugar-converter,Blood Sugar Converter,0,51,70.8
+KEEP,converters2,clothing-size-converter,Clothing Size Converter,0,50,73.5
+KEEP,office,email-link-generator,Mailto Link Generator,0,50,84.2
+KEEP,encoding,polybius-square,Polybius Square Cipher,0,48,70.5
+KEEP,images,screenshot-taker,Screenshot Taker,0,48,83.8
+KEEP,financecalc,currency-denomination-calc,Cash Denomination Breakdown,0,47,51.7
+KEEP,business,marketing-plan-gen,Marketing Plan Generator,0,44,80.2
+KEEP,audio,audio-sample-rate,Audio Sample Rate Converter,0,43,49.2
+KEEP,mathcalc,cylinder-calc,Cylinder Calculator,0,42,75.8
+KEEP,financecalc,car-loan-calc,Car Loan Calculator,0,41,83.9
+KEEP,hash,hmac-generator,HMAC Generator,0,41,60.1
+KEEP,video,gif-to-video,GIF to Video Converter,0,41,72.0
+KEEP,encoding,binary-text,Binary Text Converter,0,40,82.5
+KEEP,js,js-formatter,JavaScript Formatter,0,40,60.6
+KEEP,fancy,bubble-text,Bubble Text Generator,0,39,86.3
+KEEP,formatters,java-formatter,Java Formatter,0,39,65.4
+KEEP,hash,md5-hash,MD5 Hash Generator,0,39,80.7
+KEEP,encoding,morse-code,Morse Code Translator,0,38,85.0
+KEEP,everyday,add-subtract-days,Add or Subtract Days,0,38,32.2
+KEEP,devtools,lorem-ipsum-adv,Lorem Ipsum Advanced,0,37,77.9
+KEEP,encoding,tap-code,Tap Code Translator,0,37,67.7
+KEEP,random,random-hobby-generator,Random Hobby Generator,0,37,47.8
+KEEP,devtools,date-format-calc,Date Format Calc,0,36,56.2
+KEEP,financecalc,ssy-calc,Sukanya Samriddhi Calculator,0,36,87.4
+KEEP,html,html-to-pdf-preview,HTML Preview,0,36,79.2
+KEEP,images,image-pixelate,Image Pixelate,0,36,88.2
+KEEP,audio,audio-mono-stereo,Mono to Stereo Converter,0,34,57.6
+KEEP,colors,hex-rgba,HEX to RGBA Converter,0,34,69.4
+KEEP,generators2,blog-title-gen,Blog Title Generator,0,34,87.3
+KEEP,js,js-comment-remover,JS Comment Remover,0,34,49.2
+KEEP,office,sms-link-generator,SMS Link Generator,0,34,74.5
+KEEP,audio,audio-base64,Audio to Base64 Converter,0,33,56.2
+KEEP,encoders,ascii-table,ASCII Code Lookup,0,33,57.2
+KEEP,generators,api-key-gen,API Key Generator,0,33,72.0
+KEEP,images,image-invert,Image Invert,0,33,87.5
+KEEP,pdf,pdf-viewer,PDF Viewer,0,33,59.5
+KEEP,business,offer-letter-gen,Job Offer Letter Generator,0,32,70.3
+KEEP,business,utm-builder,UTM Campaign Builder,0,32,88.0
+KEEP,devtools,unix-timestamp,Unix Timestamp,0,32,72.2
+KEEP,financecalc,hourly-to-annual-calc,Hourly to Annual Salary,0,32,79.4
+KEEP,text,email-extractor,Email Extractor,0,32,94.5
+KEEP,everyday,next-friday-13,Next Friday the 13th,0,31,11.3
+KEEP,images,image-caption,Image Caption,0,31,80.2
+KEEP,units,speed-converter,Speed Converter,0,31,69.8
+KEEP,data,scatter-plot-maker,Scatter Plot Maker,0,30,80.6
+KEEP,fancy,clap-text,Clap Text Generator,0,30,10.2
+KEEP,financecalc,blood-sugar-converter,Blood Sugar Converter,0,30,69.7
+KEEP,generators2,elevator-pitch-gen,Elevator Pitch Generator,0,30,89.7
+KEEP,encoders,unicode-lookup,Unicode Character Lookup,0,29,64.8
+KEEP,html,html-to-jsx,HTML to JSX,0,29,72.1
+KEEP,css,css-text-shadow,CSS Text Shadow Generator,0,28,84.6
+KEEP,encoders,base32-encode,Base32 Encoder,0,28,71.9
+KEEP,formatters,python-formatter,Python Code Cleaner,0,28,66.6
+KEEP,html,html-tag-counter,HTML Tag Counter,0,28,19.0
+KEEP,css,css-animation,CSS Animation Generator,0,27,72.0
+KEEP,study,revision-planner,Revision Timetable Planner,0,27,67.9
+KEEP,text,unique-words,Unique Word Extractor,0,27,46.5
+KEEP,business,landing-copy-gen,Landing Page Copy Generator,0,26,85.5
+KEEP,encoders,xml-encode,XML Encoder / Decoder,0,26,51.9
+KEEP,encoding,text-to-ascii,Text to ASCII Codes,0,26,75.3
+KEEP,devtools,jwt-debugger,JWT Debugger,0,25,70.9
+KEEP,encoders,vigenere-cipher,Vigenère Cipher,0,25,69.8
+KEEP,financecalc,break-even-calc,Break-even Calculator,0,25,60.7
+KEEP,images,image-text-overlay,Image Text Overlay,0,25,75.8
+KEEP,random,random-color-palette,Random Color Palette Generator,0,25,71.3
+KEEP,devtools,semver-tools,Semver Tools,0,24,52.7
+KEEP,html,html-formatter,HTML Formatter,0,24,67.2
+KEEP,html,html-validator,HTML Validator,0,24,75.3
+KEEP,mathcalc,distance-calc,Distance Between Points,0,24,87.9
+KEEP,random,random-animal-generator,Random Animal Generator,0,24,86.8
+KEEP,units,kinematic-viscosity-converter,Kinematic Viscosity Converter,0,24,64.0
+KEEP,audio,audio-metadata-viewer,Audio Metadata Viewer,0,23,44.8
+KEEP,encoders,hex-decode,Hex to Text,0,23,70.7
+KEEP,fancy,upside-down-text,Upside Down Text,0,23,81.5
+KEEP,html,html-button-generator,HTML Button Generator,0,23,66.9
+KEEP,mathcalc,ratio-simplifier,Ratio Simplifier,0,23,59.0
+KEEP,text,remove-specific-chars,Remove Specific Characters,0,23,63.1
+KEEP,text,rot13,ROT13 Encoder,0,23,60.8
+KEEP,financecalc,nps-calc,NPS Calculator,0,22,80.9
+KEEP,formatters,sql-minifier,SQL Minifier,0,22,66.6
+KEEP,generators2,eula-gen,EULA Generator,0,22,61.5
+KEEP,html,html-boilerplate-generator,HTML5 Boilerplate Generator,0,22,57.2
+KEEP,formatters,php-formatter,PHP Formatter,0,21,74.9
+KEEP,images,gradient-image,Gradient Image,0,21,73.6
+KEEP,random,random-line-picker,Random Line Picker,0,21,39.1
+KEEP,css,css-text-stroke,CSS Text Stroke Generator,0,20,71.8
+KEEP,encoders,atbash-cipher,Atbash Cipher,0,20,77.0
+KEEP,financecalc,npv-calc,NPV Calculator,0,20,87.3
+KEEP,images,image-sepia,Image Sepia,0,20,79.1
+KEEP,random,magic-8-ball,Magic 8 Ball,0,20,66.8
+WATCH,colors,complementary-color,Complementary Color Finder,0,19,69.5
+WATCH,encoding,braille-translator,Braille Translator,0,19,55.0
+WATCH,generators,cuid-gen,CUID Generator,0,19,60.4
+WATCH,units,fuel-converter,Fuel Economy Converter,0,19,64.2
+WATCH,encoders,unicode-encode,Unicode Encoder,0,18,62.4
+WATCH,generators,rsa-key-pair-gen,RSA Key Pair Generator,0,18,72.0
+WATCH,office,whatsapp-link-generator,WhatsApp Link Generator,0,18,73.6
+WATCH,pdf,pdf-redact,PDF Redaction Tool,0,18,78.8
+WATCH,random,random-name-generator-fun,Random Name Generator,0,18,78.3
+WATCH,random,random-sentence-generator,Random Sentence Generator,0,18,65.7
+WATCH,encoding,beaufort-cipher,Beaufort Cipher,0,17,37.1
+WATCH,financecalc,effective-annual-rate-calc,Effective Annual Rate Calculator,0,17,85.8
+WATCH,images,image-splitter,Image Splitter,0,17,76.5
+WATCH,text,acronym-generator,Acronym Generator,0,17,80.6
+WATCH,video,webcam-recorder,Webcam Recorder,0,17,89.1
+WATCH,audio,microphone-tester,Microphone Tester,0,16,60.0
+WATCH,fancy,wide-spaced-text,Wide Spaced Text,0,16,36.1
+WATCH,financecalc,ppi-dpi-calc,PPI/DPI Calculator,0,16,54.5
+WATCH,financecalc,take-home-pay-calc,Take Home Pay Calculator,0,16,55.2
+WATCH,generators,vin-generator,VIN Generator,0,16,59.8
+WATCH,html,og-tag-generator,Open Graph Generator,0,16,74.5
+WATCH,images,image-saturation,Image Saturation,0,16,78.1
+WATCH,mathcalc,angle-calc,Angle Calculator,0,16,89.4
+WATCH,mathcalc,ellipse-calc,Ellipse Calculator,0,16,83.9
+WATCH,study,unit-prefix-reference,SI Unit Prefix Table,0,16,19.4
+WATCH,audio,audio-fade-in-out,Audio Fade In & Out,0,15,57.8
+WATCH,audio,noise-generator,Noise Generator,0,15,56.5
+WATCH,converters2,typography-converter,Typography Converter,0,15,59.2
+WATCH,converters2,viscosity-converter,Viscosity Converter,0,15,72.0
+WATCH,data,csv-splitter,CSV Splitter,0,15,81.3
+WATCH,devtools,crontab-guru,Crontab Guru,0,15,44.0
+WATCH,devtools,curl-to-code,cURL to Code,0,15,40.9
+WATCH,fancy,square-text,Square Text Generator,0,15,70.8
+WATCH,html,html-color-codes,HTML Color Code Generator,0,15,59.4
+WATCH,js,cjs-esm-converter,CommonJS ⇄ ESM Converter,0,15,42.1
+WATCH,pdf,pdf-unlock,PDF Password Remover,0,15,87.7
+WATCH,random,random-tarot-card,Random Tarot Card Generator,0,15,66.7
+WATCH,random,random-username-generator,Random Username Generator,0,15,82.1
+WATCH,study,citation-generator,Citation Generator,0,15,73.7
+WATCH,study,readability-scorer,Readability Score Checker,0,15,61.0
+WATCH,text,find-replace,Find & Replace,0,15,73.9
+WATCH,text,text-joiner,Line Joiner,0,15,45.0
+WATCH,units,magnetic-field-converter,Magnetic Field Converter,0,15,41.7
+WATCH,units,running-pace-converter,Running Pace Converter,0,15,69.2
+WATCH,business,memo-gen,Business Memo Generator,0,14,72.2
+WATCH,colors,pastel-generator,Pastel Color Generator,0,14,48.4
+WATCH,converters2,flow-rate-converter,Flow Rate Converter,0,14,67.0
+WATCH,css,css-color-palette,CSS Color Palette Generator,0,14,76.9
+WATCH,devtools,bytes-humanizer,Bytes Humanizer,0,14,22.7
+WATCH,devtools,diff-checker,Diff Checker,0,14,60.9
+WATCH,encoders,html-decode,HTML Entities Decoder,0,14,59.7
+WATCH,encoding,a1z26-cipher,A1Z26 Cipher,0,14,50.0
+WATCH,fancy,fraktur-text,Fraktur Text Generator,0,14,58.4
+WATCH,formatters,csv-to-json,CSV to JSON,0,14,80.5
+WATCH,generators,guid-gen,GUID Generator,0,14,71.6
+WATCH,html,html-attribute-remover,HTML Attribute Remover,0,14,37.9
+WATCH,images,dpi-checker,DPI Checker,0,14,68.1
+WATCH,images,image-thumbnail,Image Thumbnail,0,14,64.8
+WATCH,study,periodic-table,Interactive Periodic Table,0,14,66.5
+WATCH,units,radiation-converter,Radiation Converter,0,14,59.3
+WATCH,fancy,serif-bold-text,Serif Bold Text Generator,0,13,80.4
+WATCH,financecalc,ctc-to-inhand-calc,CTC to In-Hand Salary Calculator,0,13,85.7
+WATCH,financecalc,fd-calc,FD Calculator,0,13,64.2
+WATCH,generators2,gdpr-compliance-gen,GDPR Compliance Notice Generator,0,13,74.6
+WATCH,hash,sha256-hash,SHA-256 Hash Generator,0,13,76.5
+WATCH,html,html-nl2br,Newline to BR Converter,0,13,39.2
+WATCH,text,sentence-splitter,Sentence Splitter,0,13,58.9
+WATCH,text,text-diff,Text Comparison / Diff,0,13,91.8
+WATCH,text,text-randomizer,Text Randomizer,0,13,70.4
+WATCH,colors,color-distance,Color Distance Calculator,0,12,44.0
+WATCH,css,css-backdrop-filter,CSS Backdrop Filter Generator,0,12,48.3
+WATCH,css,css-hex-to-rgba,CSS Hex to RGBA Converter,0,12,64.2
+WATCH,encoders,caesar-cipher,Caesar Cipher,0,12,86.8
+WATCH,fancy,bold-italic-generator,Bold Italic Generator,0,12,82.0
+WATCH,fancy,glitch-text,Glitch Text Generator,0,12,70.7
+WATCH,financecalc,present-value-calc,Present Value Calculator,0,12,40.4
+WATCH,formatters,xml-formatter,XML Formatter,0,12,73.8
+WATCH,js,js-regex-escape,JS Regex Escaper,0,12,37.2
+WATCH,js,js-string-escaper,JS String Escaper,0,12,62.3
+WATCH,js,js-to-json,JS Object to JSON,0,12,76.7
+WATCH,mathcalc,mean-median-mode,"Mean, Median & Mode Calculator",0,12,76.7
+WATCH,mathcalc,modulo-calc,Modulo Calculator,0,12,71.5
+WATCH,mathcalc,number-to-words,Number to Words,0,12,75.2
+WATCH,pdf,pdf-metadata-editor,PDF Metadata Editor,0,12,74.2
+WATCH,pdf,pdf-password-protect,PDF Password Protector,0,12,90.8
+WATCH,study,in-text-citation-helper,In-Text Citation Helper,0,12,39.8
+WATCH,text,text-to-bullets,Text to Bullet List,0,12,38.6
+WATCH,devgen,browserslist-gen,Browserslist Generator,0,11,45.9
+WATCH,fancy,spongebob-mocking-case,Mocking SpongeBob Case,0,11,38.5
+WATCH,generators2,about-us-gen,About Us Page Generator,0,11,78.2
+WATCH,images,pdf-to-image,PDF to Image,0,11,84.0
+WATCH,json,json-to-typescript,JSON to TypeScript,0,11,74.0
+WATCH,mathcalc,slope-calc,Slope & Line Equation,0,11,82.5
+WATCH,mathcalc,sphere-calc,Sphere Calculator,0,11,80.5
+WATCH,office,vcard-generator,vCard QR Generator,0,11,65.4
+WATCH,text,remove-line-numbers,Remove Line Numbers,0,11,34.8
+WATCH,video,video-bitrate-changer,Video Bitrate Changer,0,11,68.8
+WATCH,audio,video-audio-extractor,Video to Audio Extractor,0,10,70.8
+WATCH,audio,waveform-viewer,Waveform Viewer,0,10,42.0
+WATCH,colors,css-color-names,CSS Color Names Reference,0,10,74.9
+WATCH,colors,rgb-percentage,RGB Percentage Converter,0,10,27.0
+WATCH,css,css-clip-path,CSS Clip-Path Generator,0,10,57.6
+WATCH,devgen,changelog-gen,Changelog Generator,0,10,78.2
+WATCH,encoders,base62,Base62 Encoder / Decoder,0,10,67.1
+WATCH,encoding,nato-alphabet,NATO Phonetic Alphabet,0,10,72.7
+WATCH,formatters,xml-minifier,XML Minifier,0,10,67.1
+WATCH,generators,isbn13-generator,ISBN-13 Generator,0,10,39.3
+WATCH,generators2,nda-gen,NDA Generator,0,10,86.8
+WATCH,images,solid-color-image,Solid Color Image,0,10,40.8
+WATCH,js,js-import-sorter,JS Import Sorter,0,10,33.9
+WATCH,mathcalc,boolean-algebra,Boolean Algebra,0,10,66.2
+WATCH,mathcalc,permutation-combination,Permutation & Combination Calculator,0,10,64.7
+WATCH,random,random-trivia-generator,Random Trivia Generator,0,10,46.0
+WATCH,study,greek-alphabet-reference,Greek Alphabet Reference,0,10,53.8
+WATCH,study,paragraph-splitter,Paragraph Splitter,0,10,17.1
+WATCH,text,invisible-char-remover,Invisible Character Remover,0,10,63.4
+WATCH,text,remove-line-breaks,Remove Line Breaks,0,10,74.9
+WATCH,audio,audio-silence-remover,Audio Silence Remover,0,9,50.8
+WATCH,audio,audio-spectrum-analyzer,Audio Spectrum Analyzer,0,9,50.9
+WATCH,converters2,tire-pressure-converter,Tire Pressure Converter,0,9,65.1
+WATCH,css,css-button,CSS Button Generator,0,9,73.4
+WATCH,everyday,typing-speed-test,Typing Speed Test,0,9,91.8
+WATCH,fancy,discord-formatter,Discord Text Formatter,0,9,73.0
+WATCH,fancy,leetspeak-generator,Leetspeak Generator,0,9,73.4
+WATCH,financecalc,heart-rate-zone-calc,Heart Rate Zones,0,9,82.4
+WATCH,financecalc,pace-calc,Pace Calculator,0,9,90.6
+WATCH,generators,random-hex-gen,Random Hex Generator,0,9,57.3
+WATCH,generators2,cookie-policy-gen,Cookie Policy Generator,0,9,61.8
+WATCH,generators2,copyright-notice-gen,Copyright Notice Generator,0,9,65.2
+WATCH,hash,caesar-hash,Simple String Hash,0,9,48.8
+WATCH,mathcalc,truth-table-gen,Truth Table Generator,0,9,76.2
+WATCH,pdf,pdf-rotator,PDF Rotator,0,9,63.2
+WATCH,random,random-country-picker,Random Country Picker,0,9,41.6
+WATCH,text,number-extractor,Number Extractor,0,9,79.6
+WATCH,text,text-splitter,Text Splitter,0,9,83.0
+WATCH,audio,audio-reverser,Audio Reverser,0,8,38.9
+WATCH,colors,oklch-converter,OKLCH Color Converter,0,8,49.5
+WATCH,converters2,bra-size-converter,Bra Size Converter,0,8,84.2
+WATCH,converters2,gas-mark-converter,Oven Gas Mark Converter,0,8,68.8
+WATCH,data,sparkline-generator,Sparkline Generator,0,8,43.2
+WATCH,devtools,json-to-query-string,JSON to Query String,0,8,58.1
+WATCH,everyday,coin-flip,Coin Flip,0,8,37.4
+WATCH,fancy,cursive-text,Cursive Text Generator,0,8,35.5
+WATCH,financecalc,credit-card-payoff-calc,Credit Card Payoff Calculator,0,8,79.6
+WATCH,financecalc,markup-calc,Markup Calculator,0,8,69.9
+WATCH,generators,credit-card-test-gen,Test Credit Card Number Generator,0,8,82.1
+WATCH,generators2,dmca-notice-gen,DMCA Notice Generator,0,8,64.8
+WATCH,hash,djb2-hash,DJB2 Hash,0,8,20.1
+WATCH,html,html-list-generator,HTML List Generator,0,8,67.1
+WATCH,images,image-contrast,Image Contrast,0,8,75.0
+WATCH,js,json-to-js,JSON to JS Object,0,8,68.9
+WATCH,mathcalc,binary-calc,Binary Arithmetic,0,8,70.1
+WATCH,mathcalc,golden-ratio-calc,Golden Ratio Calculator,0,8,66.4
+WATCH,mathcalc,midpoint-calc,Midpoint Calculator,0,8,58.9
+WATCH,pdf,pdf-reverse-pages,PDF Page Reverser,0,8,60.8
+WATCH,random,random-letter-sequence,Random Letter Sequence,0,8,38.5
+WATCH,text,spaces-to-tab,Spaces to Tab,0,8,58.5
+WATCH,text,text-truncator,Text Truncator,0,8,72.8
+WATCH,business,clv-calc,Customer Lifetime Value Calculator,0,7,89.9
+WATCH,css,css-glassmorphism,Glassmorphism Generator,0,7,54.4
+WATCH,css,css-line-clamp,CSS Line Clamp Generator,0,7,77.7
+WATCH,css,css-scrollbar,CSS Scrollbar Styler,0,7,42.3
+WATCH,css,css-transform,CSS Transform Generator,0,7,58.0
+WATCH,css,css-triangle,CSS Triangle Generator,0,7,73.4
+WATCH,data,frequency-counter,Frequency Counter,0,7,65.3
+WATCH,devgen,nginx-config-gen,Nginx Config Generator,0,7,77.6
+WATCH,encoders,url-decode,URL Decoder,0,7,72.6
+WATCH,encoding,keyword-substitution-cipher,Keyword Substitution Cipher,0,7,68.3
+WATCH,financecalc,gratuity-calc,Gratuity Calculator,0,7,87.1
+WATCH,financecalc,simple-vs-compound-calc,Simple vs Compound Interest,0,7,82.0
+WATCH,formatters,cpp-formatter,C/C++ Formatter,0,7,60.3
+WATCH,hash,luhn-validator,Luhn Validator & Check Digit,0,7,65.3
+WATCH,html,html-attribute-extractor,HTML Attribute Extractor,0,7,80.0
+WATCH,html,html-select-generator,HTML Select Dropdown Generator,0,7,17.0
+WATCH,images,image-collage,Image Collage,0,7,76.4
+WATCH,images,image-emboss,Image Emboss,0,7,85.0
+WATCH,js,js-object-key-sorter,JSON Key Sorter,0,7,46.4
+WATCH,js,js-ternary-to-if,Ternary to If/Else,0,7,22.1
+WATCH,mathcalc,pythagorean-calc,Pythagorean Calculator,0,7,55.4
+WATCH,pdf,pdf-add-blank-page,PDF Blank Page Inserter,0,7,69.9
+WATCH,random,bingo-card-generator,Bingo Card Generator,0,7,41.7
+WATCH,random,random-binary-generator,Random Binary Generator,0,7,58.6
+WATCH,random,random-group-assigner,Random Group Assigner,0,7,85.7
+WATCH,text,count-occurrences,Count Occurrences,0,7,60.9
+WATCH,text,letter-frequency,Letter Frequency Counter,0,7,48.0
+WATCH,text,url-slug,URL Slug Generator,0,7,88.4
+WATCH,units,time-converter,Time Converter,0,7,29.0
+WATCH,audio,audio-playback-tester,Speaker & Headphone Tester,0,6,51.3
+WATCH,business,break-even-calc,Break Even Calculator,0,6,77.5
+WATCH,business,business-card-gen,Business Card Generator,0,6,72.5
+WATCH,business,meeting-agenda-gen,Meeting Agenda Generator,0,6,90.2
+WATCH,colors,blend-modes,Color Blend Mode Calculator,0,6,20.3
+WATCH,colors,color-opacity,Color Opacity / RGBA,0,6,66.7
+WATCH,converters2,inductance-converter,Inductance Converter,0,6,45.0
+WATCH,converters2,shoe-size-converter,Shoe Size Converter,0,6,88.8
+WATCH,data,heatmap-generator,Heatmap Generator,0,6,70.0
+WATCH,devgen,dockercompose-gen,Docker Compose Generator,0,6,44.0
+WATCH,devgen,tsconfig-gen,tsconfig Generator,0,6,49.2
+WATCH,devtools,cron-gen,Cron Generator,0,6,40.5
+WATCH,encoding,playfair-cipher,Playfair Cipher,0,6,57.2
+WATCH,formatters,env-file-sorter,Env File Sorter,0,6,19.5
+WATCH,formatters,indentation-converter,Indentation Converter,0,6,66.0
+WATCH,generators,fake-ip-gen,Fake IP Generator,0,6,84.0
+WATCH,generators,imei-generator,IMEI Number Generator,0,6,24.0
+WATCH,generators2,acceptable-use-policy-gen,Acceptable Use Policy Generator,0,6,84.2
+WATCH,generators2,disclaimer-gen,Disclaimer Generator,0,6,61.2
+WATCH,generators2,twitter-bio-gen,Twitter Bio Generator,0,6,85.3
+WATCH,html,html-blockquote-generator,HTML Blockquote Generator,0,6,22.2
+WATCH,html,html-compressor,HTML Compressor,0,6,80.5
+WATCH,images,color-space,Color Space Converter,0,6,50.3
+WATCH,json,json-size,JSON Size Analyzer,0,6,60.2
+WATCH,mathcalc,arc-length-calc,Arc Length Calculator,0,6,86.2
+WATCH,mathcalc,cone-calc,Cone Calculator,0,6,86.3
+WATCH,pdf,pdf-form-filler,PDF Form Filler,0,6,80.7
+WATCH,random,random-ip-generator,Random IP Address Generator,0,6,75.7
+WATCH,study,spaced-repetition-planner,Spaced Repetition Planner,0,6,44.2
+WATCH,text,text-statistics,Text Statistics,0,6,79.8
+WATCH,text,url-extractor,URL Extractor,0,6,86.0
+WATCH,text,vowel-consonant-counter,Vowel & Consonant Counter,0,6,70.5
+WATCH,units,pressure-converter,Pressure Converter,0,6,79.3
+WATCH,audio,text-to-speech,Text to Speech,0,5,67.6
+WATCH,business,appointment-letter-gen,Appointment Letter Generator,0,5,55.2
+WATCH,colors,color-gradient,Gradient Color Steps,0,5,40.8
+WATCH,converters2,roman-numeral-converter,Roman Numeral Converter,0,5,88.8
+WATCH,css,css-loader,CSS Loader Generator,0,5,67.4
+WATCH,css,css-pattern-generator,CSS Pattern Generator,0,5,74.4
+WATCH,css,css-transition,CSS Transition Generator,0,5,69.8
+WATCH,devgen,tailwind-config-gen,Tailwind Config Generator,0,5,53.0
+WATCH,devtools,html-entities-ref,HTML Entities Ref,0,5,50.0
+WATCH,encoders,base58,Base58 Encoder / Decoder,0,5,53.4
+WATCH,encoders,uuencode,Uuencode / Uudecode,0,5,58.8
+WATCH,encoding,rot47,ROT47 Encoder/Decoder,0,5,23.4
+WATCH,fancy,fancy-text-all,Fancy Text - All Styles,0,5,22.6
+WATCH,fancy,unicode-text-art,Unicode Text Art,0,5,59.2
+WATCH,financecalc,overtime-pay-calc,Overtime Pay Calculator,0,5,87.4
+WATCH,financecalc,payback-period-calc,Payback Period Calculator,0,5,36.4
+WATCH,financecalc,savings-goal-calc,Savings Goal Calculator,0,5,75.4
+WATCH,formatters,yaml-formatter,YAML Formatter,0,5,81.4
+WATCH,generators,hash-id-gen,Hash ID Generator,0,5,62.0
+WATCH,generators2,svg-divider-gen,SVG Section Divider Generator,0,5,61.6
+WATCH,generators2,terms-conditions-gen,Terms & Conditions Generator,0,5,88.6
+WATCH,hash,hash-all,Hash Generator (All),0,5,89.2
+WATCH,images,image-flipper,Image Flipper,0,5,89.8
+WATCH,images,image-metadata,Image Metadata,0,5,89.2
+WATCH,images,image-padding,Image Padding,0,5,75.0
+WATCH,images,image-posterize,Image Posterize,0,5,77.0
+WATCH,json,json-minifier,JSON Minifier,0,5,86.2
+WATCH,mathcalc,distance-3d-calc,3D Distance Calculator,0,5,74.8
+WATCH,mathcalc,prime-checker,Prime Checker,0,5,68.6
+WATCH,office,quick-notepad,Quick Notepad,0,5,61.2
+WATCH,pdf,pdf-duplicate-pages,PDF Page Duplicator,0,5,58.8
+WATCH,study,bibliography-builder,Bibliography Builder,0,5,63.2
+WATCH,text,remove-duplicate-words,Remove Duplicate Words,0,5,47.2
+WATCH,text,remove-empty-lines,Remove Empty Lines,0,5,78.4
+WATCH,video,video-watermark,Video Watermark Adder,0,5,77.0
+WATCH,audio,audio-to-wav,Audio to WAV Converter,0,4,55.2
+WATCH,business,sales-copy-gen,Sales Copy Generator,0,4,58.8
+WATCH,colors,color-inverter,Color Inverter,0,4,7.0
+WATCH,devgen,issue-template-gen,Issue Template Generator,0,4,40.2
+WATCH,encoders,base64-encode,Base64 Encoder,0,4,76.2
+WATCH,encoders,html-encode,HTML Entities Encoder,0,4,71.8
+WATCH,encoders,unicode-decode,Unicode Decoder,0,4,69.2
+WATCH,everyday,moon-phase,Moon Phase Calculator,0,4,69.5
+WATCH,fancy,double-struck,Double Struck Text,0,4,67.5
+WATCH,fancy,emoji-letters,Emoji Letters Generator,0,4,28.5
+WATCH,fancy,monospace-text,Monospace Text,0,4,77.2
+WATCH,fancy,underline-text,Underline Text,0,4,66.8
+WATCH,financecalc,lumpsum-calc,Lumpsum Calculator,0,4,69.8
+WATCH,financecalc,pe-ratio-calc,P/E Ratio Calculator,0,4,81.5
+WATCH,financecalc,rd-calc,RD Calculator,0,4,61.2
+WATCH,financecalc,sip-calc,SIP Calculator,0,4,71.2
+WATCH,formatters,css-formatter,CSS Formatter,0,4,72.2
+WATCH,formatters,properties-formatter,Java Properties Formatter,0,4,22.0
+WATCH,formatters,tsv-to-csv,TSV to CSV,0,4,65.0
+WATCH,generators,fake-address-gen,Fake Address Generator,0,4,52.8
+WATCH,generators,fake-email-gen,Fake Email Generator,0,4,87.5
+WATCH,generators,fake-name-gen,Fake Name Generator,0,4,73.2
+WATCH,generators,ulid-gen,ULID Generator,0,4,40.5
+WATCH,hash,random-string,Random String Generator,0,4,70.0
+WATCH,html,html-figure-generator,HTML Figure & Caption Generator,0,4,58.0
+WATCH,images,avatar-generator,Avatar Generator,0,4,73.0
+WATCH,images,checkerboard,Checkerboard,0,4,42.5
+WATCH,images,image-grayscale,Image Grayscale,0,4,75.5
+WATCH,js,js-unicode-escaper,JS Unicode Escaper,0,4,53.8
+WATCH,office,certificate-maker,Certificate Maker,0,4,82.2
+WATCH,office,meeting-cost-calculator,Meeting Cost Calculator,0,4,80.8
+WATCH,pdf,pdf-chunker,PDF Chunker for RAG,0,4,40.2
+WATCH,random,coin-flip-batch,Batch Coin Flip,0,4,21.8
+WATCH,random,would-you-rather-generator,Would You Rather Generator,0,4,65.5
+WATCH,text,bullets-to-text,Bullet List to Text,0,4,63.0
+WATCH,text,morse-to-text,Morse Code to Text,0,4,86.2
+WATCH,text,pig-latin,Pig Latin Converter,0,4,66.5
+WATCH,units,numbase-converter,Number Base Converter,0,4,64.0
+WATCH,units,weight-converter,Weight / Mass Converter,0,4,86.2
+WATCH,audio,audio-speed-changer,Audio Speed Changer,0,3,7.0
+WATCH,business,ad-copy-gen,Ad Copy Generator,0,3,62.3
+WATCH,business,debit-note-gen,Debit Note Generator,0,3,43.0
+WATCH,colors,alpha-blend,Alpha Blend Calculator,0,3,20.3
+WATCH,colors,color-temperature,Color Temperature Tool,0,3,54.0
+WATCH,colors,grayscale-converter,Grayscale Converter,0,3,53.0
+WATCH,colors,tailwind-colors,Tailwind Color Finder,0,3,95.0
+WATCH,converters2,current-converter,Current Converter,0,3,10.0
+WATCH,css,css-filter,CSS Filter Generator,0,3,65.0
+WATCH,css,px-to-rem-converter,PX to REM Converter,0,3,61.3
+WATCH,data,pie-chart-maker,Pie Chart Maker,0,3,90.3
+WATCH,data,timeline-maker,Timeline Maker,0,3,57.7
+WATCH,devgen,gitignore-gen,Gitignore Generator,0,3,49.0
+WATCH,devtools,http-status-codes,HTTP Status Codes,0,3,93.7
+WATCH,devtools,uuid-inspector,UUID Inspector,0,3,44.3
+WATCH,encoders,base32-decode,Base32 Decoder,0,3,67.0
+WATCH,encoding,bacon-cipher,Bacon Cipher,0,3,21.3
+WATCH,encoding,octal-text,Octal Text Converter,0,3,60.7
+WATCH,everyday,business-days-between,Business Days Calculator,0,3,69.0
+WATCH,everyday,generation-finder,Generation Finder,0,3,49.7
+WATCH,financecalc,ppf-calc,PPF Calculator,0,3,31.0
+WATCH,financecalc,protein-intake-calc,Protein Intake Calculator,0,3,9.7
+WATCH,formatters,scss-formatter,SCSS/LESS Formatter,0,3,49.3
+WATCH,generators,bulk-password-gen,Bulk Password Generator,0,3,81.0
+WATCH,generators,ean8-generator,EAN-8 Barcode Number Generator,0,3,59.7
+WATCH,generators,fake-data-bulk,Bulk Fake Data Generator,0,3,93.3
+WATCH,generators,order-number-gen,Order Number Generator,0,3,62.7
+WATCH,generators,pin-gen,PIN Generator,0,3,72.0
+WATCH,generators,random-string-gen,Random String Generator,0,3,66.3
+WATCH,generators2,abstract-bg-gen,Abstract Background Generator,0,3,45.0
+WATCH,generators2,geometric-pattern-gen,Geometric Pattern Generator,0,3,64.0
+WATCH,html,html-data-uri,Text/SVG to Data URI,0,3,59.0
+WATCH,html,html-details-accordion,HTML Details Accordion Generator,0,3,66.0
+WATCH,images,image-brightness,Image Brightness,0,3,74.7
+WATCH,images,image-histogram,Image Histogram,0,3,34.3
+WATCH,js,js-quote-normalizer,JS Quote Normalizer,0,3,55.7
+WATCH,js,js-to-typescript,JS to TypeScript,0,3,56.0
+WATCH,mathcalc,number-base-calc,Number Base Converter,0,3,75.7
+WATCH,office,address-label-sheet,Address Label Sheet,0,3,23.0
+WATCH,office,time-slot-generator,Time Slot Generator,0,3,55.0
+WATCH,pdf,pdf-metadata,PDF Metadata Viewer,0,3,83.0
+WATCH,random,random-emoji-generator,Random Emoji Generator,0,3,65.0
+WATCH,random,yes-no-generator,Yes or No Generator,0,3,62.3
+WATCH,text,anagram-checker,Anagram Checker,0,3,26.3
+WATCH,text,hashtag-extractor,Hashtag & Mention Extractor,0,3,69.7
+WATCH,units,digital-converter,Data Storage Converter,0,3,66.3
+WATCH,units,torque-converter,Torque Converter,0,3,61.7
+WATCH,business,delivery-challan-gen,Delivery Challan Generator,0,2,44.5
+WATCH,business,persona-gen,Persona Generator,0,2,60.5
+WATCH,business,salary-certificate-gen,Salary Certificate Generator,0,2,54.5
+WATCH,colors,color-sorter,Color Palette Sorter,0,2,21.5
+WATCH,colors,contrast-grid,Contrast Grid Checker,0,2,38.0
+WATCH,colors,nearest-tailwind,Nearest Tailwind Color,0,2,35.5
+WATCH,converters2,acceleration-converter,Acceleration Converter,0,2,110.0
+WATCH,converters2,capacitance-converter,Capacitance Converter,0,2,26.5
+WATCH,converters2,color-temperature-mired-converter,Color Temperature ↔ Mired Converter,0,2,31.5
+WATCH,converters2,torque-converter,Torque Converter,0,2,43.0
+WATCH,css,css-columns,CSS Multi-Column Generator,0,2,100.0
+WATCH,css,css-writing-mode,CSS Writing Mode Generator,0,2,42.0
+WATCH,data,csv-to-json-table,CSV to JSON Converter,0,2,46.0
+WATCH,devgen,pr-template-gen,Pull Request Template Generator,0,2,73.0
+WATCH,devgen,security-md-gen,SECURITY.md Generator,0,2,8.0
+WATCH,devtools,dev-case-converter,Case Converter (Dev),0,2,76.0
+WATCH,devtools,duration-humanizer,Duration Humanizer,0,2,59.5
+WATCH,devtools,flexbox-gen,Flexbox Generator,0,2,54.5
+WATCH,devtools,query-string-builder,Query String Builder,0,2,78.5
+WATCH,devtools,timestamp-diff,Timestamp Diff,0,2,57.0
+WATCH,encoders,octal-encode,Text to Octal,0,2,65.0
+WATCH,encoders,rot18-cipher,ROT18 Cipher,0,2,10.0
+WATCH,encoding,gronsfeld-cipher,Gronsfeld Cipher,0,2,35.0
+WATCH,encoding,vigenere-cipher,Vigenère Cipher,0,2,82.5
+WATCH,everyday,iso-week-number,ISO Week Number,0,2,45.5
+WATCH,fancy,parenthesized-text,Parenthesized Text Generator,0,2,13.0
+WATCH,fancy,strikethrough-text,Strikethrough Text,0,2,80.5
+WATCH,fancy,subscript-text,Subscript Generator,0,2,66.5
+WATCH,financecalc,dividend-payout-ratio-calc,Dividend Payout Ratio Calculator,0,2,74.5
+WATCH,financecalc,net-worth-calc,Net Worth Calculator,0,2,66.5
+WATCH,financecalc,vo2max-calc,VO2 Max Calculator,0,2,78.5
+WATCH,formatters,code-beautifier,Universal Code Beautifier,0,2,14.0
+WATCH,formatters,csharp-formatter,C# Formatter,0,2,78.5
+WATCH,formatters,ini-formatter,INI Formatter,0,2,9.0
+WATCH,formatters,json-to-toml,JSON to TOML,0,2,39.0
+WATCH,formatters,json-to-xml,JSON to XML,0,2,72.0
+WATCH,generators,coupon-code-gen,Coupon Code Generator,0,2,81.0
+WATCH,generators,fake-phone-gen,Fake Phone Generator,0,2,93.0
+WATCH,generators,passphrase-gen,Passphrase Generator,0,2,88.0
+WATCH,generators,totp-secret-gen,2FA / TOTP Secret Generator,0,2,7.0
+WATCH,generators2,noise-texture-gen,Noise Texture Generator,0,2,73.0
+WATCH,generators2,svg-checkmark-gen,SVG Checkmark Generator,0,2,7.5
+WATCH,hash,xor-cipher,XOR Cipher,0,2,84.5
+WATCH,html,html-comment-remover,HTML Comment Remover,0,2,24.5
+WATCH,html,html-image-tag,HTML Image Tag Generator,0,2,47.5
+WATCH,html,html-input-generator,HTML Input Generator,0,2,18.5
+WATCH,html,html-table-to-csv,HTML Table to CSV,0,2,66.5
+WATCH,html,html-video-tag,HTML Video Tag Generator,0,2,37.0
+WATCH,images,image-color-picker,Color Picker,0,2,87.0
+WATCH,images,image-compressor,Image Compressor,0,2,79.0
+WATCH,js,regex-tester,Regex Tester,0,2,79.0
+WATCH,json,json-query,JSON Query / Filter,0,2,37.5
+WATCH,mathcalc,area-calc,Area Calculator,0,2,84.5
+WATCH,mathcalc,complex-number-calc,Complex Number Calculator,0,2,88.0
+WATCH,mathcalc,factorial-calc,Factorial Calculator,0,2,9.5
+WATCH,mathcalc,fibonacci-calc,Fibonacci Calculator,0,2,63.5
+WATCH,mathcalc,roman-numeral-converter,Roman Numeral Converter,0,2,74.0
+WATCH,mathcalc,rounding-calc,Rounding Calculator,0,2,80.0
+WATCH,mathcalc,trapezoid-calc,Trapezoid Calculator,0,2,80.5
+WATCH,mathcalc,triangle-solver,Triangle Solver (SSS),0,2,65.0
+WATCH,mathcalc,volume-calc,Volume Calculator,0,2,48.0
+WATCH,mathcalc,z-score-calculator,Z-Score Calculator,0,2,91.0
+WATCH,office,letterhead-generator,Letterhead Generator,0,2,77.0
+WATCH,office,qr-code-studio,QR Code Studio,0,2,92.0
+WATCH,pdf,pdf-bookmarks,PDF Bookmark Manager,0,2,49.5
+WATCH,pdf,pdf-merger,PDF Merger,0,2,3.0
+WATCH,random,random-picker,Random Picker,0,2,53.0
+WATCH,random,random-question-generator,Random Question Generator,0,2,70.5
+WATCH,text,add-prefix-suffix,Add Prefix & Suffix,0,2,81.0
+WATCH,text,text-unwrapper,Text Unwrapper,0,2,28.0
+WATCH,units,current-converter,Electric Current Converter,0,2,28.5
+WATCH,units,flow-converter,Flow Rate Converter,0,2,66.5
+WATCH,units,length-converter,Length Converter,0,2,49.5
+WATCH,units,typography-converter,Typography / CSS Units,0,2,67.5
+WATCH,audio,audio-cropper-loop,Audio Loop Maker,0,1,48.0
+WATCH,audio,voice-recorder,Online Voice Recorder,0,1,97.0
+WATCH,business,business-hours-gen,Business Hours Schema Generator,0,1,97.0
+WATCH,business,markup-margin-calc,Markup & Margin Calculator,0,1,79.0
+WATCH,business,petty-cash-gen,Petty Cash Voucher Generator,0,1,73.0
+WATCH,business,press-release-gen,Press Release Generator,0,1,93.0
+WATCH,business,resume-builder,Resume Builder,0,1,78.0
+WATCH,business,timesheet-gen,Timesheet Generator,0,1,92.0
+WATCH,colors,hex-shorthand,HEX Shorthand Expander,0,1,36.0
+WATCH,colors,lighten-darken,Lighten / Darken Color,0,1,84.0
+WATCH,converters2,luminance-converter,Luminance Converter,0,1,57.0
+WATCH,css,css-grid,CSS Grid Generator,0,1,78.0
+WATCH,css,css-image-rendering,CSS Image Rendering Generator,0,1,93.0
+WATCH,css,css-neumorphism,Neumorphism Generator,0,1,85.0
+WATCH,css,css-outline,CSS Outline Generator,0,1,37.0
+WATCH,css,css-typography,CSS Typography Styler,0,1,47.0
+WATCH,css,css-variables,CSS Variables Generator,0,1,72.0
+WATCH,data,csv-cleaner,CSV Cleaner,0,1,54.0
+WATCH,data,donut-chart-maker,Donut Chart Maker,0,1,86.0
+WATCH,data,stacked-bar-chart,Stacked Bar Chart Maker,0,1,78.0
+WATCH,devgen,codeowners-gen,CODEOWNERS Generator,0,1,47.0
+WATCH,devgen,css-reset-gen,CSS Reset Generator,0,1,34.0
+WATCH,devgen,css-variables-gen,CSS Variables Generator,0,1,51.0
+WATCH,devgen,gitcommit-gen,Conventional Commit Generator,0,1,54.0
+WATCH,devgen,robots-txt-gen,Robots.txt Generator,0,1,88.0
+WATCH,devgen,sitemap-gen,XML Sitemap Generator,0,1,19.0
+WATCH,devgen,stylelint-config-gen,Stylelint Config Generator,0,1,18.0
+WATCH,devtools,chmod-calc,Chmod Calculator,0,1,35.0
+WATCH,devtools,color-names-ref,Color Names Ref,0,1,68.0
+WATCH,devtools,http-headers-ref,HTTP Headers Ref,0,1,48.0
+WATCH,devtools,ip-info,IP Info,0,1,10.0
+WATCH,devtools,jwt-generator,JWT Generator (HS256),0,1,48.0
+WATCH,devtools,slugify,Slugify,0,1,5.0
+WATCH,devtools,string-escaper,String Escaper,0,1,49.0
+WATCH,devtools,timezone-dev,Timezone Dev,0,1,17.0
+WATCH,devtools,user-agent-parser,User-Agent Parser,0,1,40.0
+WATCH,encoders,base64url,Base64URL Encoder / Decoder,0,1,27.0
+WATCH,encoders,decimal-entities,Numeric HTML Entities,0,1,61.0
+WATCH,encoding,affine-cipher,Affine Cipher,0,1,55.0
+WATCH,encoding,autokey-vigenere,Autokey Vigenère Cipher,0,1,33.0
+WATCH,everyday,age-calculator,Age Calculator,0,1,60.0
+WATCH,financecalc,bmi-calculator,BMI Calculator,0,1,62.0
+WATCH,financecalc,depreciation-calc,Depreciation Calculator,0,1,85.0
+WATCH,financecalc,discount-calculator,Discount Calculator,0,1,55.0
+WATCH,financecalc,electricity-cost-calc,Electricity Cost Calculator,0,1,38.0
+WATCH,financecalc,future-value-calc,Future Value Calculator,0,1,81.0
+WATCH,financecalc,hra-calc,HRA Exemption Calculator,0,1,99.0
+WATCH,financecalc,macro-calc,Macro Calculator,0,1,40.0
+WATCH,formatters,graphql-formatter,GraphQL Formatter,0,1,48.0
+WATCH,formatters,sql-formatter,SQL Formatter,0,1,76.0
+WATCH,formatters,toml-to-json,TOML to JSON,0,1,45.0
+WATCH,formatters,whitespace-normalizer,Whitespace Normalizer,0,1,6.0
+WATCH,generators,isbn10-generator,ISBN-10 Generator,0,1,83.0
+WATCH,generators,nanoid-gen,Nano ID Generator,0,1,56.0
+WATCH,generators2,cta-gen,CTA Generator,0,1,81.0
+WATCH,generators2,gradient-gen,Gradient Generator,0,1,210.0
+WATCH,generators2,headline-gen,Headline Generator,0,1,43.0
+WATCH,generators2,instagram-hashtag-gen,Instagram Hashtag Generator,0,1,99.0
+WATCH,generators2,linkedin-summary-gen,LinkedIn Summary Generator,0,1,89.0
+WATCH,generators2,mesh-gradient-gen,Mesh Gradient Generator,0,1,87.0
+WATCH,generators2,mission-vision-gen,Mission & Vision Statement Generator,0,1,86.0
+WATCH,generators2,privacy-policy-gen,Privacy Policy Generator,0,1,99.0
+WATCH,generators2,svg-avatar-gen,SVG Identicon Avatar Generator,0,1,44.0
+WATCH,generators2,svg-badge-gen,SVG Badge Generator,0,1,42.0
+WATCH,generators2,svg-pattern-gen,SVG Pattern Generator,0,1,86.0
+WATCH,generators2,svg-wave-gen,SVG Wave Generator,0,1,98.0
+WATCH,generators2,warranty-policy-gen,Warranty Policy Generator,0,1,100.0
+WATCH,generators2,youtube-title-gen,YouTube Title Generator,0,1,99.0
+WATCH,hash,adler32,Adler-32 Checksum,0,1,61.0
+WATCH,hash,bcrypt-hash,Bcrypt Hash Generator,0,1,90.0
+WATCH,hash,color-hash,Text to Color Hash,0,1,9.0
+WATCH,hash,hash-compare,Hash Comparator,0,1,8.0
+WATCH,hash,passphrase-gen,Passphrase Generator,0,1,81.0
+WATCH,hash,sha3-keccak,SHA-3 / Keccak Hash,0,1,67.0
+WATCH,hash,token-generator,API Token Generator,0,1,62.0
+WATCH,html,html-to-text,HTML to Text,0,1,83.0
+WATCH,images,image-ascii-art,ASCII Art Generator,0,1,95.0
+WATCH,images,image-base64,Image to Base64,0,1,83.0
+WATCH,images,image-cropper,Image Cropper,0,1,91.0
+WATCH,images,image-dominant-colors,Dominant Colors,0,1,33.0
+WATCH,images,image-resizer,Image Resizer,0,1,79.0
+WATCH,images,image-sharpen,Image Sharpen,0,1,97.0
+WATCH,images,sprite-sheet,Sprite Sheet Maker,0,1,60.0
+WATCH,js,js-minifier,JavaScript Minifier,0,1,52.0
+WATCH,json,json-flatten,JSON Flattener,0,1,10.0
+WATCH,json,json-formatter,JSON Formatter,0,1,85.0
+WATCH,json,json-keys,JSON Key Extractor,0,1,49.0
+WATCH,json,json-repair,JSON Repair,0,1,57.0
+WATCH,mathcalc,gcd-lcm-calc,GCD & LCM Calculator,0,1,49.0
+WATCH,mathcalc,trigonometry-calc,Trigonometry Calculator,0,1,9.0
+WATCH,office,monthly-calendar-printable,Monthly Calendar (Printable),0,1,33.0
+WATCH,office,phone-link-generator,Click-to-Call Link Generator,0,1,72.0
+WATCH,office,weekly-planner-printable,Weekly Planner (Printable),0,1,29.0
+WATCH,office,wifi-qr-generator,WiFi QR Code Generator,0,1,92.0
+WATCH,pdf,pdf-delete-pages,PDF Page Deleter,0,1,30.0
+WATCH,pdf,pdf-optimizer,PDF Optimizer,0,1,75.0
+WATCH,pdf,word-to-pdf,Word to PDF Converter,0,1,48.0
+WATCH,study,flashcard-maker,Flashcard Maker,0,1,33.0
+WATCH,text,alphabetize-words,Alphabetize Words,0,1,51.0
+WATCH,text,case-converter,Case Converter,0,1,54.0
+WATCH,text,character-counter,Character Counter,0,1,84.0
+WATCH,text,initials-extractor,Initials Extractor,0,1,9.0
+WATCH,text,palindrome-checker,Palindrome Checker,0,1,82.0
+WATCH,text,punctuation-remover,Punctuation Remover,0,1,79.0
+WATCH,text,reverse-each-word,Reverse Each Word,0,1,91.0
+WATCH,text,text-padder,Text Padder,0,1,6.0
+WATCH,text,text-reverser,Text Reverser,0,1,74.0
+WATCH,text,word-counter-pro,Word Counter Pro,0,1,160.0
+WATCH,text,word-frequency,Word Frequency Analyzer,0,1,49.0
+WATCH,units,angle-converter,Angle Converter,0,1,40.0
+WATCH,units,charge-converter,Electric Charge Converter,0,1,38.0
+WATCH,units,cooking-converter,Cooking Measurement Converter,0,1,52.0
+WATCH,units,dynamic-viscosity-converter,Dynamic Viscosity Converter,0,1,17.0
+WATCH,units,illuminance-converter,Illuminance Converter,0,1,54.0
+WATCH,video,video-social-crop,Social Media Video Cropper,0,1,79.0
+PRUNE,audio,audio-converter,Audio Converter,0,0,
+PRUNE,audio,audio-merger,Audio Merger,0,0,
+PRUNE,audio,audio-normalizer,Audio Normalizer,0,0,
+PRUNE,audio,audio-pitch-shifter,Audio Pitch Shifter,0,0,
+PRUNE,audio,audio-trimmer,Audio Trimmer,0,0,
+PRUNE,audio,audio-volume-changer,Audio Volume Changer,0,0,
+PRUNE,audio,bpm-detector,BPM Detector,0,0,
+PRUNE,audio,ringtone-maker,Ringtone Maker,0,0,
+PRUNE,audio,tone-generator,Tone Generator,0,0,
+PRUNE,business,balance-sheet-gen,Balance Sheet Generator,0,0,
+PRUNE,business,cagr-calc,CAGR Calculator,0,0,
+PRUNE,business,cover-letter-gen,Cover Letter Generator,0,0,
+PRUNE,business,credit-note-gen,Credit Note Generator,0,0,
+PRUNE,business,expense-report-gen,Expense Report Generator,0,0,
+PRUNE,business,experience-letter-gen,Experience / Service Certificate Generator,0,0,
+PRUNE,business,invoice-gen,Invoice Generator,0,0,
+PRUNE,business,job-description-gen,Job Description Generator,0,0,
+PRUNE,business,packing-slip-gen,Packing Slip Generator,0,0,
+PRUNE,business,profit-loss-gen,Profit & Loss Statement Generator,0,0,
+PRUNE,business,proforma-invoice-gen,Proforma Invoice Generator,0,0,
+PRUNE,business,purchase-order-gen,Purchase Order Generator,0,0,
+PRUNE,business,receipt-gen,Receipt Generator,0,0,
+PRUNE,business,relieving-letter-gen,Relieving Letter Generator,0,0,
+PRUNE,business,rent-receipt-gen,Rent Receipt Generator,0,0,
+PRUNE,colors,cmyk-rgb-converter,CMYK ↔ RGB Converter,0,0,
+PRUNE,colors,color-blindness,Color Blindness Simulator,0,0,
+PRUNE,colors,color-contrast,Color Contrast Checker,0,0,
+PRUNE,colors,color-converter,Color Format Converter,0,0,
+PRUNE,colors,color-harmonies,Color Harmonies,0,0,
+PRUNE,colors,color-mixer,Color Mixer,0,0,
+PRUNE,colors,color-name,Color Name Finder,0,0,
+PRUNE,colors,color-palette,Random Palette Generator,0,0,
+PRUNE,colors,color-picker,Color Picker,0,0,
+PRUNE,colors,color-scheme,UI Color Scheme Builder,0,0,
+PRUNE,colors,color-shades,Tints & Shades Generator,0,0,
+PRUNE,colors,css-color-mix,CSS color-mix() Generator,0,0,
+PRUNE,colors,hsl-adjuster,HSL Adjuster,0,0,
+PRUNE,colors,image-colors,Image Color Extractor,0,0,
+PRUNE,colors,material-palette,Material Tonal Palette,0,0,
+PRUNE,colors,sepia-converter,Sepia Tone Converter,0,0,
+PRUNE,colors,wcag-checker,WCAG Color Compliance,0,0,
+PRUNE,converters2,angle-unit-converter,Angle Unit Converter,0,0,
+PRUNE,converters2,data-transfer-rate-converter,Data Transfer Rate Converter,0,0,
+PRUNE,converters2,density-converter,Density Converter,0,0,
+PRUNE,converters2,force-converter,Force Converter,0,0,
+PRUNE,converters2,frequency-wavelength-converter,Frequency ↔ Wavelength Converter,0,0,
+PRUNE,converters2,illuminance-converter,Illuminance Converter,0,0,
+PRUNE,converters2,magnetic-flux-converter,Magnetic Flux Converter,0,0,
+PRUNE,converters2,pace-speed-converter,Running Pace ↔ Speed Converter,0,0,
+PRUNE,converters2,resistance-converter,Resistance Converter,0,0,
+PRUNE,converters2,voltage-converter,Voltage Converter,0,0,
+PRUNE,css,css-aspect-ratio,CSS Aspect Ratio Generator,0,0,
+PRUNE,css,css-blend-mode,CSS Blend Mode Generator,0,0,
+PRUNE,css,css-border-radius,CSS Border Radius Generator,0,0,
+PRUNE,css,css-box-shadow,CSS Box Shadow Generator,0,0,
+PRUNE,css,css-gradient,CSS Gradient Generator,0,0,
+PRUNE,css,css-mask-fade,CSS Mask Fade Generator,0,0,
+PRUNE,css,css-object-fit,CSS Object Fit Generator,0,0,
+PRUNE,css,css-perspective,CSS 3D Perspective Generator,0,0,
+PRUNE,css,css-specificity-calculator,CSS Specificity Calculator,0,0,
+PRUNE,css,css-type-scale,CSS Type Scale Generator,0,0,
+PRUNE,css,cubic-bezier-editor,Cubic Bezier Editor,0,0,
+PRUNE,data,area-chart-maker,Area Chart Maker,0,0,
+PRUNE,data,bar-chart-maker,Bar Chart Maker,0,0,
+PRUNE,data,csv-column-extractor,CSV Column Extractor,0,0,
+PRUNE,data,csv-deduplicator,CSV Duplicate Remover,0,0,
+PRUNE,data,csv-transposer,CSV Transposer,0,0,
+PRUNE,data,data-summary-stats,Summary Statistics Calculator,0,0,
+PRUNE,data,gantt-chart-maker,Gantt Chart Maker,0,0,
+PRUNE,data,gauge-chart-maker,Gauge Chart Maker,0,0,
+PRUNE,data,horizontal-bar-chart,Horizontal Bar Chart Maker,0,0,
+PRUNE,data,line-chart-maker,Line Chart Maker,0,0,
+PRUNE,data,org-chart-maker,Org Chart Maker,0,0,
+PRUNE,data,pivot-table-builder,Pivot Table Builder,0,0,
+PRUNE,devgen,babel-config-gen,Babel Config Generator,0,0,
+PRUNE,devgen,commitlint-config-gen,Commitlint Config Generator,0,0,
+PRUNE,devgen,contributing-md-gen,CONTRIBUTING.md Generator,0,0,
+PRUNE,devgen,csp-header-gen,CSP Header Generator,0,0,
+PRUNE,devgen,css-animation-gen,CSS Animation Generator,0,0,
+PRUNE,devgen,dockerfile-gen,Dockerfile Generator,0,0,
+PRUNE,devgen,editorconfig-gen,EditorConfig Generator,0,0,
+PRUNE,devgen,env-gen,.env Example Generator,0,0,
+PRUNE,devgen,eslint-config-gen,ESLint Config Generator,0,0,
+PRUNE,devgen,funding-yml-gen,FUNDING.yml Generator,0,0,
+PRUNE,devgen,github-actions-gen,GitHub Actions Generator,0,0,
+PRUNE,devgen,github-profile-gen,GitHub Profile README Generator,0,0,
+PRUNE,devgen,htaccess-gen,.htaccess Generator,0,0,
+PRUNE,devgen,htpasswd-gen,.htpasswd Generator,0,0,
+PRUNE,devgen,jest-config-gen,Jest Config Generator,0,0,
+PRUNE,devgen,json-schema-gen,JSON Schema Generator,0,0,
+PRUNE,devgen,license-gen,License Generator,0,0,
+PRUNE,devgen,makefile-gen,Makefile Generator,0,0,
+PRUNE,devgen,media-query-gen,Media Query Generator,0,0,
+PRUNE,devgen,packagejson-gen,package.json Generator,0,0,
+PRUNE,devgen,prettier-config-gen,Prettier Config Generator,0,0,
+PRUNE,devgen,procfile-gen,Procfile Generator,0,0,
+PRUNE,devgen,readme-gen,README Generator,0,0,
+PRUNE,devgen,vite-config-gen,Vite Config Generator,0,0,
+PRUNE,devtools,animation-gen,Animation Generator,0,0,
+PRUNE,devtools,ascii-table,ASCII Table,0,0,
+PRUNE,devtools,base64url-encoder,Base64URL Encoder,0,0,
+PRUNE,devtools,border-radius-gen,Border Radius Generator,0,0,
+PRUNE,devtools,box-shadow-gen,Box Shadow Generator,0,0,
+PRUNE,devtools,color-contrast-checker,Color Contrast Checker,0,0,
+PRUNE,devtools,color-gradient-css,Color Gradient CSS,0,0,
+PRUNE,devtools,cron-parser,Cron Parser,0,0,
+PRUNE,devtools,css-clamp-generator,CSS Clamp Generator,0,0,
+PRUNE,devtools,curl-builder,cURL Builder,0,0,
+PRUNE,devtools,git-cheatsheet,Git Cheatsheet,0,0,
+PRUNE,devtools,grid-gen,Grid Generator,0,0,
+PRUNE,devtools,hash-generator-adv,Hash Generator Advanced,0,0,
+PRUNE,devtools,hmac-generator,HMAC Generator,0,0,
+PRUNE,devtools,linux-commands-ref,Linux Commands Ref,0,0,
+PRUNE,devtools,meta-tags-adv,Meta Tags Advanced,0,0,
+PRUNE,devtools,mime-types,MIME Types,0,0,
+PRUNE,devtools,number-formatter,Number Formatter,0,0,
+PRUNE,devtools,regex-cheatsheet,Regex Cheatsheet,0,0,
+PRUNE,devtools,regex-tester-adv,Regex Tester Advanced,0,0,
+PRUNE,devtools,url-encoder,URL Encoder / Decoder,0,0,
+PRUNE,devtools,url-parser,URL Parser,0,0,
+PRUNE,devtools,uuid-v5-generator,UUID v5 Generator,0,0,
+PRUNE,encoders,ascii85,Ascii85 Encoder / Decoder,0,0,
+PRUNE,encoders,base45,Base45 Encoder / Decoder,0,0,
+PRUNE,encoders,base64-decode,Base64 Decoder,0,0,
+PRUNE,encoders,base64-image,Base64 Image Encoder,0,0,
+PRUNE,encoders,base64-to-hex,Base64 ↔ Hex Converter,0,0,
+PRUNE,encoders,data-uri-generator,Data URI Generator,0,0,
+PRUNE,encoders,hex-dump,Hex Dump Viewer,0,0,
+PRUNE,encoders,jwt-decoder,JWT Decoder,0,0,
+PRUNE,encoders,morse-encoder,Morse Code Encoder,0,0,
+PRUNE,encoders,punycode,Punycode / IDN Converter,0,0,
+PRUNE,encoders,quoted-printable,Quoted-Printable Encoder,0,0,
+PRUNE,encoders,rot47-cipher,ROT47 Cipher,0,0,
+PRUNE,encoders,url-encode,URL Encoder,0,0,
+PRUNE,encoders,url-encode-all,URL Encode All Characters,0,0,
+PRUNE,encoders,xxencode,XXencode / XXdecode,0,0,
+PRUNE,encoding,bifid-cipher,Bifid Cipher,0,0,
+PRUNE,encoding,columnar-transposition-cipher,Columnar Transposition Cipher,0,0,
+PRUNE,encoding,four-square-cipher,Four-Square Cipher,0,0,
+PRUNE,encoding,leetspeak-translator,Leetspeak Translator,0,0,
+PRUNE,encoding,rail-fence-cipher,Rail Fence Cipher,0,0,
+PRUNE,encoding,rot13,ROT13 Encoder/Decoder,0,0,
+PRUNE,encoding,scytale-cipher,Scytale Cipher,0,0,
+PRUNE,everyday,chinese-zodiac,Chinese Zodiac Finder,0,0,
+PRUNE,everyday,countdown-timer,Countdown Timer,0,0,
+PRUNE,everyday,date-difference,Date Difference Calculator,0,0,
+PRUNE,everyday,days-in-month,Days in Month Calculator,0,0,
+PRUNE,everyday,days-until,Days Until Calculator,0,0,
+PRUNE,everyday,easter-date,Easter Sunday Date Finder,0,0,
+PRUNE,everyday,half-birthday,Half Birthday Calculator,0,0,
+PRUNE,everyday,leap-year-checker,Leap Year Checker,0,0,
+PRUNE,everyday,pomodoro-timer,Pomodoro Timer,0,0,
+PRUNE,everyday,random-name-picker,Random Name Picker,0,0,
+PRUNE,everyday,stopwatch,Online Stopwatch,0,0,
+PRUNE,everyday,unix-timestamp-converter,Unix Timestamp Converter,0,0,
+PRUNE,everyday,weekday-counter,Weekday Counter,0,0,
+PRUNE,everyday,zodiac-sign,Zodiac Sign Finder,0,0,
+PRUNE,fancy,bold-text-generator,Bold Text Generator,0,0,
+PRUNE,fancy,cool-symbols,Cool Symbols & Kaomoji,0,0,
+PRUNE,fancy,double-underline-text,Double Underline Text,0,0,
+PRUNE,fancy,faux-cyrillic-text,Faux Cyrillic Text,0,0,
+PRUNE,fancy,flip-case,Flip Case Converter,0,0,
+PRUNE,fancy,fullwidth-text,Fullwidth Text Generator,0,0,
+PRUNE,fancy,negative-circled-text,Negative Circled Text,0,0,
+PRUNE,fancy,overline-text,Overline Text Generator,0,0,
+PRUNE,fancy,reverse-words,Reverse Word Order,0,0,
+PRUNE,fancy,slashthrough-text,Slashthrough Text Generator,0,0,
+PRUNE,fancy,sparkle-text,Sparkle Text Generator,0,0,
+PRUNE,fancy,superscript-text,Superscript Generator,0,0,
+PRUNE,fancy,text-to-emoji,Text to Emoji Converter,0,0,
+PRUNE,financecalc,annualized-return-calc,Annualized Return Calculator,0,0,
+PRUNE,financecalc,aspect-ratio-calc,Aspect Ratio Calculator,0,0,
+PRUNE,financecalc,blood-alcohol-calc,Blood Alcohol Calculator,0,0,
+PRUNE,financecalc,blood-pressure-calc,Blood Pressure Classifier,0,0,
+PRUNE,financecalc,budget-calc,Budget Planner,0,0,
+PRUNE,financecalc,debt-payoff-calc,Debt Payoff Calculator,0,0,
+PRUNE,financecalc,dividend-yield-calc,Dividend Yield Calculator,0,0,
+PRUNE,financecalc,emi-calc,EMI Calculator,0,0,
+PRUNE,financecalc,fuel-cost-calc,Fuel Cost Calculator,0,0,
+PRUNE,financecalc,gst-calc,GST Calculator,0,0,
+PRUNE,financecalc,home-loan-emi-calc,Home Loan EMI Calculator,0,0,
+PRUNE,financecalc,income-tax-calc,Income Tax Calculator (India),0,0,
+PRUNE,financecalc,inflation-calc,Inflation Calculator,0,0,
+PRUNE,financecalc,ohms-law-calc,Ohm,0,0,
+PRUNE,financecalc,rule-of-72-calc,Rule of 72 Calculator,0,0,
+PRUNE,financecalc,salary-hike-calc,Salary Hike Calculator,0,0,
+PRUNE,financecalc,sleep-calc,Sleep Calculator,0,0,
+PRUNE,financecalc,step-up-sip-calc,Step-up SIP Calculator,0,0,
+PRUNE,financecalc,swp-calc,SWP Calculator,0,0,
+PRUNE,financecalc,tdee-calc,TDEE Calculator,0,0,
+PRUNE,financecalc,tip-calc,Tip Calculator,0,0,
+PRUNE,formatters,blank-line-collapser,Blank Line Collapser,0,0,
+PRUNE,formatters,css-minifier,CSS Minifier,0,0,
+PRUNE,formatters,csv-column-aligner,CSV Column Aligner,0,0,
+PRUNE,formatters,csv-to-markdown,CSV to Markdown Table,0,0,
+PRUNE,formatters,json-to-csv,JSON to CSV,0,0,
+PRUNE,formatters,json-to-query-string,JSON to Query String,0,0,
+PRUNE,formatters,json-to-yaml,JSON to YAML,0,0,
+PRUNE,formatters,jsonc-to-json,JSONC to JSON,0,0,
+PRUNE,formatters,toml-formatter,TOML Formatter,0,0,
+PRUNE,formatters,xml-to-json,XML to JSON,0,0,
+PRUNE,formatters,yaml-to-json,YAML to JSON,0,0,
+PRUNE,generators,ean13-generator,EAN-13 Barcode Number Generator,0,0,
+PRUNE,generators,fake-mac-gen,Fake MAC Generator,0,0,
+PRUNE,generators,invoice-number-gen,Invoice Number Generator,0,0,
+PRUNE,generators,isin-generator,ISIN Generator,0,0,
+PRUNE,generators,objectid-gen,MongoDB ObjectId Generator,0,0,
+PRUNE,generators,random-color-gen,Random Color Generator,0,0,
+PRUNE,generators,random-country-gen,Random Country Generator,0,0,
+PRUNE,generators,random-number-gen,Random Number Generator,0,0,
+PRUNE,generators,upc-a-generator,UPC-A Barcode Number Generator,0,0,
+PRUNE,generators,uuid-gen,UUID Generator,0,0,
+PRUNE,generators2,business-name-gen,Business Name Generator,0,0,
+PRUNE,generators2,cookie-consent-banner-gen,Cookie Consent Banner Generator,0,0,
+PRUNE,generators2,email-signature-gen,Email Signature Generator,0,0,
+PRUNE,generators2,faq-schema-gen,FAQ Schema Generator,0,0,
+PRUNE,generators2,instagram-caption-gen,Instagram Caption Generator,0,0,
+PRUNE,generators2,product-description-gen,Product Description Generator,0,0,
+PRUNE,generators2,return-policy-gen,Return Policy Generator,0,0,
+PRUNE,generators2,shipping-policy-gen,Shipping Policy Generator,0,0,
+PRUNE,generators2,slogan-gen,Slogan Generator,0,0,
+PRUNE,generators2,subject-line-gen,Subject Line Generator,0,0,
+PRUNE,generators2,svg-blob-gen,SVG Blob Generator,0,0,
+PRUNE,generators2,svg-spinner-gen,SVG Spinner Generator,0,0,
+PRUNE,generators2,username-gen,Username Generator,0,0,
+PRUNE,generators2,youtube-tags-gen,YouTube Tags Generator,0,0,
+PRUNE,hash,binary-converter,Number Base Converter,0,0,
+PRUNE,hash,crc16,CRC-16 Checksum,0,0,
+PRUNE,hash,hash-identifier,Hash Identifier,0,0,
+PRUNE,hash,isbn-validator,ISBN Validator & Check Digit,0,0,
+PRUNE,hash,otp-generator,OTP Code Generator,0,0,
+PRUNE,hash,password-generator,Password Generator,0,0,
+PRUNE,hash,password-strength,Password Strength Tester,0,0,
+PRUNE,hash,pbkdf2-generator,PBKDF2 Key Derivation,0,0,
+PRUNE,hash,sha1-hash,SHA-1 Hash Generator,0,0,
+PRUNE,hash,sha384-hash,SHA-384 Hash Generator,0,0,
+PRUNE,hash,uuid-generator,UUID / GUID Generator,0,0,
+PRUNE,html,html-char-entity-finder,HTML Character Entity Finder,0,0,
+PRUNE,html,html-definition-list,HTML Definition List Generator,0,0,
+PRUNE,html,html-entities-decode,HTML Entities Decoder,0,0,
+PRUNE,html,html-entities-encode,HTML Entities Encoder,0,0,
+PRUNE,html,html-form-generator,HTML Form Generator,0,0,
+PRUNE,html,html-minifier,HTML Minifier,0,0,
+PRUNE,html,html-nav-menu-generator,HTML Nav Menu Generator,0,0,
+PRUNE,html,html-semantic5-wrapper,HTML5 Semantic Layout Generator,0,0,
+PRUNE,html,html-to-markdown,HTML to Markdown,0,0,
+PRUNE,html,markdown-to-html,Markdown to HTML,0,0,
+PRUNE,html,meta-tag-generator,Meta Tag Generator,0,0,
+PRUNE,html,schema-json-ld-generator,Schema.org JSON-LD Generator,0,0,
+PRUNE,html,srcset-generator,Responsive Image Srcset Generator,0,0,
+PRUNE,images,barcode-generator,Barcode Generator,0,0,
+PRUNE,images,base64-to-image,Base64 to Image,0,0,
+PRUNE,images,exif-reader,EXIF Reader,0,0,
+PRUNE,images,exif-remover,EXIF Remover,0,0,
+PRUNE,images,favicon-generator,Favicon Generator,0,0,
+PRUNE,images,image-circle-crop,Circle Crop,0,0,
+PRUNE,images,image-converter,Image Converter,0,0,
+PRUNE,images,image-duotone,Image Duotone,0,0,
+PRUNE,images,image-gamma,Image Gamma Correction,0,0,
+PRUNE,images,image-hue-rotate,Image Hue Rotate,0,0,
+PRUNE,images,image-info,Image Info,0,0,
+PRUNE,images,image-logo,Image Logo,0,0,
+PRUNE,images,image-rotator,Image Rotator,0,0,
+PRUNE,images,image-round-corners,Round Corners,0,0,
+PRUNE,images,image-threshold,Image Threshold,0,0,
+PRUNE,images,image-tint,Image Tint,0,0,
+PRUNE,images,image-to-pdf,Image to PDF,0,0,
+PRUNE,images,image-to-svg,Image to SVG,0,0,
+PRUNE,images,image-vignette,Image Vignette,0,0,
+PRUNE,images,image-watermark,Image Watermark,0,0,
+PRUNE,images,noise-texture,Noise Texture,0,0,
+PRUNE,images,og-image-preview,OG Image Preview,0,0,
+PRUNE,images,placeholder-image,Placeholder Generator,0,0,
+PRUNE,images,qr-code-generator,QR Code Generator,0,0,
+PRUNE,images,svg-to-png,SVG to PNG,0,0,
+PRUNE,js,js-array-from-list,List to JS Array,0,0,
+PRUNE,js,js-console-remover,Console.log Remover,0,0,
+PRUNE,js,js-template-to-concat,Template Literal → Concat,0,0,
+PRUNE,js,js-var-to-let,var to let / const,0,0,
+PRUNE,js,js-variable-name-validator,JS Variable Name Validator,0,0,
+PRUNE,json,csv-to-json,CSV to JSON,0,0,
+PRUNE,json,json-array-tools,JSON Array Tools,0,0,
+PRUNE,json,json-diff,JSON Diff / Comparator,0,0,
+PRUNE,json,json-escape,JSON String Escape,0,0,
+PRUNE,json,json-merger,JSON Merger,0,0,
+PRUNE,json,json-path,JSONPath Tester,0,0,
+PRUNE,json,json-schema,JSON Schema Validator,0,0,
+PRUNE,json,json-sorter,JSON Key Sorter,0,0,
+PRUNE,json,json-to-csv,JSON to CSV,0,0,
+PRUNE,json,json-to-env,JSON to .env,0,0,
+PRUNE,json,json-to-go,JSON to Go Struct,0,0,
+PRUNE,json,json-to-markdown,JSON to Markdown Table,0,0,
+PRUNE,json,json-to-python,JSON to Python TypedDict,0,0,
+PRUNE,json,json-to-sql,JSON to SQL INSERT,0,0,
+PRUNE,json,json-to-table,JSON to Table,0,0,
+PRUNE,json,json-to-xml,JSON to XML,0,0,
+PRUNE,json,json-to-yaml,JSON to YAML,0,0,
+PRUNE,json,json-unflatten,JSON Unflattener,0,0,
+PRUNE,json,json-validator,JSON Validator,0,0,
+PRUNE,json,jsonl-converter,JSON ⇄ JSONL Converter,0,0,
+PRUNE,json,xml-to-json,XML to JSON,0,0,
+PRUNE,json,yaml-to-json,YAML to JSON,0,0,
+PRUNE,mathcalc,circle-calc,Circle Calculator,0,0,
+PRUNE,mathcalc,coordinate-calc,Coordinate Line Properties,0,0,
+PRUNE,mathcalc,cubic-solver,Cubic Equation Solver,0,0,
+PRUNE,mathcalc,decimal-to-fraction,Decimal to Fraction Converter,0,0,
+PRUNE,mathcalc,fraction-advanced,Advanced Fraction Calculator,0,0,
+PRUNE,mathcalc,logarithm-calc,Logarithm Calculator,0,0,
+PRUNE,mathcalc,matrix-calc,Matrix Calculator,0,0,
+PRUNE,mathcalc,percent-error-calc,Percent Error Calculator,0,0,
+PRUNE,mathcalc,percentage-advanced,Advanced Percentage Calculator,0,0,
+PRUNE,mathcalc,perimeter-calc,Perimeter Calculator,0,0,
+PRUNE,mathcalc,proportion-solver,Proportion Solver,0,0,
+PRUNE,mathcalc,quadratic-solver,Quadratic Solver,0,0,
+PRUNE,mathcalc,regular-polygon-calc,Regular Polygon Calculator,0,0,
+PRUNE,mathcalc,scientific-notation,Scientific Notation,0,0,
+PRUNE,mathcalc,significant-figures,Significant Figures,0,0,
+PRUNE,mathcalc,surface-area-calc,Surface Area Calculator,0,0,
+PRUNE,mathcalc,vector-2d-calc,2D Vector Calculator,0,0,
+PRUNE,mathcalc,vector-3d-calc,3D Vector Calculator,0,0,
+PRUNE,office,contact-list-formatter,Contact List Formatter,0,0,
+PRUNE,office,countdown-to-date,Countdown to Date,0,0,
+PRUNE,office,envelope-addresser,Envelope Addresser,0,0,
+PRUNE,office,kanban-board,Kanban Board,0,0,
+PRUNE,office,name-badge-maker,Name Badge Maker,0,0,
+PRUNE,office,page-border-printable,Printable Page Borders,0,0,
+PRUNE,office,signature-pad,Signature Pad,0,0,
+PRUNE,office,todo-list-maker,To-Do List Maker,0,0,
+PRUNE,pdf,jpg-to-pdf,JPG to PDF Converter,0,0,
+PRUNE,pdf,pdf-compressor,PDF Compressor,0,0,
+PRUNE,pdf,pdf-cropper,PDF Cropper,0,0,
+PRUNE,pdf,pdf-nup-2up,PDF 2-Up (2 Pages Per Sheet),0,0,
+PRUNE,pdf,pdf-nup-4up,PDF 4-Up (4 Pages Per Sheet),0,0,
+PRUNE,pdf,pdf-page-count,PDF Page Counter,0,0,
+PRUNE,pdf,pdf-page-extractor,PDF Page Extractor,0,0,
+PRUNE,pdf,pdf-remove-metadata,PDF Metadata Remover,0,0,
+PRUNE,pdf,pdf-reorder,PDF Page Reorder,0,0,
+PRUNE,pdf,pdf-resize-pages,PDF Page Resizer,0,0,
+PRUNE,pdf,pdf-rotate-range,PDF Rotate Page Range,0,0,
+PRUNE,pdf,pdf-splitter,PDF Splitter,0,0,
+PRUNE,pdf,pdf-table-extractor,PDF Table Extractor,0,0,
+PRUNE,pdf,pdf-text-extractor,PDF Text Extractor,0,0,
+PRUNE,pdf,pdf-to-jpg,PDF to JPG Converter,0,0,
+PRUNE,pdf,pdf-to-json,PDF to JSON,0,0,
+PRUNE,pdf,pdf-to-markdown,PDF to Markdown,0,0,
+PRUNE,pdf,pdf-to-png,PDF to PNG Converter,0,0,
+PRUNE,pdf,pdf-watermark,PDF Watermark Tool,0,0,
+PRUNE,pdf,png-to-pdf,PNG to PDF Converter,0,0,
+PRUNE,random,list-randomizer-weighted,Weighted Random Picker,0,0,
+PRUNE,random,list-shuffler,List Shuffler,0,0,
+PRUNE,random,random-color-picker,Random Color Generator,0,0,
+PRUNE,random,random-letter-generator,Random Letter Generator,0,0,
+PRUNE,random,random-movie-genre-generator,Random Movie Genre Generator,0,0,
+PRUNE,random,random-number-generator,Random Number Generator,0,0,
+PRUNE,random,random-password-phrase,Random Passphrase Generator,0,0,
+PRUNE,random,random-team-generator,Random Team Generator,0,0,
+PRUNE,random,random-time-generator,Random Time Generator,0,0,
+PRUNE,random,spinner-wheel,Spinner Wheel,0,0,
+PRUNE,random,tournament-bracket-generator,Tournament Bracket Generator,0,0,
+PRUNE,study,attendance-calculator,Attendance Percentage Calculator,0,0,
+PRUNE,study,essay-word-counter,Essay Word Counter,0,0,
+PRUNE,study,final-grade-needed,Final Grade Calculator,0,0,
+PRUNE,study,gpa-planner,GPA Planner,0,0,
+PRUNE,study,grade-calculator,Weighted Grade Calculator,0,0,
+PRUNE,study,multiple-choice-maker,Multiple Choice Maker,0,0,
+PRUNE,study,multiplication-table-generator,Multiplication Table Generator,0,0,
+PRUNE,study,note-summariser-formatter,Note Formatter,0,0,
+PRUNE,study,outline-builder,Essay Outline Builder,0,0,
+PRUNE,study,physical-constants,Physical Constants Table,0,0,
+PRUNE,study,quiz-generator,Quiz Generator,0,0,
+PRUNE,study,random-question-picker,Random Question Picker,0,0,
+PRUNE,study,reading-time-estimator,Reading Time Estimator,0,0,
+PRUNE,study,study-timer,Study Timer (Pomodoro),0,0,
+PRUNE,text,add-line-numbers,Add Line Numbers,0,0,
+PRUNE,text,capitalized-words,Capitalized Word Extractor,0,0,
+PRUNE,text,duplicate-word-finder,Duplicate Word Finder,0,0,
+PRUNE,text,extract-column,Column Extractor,0,0,
+PRUNE,text,remove-accents,Remove Accents & Diacritics,0,0,
+PRUNE,text,remove-extra-spaces,Remove Extra Spaces,0,0,
+PRUNE,text,remove-numbers,Remove Numbers,0,0,
+PRUNE,text,strip-html-tags,Strip HTML Tags,0,0,
+PRUNE,text,tab-to-spaces,Tab to Spaces,0,0,
+PRUNE,text,text-repeater,Text Repeater,0,0,
+PRUNE,text,text-sorter,Line Sorter,0,0,
+PRUNE,text,text-to-morse,Text to Morse Code,0,0,
+PRUNE,text,text-wrapper,Text Wrapper,0,0,
+PRUNE,text,trim-lines,Trim Lines,0,0,
+PRUNE,units,acceleration-converter,Acceleration Converter,0,0,
+PRUNE,units,area-converter,Area Converter,0,0,
+PRUNE,units,capacitance-converter,Capacitance Converter,0,0,
+PRUNE,units,density-converter,Density Converter,0,0,
+PRUNE,units,energy-converter,Energy Converter,0,0,
+PRUNE,units,force-converter,Force Converter,0,0,
+PRUNE,units,frequency-converter,Frequency Converter,0,0,
+PRUNE,units,inductance-converter,Inductance Converter,0,0,
+PRUNE,units,magnetic-flux-converter,Magnetic Flux Converter,0,0,
+PRUNE,units,power-converter,Power Converter,0,0,
+PRUNE,units,resistance-converter,Resistance Converter,0,0,
+PRUNE,units,temperature-converter,Temperature Converter,0,0,
+PRUNE,units,voltage-converter,Voltage Converter,0,0,
+PRUNE,units,volume-converter,Volume Converter,0,0,
+PRUNE,video,screen-recorder,Screen Recorder,0,0,
+PRUNE,video,video-brightness-contrast,Video Brightness & Contrast Editor,0,0,
+PRUNE,video,video-contact-sheet,Video Contact Sheet Maker,0,0,
+PRUNE,video,video-converter,Video Format Converter,0,0,
+PRUNE,video,video-frames-extractor,Video Frame Extractor,0,0,
+PRUNE,video,video-info,Video Info Viewer,0,0,
+PRUNE,video,video-mute,Video Muter,0,0,
+PRUNE,video,video-resize,Video Resizer,0,0,
+PRUNE,video,video-thumbnail,Video Thumbnail Grabber,0,0,
+PRUNE,video,video-to-audio,Video to Audio Extractor,0,0,
+PRUNE,video,video-trimmer,Video Trimmer,0,0,
