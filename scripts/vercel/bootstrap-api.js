@@ -155,10 +155,31 @@ async function ensureDomain(p, b) {
   }
 }
 
+async function hubRepoId() {
+  const hub = await getProject(HUB_PROJECT);
+  return hub && hub.link && hub.link.repoId;
+}
+
 async function deploy(p) {
   if (!DEPLOY) return;
-  const repoId = p.link && p.link.repoId;
+  let repoId = p.link && p.link.repoId;
   if (!repoId) {
+    // Unlinked project (25-projects-per-repo limit): Vercel can still build it
+    // straight from the repo's main branch when told the repo id explicitly —
+    // no upload needed. Fall back to a CLI upload if the API refuses.
+    const rid = await hubRepoId();
+    if (rid) {
+      try {
+        const d = await api('POST', '/v13/deployments?forceNew=1', {
+          name: p.name, project: p.id, target: 'production',
+          gitSource: { type: 'github', repoId: rid, ref: 'main' },
+        });
+        console.log(`   deploying (git source, unlinked) → https://${d.url}`);
+        return;
+      } catch (e) {
+        console.log(`   (git-source deploy refused: ${e.message} — trying CLI upload)`);
+      }
+    }
     // Unlinked project: build + deploy this checkout with the Vercel CLI.
     const { spawnSync } = require('child_process');
     const fs = require('fs');
@@ -169,7 +190,7 @@ async function deploy(p) {
     if (link.status !== 0) { console.log(`   ✗ vercel link failed: ${(link.stderr || '').trim().split('\n').pop()}`); return; }
     const dep = run(['deploy', '--prod', '--yes', '--no-wait']);
     try { fs.rmSync(path.join(root, '.vercel'), { recursive: true, force: true }); } catch (_) { /* ignore */ }
-    if (dep.status !== 0) { console.log(`   ✗ vercel deploy failed: ${(dep.stderr || '').trim().split('\n').pop()}`); return; }
+    if (dep.status !== 0) { console.log(`   ✗ vercel deploy failed:\n${(dep.stderr || dep.stdout || '').trim().split('\n').slice(-12).map(l => '      ' + l).join('\n')}`); return; }
     console.log(`   deploying (CLI) → ${(dep.stdout || '').trim().split('\n').pop()}`);
     return;
   }
