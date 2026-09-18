@@ -33,7 +33,7 @@
     "shortName": "PDF Tools",
     "playCategory": "PRODUCTIVITY",
     "tools": 40,
-    "live": false
+    "live": true
   },
   {
     "id": "code",
