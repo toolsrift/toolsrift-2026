@@ -25,6 +25,15 @@ export function buildManifest(brand = SITE.brand) {
     background_color: b.palette.bg,
     theme_color: b.palette.bg,
     categories: ['utilities', 'productivity'],
+    // The site's own Android app (Trusted Web Activity, android/README.md).
+    // prefer_related_applications stays false until the app is published on
+    // Play (brands.js android.published), so Chrome offers the PWA meanwhile.
+    related_applications: [{
+      platform: 'play',
+      id: b.android.packageId,
+      url: `https://play.google.com/store/apps/details?id=${b.android.packageId}`,
+    }],
+    prefer_related_applications: !!b.android.published,
     icons: [
       { src: icon192, sizes: '192x192', type: 'image/png', purpose: 'any' },
       { src: `/brands/${b.id}/icon-512.png`, sizes: '512x512', type: 'image/png', purpose: 'any' },

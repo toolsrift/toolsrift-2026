@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server'
 import { SITE, STANDALONE_SHARED_PAGES, HUB_BASE, BRANDS } from './lib/sites'
 
-// Slugs of every category (hub routes) — used by standalone sites to bounce
-// other categories' URLs back to the hub instead of serving duplicates.
+// Slugs of every category (hub routes) — used to bounce other categories'
+// URLs to the site that owns them instead of serving duplicates.
 const CATEGORY_SLUGS = new Set(BRANDS.map(b => b.slug))
+// slug → host of every category that is live on its own site (brands.js `live`).
+const LIVE_BY_SLUG = Object.fromEntries(BRANDS.filter(b => b.live).map(b => [b.slug, b.domain]))
 const HUB_ONLY_PAGES = new Set(['/tools', '/pricing', '/roadmap', '/checker'])
 const SHARED_PAGES = new Set(STANDALONE_SHARED_PAGES)
 
@@ -57,8 +59,14 @@ export function middleware(request) {
       return NextResponse.redirect(url, 301)
     }
 
-    // Another category (or a hub-only page) → the hub, never a duplicate here.
+    // Another category → that category's own site when it is live (one hop,
+    // not via the hub), else the hub; hub-only pages → the hub. Never a
+    // duplicate here.
     const first = pathname.split('/')[1] || ''
+    const sibling = first && LIVE_BY_SLUG[first]
+    if (sibling) {
+      return NextResponse.redirect(`https://${sibling}${pathname.slice(first.length + 1) || '/'}${url.search}`, 301)
+    }
     if ((first && CATEGORY_SLUGS.has(first)) || HUB_ONLY_PAGES.has(pathname)) {
       return NextResponse.redirect(`${HUB_BASE}${pathname}${url.search}`, 301)
     }
@@ -68,24 +76,17 @@ export function middleware(request) {
   }
 
   // ── Hub (toolsrift.com) ──────────────────────────────────────────────────
-  // Legacy subdomain mirrors (text./image./pdf. still attached to the hub
-  // project). Only the ROOT mirrors the category page; the category's own
-  // paths pass through; anything else belongs to the apex, so redirect there
-  // instead of showing the same category page under every URL (that is what
-  // made pdf.toolsrift.com/json render the PDF page). These branches become
-  // dead the moment each subdomain moves to its own toolsrift-<id> project.
-  const MIRRORS = { 'text.': '/text', 'image.': '/images', 'pdf.': '/pdf' }
-  for (const [prefix, route] of Object.entries(MIRRORS)) {
-    if (!host.startsWith(prefix)) continue
-    if (pathname === '/') {
-      url.pathname = route
-      return NextResponse.rewrite(url)
-    }
-    if (pathname === route || pathname.startsWith(`${route}/`)) return NextResponse.next()
-    if (pathname.startsWith('/_next') || pathname.startsWith('/api/') || /\.[a-z0-9]+$/i.test(pathname)) {
-      return NextResponse.next()
-    }
-    return NextResponse.redirect(`${HUB_BASE}${pathname}${url.search}`, 302)
+  // A category that has its own live site is served ONLY there: /pdf and
+  // /pdf/<tool> 301 to pdf.toolsrift.com/ and /<tool>. The hub keeps the home,
+  // the directory pages and the legal pages; one canonical copy of every tool.
+  // (Categories whose brand is not `live` yet are still served by the hub.)
+  if (pathname.startsWith('/_next') || pathname.startsWith('/api/') || /\.[a-z0-9]+$/i.test(pathname)) {
+    return NextResponse.next()
+  }
+  const first = pathname.split('/')[1] || ''
+  const liveHost = first && LIVE_BY_SLUG[first]
+  if (liveHost) {
+    return NextResponse.redirect(`https://${liveHost}${pathname.slice(first.length + 1) || '/'}${url.search}`, 301)
   }
 
   return NextResponse.next()

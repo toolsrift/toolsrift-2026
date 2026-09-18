@@ -1,6 +1,6 @@
 /**
  * submit-indexnow.js
- * Pushes every URL in public/sitemap.xml to the IndexNow API, which fans out
+ * Pushes every hub URL (public/sitemap-hub.xml) to the IndexNow API, which fans out
  * to all participating search engines (Bing, Yandex, Seznam.cz, Naver, Yep — not Google).
  * Run after generate-sitemap.js: node scripts/submit-indexnow.js
  */
@@ -13,7 +13,10 @@ const KEY = '509a62672848f5997b1eb6f154172d3a'
 const KEY_LOCATION = `https://${HOST}/${KEY}.txt`
 const ENDPOINT = 'api.indexnow.org'
 
-const sitemapPath = path.join(__dirname, '../public/sitemap.xml')
+// public/sitemap.xml is a sitemap INDEX (hub + network sites); the hub's own
+// URLs are in sitemap-hub.xml. IndexNow only accepts URLs on the submitting
+// host — each network site's daily cron submits its own.
+const sitemapPath = path.join(__dirname, '../public/sitemap-hub.xml')
 const xml = fs.readFileSync(sitemapPath, 'utf8')
 const urlList = [...xml.matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => m[1])
 

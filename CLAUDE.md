@@ -852,7 +852,7 @@ Every tool now has its own indexable URL: `/{category}/{tool-id}` (e.g. `/text/w
 **MANDATORY workflow when adding/removing tools OR editing TOOL_META in any category component:**
 1. `python3 scripts/extract-tools.py`   (regenerates lib/toolRegistry.js — tool id/name/desc)
 2. `node scripts/extract-seo.js`        (regenerates lib/toolSeo.js — per-tool title/desc/keywords/faq/howTo for SERVER-rendered SEO)
-3. `node scripts/generate-sitemap.js`   (regenerates public/sitemap.xml)
+3. `node scripts/generate-sitemap.js`   (regenerates public/sitemap.xml — a sitemap index — and public/sitemap-hub.xml)
 4. Commit all three generated files together with the component change.
 5. After deploy, run `npm run submit:indexnow` (or `node scripts/submit-indexnow.js`) to push the new URLs to Bing/Yandex/Seznam/Naver/Yep via the IndexNow protocol, and `node scripts/submit-google-sitemap.js` to ask Google to recrawl the sitemap. A daily Vercel Cron (`/api/cron/submit-search-engines`, see `vercel.json`) resubmits the whole sitemap to both as a safety net, so this step is not strictly required but speeds up discovery for brand-new tools.
 
@@ -891,8 +891,15 @@ apps: `android/README.md`.
   `theme.isSiteRoot` / `theme.brand` (`lib/categoryThemes.js`), `<BrandBackdrop />`,
   `SiteFooter`, `_document.js`. Category components are untouched.
 - Routes on a standalone site: `/` (StandaloneHome), `/<tool-id>` (`pages/[slug].js`),
-  shared legal pages; `middleware.js` 301s `/pdf/x → /x` and other categories → hub;
-  `pages/api/site/*` generate robots.txt, sitemap.xml, manifest.json, assetlinks.json.
+  shared legal pages; `middleware.js` 301s `/pdf/x → /x` and other categories to
+  their own live site (else the hub); `pages/api/site/*` generate robots.txt,
+  sitemap.xml, manifest.json, assetlinks.json.
+- **The hub 301s every live category to its site** (`/pdf` → `pdf.toolsrift.com/`,
+  `/pdf/<tool>` → `/<tool>`): one canonical copy of each tool. The hub's
+  `public/sitemap.xml` is a sitemap INDEX (`sitemap-hub.xml` + every live site's
+  sitemap) — regenerate with `node scripts/generate-sitemap.js` after flipping
+  `live`. Standalone tool pages follow the same `lib/coreTools.js` allowlist as
+  the hub (non-core → `noindex`, out of the sitemap).
 - Commands: `npm run sites:list`, `npm run sites:check`, `npm run dev:site -- pdf`,
   `npm run build:site -- pdf`, `npm run brands:assets` (regenerates
   `public/brands/<id>/` logos/icons/OG via headless Chromium), `npm run android:generate`

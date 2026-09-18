@@ -5,6 +5,7 @@ import TOOL_REGISTRY from '../lib/toolRegistry'
 import TOOL_SEO from '../lib/toolSeo'
 import { publishToolHint } from '../lib/appRoute'
 import { SITE, HUB_BASE } from '../lib/sites'
+import CORE_TOOLS from '../lib/coreTools'
 import CATEGORY_COMPONENTS from '../lib/sites/categoryComponents'
 import SiteFooter from '../components/SiteFooter'
 
@@ -86,6 +87,8 @@ export default function StandaloneToolPage({ tool, related, seo, categoryName })
         <meta name="description" content={description} />
         {seo && seo.keywords && <meta name="keywords" content={seo.keywords} />}
         <link rel="canonical" href={url} />
+        {/* Same indexation allowlist as the hub — see lib/coreTools.js. */}
+        {!CORE_TOOLS.has(tool.id) && <meta name="robots" content="noindex, follow" />}
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <meta property="og:url" content={url} />

@@ -4,6 +4,7 @@
 // committed public/sitemap.xml (scripts/generate-sitemap.js).
 import { SITE, STANDALONE_SHARED_PAGES } from '../../../lib/sites'
 import TOOL_REGISTRY from '../../../lib/toolRegistry'
+import CORE_TOOLS from '../../../lib/coreTools'
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
@@ -14,7 +15,11 @@ export function buildSitemapXml(today = new Date().toISOString().slice(0, 10)) {
     rows.push(`  <url><loc>${esc(SITE.baseUrl + (p || '/'))}</loc><lastmod>${today}</lastmod><changefreq>${cf}</changefreq><priority>${pr}</priority></url>`)
 
   add('', 'daily', '1.0')
-  for (const t of (cat ? cat.tools : [])) add(`/${t.id}`, 'monthly', '0.8')
+  // Same indexation allowlist as the hub (lib/coreTools.js): only core tools
+  // are advertised; the rest are served with noindex (pages/[slug].js) so the
+  // network never repeats the scaled-thin-content pattern that got the hub
+  // deindexed in Aug 2026. Promote a tool by adding its id to coreTools.js.
+  for (const t of (cat ? cat.tools : [])) if (CORE_TOOLS.has(t.id)) add(`/${t.id}`, 'monthly', '0.8')
   for (const p of STANDALONE_SHARED_PAGES) if (p !== '/404') add(p, 'monthly', '0.4')
 
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${rows.join('\n')}\n</urlset>\n`

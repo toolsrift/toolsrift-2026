@@ -1,0 +1,48 @@
+# Google Play listing assets for every network site's app: phone screenshots
+# (1080×1920) taken from the LIVE sites with Playwright, bundled with the
+# committed feature graphic, icon and listing copy (android/apps/<id>/).
+# Run from the Actions tab; download the "play-listing-assets" artifact.
+name: android-listing
+
+on:
+  workflow_dispatch:
+    inputs:
+      sites:
+        description: 'Site ids (space-separated) or "--all"'
+        type: string
+        default: '--all'
+
+permissions:
+  contents: read
+
+jobs:
+  listing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Playwright
+        run: |
+          npm i --no-save playwright@1.63.0
+          npx playwright install --with-deps chromium
+      - name: Screenshots from the live sites
+        run: |
+          ids="${{ inputs.sites }}"; [ "$ids" = "--all" ] && ids=""
+          node scripts/android/screenshots.js $ids || echo "::warning::some screenshots failed (site not live yet?) — see the log"
+      - name: Bundle with feature graphics, icons and listing copy
+        run: |
+          for d in android/build/listing/*/; do
+            id=$(basename "$d")
+            cp "android/apps/$id/feature-graphic.png" "$d" 2>/dev/null || true
+            cp "android/apps/$id/play-listing.md" "$d" 2>/dev/null || true
+            cp "public/brands/$id/icon-512.png" "$d/icon-512.png" 2>/dev/null || true
+          done
+          ls -R android/build/listing | head -80
+      - uses: actions/upload-artifact@v4
+        with:
+          name: play-listing-assets
+          path: android/build/listing
+          retention-days: 30
+          if-no-files-found: error

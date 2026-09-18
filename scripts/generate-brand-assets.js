@@ -14,6 +14,7 @@
  *
  * PNGs are rasterised with headless Chromium (no npm deps): the Playwright
  * browser pre-installed at $PLAYWRIGHT_BROWSERS_PATH, or any `chromium` /
+ * (also writes the Play feature graphic to android/apps/<id>/feature-graphic.png)
  * `google-chrome` on PATH. Without a browser the SVGs are still written and
  * the PNG step is skipped with a warning.
  *
@@ -180,6 +181,53 @@ function ogSvg(b, toolCount) {
 `;
 }
 
+// Google Play feature graphic (1024×500, shown at the top of the listing).
+function featureSvg(b, toolCount) {
+  const { bg, surface, primary, accent2 } = b.palette;
+  const fontHead = "Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif";
+  const [w1, w2] = b.wordmark;
+  // Headline wrapped onto two balanced lines (≤ 26 chars each) so it never
+  // runs under the app mark on the right.
+  // Prefer a sentence boundary near the middle; else balance by length.
+  const words = b.concept.headline.split(/\s+/);
+  const half = b.concept.headline.length / 2;
+  let cut = -1, best = Infinity, len = 0;
+  words.forEach((w, i) => { len += w.length + 1; if (/[.!?:]$/.test(w) && i < words.length - 1 && Math.abs(len - half) < best) { best = Math.abs(len - half); cut = i + 1; } });
+  if (cut < 0 || best > 10) { len = 0; cut = words.findIndex(w => (len += w.length + 1) >= half) + 1; if (cut <= 0 || cut >= words.length) cut = Math.ceil(words.length / 2); }
+  const lines = [words.slice(0, cut).join(' '), words.slice(cut).join(' ')];
+  // Long lines drop to a smaller size instead of being cut off.
+  const longest = Math.max(...lines.map(t => t.length));
+  const hfs = longest > 26 ? 36 : 46;
+  const cap = longest > 26 ? 34 : 26;
+  const line = (t) => (t.length > cap ? t.slice(0, cap - 1).replace(/\s+\S*$/, '') + '…' : t);
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 500" width="1024" height="500">
+  <defs>
+    <linearGradient id="fbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${bg}"/><stop offset="1" stop-color="${surface}"/></linearGradient>
+    <radialGradient id="fglow" cx="0.9" cy="0.1" r="0.8"><stop offset="0" stop-color="${primary}" stop-opacity="0.38"/><stop offset="1" stop-color="${primary}" stop-opacity="0"/></radialGradient>
+    <radialGradient id="fglow2" cx="0.05" cy="0.95" r="0.6"><stop offset="0" stop-color="${accent2}" stop-opacity="0.2"/><stop offset="1" stop-color="${accent2}" stop-opacity="0"/></radialGradient>
+    <pattern id="fgrid" width="44" height="44" patternUnits="userSpaceOnUse"><path d="M44 0H0v44" fill="none" stroke="#fff" stroke-opacity="0.045"/></pattern>
+  </defs>
+  <rect width="1024" height="500" fill="url(#fbg)"/>
+  <rect width="1024" height="500" fill="url(#fgrid)"/>
+  <rect width="1024" height="500" fill="url(#fglow)"/>
+  <rect width="1024" height="500" fill="url(#fglow2)"/>
+  <g transform="translate(748 110)">${markSvg(b, 220, { id: 'fg' })}</g>
+  <text x="72" y="104" font-family="${fontHead}" font-weight="800" font-size="42" letter-spacing="-1" fill="#F8FAFC">${esc(w1)}<tspan fill="${primary}"> ${esc(w2)}</tspan></text>
+  <text x="72" y="196" font-family="${fontHead}" font-weight="800" font-size="${hfs}" letter-spacing="-1.2" fill="#F8FAFC">${esc(line(lines[0]))}</text>
+  <text x="72" y="248" font-family="${fontHead}" font-weight="800" font-size="${hfs}" letter-spacing="-1.2" fill="#F8FAFC">${esc(line(lines[1]))}</text>
+  <text x="72" y="302" font-family="${fontHead}" font-weight="500" font-size="22" fill="#CBD5E1">${esc(`${toolCount} free ${w2.toLowerCase()} tools · 100% on your device`)}</text>
+  <g transform="translate(72 348)">
+    ${['Free forever', 'No sign-up', 'Works offline'].map((t, i) => {
+      const x = i * 186;
+      return `<rect x="${x}" y="0" width="172" height="46" rx="23" fill="${primary}" fill-opacity="0.14" stroke="${primary}" stroke-opacity="0.45"/><text x="${x + 86}" y="30" text-anchor="middle" font-family="${fontHead}" font-weight="700" font-size="17" fill="${accent2}">${esc(t)}</text>`;
+    }).join('')}
+  </g>
+  <text x="72" y="446" font-family="${fontHead}" font-weight="500" font-size="19" fill="#94A3B8">${esc(b.domain)}</text>
+  <rect x="0" y="492" width="1024" height="8" fill="${primary}"/>
+</svg>
+`;
+}
+
 // ── Rasteriser ─────────────────────────────────────────────────────────────
 function rasterise(chrome, svgPath, pngPath, w, h) {
   const html = `<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;padding:0;background:transparent;overflow:hidden}img{display:block;width:${w}px;height:${h}px}</style></head><body><img src="file://${svgPath}"></body></html>`;
@@ -231,6 +279,11 @@ function main() {
       rasterise(chrome, path.join(dir, 'icon.svg'), path.join(dir, 'icon-512.png'), 512, 512);
       rasterise(chrome, path.join(dir, 'icon-maskable.svg'), path.join(dir, 'icon-maskable-512.png'), 512, 512);
       rasterise(chrome, path.join(dir, 'og.svg'), path.join(dir, 'og.png'), 1200, 630);
+      // Play Store feature graphic → android/apps/<id>/ (listing asset, not served).
+      const appDir = path.join(ROOT, 'android', 'apps', b.id);
+      fs.mkdirSync(appDir, { recursive: true });
+      fs.writeFileSync(path.join(appDir, 'feature-graphic.svg'), featureSvg(b, count));
+      rasterise(chrome, path.join(appDir, 'feature-graphic.svg'), path.join(appDir, 'feature-graphic.png'), 1024, 500);
     }
     console.log(`✓ ${b.id.padEnd(12)} → public/brands/${b.id}/  (${count} tools, ${chrome ? 'svg+png' : 'svg only'})`);
   }
