@@ -6,8 +6,8 @@
 | App name (≤30) | ToolsRift JavaScript Tools |
 | Launcher name | JS Tools |
 | Category | TOOLS |
-| Website | https://toolsriftjs.com |
-| Privacy policy | https://toolsriftjs.com/privacy-policy |
+| Website | https://js.toolsrift.com |
+| Privacy policy | https://js.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/js/icon-512.png` |
 | Feature graphic (1024×500) | export from `public/brands/js/og.svg` |
@@ -48,7 +48,7 @@ WHY TOOLSRIFT JS
 ✓ Clean, ad-supported, no paywalls
 ✓ Part of the ToolsRift network of 29 specialist tool sites
 
-ToolsRift JS is the js edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsriftjs.com, so every improvement to the website ships to the app automatically.
+ToolsRift JS is the js edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around js.toolsrift.com, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags

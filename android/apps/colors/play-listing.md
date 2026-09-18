@@ -6,8 +6,8 @@
 | App name (≤30) | ToolsRift Color Tools |
 | Launcher name | Color Tools |
 | Category | ART_AND_DESIGN |
-| Website | https://toolsriftcolors.com |
-| Privacy policy | https://toolsriftcolors.com/privacy-policy |
+| Website | https://colors.toolsrift.com |
+| Privacy policy | https://colors.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/colors/icon-512.png` |
 | Feature graphic (1024×500) | export from `public/brands/colors/og.svg` |
@@ -48,7 +48,7 @@ WHY TOOLSRIFT COLORS
 ✓ Clean, ad-supported, no paywalls
 ✓ Part of the ToolsRift network of 29 specialist tool sites
 
-ToolsRift Colors is the colors edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsriftcolors.com, so every improvement to the website ships to the app automatically.
+ToolsRift Colors is the colors edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around colors.toolsrift.com, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags

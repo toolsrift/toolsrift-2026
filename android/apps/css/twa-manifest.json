@@ -1,6 +1,6 @@
 {
   "packageId": "com.toolsrift.css",
-  "host": "toolsriftcss.com",
+  "host": "css.toolsrift.com",
   "name": "ToolsRift CSS Generators",
   "launcherName": "CSS Gen",
   "display": "standalone",
@@ -14,8 +14,8 @@
   "backgroundColor": "#04090C",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://toolsriftcss.com/brands/css/icon-512.png",
-  "maskableIconUrl": "https://toolsriftcss.com/brands/css/icon-maskable-512.png",
+  "iconUrl": "https://css.toolsrift.com/brands/css/icon-512.png",
+  "maskableIconUrl": "https://css.toolsrift.com/brands/css/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "../../keys/css.keystore",
@@ -28,29 +28,29 @@
       "name": "CSS Gradient Generator",
       "short_name": "CSS Gradien…",
       "url": "/css-gradient?source=shortcut",
-      "chosenIconUrl": "https://toolsriftcss.com/brands/css/icon-192.png"
+      "chosenIconUrl": "https://css.toolsrift.com/brands/css/icon-192.png"
     },
     {
       "name": "CSS Box Shadow Generator",
       "short_name": "CSS Box Sha…",
       "url": "/css-box-shadow?source=shortcut",
-      "chosenIconUrl": "https://toolsriftcss.com/brands/css/icon-192.png"
+      "chosenIconUrl": "https://css.toolsrift.com/brands/css/icon-192.png"
     },
     {
       "name": "CSS Text Shadow Generator",
       "short_name": "CSS Text Sh…",
       "url": "/css-text-shadow?source=shortcut",
-      "chosenIconUrl": "https://toolsriftcss.com/brands/css/icon-192.png"
+      "chosenIconUrl": "https://css.toolsrift.com/brands/css/icon-192.png"
     },
     {
       "name": "CSS Border Radius Generator",
       "short_name": "CSS Border …",
       "url": "/css-border-radius?source=shortcut",
-      "chosenIconUrl": "https://toolsriftcss.com/brands/css/icon-192.png"
+      "chosenIconUrl": "https://css.toolsrift.com/brands/css/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://toolsriftcss.com/manifest.json",
+  "webManifestUrl": "https://css.toolsrift.com/manifest.json",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -59,7 +59,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://toolsriftcss.com/",
+  "fullScopeUrl": "https://css.toolsrift.com/",
   "minSdkVersion": 21,
   "orientationLock": false,
   "additionalTrustedOrigins": [],

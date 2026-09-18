@@ -1,6 +1,6 @@
 {
   "packageId": "com.toolsrift.units",
-  "host": "toolsriftunits.com",
+  "host": "units.toolsrift.com",
   "name": "ToolsRift Unit Converter",
   "launcherName": "Units",
   "display": "standalone",
@@ -14,8 +14,8 @@
   "backgroundColor": "#05090C",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://toolsriftunits.com/brands/units/icon-512.png",
-  "maskableIconUrl": "https://toolsriftunits.com/brands/units/icon-maskable-512.png",
+  "iconUrl": "https://units.toolsrift.com/brands/units/icon-512.png",
+  "maskableIconUrl": "https://units.toolsrift.com/brands/units/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "../../keys/units.keystore",
@@ -28,29 +28,29 @@
       "name": "Length Converter",
       "short_name": "Length Conv…",
       "url": "/length-converter?source=shortcut",
-      "chosenIconUrl": "https://toolsriftunits.com/brands/units/icon-192.png"
+      "chosenIconUrl": "https://units.toolsrift.com/brands/units/icon-192.png"
     },
     {
       "name": "Weight / Mass Converter",
       "short_name": "Weight / Ma…",
       "url": "/weight-converter?source=shortcut",
-      "chosenIconUrl": "https://toolsriftunits.com/brands/units/icon-192.png"
+      "chosenIconUrl": "https://units.toolsrift.com/brands/units/icon-192.png"
     },
     {
       "name": "Temperature Converter",
       "short_name": "Temperature…",
       "url": "/temperature-converter?source=shortcut",
-      "chosenIconUrl": "https://toolsriftunits.com/brands/units/icon-192.png"
+      "chosenIconUrl": "https://units.toolsrift.com/brands/units/icon-192.png"
     },
     {
       "name": "Area Converter",
       "short_name": "Area Conver…",
       "url": "/area-converter?source=shortcut",
-      "chosenIconUrl": "https://toolsriftunits.com/brands/units/icon-192.png"
+      "chosenIconUrl": "https://units.toolsrift.com/brands/units/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://toolsriftunits.com/manifest.json",
+  "webManifestUrl": "https://units.toolsrift.com/manifest.json",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -59,7 +59,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://toolsriftunits.com/",
+  "fullScopeUrl": "https://units.toolsrift.com/",
   "minSdkVersion": 21,
   "orientationLock": false,
   "additionalTrustedOrigins": [],

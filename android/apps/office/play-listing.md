@@ -6,8 +6,8 @@
 | App name (≤30) | ToolsRift Office Tools |
 | Launcher name | Office |
 | Category | PRODUCTIVITY |
-| Website | https://toolsriftoffice.com |
-| Privacy policy | https://toolsriftoffice.com/privacy-policy |
+| Website | https://office.toolsrift.com |
+| Privacy policy | https://office.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/office/icon-512.png` |
 | Feature graphic (1024×500) | export from `public/brands/office/og.svg` |
@@ -48,7 +48,7 @@ WHY TOOLSRIFT OFFICE
 ✓ Clean, ad-supported, no paywalls
 ✓ Part of the ToolsRift network of 29 specialist tool sites
 
-ToolsRift Office is the office edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsriftoffice.com, so every improvement to the website ships to the app automatically.
+ToolsRift Office is the office edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around office.toolsrift.com, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags

@@ -6,8 +6,8 @@
 | App name (≤30) | ToolsRift Everyday Tools |
 | Launcher name | Everyday |
 | Category | TOOLS |
-| Website | https://toolsrifteveryday.com |
-| Privacy policy | https://toolsrifteveryday.com/privacy-policy |
+| Website | https://everyday.toolsrift.com |
+| Privacy policy | https://everyday.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/everyday/icon-512.png` |
 | Feature graphic (1024×500) | export from `public/brands/everyday/og.svg` |
@@ -48,7 +48,7 @@ WHY TOOLSRIFT EVERYDAY
 ✓ Clean, ad-supported, no paywalls
 ✓ Part of the ToolsRift network of 29 specialist tool sites
 
-ToolsRift Everyday is the everyday edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsrifteveryday.com, so every improvement to the website ships to the app automatically.
+ToolsRift Everyday is the everyday edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around everyday.toolsrift.com, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags

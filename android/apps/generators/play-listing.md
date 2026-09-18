@@ -6,8 +6,8 @@
 | App name (≤30) | ToolsRift Generators |
 | Launcher name | Generators |
 | Category | TOOLS |
-| Website | https://toolsriftgenerators.com |
-| Privacy policy | https://toolsriftgenerators.com/privacy-policy |
+| Website | https://generators.toolsrift.com |
+| Privacy policy | https://generators.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/generators/icon-512.png` |
 | Feature graphic (1024×500) | export from `public/brands/generators/og.svg` |
@@ -48,7 +48,7 @@ WHY TOOLSRIFT GENERATORS
 ✓ Clean, ad-supported, no paywalls
 ✓ Part of the ToolsRift network of 29 specialist tool sites
 
-ToolsRift Generators is the generators edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsriftgenerators.com, so every improvement to the website ships to the app automatically.
+ToolsRift Generators is the generators edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around generators.toolsrift.com, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags

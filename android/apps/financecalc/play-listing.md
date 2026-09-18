@@ -6,8 +6,8 @@
 | App name (≤30) | ToolsRift Finance & Health |
 | Launcher name | Finance |
 | Category | FINANCE |
-| Website | https://toolsriftfinance.com |
-| Privacy policy | https://toolsriftfinance.com/privacy-policy |
+| Website | https://finance.toolsrift.com |
+| Privacy policy | https://finance.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/financecalc/icon-512.png` |
 | Feature graphic (1024×500) | export from `public/brands/financecalc/og.svg` |
@@ -48,7 +48,7 @@ WHY TOOLSRIFT FINANCE
 ✓ Clean, ad-supported, no paywalls
 ✓ Part of the ToolsRift network of 29 specialist tool sites
 
-ToolsRift Finance is the finance edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsriftfinance.com, so every improvement to the website ships to the app automatically.
+ToolsRift Finance is the finance edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around finance.toolsrift.com, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags

@@ -6,8 +6,8 @@
 | App name (≤30) | ToolsRift Unit Converter |
 | Launcher name | Units |
 | Category | TOOLS |
-| Website | https://toolsriftunits.com |
-| Privacy policy | https://toolsriftunits.com/privacy-policy |
+| Website | https://units.toolsrift.com |
+| Privacy policy | https://units.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/units/icon-512.png` |
 | Feature graphic (1024×500) | export from `public/brands/units/og.svg` |
@@ -48,7 +48,7 @@ WHY TOOLSRIFT UNITS
 ✓ Clean, ad-supported, no paywalls
 ✓ Part of the ToolsRift network of 29 specialist tool sites
 
-ToolsRift Units is the units edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsriftunits.com, so every improvement to the website ships to the app automatically.
+ToolsRift Units is the units edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around units.toolsrift.com, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags

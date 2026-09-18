@@ -6,8 +6,8 @@
 | App name (≤30) | ToolsRift PDF Tools |
 | Launcher name | PDF Tools |
 | Category | PRODUCTIVITY |
-| Website | https://toolsriftpdf.com |
-| Privacy policy | https://toolsriftpdf.com/privacy-policy |
+| Website | https://pdf.toolsrift.com |
+| Privacy policy | https://pdf.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/pdf/icon-512.png` |
 | Feature graphic (1024×500) | export from `public/brands/pdf/og.svg` |
@@ -48,7 +48,7 @@ WHY TOOLSRIFT PDF
 ✓ Clean, ad-supported, no paywalls
 ✓ Part of the ToolsRift network of 29 specialist tool sites
 
-ToolsRift PDF is the pdf edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsriftpdf.com, so every improvement to the website ships to the app automatically.
+ToolsRift PDF is the pdf edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around pdf.toolsrift.com, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags

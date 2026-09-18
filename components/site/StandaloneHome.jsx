@@ -1,4 +1,4 @@
-// ── Home page of a standalone network site (toolsriftpdf.com/, …) ────────────
+// ── Home page of a standalone network site (pdf.toolsrift.com/, …) ────────────
 // The category app (header, brand banner, dashboard) on top, the category's
 // server-rendered article + footer underneath — the same shape as the hub's
 // /pdf page, re-branded for the site and canonical to its own domain.

@@ -1,6 +1,6 @@
 {
   "packageId": "com.toolsrift.data",
-  "host": "toolsriftdata.com",
+  "host": "data.toolsrift.com",
   "name": "ToolsRift Charts & Data",
   "launcherName": "Charts",
   "display": "standalone",
@@ -14,8 +14,8 @@
   "backgroundColor": "#050A0A",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://toolsriftdata.com/brands/data/icon-512.png",
-  "maskableIconUrl": "https://toolsriftdata.com/brands/data/icon-maskable-512.png",
+  "iconUrl": "https://data.toolsrift.com/brands/data/icon-512.png",
+  "maskableIconUrl": "https://data.toolsrift.com/brands/data/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "../../keys/data.keystore",
@@ -28,29 +28,29 @@
       "name": "Bar Chart Maker",
       "short_name": "Bar Chart M…",
       "url": "/bar-chart-maker?source=shortcut",
-      "chosenIconUrl": "https://toolsriftdata.com/brands/data/icon-192.png"
+      "chosenIconUrl": "https://data.toolsrift.com/brands/data/icon-192.png"
     },
     {
       "name": "Line Chart Maker",
       "short_name": "Line Chart …",
       "url": "/line-chart-maker?source=shortcut",
-      "chosenIconUrl": "https://toolsriftdata.com/brands/data/icon-192.png"
+      "chosenIconUrl": "https://data.toolsrift.com/brands/data/icon-192.png"
     },
     {
       "name": "Pie Chart Maker",
       "short_name": "Pie Chart M…",
       "url": "/pie-chart-maker?source=shortcut",
-      "chosenIconUrl": "https://toolsriftdata.com/brands/data/icon-192.png"
+      "chosenIconUrl": "https://data.toolsrift.com/brands/data/icon-192.png"
     },
     {
       "name": "Donut Chart Maker",
       "short_name": "Donut Chart…",
       "url": "/donut-chart-maker?source=shortcut",
-      "chosenIconUrl": "https://toolsriftdata.com/brands/data/icon-192.png"
+      "chosenIconUrl": "https://data.toolsrift.com/brands/data/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://toolsriftdata.com/manifest.json",
+  "webManifestUrl": "https://data.toolsrift.com/manifest.json",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -59,7 +59,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://toolsriftdata.com/",
+  "fullScopeUrl": "https://data.toolsrift.com/",
   "minSdkVersion": 21,
   "orientationLock": false,
   "additionalTrustedOrigins": [],

@@ -31,7 +31,7 @@
     <path d="M22 78V54M42 78V38M62 78V46M82 78V24" stroke="currentColor" stroke-width="12" stroke-linecap="round" fill="none"/>
   </g></g>
   <text x="240" y="152" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="800" font-size="52" letter-spacing="-1.2" fill="#F8FAFC">ToolsRift<tspan fill="#2DD4BF"> Data</tspan></text>
-  <text x="240" y="196" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="500" font-size="22" fill="#94A3B8">toolsriftdata.com</text>
+  <text x="240" y="196" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="500" font-size="22" fill="#94A3B8">data.toolsrift.com</text>
   <text x="96" y="352" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="800" font-size="60" letter-spacing="-1.5" fill="#F8FAFC">Paste a spreadsheet. Get a chart.</text>
   <text x="96" y="410" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="500" font-size="26" fill="#CBD5E1">25 free data tools · 100% in your browser · no sign-up</text>
   <g transform="translate(96 476)">

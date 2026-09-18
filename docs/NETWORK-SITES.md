@@ -1,13 +1,13 @@
 # ToolsRift Network — 29 standalone category websites (+ Android apps)
 
 > One codebase. Thirty build targets. Every category of ToolsRift becomes its
-> own website with its own domain, logo, colours, typography, design concept,
+> own website with its own subdomain, logo, colours, typography, design concept,
 > sitemap, PWA manifest and Android app — without copying a single tool.
 
 | | |
 |---|---|
 | Hub | `toolsrift.com` — everything, unchanged (`NEXT_PUBLIC_SITE_ID` unset) |
-| Network site | `toolsrift<category>.com` — one category at the root (`NEXT_PUBLIC_SITE_ID=<id>`) |
+| Network site | `<category>.toolsrift.com` — one category at the root (`NEXT_PUBLIC_SITE_ID=<id>`) |
 | Registry | `lib/sites/brands.js` — the single source of truth for all 29 brands |
 | List them | `npm run sites:list` |
 | Validate | `npm run sites:check` |
@@ -22,7 +22,8 @@ within a week.
 Instead, the site identity is a **build-time switch**. Next.js inlines
 `NEXT_PUBLIC_SITE_ID` into every bundle (pages, API routes and the edge
 middleware), so a build with `NEXT_PUBLIC_SITE_ID=pdf` only knows about
-`toolsriftpdf.com`. Each site is still a *separate Vercel project*, with its own
+`pdf.toolsrift.com`. (On Vercel the id is also derived from the project name
+`toolsrift-<id>` when the variable is unset — see `next.config.js`.) Each site is still a *separate Vercel project*, with its own
 domain, analytics, Search Console property, AdSense site and Play Store app —
 they are separate products for users and for Google. They just share a Git repo.
 
@@ -49,10 +50,10 @@ they are separate products for users and for Google. They just share a Git repo.
 
 Example: `NEXT_PUBLIC_SITE_ID=pdf`
 
-| URL on toolsriftpdf.com | Serves |
+| URL on pdf.toolsrift.com | Serves |
 |---|---|
 | `/` | The PDF category app (branded header, "Paper & Ink" banner, tool dashboard) + the category article + network footer |
-| `/merge-pdf` | The tool, opened directly, with server-rendered how-to / FAQ / related tools. Canonical = `https://toolsriftpdf.com/merge-pdf` |
+| `/merge-pdf` | The tool, opened directly, with server-rendered how-to / FAQ / related tools. Canonical = `https://pdf.toolsrift.com/merge-pdf` |
 | `/pdf`, `/pdf/merge-pdf` | 301 → `/`, `/merge-pdf` |
 | `/text`, `/json/...`, `/tools` | 301 → `https://toolsrift.com/…` (never a duplicate) |
 | `/about`, `/privacy-policy`, `/terms`, `/cookies`, `/disclaimer`, `/contact` | Served here (Play Store needs a privacy policy URL on the app's own domain) |
@@ -81,8 +82,8 @@ family with its own hue rather than a light theme.
 ## 3. Daily workflow
 
 ```bash
-npm run dev:site -- pdf          # http://localhost:3000 is toolsriftpdf.com
-npm run build:site -- image      # production build of toolsriftimage.com
+npm run dev:site -- pdf          # http://localhost:3000 is pdf.toolsrift.com
+npm run build:site -- image      # production build of image.toolsrift.com
 npm run start:site -- image      # serve it
 npm run dev                      # the hub, exactly as before
 ```
@@ -98,27 +99,33 @@ tool up automatically on the next deploy.
 
 ## 4. Going live — per site checklist
 
-1. **Register the domain** (`toolsrift<category>.com`, see `npm run sites:list`).
-   Change `domain` in `brands.js` if you buy a different name.
+1. **Domain**: every site is a subdomain of toolsrift.com (`pdf.toolsrift.com`,
+   see `npm run sites:list`). The apex is on Vercel DNS with a wildcard, so the
+   subdomain already resolves — nothing to register. (A site can move to its
+   own apex domain later by changing `domain` in `brands.js`.)
 2. **Create the Vercel project**: `npm run vercel:bootstrap -- pdf` (or
    `--all`). It creates `toolsrift-pdf`, sets `NEXT_PUBLIC_SITE_ID=pdf` for
    all environments and attaches the domain. Connect the project to this Git
    repository in the Vercel dashboard (Settings → Git) so every push deploys it.
-3. **DNS**: apex `A 76.76.21.21`, `www CNAME cname.vercel-dns.com`
-   (www 301s to the apex via middleware).
+3. **Attach the subdomain to the project** (Vercel → project → Settings →
+   Domains → add `pdf.toolsrift.com`). A domain can live on only ONE project:
+   `pdf.`, `text.`, `image.`, `dev.` and `calc.toolsrift.com` were mirrors on
+   the hub project, so remove one from the hub first, then add it to its own
+   project. With Vercel DNS the record is created automatically.
 4. **Env vars** on that project (Vercel → Settings → Environment Variables):
    - `NEXT_PUBLIC_SITE_ID` — set by bootstrap.
    - `ANDROID_SHA256_FINGERPRINTS` — after step 6, comma-separated (upload key
      **and** Play App Signing key).
    - `GOOGLE_SERVICE_ACCOUNT_KEY`, `CRON_SECRET` — optional, same as the hub;
-     the daily cron resubmits *this* site's sitemap to its own Search Console
-     property (`sc-domain:toolsrift<category>.com`).
+     the daily cron resubmits *this* site's sitemap to the `sc-domain:toolsrift.com`
+     property (which covers subdomains).
 5. **Flip `live: true`** for the brand in `brands.js` and push. From then on
    every other site (and the hub's network footer) links to the new domain
    instead of `toolsrift.com/<category>`.
-6. **Search Console**: add the domain property, verify by DNS, submit
-   `https://<domain>/sitemap.xml`. **AdSense**: add the site (ads.txt is
-   served from `public/ads.txt` on every domain). **IndexNow**: the key file
+6. **Search Console**: the `sc-domain:toolsrift.com` property already covers
+   every subdomain — just submit `https://<domain>/sitemap.xml` there.
+   **AdSense**: subdomains are covered by the approved root site (ads.txt is
+   served from `public/ads.txt` on every host). **IndexNow**: the key file
    `public/509a…txt` is served on every domain, so
    `node scripts/submit-indexnow.js` works unchanged once `HOST` is that site
    (it reads the sitemap; run it from a checkout with `NEXT_PUBLIC_SITE_ID` set).
@@ -137,7 +144,9 @@ tool up automatically on the next deploy.
 
 ## 6. SEO notes
 
-- Every network site is a **new domain**: expect 3–6 months to rank. The hub
+- Every network site is a **new host**: Google treats a subdomain largely as
+  its own site, so expect a ramp-up, though the brand and the root property's
+  history help. The hub
   keeps its internal links internal (it never sends its own equity to the
   network from category tiles); cross-links come from the network footer,
   the "More from the ToolsRift network" grid and `isPartOf` /

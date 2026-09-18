@@ -29,7 +29,7 @@ for (const b of BRANDS) {
     if (seen[k].has(v)) errors.push(`${tag} duplicate ${k} "${v}" (also ${seen[k].get(v)})`);
     seen[k].set(v, b.id);
   }
-  if (!/^[a-z0-9-]+\.[a-z]+$/.test(b.domain)) errors.push(`${tag} domain "${b.domain}" is not a bare hostname`);
+  if (!/^([a-z0-9-]+\.)+[a-z]+$/.test(b.domain) || /^www\./.test(b.domain)) errors.push(`${tag} domain "${b.domain}" is not a bare hostname`);
   if (!/^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/.test(b.android.packageId)) errors.push(`${tag} bad Android package id "${b.android.packageId}"`);
   if (b.android.appName.length > 30) errors.push(`${tag} appName > 30 chars (${b.android.appName.length})`);
   if (b.android.shortName.length > 12) errors.push(`${tag} shortName > 12 chars (${b.android.shortName.length})`);

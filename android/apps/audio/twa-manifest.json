@@ -1,6 +1,6 @@
 {
   "packageId": "com.toolsrift.audio",
-  "host": "toolsriftaudio.com",
+  "host": "audio.toolsrift.com",
   "name": "ToolsRift Audio Tools",
   "launcherName": "Audio",
   "display": "standalone",
@@ -14,8 +14,8 @@
   "backgroundColor": "#09060F",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://toolsriftaudio.com/brands/audio/icon-512.png",
-  "maskableIconUrl": "https://toolsriftaudio.com/brands/audio/icon-maskable-512.png",
+  "iconUrl": "https://audio.toolsrift.com/brands/audio/icon-512.png",
+  "maskableIconUrl": "https://audio.toolsrift.com/brands/audio/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "../../keys/audio.keystore",
@@ -28,29 +28,29 @@
       "name": "Audio Trimmer",
       "short_name": "Audio Trimm…",
       "url": "/audio-trimmer?source=shortcut",
-      "chosenIconUrl": "https://toolsriftaudio.com/brands/audio/icon-192.png"
+      "chosenIconUrl": "https://audio.toolsrift.com/brands/audio/icon-192.png"
     },
     {
       "name": "Audio Merger",
       "short_name": "Audio Merger",
       "url": "/audio-merger?source=shortcut",
-      "chosenIconUrl": "https://toolsriftaudio.com/brands/audio/icon-192.png"
+      "chosenIconUrl": "https://audio.toolsrift.com/brands/audio/icon-192.png"
     },
     {
       "name": "Audio Volume Changer",
       "short_name": "Audio Volum…",
       "url": "/audio-volume-changer?source=shortcut",
-      "chosenIconUrl": "https://toolsriftaudio.com/brands/audio/icon-192.png"
+      "chosenIconUrl": "https://audio.toolsrift.com/brands/audio/icon-192.png"
     },
     {
       "name": "Audio Normalizer",
       "short_name": "Audio Norma…",
       "url": "/audio-normalizer?source=shortcut",
-      "chosenIconUrl": "https://toolsriftaudio.com/brands/audio/icon-192.png"
+      "chosenIconUrl": "https://audio.toolsrift.com/brands/audio/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://toolsriftaudio.com/manifest.json",
+  "webManifestUrl": "https://audio.toolsrift.com/manifest.json",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -59,7 +59,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://toolsriftaudio.com/",
+  "fullScopeUrl": "https://audio.toolsrift.com/",
   "minSdkVersion": 21,
   "orientationLock": false,
   "additionalTrustedOrigins": [],

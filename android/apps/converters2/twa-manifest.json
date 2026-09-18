@@ -1,6 +1,6 @@
 {
   "packageId": "com.toolsrift.converters",
-  "host": "toolsriftconverters.com",
+  "host": "converters.toolsrift.com",
   "name": "ToolsRift Specialty Converters",
   "launcherName": "Converters",
   "display": "standalone",
@@ -14,8 +14,8 @@
   "backgroundColor": "#04080D",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://toolsriftconverters.com/brands/converters2/icon-512.png",
-  "maskableIconUrl": "https://toolsriftconverters.com/brands/converters2/icon-maskable-512.png",
+  "iconUrl": "https://converters.toolsrift.com/brands/converters2/icon-512.png",
+  "maskableIconUrl": "https://converters.toolsrift.com/brands/converters2/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "../../keys/converters2.keystore",
@@ -28,29 +28,29 @@
       "name": "Force Converter",
       "short_name": "Force Conve…",
       "url": "/force-converter?source=shortcut",
-      "chosenIconUrl": "https://toolsriftconverters.com/brands/converters2/icon-192.png"
+      "chosenIconUrl": "https://converters.toolsrift.com/brands/converters2/icon-192.png"
     },
     {
       "name": "Torque Converter",
       "short_name": "Torque Conv…",
       "url": "/torque-converter?source=shortcut",
-      "chosenIconUrl": "https://toolsriftconverters.com/brands/converters2/icon-192.png"
+      "chosenIconUrl": "https://converters.toolsrift.com/brands/converters2/icon-192.png"
     },
     {
       "name": "Current Converter",
       "short_name": "Current Con…",
       "url": "/current-converter?source=shortcut",
-      "chosenIconUrl": "https://toolsriftconverters.com/brands/converters2/icon-192.png"
+      "chosenIconUrl": "https://converters.toolsrift.com/brands/converters2/icon-192.png"
     },
     {
       "name": "Voltage Converter",
       "short_name": "Voltage Con…",
       "url": "/voltage-converter?source=shortcut",
-      "chosenIconUrl": "https://toolsriftconverters.com/brands/converters2/icon-192.png"
+      "chosenIconUrl": "https://converters.toolsrift.com/brands/converters2/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://toolsriftconverters.com/manifest.json",
+  "webManifestUrl": "https://converters.toolsrift.com/manifest.json",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -59,7 +59,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://toolsriftconverters.com/",
+  "fullScopeUrl": "https://converters.toolsrift.com/",
   "minSdkVersion": 21,
   "orientationLock": false,
   "additionalTrustedOrigins": [],

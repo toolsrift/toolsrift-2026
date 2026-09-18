@@ -1,6 +1,6 @@
 {
   "packageId": "com.toolsrift.devgen",
-  "host": "toolsriftdevgen.com",
+  "host": "devgen.toolsrift.com",
   "name": "ToolsRift Dev Config Gen",
   "launcherName": "DevGen",
   "display": "standalone",
@@ -14,8 +14,8 @@
   "backgroundColor": "#07060C",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://toolsriftdevgen.com/brands/devgen/icon-512.png",
-  "maskableIconUrl": "https://toolsriftdevgen.com/brands/devgen/icon-maskable-512.png",
+  "iconUrl": "https://devgen.toolsrift.com/brands/devgen/icon-512.png",
+  "maskableIconUrl": "https://devgen.toolsrift.com/brands/devgen/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "../../keys/devgen.keystore",
@@ -28,29 +28,29 @@
       "name": "Gitignore Generator",
       "short_name": "Gitignore G…",
       "url": "/gitignore-gen?source=shortcut",
-      "chosenIconUrl": "https://toolsriftdevgen.com/brands/devgen/icon-192.png"
+      "chosenIconUrl": "https://devgen.toolsrift.com/brands/devgen/icon-192.png"
     },
     {
       "name": "README Generator",
       "short_name": "README Gene…",
       "url": "/readme-gen?source=shortcut",
-      "chosenIconUrl": "https://toolsriftdevgen.com/brands/devgen/icon-192.png"
+      "chosenIconUrl": "https://devgen.toolsrift.com/brands/devgen/icon-192.png"
     },
     {
       "name": "GitHub Profile README Generator",
       "short_name": "GitHub Prof…",
       "url": "/github-profile-gen?source=shortcut",
-      "chosenIconUrl": "https://toolsriftdevgen.com/brands/devgen/icon-192.png"
+      "chosenIconUrl": "https://devgen.toolsrift.com/brands/devgen/icon-192.png"
     },
     {
       "name": "License Generator",
       "short_name": "License Gen…",
       "url": "/license-gen?source=shortcut",
-      "chosenIconUrl": "https://toolsriftdevgen.com/brands/devgen/icon-192.png"
+      "chosenIconUrl": "https://devgen.toolsrift.com/brands/devgen/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://toolsriftdevgen.com/manifest.json",
+  "webManifestUrl": "https://devgen.toolsrift.com/manifest.json",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -59,7 +59,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://toolsriftdevgen.com/",
+  "fullScopeUrl": "https://devgen.toolsrift.com/",
   "minSdkVersion": 21,
   "orientationLock": false,
   "additionalTrustedOrigins": [],

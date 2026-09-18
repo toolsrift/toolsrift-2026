@@ -6,8 +6,8 @@
 | App name (≤30) | ToolsRift CSS Generators |
 | Launcher name | CSS Gen |
 | Category | TOOLS |
-| Website | https://toolsriftcss.com |
-| Privacy policy | https://toolsriftcss.com/privacy-policy |
+| Website | https://css.toolsrift.com |
+| Privacy policy | https://css.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/css/icon-512.png` |
 | Feature graphic (1024×500) | export from `public/brands/css/og.svg` |
@@ -48,7 +48,7 @@ WHY TOOLSRIFT CSS
 ✓ Clean, ad-supported, no paywalls
 ✓ Part of the ToolsRift network of 29 specialist tool sites
 
-ToolsRift CSS is the css edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsriftcss.com, so every improvement to the website ships to the app automatically.
+ToolsRift CSS is the css edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around css.toolsrift.com, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags

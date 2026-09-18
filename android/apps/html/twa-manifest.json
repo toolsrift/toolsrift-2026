@@ -1,6 +1,6 @@
 {
   "packageId": "com.toolsrift.html",
-  "host": "toolsrifthtml.com",
+  "host": "html.toolsrift.com",
   "name": "ToolsRift HTML Tools",
   "launcherName": "HTML Tools",
   "display": "standalone",
@@ -14,8 +14,8 @@
   "backgroundColor": "#0C0805",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://toolsrifthtml.com/brands/html/icon-512.png",
-  "maskableIconUrl": "https://toolsrifthtml.com/brands/html/icon-maskable-512.png",
+  "iconUrl": "https://html.toolsrift.com/brands/html/icon-512.png",
+  "maskableIconUrl": "https://html.toolsrift.com/brands/html/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "../../keys/html.keystore",
@@ -28,29 +28,29 @@
       "name": "HTML Formatter",
       "short_name": "HTML Format…",
       "url": "/html-formatter?source=shortcut",
-      "chosenIconUrl": "https://toolsrifthtml.com/brands/html/icon-192.png"
+      "chosenIconUrl": "https://html.toolsrift.com/brands/html/icon-192.png"
     },
     {
       "name": "HTML Minifier",
       "short_name": "HTML Minifi…",
       "url": "/html-minifier?source=shortcut",
-      "chosenIconUrl": "https://toolsrifthtml.com/brands/html/icon-192.png"
+      "chosenIconUrl": "https://html.toolsrift.com/brands/html/icon-192.png"
     },
     {
       "name": "HTML Validator",
       "short_name": "HTML Valida…",
       "url": "/html-validator?source=shortcut",
-      "chosenIconUrl": "https://toolsrifthtml.com/brands/html/icon-192.png"
+      "chosenIconUrl": "https://html.toolsrift.com/brands/html/icon-192.png"
     },
     {
       "name": "HTML Cleaner",
       "short_name": "HTML Cleaner",
       "url": "/html-cleaner?source=shortcut",
-      "chosenIconUrl": "https://toolsrifthtml.com/brands/html/icon-192.png"
+      "chosenIconUrl": "https://html.toolsrift.com/brands/html/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://toolsrifthtml.com/manifest.json",
+  "webManifestUrl": "https://html.toolsrift.com/manifest.json",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -59,7 +59,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://toolsrifthtml.com/",
+  "fullScopeUrl": "https://html.toolsrift.com/",
   "minSdkVersion": 21,
   "orientationLock": false,
   "additionalTrustedOrigins": [],

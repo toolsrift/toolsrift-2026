@@ -1,6 +1,6 @@
 {
   "packageId": "com.toolsrift.image",
-  "host": "toolsriftimage.com",
+  "host": "image.toolsrift.com",
   "name": "ToolsRift Image Tools",
   "launcherName": "Image Tools",
   "display": "standalone",
@@ -14,8 +14,8 @@
   "backgroundColor": "#0B0709",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://toolsriftimage.com/brands/image/icon-512.png",
-  "maskableIconUrl": "https://toolsriftimage.com/brands/image/icon-maskable-512.png",
+  "iconUrl": "https://image.toolsrift.com/brands/image/icon-512.png",
+  "maskableIconUrl": "https://image.toolsrift.com/brands/image/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "../../keys/image.keystore",
@@ -28,29 +28,29 @@
       "name": "Image Resizer",
       "short_name": "Image Resiz…",
       "url": "/image-resizer?source=shortcut",
-      "chosenIconUrl": "https://toolsriftimage.com/brands/image/icon-192.png"
+      "chosenIconUrl": "https://image.toolsrift.com/brands/image/icon-192.png"
     },
     {
       "name": "Image Cropper",
       "short_name": "Image Cropp…",
       "url": "/image-cropper?source=shortcut",
-      "chosenIconUrl": "https://toolsriftimage.com/brands/image/icon-192.png"
+      "chosenIconUrl": "https://image.toolsrift.com/brands/image/icon-192.png"
     },
     {
       "name": "Image Compressor",
       "short_name": "Image Compr…",
       "url": "/image-compressor?source=shortcut",
-      "chosenIconUrl": "https://toolsriftimage.com/brands/image/icon-192.png"
+      "chosenIconUrl": "https://image.toolsrift.com/brands/image/icon-192.png"
     },
     {
       "name": "Image Converter",
       "short_name": "Image Conve…",
       "url": "/image-converter?source=shortcut",
-      "chosenIconUrl": "https://toolsriftimage.com/brands/image/icon-192.png"
+      "chosenIconUrl": "https://image.toolsrift.com/brands/image/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://toolsriftimage.com/manifest.json",
+  "webManifestUrl": "https://image.toolsrift.com/manifest.json",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -59,7 +59,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://toolsriftimage.com/",
+  "fullScopeUrl": "https://image.toolsrift.com/",
   "minSdkVersion": 21,
   "orientationLock": false,
   "additionalTrustedOrigins": [],

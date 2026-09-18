@@ -6,8 +6,8 @@
 | App name (≤30) | ToolsRift Charts & Data |
 | Launcher name | Charts |
 | Category | PRODUCTIVITY |
-| Website | https://toolsriftdata.com |
-| Privacy policy | https://toolsriftdata.com/privacy-policy |
+| Website | https://data.toolsrift.com |
+| Privacy policy | https://data.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/data/icon-512.png` |
 | Feature graphic (1024×500) | export from `public/brands/data/og.svg` |
@@ -48,7 +48,7 @@ WHY TOOLSRIFT DATA
 ✓ Clean, ad-supported, no paywalls
 ✓ Part of the ToolsRift network of 29 specialist tool sites
 
-ToolsRift Data is the data edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsriftdata.com, so every improvement to the website ships to the app automatically.
+ToolsRift Data is the data edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around data.toolsrift.com, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags

@@ -6,8 +6,8 @@
 | App name (≤30) | ToolsRift Dev Config Gen |
 | Launcher name | DevGen |
 | Category | TOOLS |
-| Website | https://toolsriftdevgen.com |
-| Privacy policy | https://toolsriftdevgen.com/privacy-policy |
+| Website | https://devgen.toolsrift.com |
+| Privacy policy | https://devgen.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/devgen/icon-512.png` |
 | Feature graphic (1024×500) | export from `public/brands/devgen/og.svg` |
@@ -48,7 +48,7 @@ WHY TOOLSRIFT DEVGEN
 ✓ Clean, ad-supported, no paywalls
 ✓ Part of the ToolsRift network of 29 specialist tool sites
 
-ToolsRift DevGen is the devgen edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsriftdevgen.com, so every improvement to the website ships to the app automatically.
+ToolsRift DevGen is the devgen edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around devgen.toolsrift.com, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags

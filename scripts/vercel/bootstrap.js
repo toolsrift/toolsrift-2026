@@ -58,9 +58,11 @@ function bootstrap(b) {
       console.log(`   ✗ env add failed for ${env}`);
     }
   }
-  for (const d of [b.domain, `www.${b.domain}`]) {
+  // A subdomain (pdf.toolsrift.com) gets no "www."; an apex domain does.
+  const isApex = b.domain.split('.').length === 2;
+  for (const d of isApex ? [b.domain, `www.${b.domain}`] : [b.domain]) {
     if (!vercel(['domains', 'add', d, project], { quiet: true })) {
-      console.log(`   (domain ${d} not added — add it in the dashboard once registered)`);
+      console.log(`   (domain ${d} not added — if it is still on the hub project, remove it there first, then re-run)`);
     }
   }
   try { fs.rmSync(path.join(ROOT, '.vercel'), { recursive: true, force: true }); } catch (_) { /* ignore */ }

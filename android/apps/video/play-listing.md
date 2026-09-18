@@ -6,8 +6,8 @@
 | App name (≤30) | ToolsRift Video Tools |
 | Launcher name | Video |
 | Category | VIDEO_PLAYERS |
-| Website | https://toolsriftvideo.com |
-| Privacy policy | https://toolsriftvideo.com/privacy-policy |
+| Website | https://video.toolsrift.com |
+| Privacy policy | https://video.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/video/icon-512.png` |
 | Feature graphic (1024×500) | export from `public/brands/video/og.svg` |
@@ -48,7 +48,7 @@ WHY TOOLSRIFT VIDEO
 ✓ Clean, ad-supported, no paywalls
 ✓ Part of the ToolsRift network of 29 specialist tool sites
 
-ToolsRift Video is the video edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsriftvideo.com, so every improvement to the website ships to the app automatically.
+ToolsRift Video is the video edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around video.toolsrift.com, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags

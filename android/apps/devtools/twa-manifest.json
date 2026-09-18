@@ -1,6 +1,6 @@
 {
   "packageId": "com.toolsrift.devtools",
-  "host": "toolsriftdevtools.com",
+  "host": "devtools.toolsrift.com",
   "name": "ToolsRift Developer Tools",
   "launcherName": "DevTools",
   "display": "standalone",
@@ -14,8 +14,8 @@
   "backgroundColor": "#000000",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://toolsriftdevtools.com/brands/devtools/icon-512.png",
-  "maskableIconUrl": "https://toolsriftdevtools.com/brands/devtools/icon-maskable-512.png",
+  "iconUrl": "https://devtools.toolsrift.com/brands/devtools/icon-512.png",
+  "maskableIconUrl": "https://devtools.toolsrift.com/brands/devtools/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "../../keys/devtools.keystore",
@@ -28,29 +28,29 @@
       "name": "Unix Timestamp",
       "short_name": "Unix Timest…",
       "url": "/unix-timestamp?source=shortcut",
-      "chosenIconUrl": "https://toolsriftdevtools.com/brands/devtools/icon-192.png"
+      "chosenIconUrl": "https://devtools.toolsrift.com/brands/devtools/icon-192.png"
     },
     {
       "name": "Cron Parser",
       "short_name": "Cron Parser",
       "url": "/cron-parser?source=shortcut",
-      "chosenIconUrl": "https://toolsriftdevtools.com/brands/devtools/icon-192.png"
+      "chosenIconUrl": "https://devtools.toolsrift.com/brands/devtools/icon-192.png"
     },
     {
       "name": "Cron Generator",
       "short_name": "Cron Genera…",
       "url": "/cron-gen?source=shortcut",
-      "chosenIconUrl": "https://toolsriftdevtools.com/brands/devtools/icon-192.png"
+      "chosenIconUrl": "https://devtools.toolsrift.com/brands/devtools/icon-192.png"
     },
     {
       "name": "Timezone Dev",
       "short_name": "Timezone Dev",
       "url": "/timezone-dev?source=shortcut",
-      "chosenIconUrl": "https://toolsriftdevtools.com/brands/devtools/icon-192.png"
+      "chosenIconUrl": "https://devtools.toolsrift.com/brands/devtools/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://toolsriftdevtools.com/manifest.json",
+  "webManifestUrl": "https://devtools.toolsrift.com/manifest.json",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -59,7 +59,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://toolsriftdevtools.com/",
+  "fullScopeUrl": "https://devtools.toolsrift.com/",
   "minSdkVersion": 21,
   "orientationLock": false,
   "additionalTrustedOrigins": [],

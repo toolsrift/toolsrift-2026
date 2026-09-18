@@ -6,8 +6,8 @@
 | App name (≤30) | ToolsRift Hash & Crypto |
 | Launcher name | Hash Tools |
 | Category | TOOLS |
-| Website | https://toolsrifthash.com |
-| Privacy policy | https://toolsrifthash.com/privacy-policy |
+| Website | https://hash.toolsrift.com |
+| Privacy policy | https://hash.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/hash/icon-512.png` |
 | Feature graphic (1024×500) | export from `public/brands/hash/og.svg` |
@@ -48,7 +48,7 @@ WHY TOOLSRIFT HASH
 ✓ Clean, ad-supported, no paywalls
 ✓ Part of the ToolsRift network of 29 specialist tool sites
 
-ToolsRift Hash is the hash edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsrifthash.com, so every improvement to the website ships to the app automatically.
+ToolsRift Hash is the hash edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around hash.toolsrift.com, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags

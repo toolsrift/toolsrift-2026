@@ -6,8 +6,8 @@
 | App name (≤30) | ToolsRift Audio Tools |
 | Launcher name | Audio |
 | Category | MUSIC_AND_AUDIO |
-| Website | https://toolsriftaudio.com |
-| Privacy policy | https://toolsriftaudio.com/privacy-policy |
+| Website | https://audio.toolsrift.com |
+| Privacy policy | https://audio.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/audio/icon-512.png` |
 | Feature graphic (1024×500) | export from `public/brands/audio/og.svg` |
@@ -48,7 +48,7 @@ WHY TOOLSRIFT AUDIO
 ✓ Clean, ad-supported, no paywalls
 ✓ Part of the ToolsRift network of 29 specialist tool sites
 
-ToolsRift Audio is the audio edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsriftaudio.com, so every improvement to the website ships to the app automatically.
+ToolsRift Audio is the audio edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around audio.toolsrift.com, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags

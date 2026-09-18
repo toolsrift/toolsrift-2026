@@ -6,8 +6,8 @@
 | App name (≤30) | ToolsRift JSON Tools |
 | Launcher name | JSON Tools |
 | Category | TOOLS |
-| Website | https://toolsriftjson.com |
-| Privacy policy | https://toolsriftjson.com/privacy-policy |
+| Website | https://json.toolsrift.com |
+| Privacy policy | https://json.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/code/icon-512.png` |
 | Feature graphic (1024×500) | export from `public/brands/code/og.svg` |
@@ -48,7 +48,7 @@ WHY TOOLSRIFT JSON
 ✓ Clean, ad-supported, no paywalls
 ✓ Part of the ToolsRift network of 29 specialist tool sites
 
-ToolsRift JSON is the json edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsriftjson.com, so every improvement to the website ships to the app automatically.
+ToolsRift JSON is the json edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around json.toolsrift.com, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags
