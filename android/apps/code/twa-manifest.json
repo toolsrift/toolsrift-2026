@@ -26,25 +26,25 @@
   "shortcuts": [
     {
       "name": "JSON Formatter",
-      "short_name": "JSON Format…",
+      "shortName": "JSON Format…",
       "url": "/json-formatter?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/code/icon-192.png"
     },
     {
       "name": "JSON Minifier",
-      "short_name": "JSON Minifi…",
+      "shortName": "JSON Minifi…",
       "url": "/json-minifier?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/code/icon-192.png"
     },
     {
       "name": "JSON Validator",
-      "short_name": "JSON Valida…",
+      "shortName": "JSON Valida…",
       "url": "/json-validator?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/code/icon-192.png"
     },
     {
       "name": "JSON String Escape",
-      "short_name": "JSON String…",
+      "shortName": "JSON String…",
       "url": "/json-escape?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/code/icon-192.png"
     }

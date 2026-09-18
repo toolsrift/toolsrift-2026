@@ -63,9 +63,10 @@ function twaManifest(b, tools) {
     signingKey: { path: '../../keys/upload.keystore', alias: 'upload' },
     appVersionName: '1.0.0',
     appVersionCode: 1,
+    // Bubblewrap's ShortcutInfo fields (camelCase — not the web-manifest names).
     shortcuts: tools.slice(0, 4).map(t => ({
       name: t.name,
-      short_name: t.name.length > 12 ? t.name.slice(0, 11) + '…' : t.name,
+      shortName: t.name.length > 12 ? t.name.slice(0, 11) + '…' : t.name,
       url: `/${t.id}?source=shortcut`,
       chosenIconUrl: `${ASSET_HOST}/brands/${b.id}/icon-192.png`,
     })),

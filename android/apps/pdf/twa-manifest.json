@@ -26,25 +26,25 @@
   "shortcuts": [
     {
       "name": "PDF Viewer",
-      "short_name": "PDF Viewer",
+      "shortName": "PDF Viewer",
       "url": "/pdf-viewer?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/pdf/icon-192.png"
     },
     {
       "name": "PDF Page Counter",
-      "short_name": "PDF Page Co…",
+      "shortName": "PDF Page Co…",
       "url": "/pdf-page-count?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/pdf/icon-192.png"
     },
     {
       "name": "PDF Metadata Viewer",
-      "short_name": "PDF Metadat…",
+      "shortName": "PDF Metadat…",
       "url": "/pdf-metadata?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/pdf/icon-192.png"
     },
     {
       "name": "PDF Text Extractor",
-      "short_name": "PDF Text Ex…",
+      "shortName": "PDF Text Ex…",
       "url": "/pdf-text-extractor?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/pdf/icon-192.png"
     }

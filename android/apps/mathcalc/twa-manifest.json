@@ -26,25 +26,25 @@
   "shortcuts": [
     {
       "name": "Area Calculator",
-      "short_name": "Area Calcul…",
+      "shortName": "Area Calcul…",
       "url": "/area-calc?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/mathcalc/icon-192.png"
     },
     {
       "name": "Perimeter Calculator",
-      "short_name": "Perimeter C…",
+      "shortName": "Perimeter C…",
       "url": "/perimeter-calc?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/mathcalc/icon-192.png"
     },
     {
       "name": "Volume Calculator",
-      "short_name": "Volume Calc…",
+      "shortName": "Volume Calc…",
       "url": "/volume-calc?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/mathcalc/icon-192.png"
     },
     {
       "name": "Surface Area Calculator",
-      "short_name": "Surface Are…",
+      "shortName": "Surface Are…",
       "url": "/surface-area-calc?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/mathcalc/icon-192.png"
     }

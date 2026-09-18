@@ -26,25 +26,25 @@
   "shortcuts": [
     {
       "name": "Privacy Policy Generator",
-      "short_name": "Privacy Pol…",
+      "shortName": "Privacy Pol…",
       "url": "/privacy-policy-gen?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/gen-content/icon-192.png"
     },
     {
       "name": "Terms & Conditions Generator",
-      "short_name": "Terms & Con…",
+      "shortName": "Terms & Con…",
       "url": "/terms-conditions-gen?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/gen-content/icon-192.png"
     },
     {
       "name": "Cookie Policy Generator",
-      "short_name": "Cookie Poli…",
+      "shortName": "Cookie Poli…",
       "url": "/cookie-policy-gen?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/gen-content/icon-192.png"
     },
     {
       "name": "Disclaimer Generator",
-      "short_name": "Disclaimer …",
+      "shortName": "Disclaimer …",
       "url": "/disclaimer-gen?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/gen-content/icon-192.png"
     }

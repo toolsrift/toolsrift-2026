@@ -26,25 +26,25 @@
   "shortcuts": [
     {
       "name": "Audio Trimmer",
-      "short_name": "Audio Trimm…",
+      "shortName": "Audio Trimm…",
       "url": "/audio-trimmer?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/audio/icon-192.png"
     },
     {
       "name": "Audio Merger",
-      "short_name": "Audio Merger",
+      "shortName": "Audio Merger",
       "url": "/audio-merger?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/audio/icon-192.png"
     },
     {
       "name": "Audio Volume Changer",
-      "short_name": "Audio Volum…",
+      "shortName": "Audio Volum…",
       "url": "/audio-volume-changer?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/audio/icon-192.png"
     },
     {
       "name": "Audio Normalizer",
-      "short_name": "Audio Norma…",
+      "shortName": "Audio Norma…",
       "url": "/audio-normalizer?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/audio/icon-192.png"
     }

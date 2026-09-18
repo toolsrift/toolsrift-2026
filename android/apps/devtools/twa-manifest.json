@@ -26,25 +26,25 @@
   "shortcuts": [
     {
       "name": "Unix Timestamp",
-      "short_name": "Unix Timest…",
+      "shortName": "Unix Timest…",
       "url": "/unix-timestamp?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/devtools/icon-192.png"
     },
     {
       "name": "Cron Parser",
-      "short_name": "Cron Parser",
+      "shortName": "Cron Parser",
       "url": "/cron-parser?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/devtools/icon-192.png"
     },
     {
       "name": "Cron Generator",
-      "short_name": "Cron Genera…",
+      "shortName": "Cron Genera…",
       "url": "/cron-gen?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/devtools/icon-192.png"
     },
     {
       "name": "Timezone Dev",
-      "short_name": "Timezone Dev",
+      "shortName": "Timezone Dev",
       "url": "/timezone-dev?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/devtools/icon-192.png"
     }

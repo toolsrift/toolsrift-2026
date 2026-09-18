@@ -26,25 +26,25 @@
   "shortcuts": [
     {
       "name": "vCard QR Generator",
-      "short_name": "vCard QR Ge…",
+      "shortName": "vCard QR Ge…",
       "url": "/vcard-generator?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/office/icon-192.png"
     },
     {
       "name": "WiFi QR Code Generator",
-      "short_name": "WiFi QR Cod…",
+      "shortName": "WiFi QR Cod…",
       "url": "/wifi-qr-generator?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/office/icon-192.png"
     },
     {
       "name": "QR Code Studio",
-      "short_name": "QR Code Stu…",
+      "shortName": "QR Code Stu…",
       "url": "/qr-code-studio?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/office/icon-192.png"
     },
     {
       "name": "Mailto Link Generator",
-      "short_name": "Mailto Link…",
+      "shortName": "Mailto Link…",
       "url": "/email-link-generator?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/office/icon-192.png"
     }

@@ -26,25 +26,25 @@
   "shortcuts": [
     {
       "name": "Word Counter Pro",
-      "short_name": "Word Counte…",
+      "shortName": "Word Counte…",
       "url": "/word-counter-pro?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/text/icon-192.png"
     },
     {
       "name": "Character Counter",
-      "short_name": "Character C…",
+      "shortName": "Character C…",
       "url": "/character-counter?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/text/icon-192.png"
     },
     {
       "name": "Reading Time Calculator",
-      "short_name": "Reading Tim…",
+      "shortName": "Reading Tim…",
       "url": "/reading-time?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/text/icon-192.png"
     },
     {
       "name": "Word Frequency Analyzer",
-      "short_name": "Word Freque…",
+      "shortName": "Word Freque…",
       "url": "/word-frequency?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/text/icon-192.png"
     }

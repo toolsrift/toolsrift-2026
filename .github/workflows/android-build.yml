@@ -127,6 +127,9 @@ jobs:
           SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
           yes | "$SDKMANAGER" --licenses >/dev/null 2>&1 || true
           "$SDKMANAGER" --install "build-tools;$BUILD_TOOLS" "platforms;android-36" >/dev/null
+          # Bubblewrap validates the SDK root by looking for <sdk>/bin (or <sdk>/tools);
+          # the runner's SDK keeps sdkmanager under cmdline-tools/latest/bin.
+          [ -e "$ANDROID_HOME/bin" ] || sudo ln -s "$ANDROID_HOME/cmdline-tools/latest/bin" "$ANDROID_HOME/bin"
       - name: Bubblewrap
         run: |
           npm i -g "@bubblewrap/cli@$BUBBLEWRAP_VERSION"

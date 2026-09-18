@@ -26,25 +26,25 @@
   "shortcuts": [
     {
       "name": "Strong Password Generator",
-      "short_name": "Strong Pass…",
+      "shortName": "Strong Pass…",
       "url": "/strong-password-gen?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/generators/icon-192.png"
     },
     {
       "name": "Passphrase Generator",
-      "short_name": "Passphrase …",
+      "shortName": "Passphrase …",
       "url": "/passphrase-gen?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/generators/icon-192.png"
     },
     {
       "name": "PIN Generator",
-      "short_name": "PIN Generat…",
+      "shortName": "PIN Generat…",
       "url": "/pin-gen?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/generators/icon-192.png"
     },
     {
       "name": "API Key Generator",
-      "short_name": "API Key Gen…",
+      "shortName": "API Key Gen…",
       "url": "/api-key-gen?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/generators/icon-192.png"
     }

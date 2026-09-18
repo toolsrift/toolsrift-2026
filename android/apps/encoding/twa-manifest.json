@@ -26,25 +26,25 @@
   "shortcuts": [
     {
       "name": "Morse Code Translator",
-      "short_name": "Morse Code …",
+      "shortName": "Morse Code …",
       "url": "/morse-code?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/encoding/icon-192.png"
     },
     {
       "name": "NATO Phonetic Alphabet",
-      "short_name": "NATO Phonet…",
+      "shortName": "NATO Phonet…",
       "url": "/nato-alphabet?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/encoding/icon-192.png"
     },
     {
       "name": "Binary Text Converter",
-      "short_name": "Binary Text…",
+      "shortName": "Binary Text…",
       "url": "/binary-text?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/encoding/icon-192.png"
     },
     {
       "name": "Hex Text Converter",
-      "short_name": "Hex Text Co…",
+      "shortName": "Hex Text Co…",
       "url": "/hex-text?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/encoding/icon-192.png"
     }

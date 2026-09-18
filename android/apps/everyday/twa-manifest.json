@@ -26,25 +26,25 @@
   "shortcuts": [
     {
       "name": "Age Calculator",
-      "short_name": "Age Calcula…",
+      "shortName": "Age Calcula…",
       "url": "/age-calculator?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/everyday/icon-192.png"
     },
     {
       "name": "Date Difference Calculator",
-      "short_name": "Date Differ…",
+      "shortName": "Date Differ…",
       "url": "/date-difference?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/everyday/icon-192.png"
     },
     {
       "name": "Add or Subtract Days",
-      "short_name": "Add or Subt…",
+      "shortName": "Add or Subt…",
       "url": "/add-subtract-days?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/everyday/icon-192.png"
     },
     {
       "name": "Days Until Calculator",
-      "short_name": "Days Until …",
+      "shortName": "Days Until …",
       "url": "/days-until?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/everyday/icon-192.png"
     }

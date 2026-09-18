@@ -26,25 +26,25 @@
   "shortcuts": [
     {
       "name": "Force Converter",
-      "short_name": "Force Conve…",
+      "shortName": "Force Conve…",
       "url": "/force-converter?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/converters2/icon-192.png"
     },
     {
       "name": "Torque Converter",
-      "short_name": "Torque Conv…",
+      "shortName": "Torque Conv…",
       "url": "/torque-converter?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/converters2/icon-192.png"
     },
     {
       "name": "Current Converter",
-      "short_name": "Current Con…",
+      "shortName": "Current Con…",
       "url": "/current-converter?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/converters2/icon-192.png"
     },
     {
       "name": "Voltage Converter",
-      "short_name": "Voltage Con…",
+      "shortName": "Voltage Con…",
       "url": "/voltage-converter?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/converters2/icon-192.png"
     }

@@ -26,25 +26,25 @@
   "shortcuts": [
     {
       "name": "Gitignore Generator",
-      "short_name": "Gitignore G…",
+      "shortName": "Gitignore G…",
       "url": "/gitignore-gen?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/devgen/icon-192.png"
     },
     {
       "name": "README Generator",
-      "short_name": "README Gene…",
+      "shortName": "README Gene…",
       "url": "/readme-gen?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/devgen/icon-192.png"
     },
     {
       "name": "GitHub Profile README Generator",
-      "short_name": "GitHub Prof…",
+      "shortName": "GitHub Prof…",
       "url": "/github-profile-gen?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/devgen/icon-192.png"
     },
     {
       "name": "License Generator",
-      "short_name": "License Gen…",
+      "shortName": "License Gen…",
       "url": "/license-gen?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/devgen/icon-192.png"
     }

@@ -26,25 +26,25 @@
   "shortcuts": [
     {
       "name": "Base64 Encoder",
-      "short_name": "Base64 Enco…",
+      "shortName": "Base64 Enco…",
       "url": "/base64-encode?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/encoders/icon-192.png"
     },
     {
       "name": "Base64 Decoder",
-      "short_name": "Base64 Deco…",
+      "shortName": "Base64 Deco…",
       "url": "/base64-decode?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/encoders/icon-192.png"
     },
     {
       "name": "Base64 Image Encoder",
-      "short_name": "Base64 Imag…",
+      "shortName": "Base64 Imag…",
       "url": "/base64-image?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/encoders/icon-192.png"
     },
     {
       "name": "Base32 Encoder",
-      "short_name": "Base32 Enco…",
+      "shortName": "Base32 Enco…",
       "url": "/base32-encode?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/encoders/icon-192.png"
     }
