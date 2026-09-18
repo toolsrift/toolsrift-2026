@@ -11,8 +11,8 @@ import SiteFooter from '../components/SiteFooter'
 /* ============================================================
    STANDALONE NETWORK SITE — TOOL PAGE  /<tool-id>   (file: pages/[slug].js)
    ============================================================
-   On toolsriftpdf.com every PDF tool lives at the root:
-     https://toolsriftpdf.com/merge-pdf
+   On pdf.toolsrift.com every PDF tool lives at the root:
+     https://pdf.toolsrift.com/merge-pdf
    This is the standalone counterpart of pages/[slug]/[tool].js — same
    route-hint mechanism, same server-rendered article — but branded for the
    site, canonical to the site's own domain, and with a two-level breadcrumb

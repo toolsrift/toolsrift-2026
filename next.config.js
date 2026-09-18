@@ -7,7 +7,7 @@
 //            named "toolsrift-<site id>" (scripts/vercel/bootstrap.sh and the
 //            Vercel connector both follow this), so "toolsrift-pdf.vercel.app",
 //            "toolsrift-pdf-xxxx.vercel.app" or a brand's own domain
-//            ("toolsriftpdf.com") all resolve to the pdf site. Anything else —
+//            ("pdf.toolsrift.com") all resolve to the pdf site. Anything else —
 //            including toolsrift.com / toolsrift.vercel.app — is the hub.
 // The resolved value is inlined as NEXT_PUBLIC_SITE_ID into every bundle
 // (client, server and edge middleware), so lib/sites/index.js only ever reads

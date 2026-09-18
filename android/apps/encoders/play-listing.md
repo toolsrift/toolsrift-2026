@@ -6,8 +6,8 @@
 | App name (≤30) | ToolsRift Encoders |
 | Launcher name | Encoders |
 | Category | TOOLS |
-| Website | https://toolsriftencoders.com |
-| Privacy policy | https://toolsriftencoders.com/privacy-policy |
+| Website | https://encoders.toolsrift.com |
+| Privacy policy | https://encoders.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/encoders/icon-512.png` |
 | Feature graphic (1024×500) | export from `public/brands/encoders/og.svg` |
@@ -48,7 +48,7 @@ WHY TOOLSRIFT ENCODERS
 ✓ Clean, ad-supported, no paywalls
 ✓ Part of the ToolsRift network of 29 specialist tool sites
 
-ToolsRift Encoders is the encoders edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsriftencoders.com, so every improvement to the website ships to the app automatically.
+ToolsRift Encoders is the encoders edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around encoders.toolsrift.com, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags

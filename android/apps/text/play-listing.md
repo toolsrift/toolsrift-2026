@@ -6,8 +6,8 @@
 | App name (≤30) | ToolsRift Text Tools |
 | Launcher name | Text Tools |
 | Category | PRODUCTIVITY |
-| Website | https://toolsrifttext.com |
-| Privacy policy | https://toolsrifttext.com/privacy-policy |
+| Website | https://text.toolsrift.com |
+| Privacy policy | https://text.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/text/icon-512.png` |
 | Feature graphic (1024×500) | export from `public/brands/text/og.svg` |
@@ -48,7 +48,7 @@ WHY TOOLSRIFT TEXT
 ✓ Clean, ad-supported, no paywalls
 ✓ Part of the ToolsRift network of 29 specialist tool sites
 
-ToolsRift Text is the text edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsrifttext.com, so every improvement to the website ships to the app automatically.
+ToolsRift Text is the text edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around text.toolsrift.com, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags

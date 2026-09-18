@@ -51,7 +51,10 @@ bootstrap_one() {
   done
   # 4. Domain (DNS: A 76.76.21.21 or CNAME cname.vercel-dns.com — see docs/NETWORK-SITES.md)
   $VERCEL domains add "$domain" "$project" "${SCOPE_ARGS[@]}" || true
-  $VERCEL domains add "www.$domain" "$project" "${SCOPE_ARGS[@]}" || true
+  # "www." only makes sense for an apex domain, not for pdf.toolsrift.com
+  if [[ "$(tr -cd '.' <<< "$domain" | wc -c)" -eq 1 ]]; then
+    $VERCEL domains add "www.$domain" "$project" "${SCOPE_ARGS[@]}" || true
+  fi
   echo "   ✓ project=$project  NEXT_PUBLIC_SITE_ID=$site  domain=$domain"
   rm -rf .vercel
 }

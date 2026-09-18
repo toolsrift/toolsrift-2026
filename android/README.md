@@ -42,7 +42,7 @@ npm run android:keystore -- pdf
 
 # 2. put that fingerprint in the site's Vercel env and redeploy
 #    ANDROID_SHA256_FINGERPRINTS=AB:CD:...   (project toolsrift-pdf)
-#    → https://toolsriftpdf.com/.well-known/assetlinks.json now lists it
+#    → https://pdf.toolsrift.com/.well-known/assetlinks.json now lists it
 
 # 3. build
 npm run android:build -- pdf
@@ -72,21 +72,21 @@ icon path (`public/brands/<id>/icon-512.png`), and the Data safety answers.
 ## Verifying assetlinks
 
 ```bash
-curl -s https://toolsriftpdf.com/.well-known/assetlinks.json
+curl -s https://pdf.toolsrift.com/.well-known/assetlinks.json
 # → [{ "relation": ["delegate_permission/common.handle_all_urls"],
 #      "target": { "namespace": "android_app", "package_name": "com.toolsrift.pdf",
 #                  "sha256_cert_fingerprints": ["AB:CD:…"] } }]
 ```
 
-Google's checker: `https://digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https://toolsriftpdf.com&relation=delegate_permission/common.handle_all_urls`
+Google's checker: `https://digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https://pdf.toolsrift.com&relation=delegate_permission/common.handle_all_urls`
 
 ## Existing text app
 
 `com.toolsrift.text.twa` (the app already built against `text.toolsrift.com`)
-keeps its package id and fingerprint in `brands.js` → `text.android`. Rebuilding
-it from `android/apps/text/twa-manifest.json` moves it to `toolsrifttext.com`
-as an ordinary update; the hub keeps `public/.well-known/assetlinks.json` so
-the old host stays verified during the transition.
+keeps its package id and fingerprint in `brands.js` → `text.android`, and the
+text site keeps that same host — so the existing app simply starts opening the
+standalone site once `text.toolsrift.com` is moved to the `toolsrift-text`
+project. Put its fingerprint in that project's `ANDROID_SHA256_FINGERPRINTS`.
 
 ## Why not Capacitor / React Native?
 

@@ -1,6 +1,6 @@
 {
   "packageId": "com.toolsrift.json",
-  "host": "toolsriftjson.com",
+  "host": "json.toolsrift.com",
   "name": "ToolsRift JSON Tools",
   "launcherName": "JSON Tools",
   "display": "standalone",
@@ -14,8 +14,8 @@
   "backgroundColor": "#060A08",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://toolsriftjson.com/brands/code/icon-512.png",
-  "maskableIconUrl": "https://toolsriftjson.com/brands/code/icon-maskable-512.png",
+  "iconUrl": "https://json.toolsrift.com/brands/code/icon-512.png",
+  "maskableIconUrl": "https://json.toolsrift.com/brands/code/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "../../keys/code.keystore",
@@ -28,29 +28,29 @@
       "name": "JSON Formatter",
       "short_name": "JSON Format…",
       "url": "/json-formatter?source=shortcut",
-      "chosenIconUrl": "https://toolsriftjson.com/brands/code/icon-192.png"
+      "chosenIconUrl": "https://json.toolsrift.com/brands/code/icon-192.png"
     },
     {
       "name": "JSON Minifier",
       "short_name": "JSON Minifi…",
       "url": "/json-minifier?source=shortcut",
-      "chosenIconUrl": "https://toolsriftjson.com/brands/code/icon-192.png"
+      "chosenIconUrl": "https://json.toolsrift.com/brands/code/icon-192.png"
     },
     {
       "name": "JSON Validator",
       "short_name": "JSON Valida…",
       "url": "/json-validator?source=shortcut",
-      "chosenIconUrl": "https://toolsriftjson.com/brands/code/icon-192.png"
+      "chosenIconUrl": "https://json.toolsrift.com/brands/code/icon-192.png"
     },
     {
       "name": "JSON String Escape",
       "short_name": "JSON String…",
       "url": "/json-escape?source=shortcut",
-      "chosenIconUrl": "https://toolsriftjson.com/brands/code/icon-192.png"
+      "chosenIconUrl": "https://json.toolsrift.com/brands/code/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://toolsriftjson.com/manifest.json",
+  "webManifestUrl": "https://json.toolsrift.com/manifest.json",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -59,7 +59,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://toolsriftjson.com/",
+  "fullScopeUrl": "https://json.toolsrift.com/",
   "minSdkVersion": 21,
   "orientationLock": false,
   "additionalTrustedOrigins": [],

@@ -1,6 +1,6 @@
 {
   "packageId": "com.toolsrift.generators",
-  "host": "toolsriftgenerators.com",
+  "host": "generators.toolsrift.com",
   "name": "ToolsRift Generators",
   "launcherName": "Generators",
   "display": "standalone",
@@ -14,8 +14,8 @@
   "backgroundColor": "#070A05",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://toolsriftgenerators.com/brands/generators/icon-512.png",
-  "maskableIconUrl": "https://toolsriftgenerators.com/brands/generators/icon-maskable-512.png",
+  "iconUrl": "https://generators.toolsrift.com/brands/generators/icon-512.png",
+  "maskableIconUrl": "https://generators.toolsrift.com/brands/generators/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "../../keys/generators.keystore",
@@ -28,29 +28,29 @@
       "name": "Strong Password Generator",
       "short_name": "Strong Pass…",
       "url": "/strong-password-gen?source=shortcut",
-      "chosenIconUrl": "https://toolsriftgenerators.com/brands/generators/icon-192.png"
+      "chosenIconUrl": "https://generators.toolsrift.com/brands/generators/icon-192.png"
     },
     {
       "name": "Passphrase Generator",
       "short_name": "Passphrase …",
       "url": "/passphrase-gen?source=shortcut",
-      "chosenIconUrl": "https://toolsriftgenerators.com/brands/generators/icon-192.png"
+      "chosenIconUrl": "https://generators.toolsrift.com/brands/generators/icon-192.png"
     },
     {
       "name": "PIN Generator",
       "short_name": "PIN Generat…",
       "url": "/pin-gen?source=shortcut",
-      "chosenIconUrl": "https://toolsriftgenerators.com/brands/generators/icon-192.png"
+      "chosenIconUrl": "https://generators.toolsrift.com/brands/generators/icon-192.png"
     },
     {
       "name": "API Key Generator",
       "short_name": "API Key Gen…",
       "url": "/api-key-gen?source=shortcut",
-      "chosenIconUrl": "https://toolsriftgenerators.com/brands/generators/icon-192.png"
+      "chosenIconUrl": "https://generators.toolsrift.com/brands/generators/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://toolsriftgenerators.com/manifest.json",
+  "webManifestUrl": "https://generators.toolsrift.com/manifest.json",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -59,7 +59,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://toolsriftgenerators.com/",
+  "fullScopeUrl": "https://generators.toolsrift.com/",
   "minSdkVersion": 21,
   "orientationLock": false,
   "additionalTrustedOrigins": [],

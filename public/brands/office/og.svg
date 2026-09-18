@@ -31,7 +31,7 @@
     <rect x="16" y="24" width="68" height="52" rx="8" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 42h68M30 56h26" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
   </g></g>
   <text x="240" y="152" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="800" font-size="52" letter-spacing="-1.2" fill="#F8FAFC">ToolsRift<tspan fill="#0891B2"> Office</tspan></text>
-  <text x="240" y="196" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="500" font-size="22" fill="#94A3B8">toolsriftoffice.com</text>
+  <text x="240" y="196" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="500" font-size="22" fill="#94A3B8">office.toolsrift.com</text>
   <text x="96" y="352" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="800" font-size="60" letter-spacing="-1.5" fill="#F8FAFC">A tidy desk, in a browser tab.</text>
   <text x="96" y="410" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="500" font-size="26" fill="#CBD5E1">25 free office tools · 100% in your browser · no sign-up</text>
   <g transform="translate(96 476)">

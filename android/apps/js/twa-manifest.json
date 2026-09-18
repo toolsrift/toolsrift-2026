@@ -1,6 +1,6 @@
 {
   "packageId": "com.toolsrift.js",
-  "host": "toolsriftjs.com",
+  "host": "js.toolsrift.com",
   "name": "ToolsRift JavaScript Tools",
   "launcherName": "JS Tools",
   "display": "standalone",
@@ -14,8 +14,8 @@
   "backgroundColor": "#0A0A06",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://toolsriftjs.com/brands/js/icon-512.png",
-  "maskableIconUrl": "https://toolsriftjs.com/brands/js/icon-maskable-512.png",
+  "iconUrl": "https://js.toolsrift.com/brands/js/icon-512.png",
+  "maskableIconUrl": "https://js.toolsrift.com/brands/js/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "../../keys/js.keystore",
@@ -28,29 +28,29 @@
       "name": "JavaScript Formatter",
       "short_name": "JavaScript …",
       "url": "/js-formatter?source=shortcut",
-      "chosenIconUrl": "https://toolsriftjs.com/brands/js/icon-192.png"
+      "chosenIconUrl": "https://js.toolsrift.com/brands/js/icon-192.png"
     },
     {
       "name": "JavaScript Minifier",
       "short_name": "JavaScript …",
       "url": "/js-minifier?source=shortcut",
-      "chosenIconUrl": "https://toolsriftjs.com/brands/js/icon-192.png"
+      "chosenIconUrl": "https://js.toolsrift.com/brands/js/icon-192.png"
     },
     {
       "name": "JavaScript Validator",
       "short_name": "JavaScript …",
       "url": "/js-validator?source=shortcut",
-      "chosenIconUrl": "https://toolsriftjs.com/brands/js/icon-192.png"
+      "chosenIconUrl": "https://js.toolsrift.com/brands/js/icon-192.png"
     },
     {
       "name": "JSON to JS Object",
       "short_name": "JSON to JS …",
       "url": "/json-to-js?source=shortcut",
-      "chosenIconUrl": "https://toolsriftjs.com/brands/js/icon-192.png"
+      "chosenIconUrl": "https://js.toolsrift.com/brands/js/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://toolsriftjs.com/manifest.json",
+  "webManifestUrl": "https://js.toolsrift.com/manifest.json",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -59,7 +59,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://toolsriftjs.com/",
+  "fullScopeUrl": "https://js.toolsrift.com/",
   "minSdkVersion": 21,
   "orientationLock": false,
   "additionalTrustedOrigins": [],

@@ -1,6 +1,6 @@
 {
   "packageId": "com.toolsrift.encoding",
-  "host": "toolsriftencoding.com",
+  "host": "encoding.toolsrift.com",
   "name": "ToolsRift Text Encoding",
   "launcherName": "Encoding",
   "display": "standalone",
@@ -14,8 +14,8 @@
   "backgroundColor": "#06070F",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://toolsriftencoding.com/brands/encoding/icon-512.png",
-  "maskableIconUrl": "https://toolsriftencoding.com/brands/encoding/icon-maskable-512.png",
+  "iconUrl": "https://encoding.toolsrift.com/brands/encoding/icon-512.png",
+  "maskableIconUrl": "https://encoding.toolsrift.com/brands/encoding/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "../../keys/encoding.keystore",
@@ -28,29 +28,29 @@
       "name": "Morse Code Translator",
       "short_name": "Morse Code …",
       "url": "/morse-code?source=shortcut",
-      "chosenIconUrl": "https://toolsriftencoding.com/brands/encoding/icon-192.png"
+      "chosenIconUrl": "https://encoding.toolsrift.com/brands/encoding/icon-192.png"
     },
     {
       "name": "NATO Phonetic Alphabet",
       "short_name": "NATO Phonet…",
       "url": "/nato-alphabet?source=shortcut",
-      "chosenIconUrl": "https://toolsriftencoding.com/brands/encoding/icon-192.png"
+      "chosenIconUrl": "https://encoding.toolsrift.com/brands/encoding/icon-192.png"
     },
     {
       "name": "Binary Text Converter",
       "short_name": "Binary Text…",
       "url": "/binary-text?source=shortcut",
-      "chosenIconUrl": "https://toolsriftencoding.com/brands/encoding/icon-192.png"
+      "chosenIconUrl": "https://encoding.toolsrift.com/brands/encoding/icon-192.png"
     },
     {
       "name": "Hex Text Converter",
       "short_name": "Hex Text Co…",
       "url": "/hex-text?source=shortcut",
-      "chosenIconUrl": "https://toolsriftencoding.com/brands/encoding/icon-192.png"
+      "chosenIconUrl": "https://encoding.toolsrift.com/brands/encoding/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://toolsriftencoding.com/manifest.json",
+  "webManifestUrl": "https://encoding.toolsrift.com/manifest.json",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -59,7 +59,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://toolsriftencoding.com/",
+  "fullScopeUrl": "https://encoding.toolsrift.com/",
   "minSdkVersion": 21,
   "orientationLock": false,
   "additionalTrustedOrigins": [],

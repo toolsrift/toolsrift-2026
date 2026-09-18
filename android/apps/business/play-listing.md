@@ -6,8 +6,8 @@
 | App name (≤30) | ToolsRift Business Tools |
 | Launcher name | Business |
 | Category | BUSINESS |
-| Website | https://toolsriftbusiness.com |
-| Privacy policy | https://toolsriftbusiness.com/privacy-policy |
+| Website | https://business.toolsrift.com |
+| Privacy policy | https://business.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/business/icon-512.png` |
 | Feature graphic (1024×500) | export from `public/brands/business/og.svg` |
@@ -48,7 +48,7 @@ WHY TOOLSRIFT BUSINESS
 ✓ Clean, ad-supported, no paywalls
 ✓ Part of the ToolsRift network of 29 specialist tool sites
 
-ToolsRift Business is the business edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsriftbusiness.com, so every improvement to the website ships to the app automatically.
+ToolsRift Business is the business edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around business.toolsrift.com, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags

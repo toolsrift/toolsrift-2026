@@ -6,8 +6,8 @@
 | App name (≤30) | ToolsRift Fancy Text |
 | Launcher name | Fancy Text |
 | Category | SOCIAL |
-| Website | https://toolsriftfancy.com |
-| Privacy policy | https://toolsriftfancy.com/privacy-policy |
+| Website | https://fancy.toolsrift.com |
+| Privacy policy | https://fancy.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/fancy/icon-512.png` |
 | Feature graphic (1024×500) | export from `public/brands/fancy/og.svg` |
@@ -48,7 +48,7 @@ WHY TOOLSRIFT FANCY
 ✓ Clean, ad-supported, no paywalls
 ✓ Part of the ToolsRift network of 29 specialist tool sites
 
-ToolsRift Fancy is the fancy edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsriftfancy.com, so every improvement to the website ships to the app automatically.
+ToolsRift Fancy is the fancy edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around fancy.toolsrift.com, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags

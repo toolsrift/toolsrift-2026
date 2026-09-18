@@ -1,6 +1,6 @@
 {
   "packageId": "com.toolsrift.pdf",
-  "host": "toolsriftpdf.com",
+  "host": "pdf.toolsrift.com",
   "name": "ToolsRift PDF Tools",
   "launcherName": "PDF Tools",
   "display": "standalone",
@@ -14,8 +14,8 @@
   "backgroundColor": "#0E0A09",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://toolsriftpdf.com/brands/pdf/icon-512.png",
-  "maskableIconUrl": "https://toolsriftpdf.com/brands/pdf/icon-maskable-512.png",
+  "iconUrl": "https://pdf.toolsrift.com/brands/pdf/icon-512.png",
+  "maskableIconUrl": "https://pdf.toolsrift.com/brands/pdf/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "../../keys/pdf.keystore",
@@ -28,29 +28,29 @@
       "name": "PDF Viewer",
       "short_name": "PDF Viewer",
       "url": "/pdf-viewer?source=shortcut",
-      "chosenIconUrl": "https://toolsriftpdf.com/brands/pdf/icon-192.png"
+      "chosenIconUrl": "https://pdf.toolsrift.com/brands/pdf/icon-192.png"
     },
     {
       "name": "PDF Page Counter",
       "short_name": "PDF Page Co…",
       "url": "/pdf-page-count?source=shortcut",
-      "chosenIconUrl": "https://toolsriftpdf.com/brands/pdf/icon-192.png"
+      "chosenIconUrl": "https://pdf.toolsrift.com/brands/pdf/icon-192.png"
     },
     {
       "name": "PDF Metadata Viewer",
       "short_name": "PDF Metadat…",
       "url": "/pdf-metadata?source=shortcut",
-      "chosenIconUrl": "https://toolsriftpdf.com/brands/pdf/icon-192.png"
+      "chosenIconUrl": "https://pdf.toolsrift.com/brands/pdf/icon-192.png"
     },
     {
       "name": "PDF Text Extractor",
       "short_name": "PDF Text Ex…",
       "url": "/pdf-text-extractor?source=shortcut",
-      "chosenIconUrl": "https://toolsriftpdf.com/brands/pdf/icon-192.png"
+      "chosenIconUrl": "https://pdf.toolsrift.com/brands/pdf/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://toolsriftpdf.com/manifest.json",
+  "webManifestUrl": "https://pdf.toolsrift.com/manifest.json",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -59,7 +59,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://toolsriftpdf.com/",
+  "fullScopeUrl": "https://pdf.toolsrift.com/",
   "minSdkVersion": 21,
   "orientationLock": false,
   "additionalTrustedOrigins": [],

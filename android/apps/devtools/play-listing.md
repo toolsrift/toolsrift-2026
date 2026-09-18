@@ -6,8 +6,8 @@
 | App name (≤30) | ToolsRift Developer Tools |
 | Launcher name | DevTools |
 | Category | TOOLS |
-| Website | https://toolsriftdevtools.com |
-| Privacy policy | https://toolsriftdevtools.com/privacy-policy |
+| Website | https://devtools.toolsrift.com |
+| Privacy policy | https://devtools.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/devtools/icon-512.png` |
 | Feature graphic (1024×500) | export from `public/brands/devtools/og.svg` |
@@ -48,7 +48,7 @@ WHY TOOLSRIFT DEVTOOLS
 ✓ Clean, ad-supported, no paywalls
 ✓ Part of the ToolsRift network of 29 specialist tool sites
 
-ToolsRift DevTools is the devtools edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsriftdevtools.com, so every improvement to the website ships to the app automatically.
+ToolsRift DevTools is the devtools edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around devtools.toolsrift.com, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags

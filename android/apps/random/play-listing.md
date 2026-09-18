@@ -6,8 +6,8 @@
 | App name (≤30) | ToolsRift Random & Games |
 | Launcher name | Random |
 | Category | ENTERTAINMENT |
-| Website | https://toolsriftrandom.com |
-| Privacy policy | https://toolsriftrandom.com/privacy-policy |
+| Website | https://random.toolsrift.com |
+| Privacy policy | https://random.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/random/icon-512.png` |
 | Feature graphic (1024×500) | export from `public/brands/random/og.svg` |
@@ -48,7 +48,7 @@ WHY TOOLSRIFT RANDOM
 ✓ Clean, ad-supported, no paywalls
 ✓ Part of the ToolsRift network of 29 specialist tool sites
 
-ToolsRift Random is the random edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsriftrandom.com, so every improvement to the website ships to the app automatically.
+ToolsRift Random is the random edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around random.toolsrift.com, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags

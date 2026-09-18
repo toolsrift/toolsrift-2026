@@ -1,6 +1,6 @@
 {
   "packageId": "com.toolsrift.fancy",
-  "host": "toolsriftfancy.com",
+  "host": "fancy.toolsrift.com",
   "name": "ToolsRift Fancy Text",
   "launcherName": "Fancy Text",
   "display": "standalone",
@@ -14,8 +14,8 @@
   "backgroundColor": "#0D0612",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://toolsriftfancy.com/brands/fancy/icon-512.png",
-  "maskableIconUrl": "https://toolsriftfancy.com/brands/fancy/icon-maskable-512.png",
+  "iconUrl": "https://fancy.toolsrift.com/brands/fancy/icon-512.png",
+  "maskableIconUrl": "https://fancy.toolsrift.com/brands/fancy/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "../../keys/fancy.keystore",
@@ -28,29 +28,29 @@
       "name": "Bold Text Generator",
       "short_name": "Bold Text G…",
       "url": "/bold-text-generator?source=shortcut",
-      "chosenIconUrl": "https://toolsriftfancy.com/brands/fancy/icon-192.png"
+      "chosenIconUrl": "https://fancy.toolsrift.com/brands/fancy/icon-192.png"
     },
     {
       "name": "Italic Text Generator",
       "short_name": "Italic Text…",
       "url": "/italic-text-generator?source=shortcut",
-      "chosenIconUrl": "https://toolsriftfancy.com/brands/fancy/icon-192.png"
+      "chosenIconUrl": "https://fancy.toolsrift.com/brands/fancy/icon-192.png"
     },
     {
       "name": "Bold Italic Generator",
       "short_name": "Bold Italic…",
       "url": "/bold-italic-generator?source=shortcut",
-      "chosenIconUrl": "https://toolsriftfancy.com/brands/fancy/icon-192.png"
+      "chosenIconUrl": "https://fancy.toolsrift.com/brands/fancy/icon-192.png"
     },
     {
       "name": "Underline Text",
       "short_name": "Underline T…",
       "url": "/underline-text?source=shortcut",
-      "chosenIconUrl": "https://toolsriftfancy.com/brands/fancy/icon-192.png"
+      "chosenIconUrl": "https://fancy.toolsrift.com/brands/fancy/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://toolsriftfancy.com/manifest.json",
+  "webManifestUrl": "https://fancy.toolsrift.com/manifest.json",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -59,7 +59,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://toolsriftfancy.com/",
+  "fullScopeUrl": "https://fancy.toolsrift.com/",
   "minSdkVersion": 21,
   "orientationLock": false,
   "additionalTrustedOrigins": [],

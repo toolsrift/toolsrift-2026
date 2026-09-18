@@ -1,6 +1,6 @@
 {
   "packageId": "com.toolsrift.video",
-  "host": "toolsriftvideo.com",
+  "host": "video.toolsrift.com",
   "name": "ToolsRift Video Tools",
   "launcherName": "Video",
   "display": "standalone",
@@ -14,8 +14,8 @@
   "backgroundColor": "#0B0604",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://toolsriftvideo.com/brands/video/icon-512.png",
-  "maskableIconUrl": "https://toolsriftvideo.com/brands/video/icon-maskable-512.png",
+  "iconUrl": "https://video.toolsrift.com/brands/video/icon-512.png",
+  "maskableIconUrl": "https://video.toolsrift.com/brands/video/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "../../keys/video.keystore",
@@ -28,29 +28,29 @@
       "name": "Video Trimmer",
       "short_name": "Video Trimm…",
       "url": "/video-trimmer?source=shortcut",
-      "chosenIconUrl": "https://toolsriftvideo.com/brands/video/icon-192.png"
+      "chosenIconUrl": "https://video.toolsrift.com/brands/video/icon-192.png"
     },
     {
       "name": "Video Merger",
       "short_name": "Video Merger",
       "url": "/video-merger?source=shortcut",
-      "chosenIconUrl": "https://toolsriftvideo.com/brands/video/icon-192.png"
+      "chosenIconUrl": "https://video.toolsrift.com/brands/video/icon-192.png"
     },
     {
       "name": "Video Rotator",
       "short_name": "Video Rotat…",
       "url": "/video-rotate?source=shortcut",
-      "chosenIconUrl": "https://toolsriftvideo.com/brands/video/icon-192.png"
+      "chosenIconUrl": "https://video.toolsrift.com/brands/video/icon-192.png"
     },
     {
       "name": "Video Cropper",
       "short_name": "Video Cropp…",
       "url": "/video-crop?source=shortcut",
-      "chosenIconUrl": "https://toolsriftvideo.com/brands/video/icon-192.png"
+      "chosenIconUrl": "https://video.toolsrift.com/brands/video/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://toolsriftvideo.com/manifest.json",
+  "webManifestUrl": "https://video.toolsrift.com/manifest.json",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -59,7 +59,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://toolsriftvideo.com/",
+  "fullScopeUrl": "https://video.toolsrift.com/",
   "minSdkVersion": 21,
   "orientationLock": false,
   "additionalTrustedOrigins": [],

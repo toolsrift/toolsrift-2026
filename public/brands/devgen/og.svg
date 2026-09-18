@@ -31,7 +31,7 @@
     <text x="50" y="68" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-weight="700" font-size="54" fill="currentColor">$_</text>
   </g></g>
   <text x="240" y="152" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="800" font-size="52" letter-spacing="-1.2" fill="#F8FAFC">ToolsRift<tspan fill="#8B5CF6"> DevGen</tspan></text>
-  <text x="240" y="196" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="500" font-size="22" fill="#94A3B8">toolsriftdevgen.com</text>
+  <text x="240" y="196" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="500" font-size="22" fill="#94A3B8">devgen.toolsrift.com</text>
   <text x="96" y="352" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="800" font-size="60" letter-spacing="-1.5" fill="#F8FAFC">$ generate the config, skip the docs.</text>
   <text x="96" y="410" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="500" font-size="26" fill="#CBD5E1">43 free devgen tools · 100% in your browser · no sign-up</text>
   <g transform="translate(96 476)">

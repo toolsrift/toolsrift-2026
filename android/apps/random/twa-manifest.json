@@ -1,6 +1,6 @@
 {
   "packageId": "com.toolsrift.random",
-  "host": "toolsriftrandom.com",
+  "host": "random.toolsrift.com",
   "name": "ToolsRift Random & Games",
   "launcherName": "Random",
   "display": "standalone",
@@ -14,8 +14,8 @@
   "backgroundColor": "#0D0508",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://toolsriftrandom.com/brands/random/icon-512.png",
-  "maskableIconUrl": "https://toolsriftrandom.com/brands/random/icon-maskable-512.png",
+  "iconUrl": "https://random.toolsrift.com/brands/random/icon-512.png",
+  "maskableIconUrl": "https://random.toolsrift.com/brands/random/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "../../keys/random.keystore",
@@ -28,29 +28,29 @@
       "name": "Spinner Wheel",
       "short_name": "Spinner Whe…",
       "url": "/spinner-wheel?source=shortcut",
-      "chosenIconUrl": "https://toolsriftrandom.com/brands/random/icon-192.png"
+      "chosenIconUrl": "https://random.toolsrift.com/brands/random/icon-192.png"
     },
     {
       "name": "Random Team Generator",
       "short_name": "Random Team…",
       "url": "/random-team-generator?source=shortcut",
-      "chosenIconUrl": "https://toolsriftrandom.com/brands/random/icon-192.png"
+      "chosenIconUrl": "https://random.toolsrift.com/brands/random/icon-192.png"
     },
     {
       "name": "Random Picker",
       "short_name": "Random Pick…",
       "url": "/random-picker?source=shortcut",
-      "chosenIconUrl": "https://toolsriftrandom.com/brands/random/icon-192.png"
+      "chosenIconUrl": "https://random.toolsrift.com/brands/random/icon-192.png"
     },
     {
       "name": "Random Number Generator",
       "short_name": "Random Numb…",
       "url": "/random-number-generator?source=shortcut",
-      "chosenIconUrl": "https://toolsriftrandom.com/brands/random/icon-192.png"
+      "chosenIconUrl": "https://random.toolsrift.com/brands/random/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://toolsriftrandom.com/manifest.json",
+  "webManifestUrl": "https://random.toolsrift.com/manifest.json",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -59,7 +59,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://toolsriftrandom.com/",
+  "fullScopeUrl": "https://random.toolsrift.com/",
   "minSdkVersion": 21,
   "orientationLock": false,
   "additionalTrustedOrigins": [],

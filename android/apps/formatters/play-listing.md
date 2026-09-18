@@ -6,8 +6,8 @@
 | App name (≤30) | ToolsRift Code Formatters |
 | Launcher name | Formatters |
 | Category | TOOLS |
-| Website | https://toolsriftformatters.com |
-| Privacy policy | https://toolsriftformatters.com/privacy-policy |
+| Website | https://formatters.toolsrift.com |
+| Privacy policy | https://formatters.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/formatters/icon-512.png` |
 | Feature graphic (1024×500) | export from `public/brands/formatters/og.svg` |
@@ -48,7 +48,7 @@ WHY TOOLSRIFT FORMATTERS
 ✓ Clean, ad-supported, no paywalls
 ✓ Part of the ToolsRift network of 29 specialist tool sites
 
-ToolsRift Formatters is the formatters edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsriftformatters.com, so every improvement to the website ships to the app automatically.
+ToolsRift Formatters is the formatters edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around formatters.toolsrift.com, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags

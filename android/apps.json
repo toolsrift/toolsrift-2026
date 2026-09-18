@@ -2,7 +2,7 @@
   {
     "id": "text",
     "slug": "text",
-    "domain": "toolsrifttext.com",
+    "domain": "text.toolsrift.com",
     "siteName": "ToolsRift Text",
     "packageId": "com.toolsrift.text.twa",
     "appName": "ToolsRift Text Tools",
@@ -14,7 +14,7 @@
   {
     "id": "image",
     "slug": "images",
-    "domain": "toolsriftimage.com",
+    "domain": "image.toolsrift.com",
     "siteName": "ToolsRift Image",
     "packageId": "com.toolsrift.image",
     "appName": "ToolsRift Image Tools",
@@ -26,7 +26,7 @@
   {
     "id": "pdf",
     "slug": "pdf",
-    "domain": "toolsriftpdf.com",
+    "domain": "pdf.toolsrift.com",
     "siteName": "ToolsRift PDF",
     "packageId": "com.toolsrift.pdf",
     "appName": "ToolsRift PDF Tools",
@@ -38,7 +38,7 @@
   {
     "id": "code",
     "slug": "json",
-    "domain": "toolsriftjson.com",
+    "domain": "json.toolsrift.com",
     "siteName": "ToolsRift JSON",
     "packageId": "com.toolsrift.json",
     "appName": "ToolsRift JSON Tools",
@@ -50,7 +50,7 @@
   {
     "id": "encoders",
     "slug": "encoders",
-    "domain": "toolsriftencoders.com",
+    "domain": "encoders.toolsrift.com",
     "siteName": "ToolsRift Encoders",
     "packageId": "com.toolsrift.encoders",
     "appName": "ToolsRift Encoders",
@@ -62,7 +62,7 @@
   {
     "id": "colors",
     "slug": "colors",
-    "domain": "toolsriftcolors.com",
+    "domain": "colors.toolsrift.com",
     "siteName": "ToolsRift Colors",
     "packageId": "com.toolsrift.colors",
     "appName": "ToolsRift Color Tools",
@@ -74,7 +74,7 @@
   {
     "id": "css",
     "slug": "css",
-    "domain": "toolsriftcss.com",
+    "domain": "css.toolsrift.com",
     "siteName": "ToolsRift CSS",
     "packageId": "com.toolsrift.css",
     "appName": "ToolsRift CSS Generators",
@@ -86,7 +86,7 @@
   {
     "id": "html",
     "slug": "html",
-    "domain": "toolsrifthtml.com",
+    "domain": "html.toolsrift.com",
     "siteName": "ToolsRift HTML",
     "packageId": "com.toolsrift.html",
     "appName": "ToolsRift HTML Tools",
@@ -98,7 +98,7 @@
   {
     "id": "js",
     "slug": "js",
-    "domain": "toolsriftjs.com",
+    "domain": "js.toolsrift.com",
     "siteName": "ToolsRift JS",
     "packageId": "com.toolsrift.js",
     "appName": "ToolsRift JavaScript Tools",
@@ -110,7 +110,7 @@
   {
     "id": "formatters",
     "slug": "formatters",
-    "domain": "toolsriftformatters.com",
+    "domain": "formatters.toolsrift.com",
     "siteName": "ToolsRift Formatters",
     "packageId": "com.toolsrift.formatters",
     "appName": "ToolsRift Code Formatters",
@@ -122,7 +122,7 @@
   {
     "id": "hash",
     "slug": "hash",
-    "domain": "toolsrifthash.com",
+    "domain": "hash.toolsrift.com",
     "siteName": "ToolsRift Hash",
     "packageId": "com.toolsrift.hash",
     "appName": "ToolsRift Hash & Crypto",
@@ -134,7 +134,7 @@
   {
     "id": "fancy",
     "slug": "fancy",
-    "domain": "toolsriftfancy.com",
+    "domain": "fancy.toolsrift.com",
     "siteName": "ToolsRift Fancy",
     "packageId": "com.toolsrift.fancy",
     "appName": "ToolsRift Fancy Text",
@@ -146,7 +146,7 @@
   {
     "id": "encoding",
     "slug": "encoding",
-    "domain": "toolsriftencoding.com",
+    "domain": "encoding.toolsrift.com",
     "siteName": "ToolsRift Encoding",
     "packageId": "com.toolsrift.encoding",
     "appName": "ToolsRift Text Encoding",
@@ -158,7 +158,7 @@
   {
     "id": "everyday",
     "slug": "everyday",
-    "domain": "toolsrifteveryday.com",
+    "domain": "everyday.toolsrift.com",
     "siteName": "ToolsRift Everyday",
     "packageId": "com.toolsrift.everyday",
     "appName": "ToolsRift Everyday Tools",
@@ -170,7 +170,7 @@
   {
     "id": "generators",
     "slug": "generators",
-    "domain": "toolsriftgenerators.com",
+    "domain": "generators.toolsrift.com",
     "siteName": "ToolsRift Generators",
     "packageId": "com.toolsrift.generators",
     "appName": "ToolsRift Generators",
@@ -182,7 +182,7 @@
   {
     "id": "gen-content",
     "slug": "generators2",
-    "domain": "toolsriftcontent.com",
+    "domain": "content.toolsrift.com",
     "siteName": "ToolsRift Content",
     "packageId": "com.toolsrift.content",
     "appName": "ToolsRift Content Generators",
@@ -194,7 +194,7 @@
   {
     "id": "devgen",
     "slug": "devgen",
-    "domain": "toolsriftdevgen.com",
+    "domain": "devgen.toolsrift.com",
     "siteName": "ToolsRift DevGen",
     "packageId": "com.toolsrift.devgen",
     "appName": "ToolsRift Dev Config Gen",
@@ -206,7 +206,7 @@
   {
     "id": "devtools",
     "slug": "devtools",
-    "domain": "toolsriftdevtools.com",
+    "domain": "devtools.toolsrift.com",
     "siteName": "ToolsRift DevTools",
     "packageId": "com.toolsrift.devtools",
     "appName": "ToolsRift Developer Tools",
@@ -218,7 +218,7 @@
   {
     "id": "mathcalc",
     "slug": "mathcalc",
-    "domain": "toolsriftmath.com",
+    "domain": "math.toolsrift.com",
     "siteName": "ToolsRift Math",
     "packageId": "com.toolsrift.math",
     "appName": "ToolsRift Math Calculators",
@@ -230,7 +230,7 @@
   {
     "id": "financecalc",
     "slug": "financecalc",
-    "domain": "toolsriftfinance.com",
+    "domain": "finance.toolsrift.com",
     "siteName": "ToolsRift Finance",
     "packageId": "com.toolsrift.finance",
     "appName": "ToolsRift Finance & Health",
@@ -242,7 +242,7 @@
   {
     "id": "units",
     "slug": "units",
-    "domain": "toolsriftunits.com",
+    "domain": "units.toolsrift.com",
     "siteName": "ToolsRift Units",
     "packageId": "com.toolsrift.units",
     "appName": "ToolsRift Unit Converter",
@@ -254,7 +254,7 @@
   {
     "id": "converters2",
     "slug": "converters2",
-    "domain": "toolsriftconverters.com",
+    "domain": "converters.toolsrift.com",
     "siteName": "ToolsRift Converters",
     "packageId": "com.toolsrift.converters",
     "appName": "ToolsRift Specialty Converters",
@@ -266,7 +266,7 @@
   {
     "id": "business",
     "slug": "business",
-    "domain": "toolsriftbusiness.com",
+    "domain": "business.toolsrift.com",
     "siteName": "ToolsRift Business",
     "packageId": "com.toolsrift.business",
     "appName": "ToolsRift Business Tools",
@@ -278,7 +278,7 @@
   {
     "id": "random",
     "slug": "random",
-    "domain": "toolsriftrandom.com",
+    "domain": "random.toolsrift.com",
     "siteName": "ToolsRift Random",
     "packageId": "com.toolsrift.random",
     "appName": "ToolsRift Random & Games",
@@ -290,7 +290,7 @@
   {
     "id": "audio",
     "slug": "audio",
-    "domain": "toolsriftaudio.com",
+    "domain": "audio.toolsrift.com",
     "siteName": "ToolsRift Audio",
     "packageId": "com.toolsrift.audio",
     "appName": "ToolsRift Audio Tools",
@@ -302,7 +302,7 @@
   {
     "id": "office",
     "slug": "office",
-    "domain": "toolsriftoffice.com",
+    "domain": "office.toolsrift.com",
     "siteName": "ToolsRift Office",
     "packageId": "com.toolsrift.office",
     "appName": "ToolsRift Office Tools",
@@ -314,7 +314,7 @@
   {
     "id": "data",
     "slug": "data",
-    "domain": "toolsriftdata.com",
+    "domain": "data.toolsrift.com",
     "siteName": "ToolsRift Data",
     "packageId": "com.toolsrift.data",
     "appName": "ToolsRift Charts & Data",
@@ -326,7 +326,7 @@
   {
     "id": "study",
     "slug": "study",
-    "domain": "toolsriftstudy.com",
+    "domain": "study.toolsrift.com",
     "siteName": "ToolsRift Study",
     "packageId": "com.toolsrift.study",
     "appName": "ToolsRift Study Tools",
@@ -338,7 +338,7 @@
   {
     "id": "video",
     "slug": "video",
-    "domain": "toolsriftvideo.com",
+    "domain": "video.toolsrift.com",
     "siteName": "ToolsRift Video",
     "packageId": "com.toolsrift.video",
     "appName": "ToolsRift Video Tools",

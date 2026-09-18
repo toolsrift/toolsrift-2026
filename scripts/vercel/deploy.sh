@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------------
 # scripts/vercel/deploy.sh — deploy one network site (or all) to production.
 #
-#   npm run vercel:deploy -- pdf       # build + deploy toolsriftpdf.com
+#   npm run vercel:deploy -- pdf       # build + deploy pdf.toolsrift.com
 #   npm run vercel:deploy -- --all     # every site, sequentially
 #
 # Uses the project created by scripts/vercel/bootstrap.sh. The build happens on

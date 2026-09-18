@@ -1,6 +1,6 @@
 {
   "packageId": "com.toolsrift.text.twa",
-  "host": "toolsrifttext.com",
+  "host": "text.toolsrift.com",
   "name": "ToolsRift Text Tools",
   "launcherName": "Text Tools",
   "display": "standalone",
@@ -14,8 +14,8 @@
   "backgroundColor": "#08090E",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://toolsrifttext.com/brands/text/icon-512.png",
-  "maskableIconUrl": "https://toolsrifttext.com/brands/text/icon-maskable-512.png",
+  "iconUrl": "https://text.toolsrift.com/brands/text/icon-512.png",
+  "maskableIconUrl": "https://text.toolsrift.com/brands/text/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "../../keys/text.keystore",
@@ -28,29 +28,29 @@
       "name": "Word Counter Pro",
       "short_name": "Word Counte…",
       "url": "/word-counter-pro?source=shortcut",
-      "chosenIconUrl": "https://toolsrifttext.com/brands/text/icon-192.png"
+      "chosenIconUrl": "https://text.toolsrift.com/brands/text/icon-192.png"
     },
     {
       "name": "Character Counter",
       "short_name": "Character C…",
       "url": "/character-counter?source=shortcut",
-      "chosenIconUrl": "https://toolsrifttext.com/brands/text/icon-192.png"
+      "chosenIconUrl": "https://text.toolsrift.com/brands/text/icon-192.png"
     },
     {
       "name": "Reading Time Calculator",
       "short_name": "Reading Tim…",
       "url": "/reading-time?source=shortcut",
-      "chosenIconUrl": "https://toolsrifttext.com/brands/text/icon-192.png"
+      "chosenIconUrl": "https://text.toolsrift.com/brands/text/icon-192.png"
     },
     {
       "name": "Word Frequency Analyzer",
       "short_name": "Word Freque…",
       "url": "/word-frequency?source=shortcut",
-      "chosenIconUrl": "https://toolsrifttext.com/brands/text/icon-192.png"
+      "chosenIconUrl": "https://text.toolsrift.com/brands/text/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://toolsrifttext.com/manifest.json",
+  "webManifestUrl": "https://text.toolsrift.com/manifest.json",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -59,7 +59,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://toolsrifttext.com/",
+  "fullScopeUrl": "https://text.toolsrift.com/",
   "minSdkVersion": 21,
   "orientationLock": false,
   "additionalTrustedOrigins": [],

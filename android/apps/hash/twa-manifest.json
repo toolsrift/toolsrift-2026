@@ -1,6 +1,6 @@
 {
   "packageId": "com.toolsrift.hash",
-  "host": "toolsrifthash.com",
+  "host": "hash.toolsrift.com",
   "name": "ToolsRift Hash & Crypto",
   "launcherName": "Hash Tools",
   "display": "standalone",
@@ -14,8 +14,8 @@
   "backgroundColor": "#08060F",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://toolsrifthash.com/brands/hash/icon-512.png",
-  "maskableIconUrl": "https://toolsrifthash.com/brands/hash/icon-maskable-512.png",
+  "iconUrl": "https://hash.toolsrift.com/brands/hash/icon-512.png",
+  "maskableIconUrl": "https://hash.toolsrift.com/brands/hash/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "../../keys/hash.keystore",
@@ -28,29 +28,29 @@
       "name": "Hash Generator (All)",
       "short_name": "Hash Genera…",
       "url": "/hash-all?source=shortcut",
-      "chosenIconUrl": "https://toolsrifthash.com/brands/hash/icon-192.png"
+      "chosenIconUrl": "https://hash.toolsrift.com/brands/hash/icon-192.png"
     },
     {
       "name": "MD5 Hash Generator",
       "short_name": "MD5 Hash Ge…",
       "url": "/md5-hash?source=shortcut",
-      "chosenIconUrl": "https://toolsrifthash.com/brands/hash/icon-192.png"
+      "chosenIconUrl": "https://hash.toolsrift.com/brands/hash/icon-192.png"
     },
     {
       "name": "SHA-1 Hash Generator",
       "short_name": "SHA-1 Hash …",
       "url": "/sha1-hash?source=shortcut",
-      "chosenIconUrl": "https://toolsrifthash.com/brands/hash/icon-192.png"
+      "chosenIconUrl": "https://hash.toolsrift.com/brands/hash/icon-192.png"
     },
     {
       "name": "SHA-256 Hash Generator",
       "short_name": "SHA-256 Has…",
       "url": "/sha256-hash?source=shortcut",
-      "chosenIconUrl": "https://toolsrifthash.com/brands/hash/icon-192.png"
+      "chosenIconUrl": "https://hash.toolsrift.com/brands/hash/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://toolsrifthash.com/manifest.json",
+  "webManifestUrl": "https://hash.toolsrift.com/manifest.json",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -59,7 +59,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://toolsrifthash.com/",
+  "fullScopeUrl": "https://hash.toolsrift.com/",
   "minSdkVersion": 21,
   "orientationLock": false,
   "additionalTrustedOrigins": [],

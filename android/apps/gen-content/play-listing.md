@@ -6,8 +6,8 @@
 | App name (≤30) | ToolsRift Content Generators |
 | Launcher name | Content Gen |
 | Category | BUSINESS |
-| Website | https://toolsriftcontent.com |
-| Privacy policy | https://toolsriftcontent.com/privacy-policy |
+| Website | https://content.toolsrift.com |
+| Privacy policy | https://content.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/gen-content/icon-512.png` |
 | Feature graphic (1024×500) | export from `public/brands/gen-content/og.svg` |
@@ -48,7 +48,7 @@ WHY TOOLSRIFT CONTENT
 ✓ Clean, ad-supported, no paywalls
 ✓ Part of the ToolsRift network of 29 specialist tool sites
 
-ToolsRift Content is the content edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsriftcontent.com, so every improvement to the website ships to the app automatically.
+ToolsRift Content is the content edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around content.toolsrift.com, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags

@@ -31,7 +31,7 @@
     <rect x="16" y="40" width="68" height="40" rx="8" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M38 40v-8a12 12 0 0 1 24 0v8M16 58h68" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
   </g></g>
   <text x="240" y="152" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="800" font-size="52" letter-spacing="-1.2" fill="#F8FAFC">ToolsRift<tspan fill="#F97316"> Everyday</tspan></text>
-  <text x="240" y="196" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="500" font-size="22" fill="#94A3B8">toolsrifteveryday.com</text>
+  <text x="240" y="196" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="500" font-size="22" fill="#94A3B8">everyday.toolsrift.com</text>
   <text x="96" y="352" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="800" font-size="60" letter-spacing="-1.5" fill="#F8FAFC">The little tools you reach for every day.</text>
   <text x="96" y="410" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="500" font-size="26" fill="#CBD5E1">27 free everyday tools · 100% in your browser · no sign-up</text>
   <g transform="translate(96 476)">

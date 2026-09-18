@@ -6,8 +6,8 @@
 | App name (≤30) | ToolsRift Math Calculators |
 | Launcher name | Math Calc |
 | Category | EDUCATION |
-| Website | https://toolsriftmath.com |
-| Privacy policy | https://toolsriftmath.com/privacy-policy |
+| Website | https://math.toolsrift.com |
+| Privacy policy | https://math.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/mathcalc/icon-512.png` |
 | Feature graphic (1024×500) | export from `public/brands/mathcalc/og.svg` |
@@ -48,7 +48,7 @@ WHY TOOLSRIFT MATH
 ✓ Clean, ad-supported, no paywalls
 ✓ Part of the ToolsRift network of 29 specialist tool sites
 
-ToolsRift Math is the math edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsriftmath.com, so every improvement to the website ships to the app automatically.
+ToolsRift Math is the math edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around math.toolsrift.com, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags

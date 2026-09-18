@@ -4,7 +4,7 @@ import { SPRING } from '../lib/designTokens'
 import { SITE_FEATURES } from '../lib/siteFeatures'
 
 const C = {
-  // Site-aware: on toolsriftpdf.com these are the brand's warm charcoal.
+  // Site-aware: on pdf.toolsrift.com these are the brand's warm charcoal.
   bg: SITE.brand ? SITE.brand.palette.bg : '#06090F',
   surface: SITE.brand ? SITE.brand.palette.surface : '#0D1117',
   border: 'rgba(255,255,255,0.08)',

@@ -6,8 +6,8 @@
 | App name (≤30) | ToolsRift Text Encoding |
 | Launcher name | Encoding |
 | Category | EDUCATION |
-| Website | https://toolsriftencoding.com |
-| Privacy policy | https://toolsriftencoding.com/privacy-policy |
+| Website | https://encoding.toolsrift.com |
+| Privacy policy | https://encoding.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/encoding/icon-512.png` |
 | Feature graphic (1024×500) | export from `public/brands/encoding/og.svg` |
@@ -48,7 +48,7 @@ WHY TOOLSRIFT ENCODING
 ✓ Clean, ad-supported, no paywalls
 ✓ Part of the ToolsRift network of 29 specialist tool sites
 
-ToolsRift Encoding is the encoding edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsriftencoding.com, so every improvement to the website ships to the app automatically.
+ToolsRift Encoding is the encoding edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around encoding.toolsrift.com, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags

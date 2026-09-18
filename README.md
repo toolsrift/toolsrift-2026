@@ -18,14 +18,15 @@ http://localhost:3000
 
 ## 🌐 ToolsRift Network — 29 standalone sites + Android apps
 
-Every category can be built as its own website (`toolsriftpdf.com`, `toolsriftimage.com`, …)
+Every category can be built as its own website (`pdf.toolsrift.com`, `image.toolsrift.com`, …)
 with its own logo, palette, fonts, design concept, sitemap, PWA manifest and Android app —
-from this same codebase, selected at build time with `NEXT_PUBLIC_SITE_ID`.
+from this same codebase, selected at build time with `NEXT_PUBLIC_SITE_ID` (or the Vercel
+project name `toolsrift-<id>`).
 
 ```bash
 npm run sites:list            # the 29 sites
-npm run dev:site -- pdf       # run toolsriftpdf.com locally
-npm run build:site -- image   # production build of toolsriftimage.com
+npm run dev:site -- pdf       # run pdf.toolsrift.com locally
+npm run build:site -- image   # production build of image.toolsrift.com
 ```
 
 See **docs/NETWORK-SITES.md** (sites, deployment) and **android/README.md** (Play Store apps).

@@ -875,13 +875,15 @@ Skipping step 1 means new tools get no URL/page. Skipping step 2 means the tool'
 
 ## TOOLSRIFT NETWORK — 29 STANDALONE CATEGORY SITES + ANDROID APPS (added Sept 2026)
 
-Every category is also its own website (`toolsriftpdf.com`, `toolsriftimage.com`, …)
+Every category is also its own website (`pdf.toolsrift.com`, `image.toolsrift.com`, …)
 with its own logo, palette, typography, design concept, sitemap, PWA manifest and
-Android app. **One codebase, thirty build targets** — full guide: `docs/NETWORK-SITES.md`,
+Android app. Domains are subdomains of toolsrift.com (Vercel DNS wildcard), attached
+per Vercel project `toolsrift-<id>`. **One codebase, thirty build targets** — full guide: `docs/NETWORK-SITES.md`,
 apps: `android/README.md`.
 
 - `NEXT_PUBLIC_SITE_ID` (build-time) selects the site: unset/`hub` = toolsrift.com as
-  before; `pdf`, `image`, `json`, … = that category at the root of its own domain.
+  before; `pdf`, `image`, `json`, … = that category at the root of its own subdomain
+  (on Vercel also derived from the project name `toolsrift-<id>`, see next.config.js).
 - `lib/sites/brands.js` — the 29 brands (domain, palette, fonts, shape, pattern,
   concept copy, logo spec, Android package id + Play listing). `lib/sites/index.js`
   resolves the active `SITE`; `categoryHome()` / `toolPath()` give network-aware URLs.

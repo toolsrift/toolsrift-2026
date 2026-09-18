@@ -6,8 +6,8 @@
 | App name (≤30) | ToolsRift HTML Tools |
 | Launcher name | HTML Tools |
 | Category | TOOLS |
-| Website | https://toolsrifthtml.com |
-| Privacy policy | https://toolsrifthtml.com/privacy-policy |
+| Website | https://html.toolsrift.com |
+| Privacy policy | https://html.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/html/icon-512.png` |
 | Feature graphic (1024×500) | export from `public/brands/html/og.svg` |
@@ -48,7 +48,7 @@ WHY TOOLSRIFT HTML
 ✓ Clean, ad-supported, no paywalls
 ✓ Part of the ToolsRift network of 29 specialist tool sites
 
-ToolsRift HTML is the html edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsrifthtml.com, so every improvement to the website ships to the app automatically.
+ToolsRift HTML is the html edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around html.toolsrift.com, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags
