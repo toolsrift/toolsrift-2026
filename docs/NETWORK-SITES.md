@@ -124,8 +124,9 @@ tool up automatically on the next deploy.
    project. With Vercel DNS the record is created automatically.
 4. **Env vars** on that project (Vercel → Settings → Environment Variables):
    - `NEXT_PUBLIC_SITE_ID` — set by bootstrap.
-   - `ANDROID_SHA256_FINGERPRINTS` — after step 6, comma-separated (upload key
-     **and** Play App Signing key).
+   - `ANDROID_SHA256_FINGERPRINTS` — optional; the app signing fingerprints
+     normally live in `android/fingerprints.json` (committed, served on every
+     site), this env var only adds to them.
    - `GOOGLE_SERVICE_ACCOUNT_KEY`, `CRON_SECRET` — optional, same as the hub;
      the daily cron resubmits *this* site's sitemap to the `sc-domain:toolsrift.com`
      property (which covers subdomains).
@@ -139,7 +140,10 @@ tool up automatically on the next deploy.
    `public/509a…txt` is served on every domain, so
    `node scripts/submit-indexnow.js` works unchanged once `HOST` is that site
    (it reads the sitemap; run it from a checkout with `NEXT_PUBLIC_SITE_ID` set).
-7. **Android**: see `android/README.md`.
+7. **Android**: run the `android-build` GitHub workflow (Actions → android-build →
+   Run workflow, `--all` or site ids); it builds and signs every app with
+   Bubblewrap and publishes the `.aab`/`.apk` artifacts. Full guide, signing
+   key, Play Console steps: `android/README.md`.
 
 ## 5. Adding a 30th site
 

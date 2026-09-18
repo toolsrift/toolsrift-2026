@@ -42,6 +42,21 @@ for (const b of BRANDS) {
     if (!/^#[0-9A-Fa-f]{6}$/.test(b.palette[k])) errors.push(`${tag} palette.${k} must be a 6-digit hex`);
   }
 }
+// android/fingerprints.json — the keys every site's assetlinks.json lists.
+{
+  const fpPath = path.join(ROOT, 'android', 'fingerprints.json');
+  const FP_RE = /^([0-9A-F]{2}:){31}[0-9A-F]{2}$/;
+  try {
+    const fp = JSON.parse(fs.readFileSync(fpPath, 'utf8'));
+    for (const [k, v] of Object.entries(fp)) {
+      if (k === '//') continue;
+      if (k !== 'all' && !BRANDS.some(b => b.id === k)) errors.push(`android/fingerprints.json: "${k}" is not "all" or a site id`);
+      if (!Array.isArray(v)) { errors.push(`android/fingerprints.json: "${k}" must be an array`); continue; }
+      for (const f of v) if (!FP_RE.test(String(f).toUpperCase())) errors.push(`android/fingerprints.json: "${k}" has a malformed SHA-256 fingerprint "${f}"`);
+    }
+    if (!(fp.all || []).length) console.log('note: android/fingerprints.json "all" is empty — apps open with a browser bar until the upload key fingerprint is added (android/README.md)');
+  } catch (e) { errors.push(`android/fingerprints.json: ${e.message}`); }
+}
 for (const slug of Object.keys(REG)) {
   if (!BRANDS.some(b => b.slug === slug)) errors.push(`registry category "${slug}" has no brand in lib/sites/brands.js`);
 }

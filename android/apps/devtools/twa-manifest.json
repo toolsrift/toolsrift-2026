@@ -14,12 +14,12 @@
   "backgroundColor": "#000000",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://devtools.toolsrift.com/brands/devtools/icon-512.png",
-  "maskableIconUrl": "https://devtools.toolsrift.com/brands/devtools/icon-maskable-512.png",
+  "iconUrl": "https://toolsrift.com/brands/devtools/icon-512.png",
+  "maskableIconUrl": "https://toolsrift.com/brands/devtools/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "../../keys/devtools.keystore",
-    "alias": "devtools"
+    "path": "../../keys/upload.keystore",
+    "alias": "upload"
   },
   "appVersionName": "1.0.0",
   "appVersionCode": 1,
@@ -28,25 +28,25 @@
       "name": "Unix Timestamp",
       "short_name": "Unix Timest…",
       "url": "/unix-timestamp?source=shortcut",
-      "chosenIconUrl": "https://devtools.toolsrift.com/brands/devtools/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/devtools/icon-192.png"
     },
     {
       "name": "Cron Parser",
       "short_name": "Cron Parser",
       "url": "/cron-parser?source=shortcut",
-      "chosenIconUrl": "https://devtools.toolsrift.com/brands/devtools/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/devtools/icon-192.png"
     },
     {
       "name": "Cron Generator",
       "short_name": "Cron Genera…",
       "url": "/cron-gen?source=shortcut",
-      "chosenIconUrl": "https://devtools.toolsrift.com/brands/devtools/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/devtools/icon-192.png"
     },
     {
       "name": "Timezone Dev",
       "short_name": "Timezone Dev",
       "url": "/timezone-dev?source=shortcut",
-      "chosenIconUrl": "https://devtools.toolsrift.com/brands/devtools/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/devtools/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",

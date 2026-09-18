@@ -14,12 +14,12 @@
   "backgroundColor": "#04090C",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://css.toolsrift.com/brands/css/icon-512.png",
-  "maskableIconUrl": "https://css.toolsrift.com/brands/css/icon-maskable-512.png",
+  "iconUrl": "https://toolsrift.com/brands/css/icon-512.png",
+  "maskableIconUrl": "https://toolsrift.com/brands/css/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "../../keys/css.keystore",
-    "alias": "css"
+    "path": "../../keys/upload.keystore",
+    "alias": "upload"
   },
   "appVersionName": "1.0.0",
   "appVersionCode": 1,
@@ -28,25 +28,25 @@
       "name": "CSS Gradient Generator",
       "short_name": "CSS Gradien…",
       "url": "/css-gradient?source=shortcut",
-      "chosenIconUrl": "https://css.toolsrift.com/brands/css/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/css/icon-192.png"
     },
     {
       "name": "CSS Box Shadow Generator",
       "short_name": "CSS Box Sha…",
       "url": "/css-box-shadow?source=shortcut",
-      "chosenIconUrl": "https://css.toolsrift.com/brands/css/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/css/icon-192.png"
     },
     {
       "name": "CSS Text Shadow Generator",
       "short_name": "CSS Text Sh…",
       "url": "/css-text-shadow?source=shortcut",
-      "chosenIconUrl": "https://css.toolsrift.com/brands/css/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/css/icon-192.png"
     },
     {
       "name": "CSS Border Radius Generator",
       "short_name": "CSS Border …",
       "url": "/css-border-radius?source=shortcut",
-      "chosenIconUrl": "https://css.toolsrift.com/brands/css/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/css/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",

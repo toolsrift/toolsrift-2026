@@ -14,12 +14,12 @@
   "backgroundColor": "#06070F",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://encoding.toolsrift.com/brands/encoding/icon-512.png",
-  "maskableIconUrl": "https://encoding.toolsrift.com/brands/encoding/icon-maskable-512.png",
+  "iconUrl": "https://toolsrift.com/brands/encoding/icon-512.png",
+  "maskableIconUrl": "https://toolsrift.com/brands/encoding/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "../../keys/encoding.keystore",
-    "alias": "encoding"
+    "path": "../../keys/upload.keystore",
+    "alias": "upload"
   },
   "appVersionName": "1.0.0",
   "appVersionCode": 1,
@@ -28,25 +28,25 @@
       "name": "Morse Code Translator",
       "short_name": "Morse Code …",
       "url": "/morse-code?source=shortcut",
-      "chosenIconUrl": "https://encoding.toolsrift.com/brands/encoding/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/encoding/icon-192.png"
     },
     {
       "name": "NATO Phonetic Alphabet",
       "short_name": "NATO Phonet…",
       "url": "/nato-alphabet?source=shortcut",
-      "chosenIconUrl": "https://encoding.toolsrift.com/brands/encoding/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/encoding/icon-192.png"
     },
     {
       "name": "Binary Text Converter",
       "short_name": "Binary Text…",
       "url": "/binary-text?source=shortcut",
-      "chosenIconUrl": "https://encoding.toolsrift.com/brands/encoding/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/encoding/icon-192.png"
     },
     {
       "name": "Hex Text Converter",
       "short_name": "Hex Text Co…",
       "url": "/hex-text?source=shortcut",
-      "chosenIconUrl": "https://encoding.toolsrift.com/brands/encoding/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/encoding/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",

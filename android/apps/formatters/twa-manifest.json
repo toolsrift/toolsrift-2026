@@ -14,12 +14,12 @@
   "backgroundColor": "#050B0A",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://formatters.toolsrift.com/brands/formatters/icon-512.png",
-  "maskableIconUrl": "https://formatters.toolsrift.com/brands/formatters/icon-maskable-512.png",
+  "iconUrl": "https://toolsrift.com/brands/formatters/icon-512.png",
+  "maskableIconUrl": "https://toolsrift.com/brands/formatters/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "../../keys/formatters.keystore",
-    "alias": "formatters"
+    "path": "../../keys/upload.keystore",
+    "alias": "upload"
   },
   "appVersionName": "1.0.0",
   "appVersionCode": 1,
@@ -28,25 +28,25 @@
       "name": "CSS Formatter",
       "short_name": "CSS Formatt…",
       "url": "/css-formatter?source=shortcut",
-      "chosenIconUrl": "https://formatters.toolsrift.com/brands/formatters/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/formatters/icon-192.png"
     },
     {
       "name": "CSS Minifier",
       "short_name": "CSS Minifier",
       "url": "/css-minifier?source=shortcut",
-      "chosenIconUrl": "https://formatters.toolsrift.com/brands/formatters/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/formatters/icon-192.png"
     },
     {
       "name": "SQL Formatter",
       "short_name": "SQL Formatt…",
       "url": "/sql-formatter?source=shortcut",
-      "chosenIconUrl": "https://formatters.toolsrift.com/brands/formatters/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/formatters/icon-192.png"
     },
     {
       "name": "XML Formatter",
       "short_name": "XML Formatt…",
       "url": "/xml-formatter?source=shortcut",
-      "chosenIconUrl": "https://formatters.toolsrift.com/brands/formatters/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/formatters/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",

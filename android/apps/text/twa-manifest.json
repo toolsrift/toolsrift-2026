@@ -14,12 +14,12 @@
   "backgroundColor": "#08090E",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://text.toolsrift.com/brands/text/icon-512.png",
-  "maskableIconUrl": "https://text.toolsrift.com/brands/text/icon-maskable-512.png",
+  "iconUrl": "https://toolsrift.com/brands/text/icon-512.png",
+  "maskableIconUrl": "https://toolsrift.com/brands/text/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "../../keys/text.keystore",
-    "alias": "text"
+    "path": "../../keys/upload.keystore",
+    "alias": "upload"
   },
   "appVersionName": "1.0.0",
   "appVersionCode": 1,
@@ -28,25 +28,25 @@
       "name": "Word Counter Pro",
       "short_name": "Word Counte…",
       "url": "/word-counter-pro?source=shortcut",
-      "chosenIconUrl": "https://text.toolsrift.com/brands/text/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/text/icon-192.png"
     },
     {
       "name": "Character Counter",
       "short_name": "Character C…",
       "url": "/character-counter?source=shortcut",
-      "chosenIconUrl": "https://text.toolsrift.com/brands/text/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/text/icon-192.png"
     },
     {
       "name": "Reading Time Calculator",
       "short_name": "Reading Tim…",
       "url": "/reading-time?source=shortcut",
-      "chosenIconUrl": "https://text.toolsrift.com/brands/text/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/text/icon-192.png"
     },
     {
       "name": "Word Frequency Analyzer",
       "short_name": "Word Freque…",
       "url": "/word-frequency?source=shortcut",
-      "chosenIconUrl": "https://text.toolsrift.com/brands/text/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/text/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",

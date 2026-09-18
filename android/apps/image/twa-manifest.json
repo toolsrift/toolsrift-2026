@@ -14,12 +14,12 @@
   "backgroundColor": "#0B0709",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://image.toolsrift.com/brands/image/icon-512.png",
-  "maskableIconUrl": "https://image.toolsrift.com/brands/image/icon-maskable-512.png",
+  "iconUrl": "https://toolsrift.com/brands/image/icon-512.png",
+  "maskableIconUrl": "https://toolsrift.com/brands/image/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "../../keys/image.keystore",
-    "alias": "image"
+    "path": "../../keys/upload.keystore",
+    "alias": "upload"
   },
   "appVersionName": "1.0.0",
   "appVersionCode": 1,
@@ -28,25 +28,25 @@
       "name": "Image Resizer",
       "short_name": "Image Resiz…",
       "url": "/image-resizer?source=shortcut",
-      "chosenIconUrl": "https://image.toolsrift.com/brands/image/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/image/icon-192.png"
     },
     {
       "name": "Image Cropper",
       "short_name": "Image Cropp…",
       "url": "/image-cropper?source=shortcut",
-      "chosenIconUrl": "https://image.toolsrift.com/brands/image/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/image/icon-192.png"
     },
     {
       "name": "Image Compressor",
       "short_name": "Image Compr…",
       "url": "/image-compressor?source=shortcut",
-      "chosenIconUrl": "https://image.toolsrift.com/brands/image/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/image/icon-192.png"
     },
     {
       "name": "Image Converter",
       "short_name": "Image Conve…",
       "url": "/image-converter?source=shortcut",
-      "chosenIconUrl": "https://image.toolsrift.com/brands/image/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/image/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",

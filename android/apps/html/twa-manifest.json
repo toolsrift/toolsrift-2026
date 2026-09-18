@@ -14,12 +14,12 @@
   "backgroundColor": "#0C0805",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://html.toolsrift.com/brands/html/icon-512.png",
-  "maskableIconUrl": "https://html.toolsrift.com/brands/html/icon-maskable-512.png",
+  "iconUrl": "https://toolsrift.com/brands/html/icon-512.png",
+  "maskableIconUrl": "https://toolsrift.com/brands/html/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "../../keys/html.keystore",
-    "alias": "html"
+    "path": "../../keys/upload.keystore",
+    "alias": "upload"
   },
   "appVersionName": "1.0.0",
   "appVersionCode": 1,
@@ -28,25 +28,25 @@
       "name": "HTML Formatter",
       "short_name": "HTML Format…",
       "url": "/html-formatter?source=shortcut",
-      "chosenIconUrl": "https://html.toolsrift.com/brands/html/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/html/icon-192.png"
     },
     {
       "name": "HTML Minifier",
       "short_name": "HTML Minifi…",
       "url": "/html-minifier?source=shortcut",
-      "chosenIconUrl": "https://html.toolsrift.com/brands/html/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/html/icon-192.png"
     },
     {
       "name": "HTML Validator",
       "short_name": "HTML Valida…",
       "url": "/html-validator?source=shortcut",
-      "chosenIconUrl": "https://html.toolsrift.com/brands/html/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/html/icon-192.png"
     },
     {
       "name": "HTML Cleaner",
       "short_name": "HTML Cleaner",
       "url": "/html-cleaner?source=shortcut",
-      "chosenIconUrl": "https://html.toolsrift.com/brands/html/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/html/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",

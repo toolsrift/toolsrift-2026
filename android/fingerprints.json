@@ -1,0 +1,5 @@
+{
+  "//": "SHA-256 certificate fingerprints served in every site's /.well-known/assetlinks.json (pages/api/site/assetlinks.js). 'all' = the shared upload key the android-build workflow signs every app with; '<site id>' = extra keys for that app only (add its Play App Signing key here after enrolling). Fingerprints are public — the keystore itself is not.",
+  "all": [],
+  "text": []
+}

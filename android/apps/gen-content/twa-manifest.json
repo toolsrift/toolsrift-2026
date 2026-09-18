@@ -14,12 +14,12 @@
   "backgroundColor": "#04080D",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://content.toolsrift.com/brands/gen-content/icon-512.png",
-  "maskableIconUrl": "https://content.toolsrift.com/brands/gen-content/icon-maskable-512.png",
+  "iconUrl": "https://toolsrift.com/brands/gen-content/icon-512.png",
+  "maskableIconUrl": "https://toolsrift.com/brands/gen-content/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "../../keys/gen-content.keystore",
-    "alias": "gen-content"
+    "path": "../../keys/upload.keystore",
+    "alias": "upload"
   },
   "appVersionName": "1.0.0",
   "appVersionCode": 1,
@@ -28,25 +28,25 @@
       "name": "Privacy Policy Generator",
       "short_name": "Privacy Pol…",
       "url": "/privacy-policy-gen?source=shortcut",
-      "chosenIconUrl": "https://content.toolsrift.com/brands/gen-content/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/gen-content/icon-192.png"
     },
     {
       "name": "Terms & Conditions Generator",
       "short_name": "Terms & Con…",
       "url": "/terms-conditions-gen?source=shortcut",
-      "chosenIconUrl": "https://content.toolsrift.com/brands/gen-content/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/gen-content/icon-192.png"
     },
     {
       "name": "Cookie Policy Generator",
       "short_name": "Cookie Poli…",
       "url": "/cookie-policy-gen?source=shortcut",
-      "chosenIconUrl": "https://content.toolsrift.com/brands/gen-content/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/gen-content/icon-192.png"
     },
     {
       "name": "Disclaimer Generator",
       "short_name": "Disclaimer …",
       "url": "/disclaimer-gen?source=shortcut",
-      "chosenIconUrl": "https://content.toolsrift.com/brands/gen-content/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/gen-content/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",

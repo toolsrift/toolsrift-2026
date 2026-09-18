@@ -14,12 +14,12 @@
   "backgroundColor": "#070A05",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://generators.toolsrift.com/brands/generators/icon-512.png",
-  "maskableIconUrl": "https://generators.toolsrift.com/brands/generators/icon-maskable-512.png",
+  "iconUrl": "https://toolsrift.com/brands/generators/icon-512.png",
+  "maskableIconUrl": "https://toolsrift.com/brands/generators/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "../../keys/generators.keystore",
-    "alias": "generators"
+    "path": "../../keys/upload.keystore",
+    "alias": "upload"
   },
   "appVersionName": "1.0.0",
   "appVersionCode": 1,
@@ -28,25 +28,25 @@
       "name": "Strong Password Generator",
       "short_name": "Strong Pass…",
       "url": "/strong-password-gen?source=shortcut",
-      "chosenIconUrl": "https://generators.toolsrift.com/brands/generators/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/generators/icon-192.png"
     },
     {
       "name": "Passphrase Generator",
       "short_name": "Passphrase …",
       "url": "/passphrase-gen?source=shortcut",
-      "chosenIconUrl": "https://generators.toolsrift.com/brands/generators/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/generators/icon-192.png"
     },
     {
       "name": "PIN Generator",
       "short_name": "PIN Generat…",
       "url": "/pin-gen?source=shortcut",
-      "chosenIconUrl": "https://generators.toolsrift.com/brands/generators/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/generators/icon-192.png"
     },
     {
       "name": "API Key Generator",
       "short_name": "API Key Gen…",
       "url": "/api-key-gen?source=shortcut",
-      "chosenIconUrl": "https://generators.toolsrift.com/brands/generators/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/generators/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",

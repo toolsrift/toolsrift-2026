@@ -14,12 +14,12 @@
   "backgroundColor": "#0B0604",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://video.toolsrift.com/brands/video/icon-512.png",
-  "maskableIconUrl": "https://video.toolsrift.com/brands/video/icon-maskable-512.png",
+  "iconUrl": "https://toolsrift.com/brands/video/icon-512.png",
+  "maskableIconUrl": "https://toolsrift.com/brands/video/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "../../keys/video.keystore",
-    "alias": "video"
+    "path": "../../keys/upload.keystore",
+    "alias": "upload"
   },
   "appVersionName": "1.0.0",
   "appVersionCode": 1,
@@ -28,25 +28,25 @@
       "name": "Video Trimmer",
       "short_name": "Video Trimm…",
       "url": "/video-trimmer?source=shortcut",
-      "chosenIconUrl": "https://video.toolsrift.com/brands/video/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/video/icon-192.png"
     },
     {
       "name": "Video Merger",
       "short_name": "Video Merger",
       "url": "/video-merger?source=shortcut",
-      "chosenIconUrl": "https://video.toolsrift.com/brands/video/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/video/icon-192.png"
     },
     {
       "name": "Video Rotator",
       "short_name": "Video Rotat…",
       "url": "/video-rotate?source=shortcut",
-      "chosenIconUrl": "https://video.toolsrift.com/brands/video/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/video/icon-192.png"
     },
     {
       "name": "Video Cropper",
       "short_name": "Video Cropp…",
       "url": "/video-crop?source=shortcut",
-      "chosenIconUrl": "https://video.toolsrift.com/brands/video/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/video/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",

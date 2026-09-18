@@ -897,6 +897,13 @@ apps: `android/README.md`.
   `npm run build:site -- pdf`, `npm run brands:assets` (regenerates
   `public/brands/<id>/` logos/icons/OG via headless Chromium), `npm run android:generate`
   (regenerates `android/apps/<id>/`), `npm run vercel:bootstrap -- <id>|--all`.
+- **Android apps** are built in CI: the `android-build` workflow (Actions → Run
+  workflow) runs Bubblewrap for all 29 (or given) sites, signs them with the
+  shared upload key (secrets `ANDROID_KEYSTORE_BASE64` + `ANDROID_KEYSTORE_PASSWORD`,
+  else the `android-upload-keystore` artifact) and uploads `.aab`/`.apk` artifacts.
+  The key's SHA-256 goes in `android/fingerprints.json` ("all"; per-site keys such
+  as the Play App Signing key under the site id) — served by every site at
+  `/.well-known/assetlinks.json`. Never commit a keystore (`android/keys/` is ignored).
 - **When editing `brands.js`**: run `brands:assets`, `android:generate`, `sites:check`
   and commit the generated files. **When adding a category**: also add a brand, a
   glyph in `scripts/brand-glyphs.js`, and register it in `lib/sites/categoryComponents.js`.

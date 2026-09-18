@@ -1,32 +1,40 @@
 #!/usr/bin/env bash
 # ----------------------------------------------------------------------------
-# scripts/android/keystore.sh — create the upload signing key for one app.
+# scripts/android/keystore.sh — create the shared UPLOAD signing key that every
+# ToolsRift Android app is built with.
 #
-#   npm run android:keystore -- pdf
+#   npm run android:keystore
 #
-# Writes android/keys/<id>.keystore (git-ignored) and prints the SHA-256
-# fingerprint you must put in that site's ANDROID_SHA256_FINGERPRINTS env var
-# on Vercel (so /.well-known/assetlinks.json verifies the app). Keep the
-# keystore + password in a password manager: losing it means you can never
-# update that app again (unless you enrol in Play App Signing — recommended,
-# see android/README.md).
+# Writes android/keys/upload.keystore (git-ignored, alias "upload") and prints:
+#   • the SHA-256 fingerprint → put it in android/fingerprints.json "all"
+#     (served by every site at /.well-known/assetlinks.json);
+#   • the base64 of the keystore → GitHub secret ANDROID_KEYSTORE_BASE64, with
+#     the password in ANDROID_KEYSTORE_PASSWORD, so the android-build workflow
+#     signs with the same key.
+# Keep the keystore + password in a password manager. With Play App Signing
+# (recommended) a lost upload key can be reset from the Play Console.
 # ----------------------------------------------------------------------------
 set -euo pipefail
 cd "$(dirname "$0")/../.."
-id="${1:?usage: keystore.sh <site-id>}"
-ks="android/keys/$id.keystore"
+ks="${KEYSTORE_PATH:-android/keys/upload.keystore}"
+alias="${KEYSTORE_ALIAS:-upload}"
 pass="${KEYSTORE_PASSWORD:-}"
-if [[ -z "$pass" ]]; then read -rsp "Keystore password for $id: " pass; echo; fi
+if [[ -z "$pass" ]]; then read -rsp "Keystore password: " pass; echo; fi
+mkdir -p "$(dirname "$ks")"
 
 if [[ -f "$ks" ]]; then
   echo "keystore exists: $ks"
 else
   keytool -genkeypair -v \
-    -keystore "$ks" -alias "$id" -keyalg RSA -keysize 2048 -validity 10000 \
+    -keystore "$ks" -alias "$alias" -keyalg RSA -keysize 2048 -validity 10000 \
     -storepass "$pass" -keypass "$pass" \
-    -dname "CN=ToolsRift $id, OU=Apps, O=ToolsRift, L=Hyderabad, ST=Telangana, C=IN"
+    -dname "CN=ToolsRift Apps, OU=Apps, O=ToolsRift, L=Hyderabad, ST=Telangana, C=IN"
 fi
 
 echo
-echo "SHA-256 fingerprint (add to ANDROID_SHA256_FINGERPRINTS for site '$id'):"
-keytool -list -v -keystore "$ks" -alias "$id" -storepass "$pass" | grep -E 'SHA256:' | sed 's/^[[:space:]]*SHA256: //'
+echo "SHA-256 fingerprint (android/fingerprints.json → \"all\"):"
+keytool -list -v -keystore "$ks" -alias "$alias" -storepass "$pass" | grep -E 'SHA256:' | sed 's/^[[:space:]]*SHA256: //'
+echo
+echo "GitHub secret ANDROID_KEYSTORE_BASE64 (ANDROID_KEYSTORE_PASSWORD = the password you typed):"
+base64 -w0 "$ks" 2>/dev/null || base64 "$ks" | tr -d '\n'
+echo

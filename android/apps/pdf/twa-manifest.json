@@ -14,12 +14,12 @@
   "backgroundColor": "#0E0A09",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://pdf.toolsrift.com/brands/pdf/icon-512.png",
-  "maskableIconUrl": "https://pdf.toolsrift.com/brands/pdf/icon-maskable-512.png",
+  "iconUrl": "https://toolsrift.com/brands/pdf/icon-512.png",
+  "maskableIconUrl": "https://toolsrift.com/brands/pdf/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "../../keys/pdf.keystore",
-    "alias": "pdf"
+    "path": "../../keys/upload.keystore",
+    "alias": "upload"
   },
   "appVersionName": "1.0.0",
   "appVersionCode": 1,
@@ -28,25 +28,25 @@
       "name": "PDF Viewer",
       "short_name": "PDF Viewer",
       "url": "/pdf-viewer?source=shortcut",
-      "chosenIconUrl": "https://pdf.toolsrift.com/brands/pdf/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/pdf/icon-192.png"
     },
     {
       "name": "PDF Page Counter",
       "short_name": "PDF Page Co…",
       "url": "/pdf-page-count?source=shortcut",
-      "chosenIconUrl": "https://pdf.toolsrift.com/brands/pdf/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/pdf/icon-192.png"
     },
     {
       "name": "PDF Metadata Viewer",
       "short_name": "PDF Metadat…",
       "url": "/pdf-metadata?source=shortcut",
-      "chosenIconUrl": "https://pdf.toolsrift.com/brands/pdf/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/pdf/icon-192.png"
     },
     {
       "name": "PDF Text Extractor",
       "short_name": "PDF Text Ex…",
       "url": "/pdf-text-extractor?source=shortcut",
-      "chosenIconUrl": "https://pdf.toolsrift.com/brands/pdf/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/pdf/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",
