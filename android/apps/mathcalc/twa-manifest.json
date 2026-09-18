@@ -1,0 +1,68 @@
+{
+  "packageId": "com.toolsrift.math",
+  "host": "toolsriftmath.com",
+  "name": "ToolsRift Math Calculators",
+  "launcherName": "Math Calc",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#06070F",
+  "themeColorDark": "#06070F",
+  "navigationColor": "#06070F",
+  "navigationColorDark": "#06070F",
+  "navigationDividerColor": "#131522",
+  "navigationDividerColorDark": "#131522",
+  "backgroundColor": "#06070F",
+  "enableNotifications": false,
+  "startUrl": "/?source=twa",
+  "iconUrl": "https://toolsriftmath.com/brands/mathcalc/icon-512.png",
+  "maskableIconUrl": "https://toolsriftmath.com/brands/mathcalc/icon-maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "../../keys/mathcalc.keystore",
+    "alias": "mathcalc"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "Area Calculator",
+      "short_name": "Area Calcul…",
+      "url": "/area-calc?source=shortcut",
+      "chosenIconUrl": "https://toolsriftmath.com/brands/mathcalc/icon-192.png"
+    },
+    {
+      "name": "Perimeter Calculator",
+      "short_name": "Perimeter C…",
+      "url": "/perimeter-calc?source=shortcut",
+      "chosenIconUrl": "https://toolsriftmath.com/brands/mathcalc/icon-192.png"
+    },
+    {
+      "name": "Volume Calculator",
+      "short_name": "Volume Calc…",
+      "url": "/volume-calc?source=shortcut",
+      "chosenIconUrl": "https://toolsriftmath.com/brands/mathcalc/icon-192.png"
+    },
+    {
+      "name": "Surface Area Calculator",
+      "short_name": "Surface Are…",
+      "url": "/surface-area-calc?source=shortcut",
+      "chosenIconUrl": "https://toolsriftmath.com/brands/mathcalc/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://toolsriftmath.com/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://toolsriftmath.com/",
+  "minSdkVersion": 21,
+  "orientationLock": false,
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "appVersion": "1.0.0"
+}

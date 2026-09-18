@@ -1,0 +1,68 @@
+{
+  "packageId": "com.toolsrift.study",
+  "host": "toolsriftstudy.com",
+  "name": "ToolsRift Study Tools",
+  "launcherName": "Study",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#07060F",
+  "themeColorDark": "#07060F",
+  "navigationColor": "#07060F",
+  "navigationColorDark": "#07060F",
+  "navigationDividerColor": "#141322",
+  "navigationDividerColorDark": "#141322",
+  "backgroundColor": "#07060F",
+  "enableNotifications": false,
+  "startUrl": "/?source=twa",
+  "iconUrl": "https://toolsriftstudy.com/brands/study/icon-512.png",
+  "maskableIconUrl": "https://toolsriftstudy.com/brands/study/icon-maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "../../keys/study.keystore",
+    "alias": "study"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "Flashcard Maker",
+      "short_name": "Flashcard M…",
+      "url": "/flashcard-maker?source=shortcut",
+      "chosenIconUrl": "https://toolsriftstudy.com/brands/study/icon-192.png"
+    },
+    {
+      "name": "Quiz Generator",
+      "short_name": "Quiz Genera…",
+      "url": "/quiz-generator?source=shortcut",
+      "chosenIconUrl": "https://toolsriftstudy.com/brands/study/icon-192.png"
+    },
+    {
+      "name": "Multiple Choice Maker",
+      "short_name": "Multiple Ch…",
+      "url": "/multiple-choice-maker?source=shortcut",
+      "chosenIconUrl": "https://toolsriftstudy.com/brands/study/icon-192.png"
+    },
+    {
+      "name": "Study Timer (Pomodoro)",
+      "short_name": "Study Timer…",
+      "url": "/study-timer?source=shortcut",
+      "chosenIconUrl": "https://toolsriftstudy.com/brands/study/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://toolsriftstudy.com/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://toolsriftstudy.com/",
+  "minSdkVersion": 21,
+  "orientationLock": false,
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "appVersion": "1.0.0"
+}

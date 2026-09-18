@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Color Picker",
+    "url": "/color-picker"
+  },
+  {
+    "name": "Color Format Converter",
+    "url": "/color-converter"
+  },
+  {
+    "name": "Color Contrast Checker",
+    "url": "/color-contrast"
+  },
+  {
+    "name": "WCAG Color Compliance",
+    "url": "/wcag-checker"
+  }
+]

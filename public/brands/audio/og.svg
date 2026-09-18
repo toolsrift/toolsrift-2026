@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#09060F"/><stop offset="1" stop-color="#110D1B"/></linearGradient>
+    <radialGradient id="glow" cx="0.85" cy="0.15" r="0.7"><stop offset="0" stop-color="#9333EA" stop-opacity="0.35"/><stop offset="1" stop-color="#9333EA" stop-opacity="0"/></radialGradient>
+    <radialGradient id="glow2" cx="0.1" cy="0.9" r="0.6"><stop offset="0" stop-color="#D8B4FE" stop-opacity="0.18"/><stop offset="1" stop-color="#D8B4FE" stop-opacity="0"/></radialGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M48 0H0v48" fill="none" stroke="#fff" stroke-opacity="0.045"/></pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <rect width="1200" height="630" fill="url(#glow2)"/>
+  <g transform="translate(96 96)">
+  <defs>
+    <linearGradient id="og-g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#D8B4FE"/>
+      <stop offset="0.55" stop-color="#9333EA"/>
+      <stop offset="1" stop-color="#7E22CE"/>
+    </linearGradient>
+    <radialGradient id="og-hl" cx="0.3" cy="0.2" r="0.8">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="og-c"><circle cx="60" cy="60" r="60"/></clipPath>
+  </defs>
+  <g clip-path="url(#og-c)">
+    <rect width="120" height="120" fill="url(#og-g)"/>
+    <rect width="120" height="120" fill="url(#og-hl)"/>
+    <rect x="7.199999999999999" y="7.199999999999999" width="105.6" height="105.6" rx="19.2" fill="none" stroke="#09060F" stroke-opacity="0.18" stroke-width="1.44"/>
+  </g>
+  <g transform="translate(21.60 21.60) scale(0.7680)" color="#ffffff">
+    <path d="M18 42v16M30 30v40M42 22v56M54 34v32M66 26v48M78 40v20" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  </g></g>
+  <text x="240" y="152" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="800" font-size="52" letter-spacing="-1.2" fill="#F8FAFC">ToolsRift<tspan fill="#9333EA"> Audio</tspan></text>
+  <text x="240" y="196" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="500" font-size="22" fill="#94A3B8">toolsriftaudio.com</text>
+  <text x="96" y="352" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="800" font-size="60" letter-spacing="-1.5" fill="#F8FAFC">Trim it, convert it, hear it. Right here.</text>
+  <text x="96" y="410" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="500" font-size="26" fill="#CBD5E1">30 free audio tools · 100% in your browser · no sign-up</text>
+  <g transform="translate(96 476)">
+    <rect x="0" y="0" width="190" height="52" rx="26" fill="#9333EA" fill-opacity="0.14" stroke="#9333EA" stroke-opacity="0.45"/><text x="95" y="34" text-anchor="middle" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="700" font-size="20" fill="#D8B4FE">Free forever</text><rect x="210" y="0" width="190" height="52" rx="26" fill="#9333EA" fill-opacity="0.14" stroke="#9333EA" stroke-opacity="0.45"/><text x="305" y="34" text-anchor="middle" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="700" font-size="20" fill="#D8B4FE">No uploads</text><rect x="420" y="0" width="190" height="52" rx="26" fill="#9333EA" fill-opacity="0.14" stroke="#9333EA" stroke-opacity="0.45"/><text x="515" y="34" text-anchor="middle" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="700" font-size="20" fill="#D8B4FE">Works offline</text><rect x="630" y="0" width="190" height="52" rx="26" fill="#9333EA" fill-opacity="0.14" stroke="#9333EA" stroke-opacity="0.45"/><text x="725" y="34" text-anchor="middle" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="700" font-size="20" fill="#D8B4FE">Android app</text>
+  </g>
+  <rect x="0" y="622" width="1200" height="8" fill="#9333EA"/>
+</svg>

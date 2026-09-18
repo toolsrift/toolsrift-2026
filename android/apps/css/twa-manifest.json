@@ -1,0 +1,68 @@
+{
+  "packageId": "com.toolsrift.css",
+  "host": "toolsriftcss.com",
+  "name": "ToolsRift CSS Generators",
+  "launcherName": "CSS Gen",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#04090C",
+  "themeColorDark": "#04090C",
+  "navigationColor": "#04090C",
+  "navigationColorDark": "#04090C",
+  "navigationDividerColor": "#0F1A20",
+  "navigationDividerColorDark": "#0F1A20",
+  "backgroundColor": "#04090C",
+  "enableNotifications": false,
+  "startUrl": "/?source=twa",
+  "iconUrl": "https://toolsriftcss.com/brands/css/icon-512.png",
+  "maskableIconUrl": "https://toolsriftcss.com/brands/css/icon-maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "../../keys/css.keystore",
+    "alias": "css"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "CSS Gradient Generator",
+      "short_name": "CSS Gradien…",
+      "url": "/css-gradient?source=shortcut",
+      "chosenIconUrl": "https://toolsriftcss.com/brands/css/icon-192.png"
+    },
+    {
+      "name": "CSS Box Shadow Generator",
+      "short_name": "CSS Box Sha…",
+      "url": "/css-box-shadow?source=shortcut",
+      "chosenIconUrl": "https://toolsriftcss.com/brands/css/icon-192.png"
+    },
+    {
+      "name": "CSS Text Shadow Generator",
+      "short_name": "CSS Text Sh…",
+      "url": "/css-text-shadow?source=shortcut",
+      "chosenIconUrl": "https://toolsriftcss.com/brands/css/icon-192.png"
+    },
+    {
+      "name": "CSS Border Radius Generator",
+      "short_name": "CSS Border …",
+      "url": "/css-border-radius?source=shortcut",
+      "chosenIconUrl": "https://toolsriftcss.com/brands/css/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://toolsriftcss.com/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://toolsriftcss.com/",
+  "minSdkVersion": 21,
+  "orientationLock": false,
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "appVersion": "1.0.0"
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Investment Return Calculator",
+    "url": "/investment-return-calc"
+  },
+  {
+    "name": "RD Calculator",
+    "url": "/rd-calc"
+  },
+  {
+    "name": "PPF Calculator",
+    "url": "/ppf-calc"
+  },
+  {
+    "name": "Gratuity Calculator",
+    "url": "/gratuity-calc"
+  }
+]

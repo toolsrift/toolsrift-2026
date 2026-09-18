@@ -56,3 +56,8 @@ content/social/hf/
 content/social/renders/
 content/social/audio-configs/
 content/social/creative/
+
+# ToolsRift network — Android signing keys and Bubblewrap build output
+android/keys/*
+!android/keys/.gitignore
+android/build/

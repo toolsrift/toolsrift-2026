@@ -3,6 +3,7 @@
 // Injects WebApplication, BreadcrumbList, and FAQPage JSON-LD schemas.
 
 import { useState, useRef, useEffect } from 'react';
+import { toolHref } from './toolLink';
 import Head from 'next/head';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COLORS, RADIUS, FS, MQ, SPRING } from '../../lib/designTokens';
@@ -10,16 +11,18 @@ import { FadeUp, Stagger, StaggerItem } from './motion';
 import ToolNavSidebar from './ToolNavSidebar';
 import { resolveIcon } from '../../lib/toolIcons';
 import { isArticleOwnedByPage } from '../../lib/appRoute';
+import { SITE } from '../../lib/sites';
 
 // ── JSON-LD schema injection ────────────────────────────────────────────────
 export function ToolSchemas({ theme, tool }) {
-  const baseUrl   = 'https://toolsrift.com';
+  // Site-aware: on a standalone network site this is that site's own domain.
+  const baseUrl   = SITE.baseUrl;
   // The clean, canonical URL — this used to be `${pageRoute}#/tool/${id}`, which
   // Google reads as the CATEGORY page, so every tool in a category declared
   // itself to be the same entity and contradicted the page's own canonical tag.
-  const toolUrl   = `${baseUrl}${theme.pageRoute}/${tool.id}`;
+  const toolUrl   = `${baseUrl}${toolHref(theme, tool.id)}`;
 
-  // A /[category]/[tool] page emits its own SoftwareApplication, BreadcrumbList
+  // A /[slug]/[tool] page emits its own SoftwareApplication, BreadcrumbList
   // and FAQPage blocks against the canonical URL. Emitting a second set here left
   // two conflicting descriptions of the same page in the markup.
   const [ownedByPage, setOwnedByPage] = useState(false);
@@ -35,17 +38,22 @@ export function ToolSchemas({ theme, tool }) {
     applicationCategory: 'UtilitiesApplication',
     operatingSystem: 'Any',
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-    creator: { '@type': 'Organization', name: 'ToolsRift', url: baseUrl },
+    creator: { '@type': 'Organization', name: SITE.siteName, url: baseUrl },
   };
 
   const crumbs = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'ToolsRift',  item: baseUrl },
-      { '@type': 'ListItem', position: 2, name: theme.name,   item: `${baseUrl}${theme.pageRoute}` },
-      { '@type': 'ListItem', position: 3, name: tool.name },
-    ],
+    itemListElement: theme.isSiteRoot
+      ? [
+          { '@type': 'ListItem', position: 1, name: SITE.siteName, item: baseUrl },
+          { '@type': 'ListItem', position: 2, name: tool.name },
+        ]
+      : [
+          { '@type': 'ListItem', position: 1, name: 'ToolsRift',  item: baseUrl },
+          { '@type': 'ListItem', position: 2, name: theme.name,   item: `${baseUrl}${theme.pageRoute}` },
+          { '@type': 'ListItem', position: 3, name: tool.name },
+        ],
   };
 
   const faqPage = tool.faq?.length ? {
@@ -103,11 +111,15 @@ function AdSlot() { return null; }
 
 // ── Breadcrumb ──────────────────────────────────────────────────────────────
 function Breadcrumb({ theme, toolName }) {
-  const crumbs = [
-    { label: 'ToolsRift', href: '/' },
-    { label: theme.name,  href: theme.pageRoute },
-    { label: toolName },
-  ];
+  // Standalone site: Home › Tool (the category IS the site).
+  // Hub:             ToolsRift › Category › Tool.
+  const crumbs = theme.isSiteRoot
+    ? [{ label: theme.name, href: '/' }, { label: toolName }]
+    : [
+        { label: 'ToolsRift', href: '/' },
+        { label: theme.name,  href: theme.pageRoute },
+        { label: toolName },
+      ];
   return (
     <nav aria-label="Breadcrumb" style={{
       display: 'flex', alignItems: 'center', flexWrap: 'wrap',
@@ -308,7 +320,7 @@ function RelatedTools({ theme, related = [] }) {
           {related.slice(0, 8).map((t) => (
             <StaggerItem key={t.id}>
               <motion.a
-                href={`${theme.pageRoute}/${t.id}`}
+                href={toolHref(theme, t.id)}
                 onClick={(e) => fastHashNav(e, theme.pageRoute, t.id)}
                 whileHover={{ y: -3, borderColor: theme.color, background: theme.tint06 }}
                 transition={SPRING.smooth}
@@ -395,7 +407,7 @@ function ToolSidebar({ theme, tool, related = [] }) {
         {siblings.map(t => (
           <a
             key={t.id}
-            href={`${theme.pageRoute}/${t.id}`}
+            href={toolHref(theme, t.id)}
             onClick={(e) => fastHashNav(e, theme.pageRoute, t.id)}
             style={{
               display: 'flex', alignItems: 'center', gap: 10, minHeight: 40,
@@ -459,7 +471,7 @@ function ToolSidebar({ theme, tool, related = [] }) {
 export default function ToolPageLayout({ theme, tool, tools, subcats, related, children }) {
   const hasFullNav = Array.isArray(tools) && tools.length > 1;
   const hasSidebar = hasFullNav || (related && related.length > 1);
-  // On a /[category]/[tool] URL the page itself server-renders the how-to, FAQ
+  // On a /[slug]/[tool] URL the page itself server-renders the how-to, FAQ
   // and related-tool links, so rendering them again here would show each twice.
   // Deferring to the page also means the crawlable copy is the one in raw HTML,
   // rather than one that only exists after JavaScript runs.

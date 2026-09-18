@@ -2,10 +2,11 @@ import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import SiteFooter from './SiteFooter'
 import TOOL_REGISTRY from '../lib/toolRegistry'
+import { SITE, toolPath, categoryHome } from '../lib/sites'
 
 const C = {
-  bg: '#06090F',
-  surface: '#0D1117',
+  bg: SITE.brand ? SITE.brand.palette.bg : '#06090F',
+  surface: SITE.brand ? SITE.brand.palette.surface : '#0D1117',
   surface2: '#111827',
   border: 'rgba(255,255,255,0.08)',
   borderLight: 'rgba(255,255,255,0.05)',
@@ -340,7 +341,7 @@ export default function CategoryContent({ data }) {
               }}>
                 {categoryTools.map(t => (
                   <li key={t.id}>
-                    <a href={`/${categorySlug}/${t.id}`} style={{
+                    <a href={toolPath(categorySlug, t.id)} style={{
                       color: C.muted, textDecoration: 'none', fontSize: 13.5, lineHeight: 1.6,
                     }}>
                       {t.name}
@@ -358,7 +359,7 @@ export default function CategoryContent({ data }) {
           <Section>
             <Eyebrow color="#8B5CF6">Explore More</Eyebrow>
             <H2>Related tool categories</H2>
-            <Paragraph dim>Continue exploring ToolsRift with these related tool collections.</Paragraph>
+            <Paragraph dim>{SITE.isStandalone ? 'Part of the ToolsRift network — sister sites, each dedicated to one kind of tool.' : 'Continue exploring ToolsRift with these related tool collections.'}</Paragraph>
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))',
@@ -366,7 +367,7 @@ export default function CategoryContent({ data }) {
               marginTop: 24,
             }}>
               {related.map(r => (
-                <a key={r.href} href={r.href} style={{
+                <a key={r.href} href={SITE.isStandalone ? categoryHome(r.href.replace(/^\//, '')) : r.href} style={{
                   display: 'block',
                   padding: '20px 22px',
                   background: C.surface,
@@ -403,7 +404,7 @@ export default function CategoryContent({ data }) {
       {/* Footer at the very bottom of the category landing page (server-rendered).
           On tool detail pages this component returns null and CategoryLayout
           renders the footer instead — so there is exactly one, always last. */}
-      <SiteFooter accent={C.blue} />
+      <SiteFooter accent={SITE.brand ? SITE.brand.palette.primary : C.blue} fonts={SITE.brand ? SITE.brand.fonts : undefined} />
     </>
   )
 }

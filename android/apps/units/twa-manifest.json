@@ -1,0 +1,68 @@
+{
+  "packageId": "com.toolsrift.units",
+  "host": "toolsriftunits.com",
+  "name": "ToolsRift Unit Converter",
+  "launcherName": "Units",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#05090C",
+  "themeColorDark": "#05090C",
+  "navigationColor": "#05090C",
+  "navigationColorDark": "#05090C",
+  "navigationDividerColor": "#10171D",
+  "navigationDividerColorDark": "#10171D",
+  "backgroundColor": "#05090C",
+  "enableNotifications": false,
+  "startUrl": "/?source=twa",
+  "iconUrl": "https://toolsriftunits.com/brands/units/icon-512.png",
+  "maskableIconUrl": "https://toolsriftunits.com/brands/units/icon-maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "../../keys/units.keystore",
+    "alias": "units"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "Length Converter",
+      "short_name": "Length Conv…",
+      "url": "/length-converter?source=shortcut",
+      "chosenIconUrl": "https://toolsriftunits.com/brands/units/icon-192.png"
+    },
+    {
+      "name": "Weight / Mass Converter",
+      "short_name": "Weight / Ma…",
+      "url": "/weight-converter?source=shortcut",
+      "chosenIconUrl": "https://toolsriftunits.com/brands/units/icon-192.png"
+    },
+    {
+      "name": "Temperature Converter",
+      "short_name": "Temperature…",
+      "url": "/temperature-converter?source=shortcut",
+      "chosenIconUrl": "https://toolsriftunits.com/brands/units/icon-192.png"
+    },
+    {
+      "name": "Area Converter",
+      "short_name": "Area Conver…",
+      "url": "/area-converter?source=shortcut",
+      "chosenIconUrl": "https://toolsriftunits.com/brands/units/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://toolsriftunits.com/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://toolsriftunits.com/",
+  "minSdkVersion": 21,
+  "orientationLock": false,
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "appVersion": "1.0.0"
+}

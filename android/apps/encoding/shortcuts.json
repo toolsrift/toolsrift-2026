@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Morse Code Translator",
+    "url": "/morse-code"
+  },
+  {
+    "name": "NATO Phonetic Alphabet",
+    "url": "/nato-alphabet"
+  },
+  {
+    "name": "Binary Text Converter",
+    "url": "/binary-text"
+  },
+  {
+    "name": "Hex Text Converter",
+    "url": "/hex-text"
+  }
+]

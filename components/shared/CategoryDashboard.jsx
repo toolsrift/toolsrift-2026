@@ -15,6 +15,7 @@ import { groupTools } from './ToolNavSidebar';
 import { resolveIcon } from '../../lib/toolIcons';
 import { toolHref, shouldInterceptClick } from './toolLink';
 import { TOOLS_PLUS, TOTAL_CATEGORIES } from '../../lib/siteStats';
+import { SITE } from '../../lib/sites';
 
 // ── Themed tool tile (style varies per anim feel) ───────────────────────────
 function ThemedToolTile({ theme, tool, onClick, index = 0 }) {
@@ -277,7 +278,7 @@ function ExploreOthers({ theme }) {
           <div style={{
             fontSize: 12, fontWeight: 700, letterSpacing: '0.12em',
             textTransform: 'uppercase', color: COLORS.muted, marginBottom: 8,
-          }}>Explore other categories</div>
+          }}>{SITE.isStandalone ? 'More from the ToolsRift network' : 'Explore other categories'}</div>
           <div style={{
             fontFamily: theme.fonts.head, fontSize: FS.xl, fontWeight: 700,
             color: COLORS.textBright, letterSpacing: '-0.015em',

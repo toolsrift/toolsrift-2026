@@ -1,0 +1,68 @@
+{
+  "packageId": "com.toolsrift.html",
+  "host": "toolsrifthtml.com",
+  "name": "ToolsRift HTML Tools",
+  "launcherName": "HTML Tools",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#0C0805",
+  "themeColorDark": "#0C0805",
+  "navigationColor": "#0C0805",
+  "navigationColorDark": "#0C0805",
+  "navigationDividerColor": "#1C150F",
+  "navigationDividerColorDark": "#1C150F",
+  "backgroundColor": "#0C0805",
+  "enableNotifications": false,
+  "startUrl": "/?source=twa",
+  "iconUrl": "https://toolsrifthtml.com/brands/html/icon-512.png",
+  "maskableIconUrl": "https://toolsrifthtml.com/brands/html/icon-maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "../../keys/html.keystore",
+    "alias": "html"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "HTML Formatter",
+      "short_name": "HTML Format…",
+      "url": "/html-formatter?source=shortcut",
+      "chosenIconUrl": "https://toolsrifthtml.com/brands/html/icon-192.png"
+    },
+    {
+      "name": "HTML Minifier",
+      "short_name": "HTML Minifi…",
+      "url": "/html-minifier?source=shortcut",
+      "chosenIconUrl": "https://toolsrifthtml.com/brands/html/icon-192.png"
+    },
+    {
+      "name": "HTML Validator",
+      "short_name": "HTML Valida…",
+      "url": "/html-validator?source=shortcut",
+      "chosenIconUrl": "https://toolsrifthtml.com/brands/html/icon-192.png"
+    },
+    {
+      "name": "HTML Cleaner",
+      "short_name": "HTML Cleaner",
+      "url": "/html-cleaner?source=shortcut",
+      "chosenIconUrl": "https://toolsrifthtml.com/brands/html/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://toolsrifthtml.com/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://toolsrifthtml.com/",
+  "minSdkVersion": 21,
+  "orientationLock": false,
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "appVersion": "1.0.0"
+}

@@ -845,7 +845,7 @@ When ready for Phase 2 (Pro subscriptions):
 Every tool now has its own indexable URL: `/{category}/{tool-id}` (e.g. `/text/word-counter-pro`).
 
 **How it works:**
-- `pages/[category]/[tool].js` — single dynamic page for all 593 tools. Uses a "hash bridge": on mount it sets `window.location.hash = #/tool/{id}` via `history.replaceState()` BEFORE loading the category component, so the component's internal `useAppRouter()` opens the correct tool. NO changes to category component files are needed.
+- `pages/[slug]/[tool].js` (formerly `pages/[category]/[tool].js`) — single dynamic page for all 593 tools. Uses a "hash bridge": on mount it sets `window.location.hash = #/tool/{id}` via `history.replaceState()` BEFORE loading the category component, so the component's internal `useAppRouter()` opens the correct tool. NO changes to category component files are needed.
 - `lib/toolRegistry.js` — AUTO-GENERATED registry of all tools (id, name, desc per category). Never edit by hand.
 - `components/CategoryContent.jsx` — renders a server-side link grid to every tool URL (Google discovery paths).
 
@@ -856,7 +856,7 @@ Every tool now has its own indexable URL: `/{category}/{tool-id}` (e.g. `/text/w
 4. Commit all three generated files together with the component change.
 5. After deploy, run `npm run submit:indexnow` (or `node scripts/submit-indexnow.js`) to push the new URLs to Bing/Yandex/Seznam/Naver/Yep via the IndexNow protocol, and `node scripts/submit-google-sitemap.js` to ask Google to recrawl the sitemap. A daily Vercel Cron (`/api/cron/submit-search-engines`, see `vercel.json`) resubmits the whole sitemap to both as a safety net, so this step is not strictly required but speeds up discovery for brand-new tools.
 
-Skipping step 1 means new tools get no URL/page. Skipping step 2 means the tool's page falls back to a GENERIC server title/description/FAQ (the rich TOOL_META only applies client-side, which Google weights far less). Skipping step 3 means search engines are never told about them. NOTE: when adding a NEW CATEGORY, also add its `slug -> component` entry to the hardcoded `MAP` in BOTH `scripts/extract-tools.py` and `scripts/extract-seo.js`, and register it in `pages/[category]/[tool].js` COMPONENTS.
+Skipping step 1 means new tools get no URL/page. Skipping step 2 means the tool's page falls back to a GENERIC server title/description/FAQ (the rich TOOL_META only applies client-side, which Google weights far less). Skipping step 3 means search engines are never told about them. NOTE: when adding a NEW CATEGORY, also add its `slug -> component` entry to the hardcoded `MAP` in BOTH `scripts/extract-tools.py` and `scripts/extract-seo.js`, and register it in `pages/[slug]/[tool].js` COMPONENTS and `lib/sites/categoryComponents.js`.
 
 ### Search Engine Indexing Automation (added 2026-07)
 
@@ -870,3 +870,33 @@ Skipping step 1 means new tools get no URL/page. Skipping step 2 means the tool'
 - Tool ids must be kebab-case `[a-z0-9-]+` (they become URLs).
 - Every tool object needs `id`, `name`, and `desc` (desc is used for meta description).
 - `public/sw.js` must still NEVER exist.
+
+---
+
+## TOOLSRIFT NETWORK — 29 STANDALONE CATEGORY SITES + ANDROID APPS (added Sept 2026)
+
+Every category is also its own website (`toolsriftpdf.com`, `toolsriftimage.com`, …)
+with its own logo, palette, typography, design concept, sitemap, PWA manifest and
+Android app. **One codebase, thirty build targets** — full guide: `docs/NETWORK-SITES.md`,
+apps: `android/README.md`.
+
+- `NEXT_PUBLIC_SITE_ID` (build-time) selects the site: unset/`hub` = toolsrift.com as
+  before; `pdf`, `image`, `json`, … = that category at the root of its own domain.
+- `lib/sites/brands.js` — the 29 brands (domain, palette, fonts, shape, pattern,
+  concept copy, logo spec, Android package id + Play listing). `lib/sites/index.js`
+  resolves the active `SITE`; `categoryHome()` / `toolPath()` give network-aware URLs.
+- Shared layouts are site-aware through `COLORS`/`RADIUS` (`lib/designTokens.js`),
+  `theme.isSiteRoot` / `theme.brand` (`lib/categoryThemes.js`), `<BrandBackdrop />`,
+  `SiteFooter`, `_document.js`. Category components are untouched.
+- Routes on a standalone site: `/` (StandaloneHome), `/<tool-id>` (`pages/[slug].js`),
+  shared legal pages; `middleware.js` 301s `/pdf/x → /x` and other categories → hub;
+  `pages/api/site/*` generate robots.txt, sitemap.xml, manifest.json, assetlinks.json.
+- Commands: `npm run sites:list`, `npm run sites:check`, `npm run dev:site -- pdf`,
+  `npm run build:site -- pdf`, `npm run brands:assets` (regenerates
+  `public/brands/<id>/` logos/icons/OG via headless Chromium), `npm run android:generate`
+  (regenerates `android/apps/<id>/`), `npm run vercel:bootstrap -- <id>|--all`.
+- **When editing `brands.js`**: run `brands:assets`, `android:generate`, `sites:check`
+  and commit the generated files. **When adding a category**: also add a brand, a
+  glyph in `scripts/brand-glyphs.js`, and register it in `lib/sites/categoryComponents.js`.
+- `pages/[category]/[tool].js` was renamed to `pages/[slug]/[tool].js` (Next.js
+  requires one name for the first dynamic segment); behaviour is unchanged.

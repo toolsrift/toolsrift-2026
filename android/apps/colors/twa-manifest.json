@@ -1,0 +1,68 @@
+{
+  "packageId": "com.toolsrift.colors",
+  "host": "toolsriftcolors.com",
+  "name": "ToolsRift Color Tools",
+  "launcherName": "Color Tools",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#0A0710",
+  "themeColorDark": "#0A0710",
+  "navigationColor": "#0A0710",
+  "navigationColorDark": "#0A0710",
+  "navigationDividerColor": "#191324",
+  "navigationDividerColorDark": "#191324",
+  "backgroundColor": "#0A0710",
+  "enableNotifications": false,
+  "startUrl": "/?source=twa",
+  "iconUrl": "https://toolsriftcolors.com/brands/colors/icon-512.png",
+  "maskableIconUrl": "https://toolsriftcolors.com/brands/colors/icon-maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "../../keys/colors.keystore",
+    "alias": "colors"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "Color Picker",
+      "short_name": "Color Picker",
+      "url": "/color-picker?source=shortcut",
+      "chosenIconUrl": "https://toolsriftcolors.com/brands/colors/icon-192.png"
+    },
+    {
+      "name": "Color Format Converter",
+      "short_name": "Color Forma…",
+      "url": "/color-converter?source=shortcut",
+      "chosenIconUrl": "https://toolsriftcolors.com/brands/colors/icon-192.png"
+    },
+    {
+      "name": "Color Contrast Checker",
+      "short_name": "Color Contr…",
+      "url": "/color-contrast?source=shortcut",
+      "chosenIconUrl": "https://toolsriftcolors.com/brands/colors/icon-192.png"
+    },
+    {
+      "name": "WCAG Color Compliance",
+      "short_name": "WCAG Color …",
+      "url": "/wcag-checker?source=shortcut",
+      "chosenIconUrl": "https://toolsriftcolors.com/brands/colors/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://toolsriftcolors.com/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://toolsriftcolors.com/",
+  "minSdkVersion": 21,
+  "orientationLock": false,
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "appVersion": "1.0.0"
+}

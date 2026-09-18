@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Bar Chart Maker",
+    "url": "/bar-chart-maker"
+  },
+  {
+    "name": "Line Chart Maker",
+    "url": "/line-chart-maker"
+  },
+  {
+    "name": "Pie Chart Maker",
+    "url": "/pie-chart-maker"
+  },
+  {
+    "name": "Donut Chart Maker",
+    "url": "/donut-chart-maker"
+  }
+]

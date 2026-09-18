@@ -9,8 +9,11 @@
 //   (not an error) if that env var isn't set yet. See CLAUDE.md for setup steps.
 
 import { JWT } from 'google-auth-library'
+import { SITE } from '../../../lib/sites'
 
-const HOST = 'toolsrift.com'
+// Each network site runs its own copy of this cron (one Vercel project per
+// domain), so the host is whichever site this build is.
+const HOST = SITE.domain
 const KEY = '509a62672848f5997b1eb6f154172d3a'
 const KEY_LOCATION = `https://${HOST}/${KEY}.txt`
 // toolsrift.com is a Domain property in Search Console (verified via DNS), so the

@@ -1,0 +1,68 @@
+{
+  "packageId": "com.toolsrift.audio",
+  "host": "toolsriftaudio.com",
+  "name": "ToolsRift Audio Tools",
+  "launcherName": "Audio",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#09060F",
+  "themeColorDark": "#09060F",
+  "navigationColor": "#09060F",
+  "navigationColorDark": "#09060F",
+  "navigationDividerColor": "#171222",
+  "navigationDividerColorDark": "#171222",
+  "backgroundColor": "#09060F",
+  "enableNotifications": false,
+  "startUrl": "/?source=twa",
+  "iconUrl": "https://toolsriftaudio.com/brands/audio/icon-512.png",
+  "maskableIconUrl": "https://toolsriftaudio.com/brands/audio/icon-maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "../../keys/audio.keystore",
+    "alias": "audio"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "Audio Trimmer",
+      "short_name": "Audio Trimm…",
+      "url": "/audio-trimmer?source=shortcut",
+      "chosenIconUrl": "https://toolsriftaudio.com/brands/audio/icon-192.png"
+    },
+    {
+      "name": "Audio Merger",
+      "short_name": "Audio Merger",
+      "url": "/audio-merger?source=shortcut",
+      "chosenIconUrl": "https://toolsriftaudio.com/brands/audio/icon-192.png"
+    },
+    {
+      "name": "Audio Volume Changer",
+      "short_name": "Audio Volum…",
+      "url": "/audio-volume-changer?source=shortcut",
+      "chosenIconUrl": "https://toolsriftaudio.com/brands/audio/icon-192.png"
+    },
+    {
+      "name": "Audio Normalizer",
+      "short_name": "Audio Norma…",
+      "url": "/audio-normalizer?source=shortcut",
+      "chosenIconUrl": "https://toolsriftaudio.com/brands/audio/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://toolsriftaudio.com/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://toolsriftaudio.com/",
+  "minSdkVersion": 21,
+  "orientationLock": false,
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "appVersion": "1.0.0"
+}

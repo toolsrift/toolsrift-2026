@@ -1,0 +1,3 @@
+# Signing keystores are secrets. Never commit them.
+*
+!.gitignore

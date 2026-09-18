@@ -1,0 +1,68 @@
+{
+  "packageId": "com.toolsrift.content",
+  "host": "toolsriftcontent.com",
+  "name": "ToolsRift Content Generators",
+  "launcherName": "Content Gen",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#04080D",
+  "themeColorDark": "#04080D",
+  "navigationColor": "#04080D",
+  "navigationColorDark": "#04080D",
+  "navigationDividerColor": "#0F1720",
+  "navigationDividerColorDark": "#0F1720",
+  "backgroundColor": "#04080D",
+  "enableNotifications": false,
+  "startUrl": "/?source=twa",
+  "iconUrl": "https://toolsriftcontent.com/brands/gen-content/icon-512.png",
+  "maskableIconUrl": "https://toolsriftcontent.com/brands/gen-content/icon-maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "../../keys/gen-content.keystore",
+    "alias": "gen-content"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "Privacy Policy Generator",
+      "short_name": "Privacy Pol…",
+      "url": "/privacy-policy-gen?source=shortcut",
+      "chosenIconUrl": "https://toolsriftcontent.com/brands/gen-content/icon-192.png"
+    },
+    {
+      "name": "Terms & Conditions Generator",
+      "short_name": "Terms & Con…",
+      "url": "/terms-conditions-gen?source=shortcut",
+      "chosenIconUrl": "https://toolsriftcontent.com/brands/gen-content/icon-192.png"
+    },
+    {
+      "name": "Cookie Policy Generator",
+      "short_name": "Cookie Poli…",
+      "url": "/cookie-policy-gen?source=shortcut",
+      "chosenIconUrl": "https://toolsriftcontent.com/brands/gen-content/icon-192.png"
+    },
+    {
+      "name": "Disclaimer Generator",
+      "short_name": "Disclaimer …",
+      "url": "/disclaimer-gen?source=shortcut",
+      "chosenIconUrl": "https://toolsriftcontent.com/brands/gen-content/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://toolsriftcontent.com/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://toolsriftcontent.com/",
+  "minSdkVersion": 21,
+  "orientationLock": false,
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "appVersion": "1.0.0"
+}

@@ -7,6 +7,7 @@ import TOOL_SEO from '../../lib/toolSeo'
 import CORE_TOOLS from '../../lib/coreTools'
 import { publishToolHint } from '../../lib/appRoute'
 import SiteFooter from '../../components/SiteFooter'
+import { SITE } from '../../lib/sites'
 
 // Map each tool id -> its canonical category (first category in registry order
 // that contains the id). Cross-category duplicate tools (same id in two
@@ -23,7 +24,7 @@ const CANONICAL_CAT = (() => {
 })()
 
 /* ============================================================
-   DYNAMIC TOOL PAGE — /[category]/[tool]
+   DYNAMIC TOOL PAGE — /[slug]/[tool]
    ============================================================
    This single file gives every tool its own real URL, e.g.
      /text/word-counter-pro
@@ -107,17 +108,21 @@ function WidgetLoading() {
 }
 
 export async function getStaticPaths() {
+  // A standalone network site (NEXT_PUBLIC_SITE_ID=pdf …) serves its tools at
+  // /<tool> (pages/[slug].js) and 301s /<category>/<tool> there via middleware,
+  // so this hub-shaped route builds nothing on those sites.
+  if (SITE.isStandalone) return { paths: [], fallback: false }
   const paths = []
   for (const [category, data] of Object.entries(TOOL_REGISTRY)) {
     for (const t of data.tools) {
-      paths.push({ params: { category, tool: t.id } })
+      paths.push({ params: { slug: category, tool: t.id } })
     }
   }
   return { paths, fallback: false }
 }
 
 export async function getStaticProps({ params }) {
-  const catData = TOOL_REGISTRY[params.category]
+  const catData = TOOL_REGISTRY[params.slug]
   const tool = catData.tools.find(t => t.id === params.tool)
   const idx = catData.tools.indexOf(tool)
   // 12 related tools from the same category (wrap around the list). Each tool
@@ -127,11 +132,11 @@ export async function getStaticProps({ params }) {
   for (let i = 1; related.length < 12 && i < catData.tools.length; i++) {
     related.push(catData.tools[(idx + i) % catData.tools.length])
   }
-  const seo = (TOOL_SEO[params.category] && TOOL_SEO[params.category][params.tool]) || null
-  const canonicalCategory = CANONICAL_CAT[params.tool] || params.category
+  const seo = (TOOL_SEO[params.slug] && TOOL_SEO[params.slug][params.tool]) || null
+  const canonicalCategory = CANONICAL_CAT[params.tool] || params.slug
   return {
     props: {
-      category: params.category,
+      category: params.slug,
       categoryName: catData.name,
       tool,
       related,

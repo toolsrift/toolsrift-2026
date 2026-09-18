@@ -1,0 +1,68 @@
+{
+  "packageId": "com.toolsrift.image",
+  "host": "toolsriftimage.com",
+  "name": "ToolsRift Image Tools",
+  "launcherName": "Image Tools",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#0B0709",
+  "themeColorDark": "#0B0709",
+  "navigationColor": "#0B0709",
+  "navigationColorDark": "#0B0709",
+  "navigationDividerColor": "#1A1116",
+  "navigationDividerColorDark": "#1A1116",
+  "backgroundColor": "#0B0709",
+  "enableNotifications": false,
+  "startUrl": "/?source=twa",
+  "iconUrl": "https://toolsriftimage.com/brands/image/icon-512.png",
+  "maskableIconUrl": "https://toolsriftimage.com/brands/image/icon-maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "../../keys/image.keystore",
+    "alias": "image"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "Image Resizer",
+      "short_name": "Image Resiz…",
+      "url": "/image-resizer?source=shortcut",
+      "chosenIconUrl": "https://toolsriftimage.com/brands/image/icon-192.png"
+    },
+    {
+      "name": "Image Cropper",
+      "short_name": "Image Cropp…",
+      "url": "/image-cropper?source=shortcut",
+      "chosenIconUrl": "https://toolsriftimage.com/brands/image/icon-192.png"
+    },
+    {
+      "name": "Image Compressor",
+      "short_name": "Image Compr…",
+      "url": "/image-compressor?source=shortcut",
+      "chosenIconUrl": "https://toolsriftimage.com/brands/image/icon-192.png"
+    },
+    {
+      "name": "Image Converter",
+      "short_name": "Image Conve…",
+      "url": "/image-converter?source=shortcut",
+      "chosenIconUrl": "https://toolsriftimage.com/brands/image/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://toolsriftimage.com/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://toolsriftimage.com/",
+  "minSdkVersion": 21,
+  "orientationLock": false,
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "appVersion": "1.0.0"
+}

@@ -1,0 +1,68 @@
+{
+  "packageId": "com.toolsrift.text.twa",
+  "host": "toolsrifttext.com",
+  "name": "ToolsRift Text Tools",
+  "launcherName": "Text Tools",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#08090E",
+  "themeColorDark": "#08090E",
+  "navigationColor": "#08090E",
+  "navigationColorDark": "#08090E",
+  "navigationDividerColor": "#141824",
+  "navigationDividerColorDark": "#141824",
+  "backgroundColor": "#08090E",
+  "enableNotifications": false,
+  "startUrl": "/?source=twa",
+  "iconUrl": "https://toolsrifttext.com/brands/text/icon-512.png",
+  "maskableIconUrl": "https://toolsrifttext.com/brands/text/icon-maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "../../keys/text.keystore",
+    "alias": "text"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "Word Counter Pro",
+      "short_name": "Word Counte…",
+      "url": "/word-counter-pro?source=shortcut",
+      "chosenIconUrl": "https://toolsrifttext.com/brands/text/icon-192.png"
+    },
+    {
+      "name": "Character Counter",
+      "short_name": "Character C…",
+      "url": "/character-counter?source=shortcut",
+      "chosenIconUrl": "https://toolsrifttext.com/brands/text/icon-192.png"
+    },
+    {
+      "name": "Reading Time Calculator",
+      "short_name": "Reading Tim…",
+      "url": "/reading-time?source=shortcut",
+      "chosenIconUrl": "https://toolsrifttext.com/brands/text/icon-192.png"
+    },
+    {
+      "name": "Word Frequency Analyzer",
+      "short_name": "Word Freque…",
+      "url": "/word-frequency?source=shortcut",
+      "chosenIconUrl": "https://toolsrifttext.com/brands/text/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://toolsrifttext.com/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://toolsrifttext.com/",
+  "minSdkVersion": 21,
+  "orientationLock": false,
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "appVersion": "1.0.0"
+}
