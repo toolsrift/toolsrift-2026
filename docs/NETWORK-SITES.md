@@ -103,10 +103,14 @@ tool up automatically on the next deploy.
    see `npm run sites:list`). The apex is on Vercel DNS with a wildcard, so the
    subdomain already resolves — nothing to register. (A site can move to its
    own apex domain later by changing `domain` in `brands.js`.)
-2. **Create the Vercel project**: `npm run vercel:bootstrap -- pdf` (or
-   `--all`). It creates `toolsrift-pdf`, sets `NEXT_PUBLIC_SITE_ID=pdf` for
-   all environments and attaches the domain. Connect the project to this Git
-   repository in the Vercel dashboard (Settings → Git) so every push deploys it.
+2. **Create the Vercel project** — easiest: add a `VERCEL_TOKEN` repository
+   secret on GitHub once, then run the **vercel-bootstrap** workflow (Actions →
+   "Run workflow"). It uses `scripts/vercel/bootstrap-api.js` (Vercel REST API)
+   to create `toolsrift-<id>` linked to this repo, set `NEXT_PUBLIC_SITE_ID`,
+   attach the subdomain (moving it off the hub project if needed) and trigger
+   the first production deploy. Locally the same script runs with
+   `VERCEL_TOKEN=… node scripts/vercel/bootstrap-api.js --all`, and
+   `npm run vercel:bootstrap -- pdf` is the CLI-based alternative.
 3. **Attach the subdomain to the project** (Vercel → project → Settings →
    Domains → add `pdf.toolsrift.com`). A domain can live on only ONE project:
    `pdf.`, `text.`, `image.`, `dev.` and `calc.toolsrift.com` were mirrors on
