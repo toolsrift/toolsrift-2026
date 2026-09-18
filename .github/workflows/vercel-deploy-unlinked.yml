@@ -1,0 +1,36 @@
+# Deploys the network-site projects that have no Git link on Vercel.
+#
+# Vercel connects at most 25 projects to one repository (the hub + 24 sites).
+# The remaining sites are plain projects; this workflow uploads the repo with
+# the Vercel CLI and builds them on Vercel on every push to main, so they stay
+# in lock-step with the Git-linked ones. Needs the VERCEL_TOKEN secret.
+name: vercel-deploy-unlinked
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      sites:
+        description: 'Site ids (space-separated) or empty for all unlinked projects'
+        type: string
+        default: ''
+
+concurrency:
+  group: vercel-deploy-unlinked
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Deploy unlinked projects with the Vercel CLI
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_TEAM: toolsrifts-projects
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then echo "::error::VERCEL_TOKEN secret is not set"; exit 1; fi
+          node scripts/vercel/deploy-unlinked.js ${{ inputs.sites }}

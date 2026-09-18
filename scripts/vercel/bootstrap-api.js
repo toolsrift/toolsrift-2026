@@ -79,22 +79,36 @@ async function ensureProject(b) {
   if (p) {
     console.log(`   project exists (${p.id})${p.link ? ', git-linked' : ', NOT git-linked'}`);
     if (!p.link) {
-      // Link the repo after the fact.
-      await api('POST', `/v9/projects/${p.id}/link`, { type: 'github', repo: REPO });
-      console.log('   linked to git');
+      // Link the repo after the fact — unless the repo already has its 25 projects.
+      try {
+        await api('POST', `/v9/projects/${p.id}/link`, { type: 'github', repo: REPO });
+        console.log('   linked to git');
+        p = await getProject(name);
+      } catch (e) {
+        if (!/more than 25 Projects/i.test(e.message)) throw e;
+        console.log('   stays unlinked (25-projects-per-repo limit) — deployed by CI via Vercel CLI');
+      }
     }
     return p;
   }
-  p = await api('POST', '/v10/projects', {
-    name,
-    framework: 'nextjs',
-    gitRepository: { type: 'github', repo: REPO },
-    environmentVariables: [
-      { key: 'NEXT_PUBLIC_SITE_ID', value: b.id, target: ['production', 'preview', 'development'], type: 'plain' },
-    ],
-  });
-  console.log(`   created project ${p.id}, linked to ${REPO}`);
-  return p;
+  const env = [
+    { key: 'NEXT_PUBLIC_SITE_ID', value: b.id, target: ['production', 'preview', 'development'], type: 'plain' },
+  ];
+  try {
+    p = await api('POST', '/v10/projects', {
+      name, framework: 'nextjs', gitRepository: { type: 'github', repo: REPO }, environmentVariables: env,
+    });
+    console.log(`   created project ${p.id}, linked to ${REPO}`);
+    return p;
+  } catch (e) {
+    // Vercel allows at most 25 projects per Git repository. Beyond that, create
+    // the project WITHOUT a Git link; .github/workflows/vercel-deploy-unlinked.yml
+    // deploys such projects with the Vercel CLI on every push to main.
+    if (!/more than 25 Projects/i.test(e.message)) throw e;
+    p = await api('POST', '/v10/projects', { name, framework: 'nextjs', environmentVariables: env });
+    console.log(`   created project ${p.id} WITHOUT git link (25-projects-per-repo limit) — deployed by CI via Vercel CLI`);
+    return p;
+  }
 }
 
 async function ensureEnv(p, b) {
@@ -144,7 +158,21 @@ async function ensureDomain(p, b) {
 async function deploy(p) {
   if (!DEPLOY) return;
   const repoId = p.link && p.link.repoId;
-  if (!repoId) { console.log('   (no git link → skipping deploy)'); return; }
+  if (!repoId) {
+    // Unlinked project: build + deploy this checkout with the Vercel CLI.
+    const { spawnSync } = require('child_process');
+    const fs = require('fs');
+    const path = require('path');
+    const root = path.join(__dirname, '..', '..');
+    const run = (args) => spawnSync('npx', ['vercel', ...args, '--token', TOKEN, '--scope', TEAM_SLUG], { cwd: root, encoding: 'utf8' });
+    const link = run(['link', '--yes', '--project', p.name]);
+    if (link.status !== 0) { console.log(`   ✗ vercel link failed: ${(link.stderr || '').trim().split('\n').pop()}`); return; }
+    const dep = run(['deploy', '--prod', '--yes', '--no-wait']);
+    try { fs.rmSync(path.join(root, '.vercel'), { recursive: true, force: true }); } catch (_) { /* ignore */ }
+    if (dep.status !== 0) { console.log(`   ✗ vercel deploy failed: ${(dep.stderr || '').trim().split('\n').pop()}`); return; }
+    console.log(`   deploying (CLI) → ${(dep.stdout || '').trim().split('\n').pop()}`);
+    return;
+  }
   const d = await api('POST', '/v13/deployments?forceNew=1', {
     name: p.name,
     project: p.id,
