@@ -14,12 +14,12 @@
   "backgroundColor": "#06070F",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://math.toolsrift.com/brands/mathcalc/icon-512.png",
-  "maskableIconUrl": "https://math.toolsrift.com/brands/mathcalc/icon-maskable-512.png",
+  "iconUrl": "https://toolsrift.com/brands/mathcalc/icon-512.png",
+  "maskableIconUrl": "https://toolsrift.com/brands/mathcalc/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "../../keys/mathcalc.keystore",
-    "alias": "mathcalc"
+    "path": "../../keys/upload.keystore",
+    "alias": "upload"
   },
   "appVersionName": "1.0.0",
   "appVersionCode": 1,
@@ -28,25 +28,25 @@
       "name": "Area Calculator",
       "short_name": "Area Calcul…",
       "url": "/area-calc?source=shortcut",
-      "chosenIconUrl": "https://math.toolsrift.com/brands/mathcalc/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/mathcalc/icon-192.png"
     },
     {
       "name": "Perimeter Calculator",
       "short_name": "Perimeter C…",
       "url": "/perimeter-calc?source=shortcut",
-      "chosenIconUrl": "https://math.toolsrift.com/brands/mathcalc/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/mathcalc/icon-192.png"
     },
     {
       "name": "Volume Calculator",
       "short_name": "Volume Calc…",
       "url": "/volume-calc?source=shortcut",
-      "chosenIconUrl": "https://math.toolsrift.com/brands/mathcalc/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/mathcalc/icon-192.png"
     },
     {
       "name": "Surface Area Calculator",
       "short_name": "Surface Are…",
       "url": "/surface-area-calc?source=shortcut",
-      "chosenIconUrl": "https://math.toolsrift.com/brands/mathcalc/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/mathcalc/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",

@@ -14,12 +14,12 @@
   "backgroundColor": "#0A0710",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://colors.toolsrift.com/brands/colors/icon-512.png",
-  "maskableIconUrl": "https://colors.toolsrift.com/brands/colors/icon-maskable-512.png",
+  "iconUrl": "https://toolsrift.com/brands/colors/icon-512.png",
+  "maskableIconUrl": "https://toolsrift.com/brands/colors/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "../../keys/colors.keystore",
-    "alias": "colors"
+    "path": "../../keys/upload.keystore",
+    "alias": "upload"
   },
   "appVersionName": "1.0.0",
   "appVersionCode": 1,
@@ -28,25 +28,25 @@
       "name": "Color Picker",
       "short_name": "Color Picker",
       "url": "/color-picker?source=shortcut",
-      "chosenIconUrl": "https://colors.toolsrift.com/brands/colors/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/colors/icon-192.png"
     },
     {
       "name": "Color Format Converter",
       "short_name": "Color Forma…",
       "url": "/color-converter?source=shortcut",
-      "chosenIconUrl": "https://colors.toolsrift.com/brands/colors/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/colors/icon-192.png"
     },
     {
       "name": "Color Contrast Checker",
       "short_name": "Color Contr…",
       "url": "/color-contrast?source=shortcut",
-      "chosenIconUrl": "https://colors.toolsrift.com/brands/colors/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/colors/icon-192.png"
     },
     {
       "name": "WCAG Color Compliance",
       "short_name": "WCAG Color …",
       "url": "/wcag-checker?source=shortcut",
-      "chosenIconUrl": "https://colors.toolsrift.com/brands/colors/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/colors/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",

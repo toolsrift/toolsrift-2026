@@ -14,12 +14,12 @@
   "backgroundColor": "#060A08",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://business.toolsrift.com/brands/business/icon-512.png",
-  "maskableIconUrl": "https://business.toolsrift.com/brands/business/icon-maskable-512.png",
+  "iconUrl": "https://toolsrift.com/brands/business/icon-512.png",
+  "maskableIconUrl": "https://toolsrift.com/brands/business/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "../../keys/business.keystore",
-    "alias": "business"
+    "path": "../../keys/upload.keystore",
+    "alias": "upload"
   },
   "appVersionName": "1.0.0",
   "appVersionCode": 1,
@@ -28,25 +28,25 @@
       "name": "Invoice Generator",
       "short_name": "Invoice Gen…",
       "url": "/invoice-gen?source=shortcut",
-      "chosenIconUrl": "https://business.toolsrift.com/brands/business/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/business/icon-192.png"
     },
     {
       "name": "Receipt Generator",
       "short_name": "Receipt Gen…",
       "url": "/receipt-gen?source=shortcut",
-      "chosenIconUrl": "https://business.toolsrift.com/brands/business/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/business/icon-192.png"
     },
     {
       "name": "Quotation Generator",
       "short_name": "Quotation G…",
       "url": "/quotation-gen?source=shortcut",
-      "chosenIconUrl": "https://business.toolsrift.com/brands/business/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/business/icon-192.png"
     },
     {
       "name": "Business Card Generator",
       "short_name": "Business Ca…",
       "url": "/business-card-gen?source=shortcut",
-      "chosenIconUrl": "https://business.toolsrift.com/brands/business/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/business/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",

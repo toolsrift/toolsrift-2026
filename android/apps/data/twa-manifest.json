@@ -14,12 +14,12 @@
   "backgroundColor": "#050A0A",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://data.toolsrift.com/brands/data/icon-512.png",
-  "maskableIconUrl": "https://data.toolsrift.com/brands/data/icon-maskable-512.png",
+  "iconUrl": "https://toolsrift.com/brands/data/icon-512.png",
+  "maskableIconUrl": "https://toolsrift.com/brands/data/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "../../keys/data.keystore",
-    "alias": "data"
+    "path": "../../keys/upload.keystore",
+    "alias": "upload"
   },
   "appVersionName": "1.0.0",
   "appVersionCode": 1,
@@ -28,25 +28,25 @@
       "name": "Bar Chart Maker",
       "short_name": "Bar Chart M…",
       "url": "/bar-chart-maker?source=shortcut",
-      "chosenIconUrl": "https://data.toolsrift.com/brands/data/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/data/icon-192.png"
     },
     {
       "name": "Line Chart Maker",
       "short_name": "Line Chart …",
       "url": "/line-chart-maker?source=shortcut",
-      "chosenIconUrl": "https://data.toolsrift.com/brands/data/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/data/icon-192.png"
     },
     {
       "name": "Pie Chart Maker",
       "short_name": "Pie Chart M…",
       "url": "/pie-chart-maker?source=shortcut",
-      "chosenIconUrl": "https://data.toolsrift.com/brands/data/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/data/icon-192.png"
     },
     {
       "name": "Donut Chart Maker",
       "short_name": "Donut Chart…",
       "url": "/donut-chart-maker?source=shortcut",
-      "chosenIconUrl": "https://data.toolsrift.com/brands/data/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/data/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",

@@ -14,12 +14,12 @@
   "backgroundColor": "#0D0508",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://random.toolsrift.com/brands/random/icon-512.png",
-  "maskableIconUrl": "https://random.toolsrift.com/brands/random/icon-maskable-512.png",
+  "iconUrl": "https://toolsrift.com/brands/random/icon-512.png",
+  "maskableIconUrl": "https://toolsrift.com/brands/random/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "../../keys/random.keystore",
-    "alias": "random"
+    "path": "../../keys/upload.keystore",
+    "alias": "upload"
   },
   "appVersionName": "1.0.0",
   "appVersionCode": 1,
@@ -28,25 +28,25 @@
       "name": "Spinner Wheel",
       "short_name": "Spinner Whe…",
       "url": "/spinner-wheel?source=shortcut",
-      "chosenIconUrl": "https://random.toolsrift.com/brands/random/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/random/icon-192.png"
     },
     {
       "name": "Random Team Generator",
       "short_name": "Random Team…",
       "url": "/random-team-generator?source=shortcut",
-      "chosenIconUrl": "https://random.toolsrift.com/brands/random/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/random/icon-192.png"
     },
     {
       "name": "Random Picker",
       "short_name": "Random Pick…",
       "url": "/random-picker?source=shortcut",
-      "chosenIconUrl": "https://random.toolsrift.com/brands/random/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/random/icon-192.png"
     },
     {
       "name": "Random Number Generator",
       "short_name": "Random Numb…",
       "url": "/random-number-generator?source=shortcut",
-      "chosenIconUrl": "https://random.toolsrift.com/brands/random/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/random/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",

@@ -14,12 +14,12 @@
   "backgroundColor": "#0A0A06",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://js.toolsrift.com/brands/js/icon-512.png",
-  "maskableIconUrl": "https://js.toolsrift.com/brands/js/icon-maskable-512.png",
+  "iconUrl": "https://toolsrift.com/brands/js/icon-512.png",
+  "maskableIconUrl": "https://toolsrift.com/brands/js/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "../../keys/js.keystore",
-    "alias": "js"
+    "path": "../../keys/upload.keystore",
+    "alias": "upload"
   },
   "appVersionName": "1.0.0",
   "appVersionCode": 1,
@@ -28,25 +28,25 @@
       "name": "JavaScript Formatter",
       "short_name": "JavaScript …",
       "url": "/js-formatter?source=shortcut",
-      "chosenIconUrl": "https://js.toolsrift.com/brands/js/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/js/icon-192.png"
     },
     {
       "name": "JavaScript Minifier",
       "short_name": "JavaScript …",
       "url": "/js-minifier?source=shortcut",
-      "chosenIconUrl": "https://js.toolsrift.com/brands/js/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/js/icon-192.png"
     },
     {
       "name": "JavaScript Validator",
       "short_name": "JavaScript …",
       "url": "/js-validator?source=shortcut",
-      "chosenIconUrl": "https://js.toolsrift.com/brands/js/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/js/icon-192.png"
     },
     {
       "name": "JSON to JS Object",
       "short_name": "JSON to JS …",
       "url": "/json-to-js?source=shortcut",
-      "chosenIconUrl": "https://js.toolsrift.com/brands/js/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/js/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",

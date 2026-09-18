@@ -14,12 +14,12 @@
   "backgroundColor": "#07060C",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://devgen.toolsrift.com/brands/devgen/icon-512.png",
-  "maskableIconUrl": "https://devgen.toolsrift.com/brands/devgen/icon-maskable-512.png",
+  "iconUrl": "https://toolsrift.com/brands/devgen/icon-512.png",
+  "maskableIconUrl": "https://toolsrift.com/brands/devgen/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "../../keys/devgen.keystore",
-    "alias": "devgen"
+    "path": "../../keys/upload.keystore",
+    "alias": "upload"
   },
   "appVersionName": "1.0.0",
   "appVersionCode": 1,
@@ -28,25 +28,25 @@
       "name": "Gitignore Generator",
       "short_name": "Gitignore G…",
       "url": "/gitignore-gen?source=shortcut",
-      "chosenIconUrl": "https://devgen.toolsrift.com/brands/devgen/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/devgen/icon-192.png"
     },
     {
       "name": "README Generator",
       "short_name": "README Gene…",
       "url": "/readme-gen?source=shortcut",
-      "chosenIconUrl": "https://devgen.toolsrift.com/brands/devgen/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/devgen/icon-192.png"
     },
     {
       "name": "GitHub Profile README Generator",
       "short_name": "GitHub Prof…",
       "url": "/github-profile-gen?source=shortcut",
-      "chosenIconUrl": "https://devgen.toolsrift.com/brands/devgen/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/devgen/icon-192.png"
     },
     {
       "name": "License Generator",
       "short_name": "License Gen…",
       "url": "/license-gen?source=shortcut",
-      "chosenIconUrl": "https://devgen.toolsrift.com/brands/devgen/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/devgen/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",

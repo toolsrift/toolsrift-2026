@@ -14,12 +14,12 @@
   "backgroundColor": "#08060F",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://hash.toolsrift.com/brands/hash/icon-512.png",
-  "maskableIconUrl": "https://hash.toolsrift.com/brands/hash/icon-maskable-512.png",
+  "iconUrl": "https://toolsrift.com/brands/hash/icon-512.png",
+  "maskableIconUrl": "https://toolsrift.com/brands/hash/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "../../keys/hash.keystore",
-    "alias": "hash"
+    "path": "../../keys/upload.keystore",
+    "alias": "upload"
   },
   "appVersionName": "1.0.0",
   "appVersionCode": 1,
@@ -28,25 +28,25 @@
       "name": "Hash Generator (All)",
       "short_name": "Hash Genera…",
       "url": "/hash-all?source=shortcut",
-      "chosenIconUrl": "https://hash.toolsrift.com/brands/hash/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/hash/icon-192.png"
     },
     {
       "name": "MD5 Hash Generator",
       "short_name": "MD5 Hash Ge…",
       "url": "/md5-hash?source=shortcut",
-      "chosenIconUrl": "https://hash.toolsrift.com/brands/hash/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/hash/icon-192.png"
     },
     {
       "name": "SHA-1 Hash Generator",
       "short_name": "SHA-1 Hash …",
       "url": "/sha1-hash?source=shortcut",
-      "chosenIconUrl": "https://hash.toolsrift.com/brands/hash/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/hash/icon-192.png"
     },
     {
       "name": "SHA-256 Hash Generator",
       "short_name": "SHA-256 Has…",
       "url": "/sha256-hash?source=shortcut",
-      "chosenIconUrl": "https://hash.toolsrift.com/brands/hash/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/hash/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",

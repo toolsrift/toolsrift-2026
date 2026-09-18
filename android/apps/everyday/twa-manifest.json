@@ -14,12 +14,12 @@
   "backgroundColor": "#0C0906",
   "enableNotifications": false,
   "startUrl": "/?source=twa",
-  "iconUrl": "https://everyday.toolsrift.com/brands/everyday/icon-512.png",
-  "maskableIconUrl": "https://everyday.toolsrift.com/brands/everyday/icon-maskable-512.png",
+  "iconUrl": "https://toolsrift.com/brands/everyday/icon-512.png",
+  "maskableIconUrl": "https://toolsrift.com/brands/everyday/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "../../keys/everyday.keystore",
-    "alias": "everyday"
+    "path": "../../keys/upload.keystore",
+    "alias": "upload"
   },
   "appVersionName": "1.0.0",
   "appVersionCode": 1,
@@ -28,25 +28,25 @@
       "name": "Age Calculator",
       "short_name": "Age Calcula…",
       "url": "/age-calculator?source=shortcut",
-      "chosenIconUrl": "https://everyday.toolsrift.com/brands/everyday/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/everyday/icon-192.png"
     },
     {
       "name": "Date Difference Calculator",
       "short_name": "Date Differ…",
       "url": "/date-difference?source=shortcut",
-      "chosenIconUrl": "https://everyday.toolsrift.com/brands/everyday/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/everyday/icon-192.png"
     },
     {
       "name": "Add or Subtract Days",
       "short_name": "Add or Subt…",
       "url": "/add-subtract-days?source=shortcut",
-      "chosenIconUrl": "https://everyday.toolsrift.com/brands/everyday/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/everyday/icon-192.png"
     },
     {
       "name": "Days Until Calculator",
       "short_name": "Days Until …",
       "url": "/days-until?source=shortcut",
-      "chosenIconUrl": "https://everyday.toolsrift.com/brands/everyday/icon-192.png"
+      "chosenIconUrl": "https://toolsrift.com/brands/everyday/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",

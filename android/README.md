@@ -13,7 +13,8 @@ android/
 │   ├── twa-manifest.json     Bubblewrap config — generated from lib/sites/brands.js
 │   ├── play-listing.md       Play Console copy: title, descriptions, category, data safety
 │   └── shortcuts.json        launcher shortcuts (top 4 tools)
-├── keys/                     signing keystores (git-ignored — back them up!)
+├── fingerprints.json         signing-key SHA-256s served in every site's assetlinks.json
+├── keys/                     signing keystore (git-ignored — never commit it)
 └── build/<id>/               Bubblewrap output (git-ignored): app-release-bundle.aab
 ```
 
@@ -23,35 +24,50 @@ Regenerate the configs whenever `brands.js` or the tool registry changes:
 npm run android:generate
 ```
 
-## Prerequisites (once)
+## Build all 29 apps (CI — the normal way)
 
-```bash
-npm i -g @bubblewrap/cli
-bubblewrap doctor          # offers to install the JDK + Android SDK it needs
+GitHub → **Actions → android-build → Run workflow** (`sites` = `--all` or ids
+like `pdf image json`). The workflow:
+
+1. resolves the shared **upload keystore** — from the repository secrets
+   `ANDROID_KEYSTORE_BASE64` + `ANDROID_KEYSTORE_PASSWORD`; if they are not set
+   it reuses the `android-upload-keystore` artifact of an earlier run, and on the
+   very first run it generates a key and saves it as that artifact (90 days);
+2. builds every site in parallel with Bubblewrap (JDK 17, build-tools 36.1.0),
+   `versionName 1.YYYYMMDD.HHMM`, `versionCode` = minutes since 2026-01-01
+   (always increasing, so every run can be uploaded to Play);
+3. verifies each APK is signed with that key and uploads artifacts:
+   `android-<site>` (one app) and `toolsrift-android-apps-<version>` (all),
+   each containing `<package>-<version>.aab` (Play Console) and `.apk` (sideload).
+
+The run summary lists every app and the **upload key SHA-256**.
+
+**After the first run (once):** download the `android-upload-keystore`
+artifact, store `upload.keystore` (base64) and `upload.password` as the two
+secrets above, keep a copy in a password manager, then delete the artifact.
+Without the secrets a later run past the artifact's expiry would mint a *new*
+key, and Play rejects uploads signed with a different upload key.
+
+Icons and the web manifest are fetched from the hub (`toolsrift.com` serves
+every brand's `/brands/<id>/` files and `/api/site/manifest?site=<id>`), so an
+app can be built before its subdomain is serving — but it only opens
+full-screen once the site is live and its assetlinks verify (next section).
+
+## Make the apps verify (assetlinks)
+
+Chrome opens a TWA full-screen only if `https://<domain>/.well-known/assetlinks.json`
+lists the SHA-256 of the certificate the app is signed with. Every site serves
+that file from `pages/api/site/assetlinks.js`, which reads
+[`android/fingerprints.json`](fingerprints.json):
+
+```json
+{ "all": ["AB:CD:…"],          // the shared upload key — every app
+  "pdf": ["12:34:…"] }         // extra keys for one app (Play App Signing key)
 ```
 
-The site **must already be live on its domain** before you build its app:
-Bubblewrap downloads the icons and `manifest.json` from `https://<domain>/`,
-and Chrome verifies the app against `https://<domain>/.well-known/assetlinks.json`.
-
-## Build one app
-
-```bash
-# 1. signing key (prints the SHA-256 fingerprint)
-npm run android:keystore -- pdf
-
-# 2. put that fingerprint in the site's Vercel env and redeploy
-#    ANDROID_SHA256_FINGERPRINTS=AB:CD:...   (project toolsrift-pdf)
-#    → https://pdf.toolsrift.com/.well-known/assetlinks.json now lists it
-
-# 3. build
-npm run android:build -- pdf
-#    → android/build/pdf/app-release-bundle.aab  (upload this to Play Console)
-#    → android/build/pdf/app-release-signed.apk  (sideload to test)
-```
-
-`npm run android:build -- --all` builds all 29 in sequence (set
-`KEYSTORE_PASSWORD` to avoid 29 prompts).
+Put the upload key fingerprint from the workflow summary in `"all"`, commit,
+push: the next deployment of every site serves it. `ANDROID_SHA256_FINGERPRINTS`
+(comma-separated env var on a Vercel project) adds more without a commit.
 
 ## Play Console
 
@@ -63,11 +79,28 @@ icon path (`public/brands/<id>/icon-512.png`), and the Data safety answers.
 1. Create the app → upload the `.aab` to Internal testing first.
 2. **Enrol in Play App Signing** (default for new apps). Play then re-signs
    the app with *its* key: copy the "App signing key certificate" SHA-256 from
-   Setup → App integrity and **add it** to `ANDROID_SHA256_FINGERPRINTS`
-   (comma-separated with your upload key), redeploy the site. Without this the
-   Play-signed build opens with a browser bar instead of full-screen.
+   Setup → App integrity and add it to `android/fingerprints.json` under that
+   site's id (keep the upload key in `"all"`). Without this the Play-signed
+   build opens with a browser bar instead of full-screen.
 3. Feature graphic 1024×500: export `public/brands/<id>/og.svg` at that size.
 4. Screenshots: phone 1080×1920 of the home, three tools and a tool article.
+
+Once an app exists in the Console, the workflow can upload new versions for
+you: add a Play service-account JSON (Play Console → Setup → API access) as the
+`PLAY_SERVICE_ACCOUNT_JSON` secret and run the workflow with `play_track` =
+`internal` (or `alpha` / `beta` / `production`).
+
+## Build locally (optional)
+
+```bash
+npm i -g @bubblewrap/cli@1.25.0 && bubblewrap doctor   # installs JDK 17 + Android SDK
+npm run android:keystore                                # android/keys/upload.keystore (or restore the CI one)
+KEYSTORE_PASSWORD=… npm run android:build -- pdf        # android/build/pdf/app-release-bundle.aab
+KEYSTORE_PASSWORD=… npm run android:build -- --all
+```
+
+`scripts/android/build.sh` is the same script CI runs (`BUBBLEWRAP`,
+`KEYSTORE_PATH`, `ANDROID_VERSION_CODE/NAME` env overrides).
 
 ## Verifying assetlinks
 
@@ -82,11 +115,13 @@ Google's checker: `https://digitalassetlinks.googleapis.com/v1/statements:list?s
 
 ## Existing text app
 
-`com.toolsrift.text.twa` (the app already built against `text.toolsrift.com`)
-keeps its package id and fingerprint in `brands.js` → `text.android`, and the
-text site keeps that same host — so the existing app simply starts opening the
-standalone site once `text.toolsrift.com` is moved to the `toolsrift-text`
-project. Put its fingerprint in that project's `ANDROID_SHA256_FINGERPRINTS`.
+`com.toolsrift.text.twa` (the app already published against `text.toolsrift.com`)
+keeps its package id. Play only accepts updates signed with the key it already
+knows: either rebuild it with that original keystore (`KEYSTORE_PATH=…
+npm run android:build -- text`) or, if the app is enrolled in Play App Signing,
+request an upload-key reset in the Console to the shared key. Put its current
+certificate SHA-256 in `android/fingerprints.json` under `"text"` so the
+published build keeps verifying.
 
 ## Why not Capacitor / React Native?
 
