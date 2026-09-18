@@ -19,10 +19,14 @@ const TEAM_SLUG = process.env.VERCEL_TEAM || 'toolsrifts-projects';
 const ROOT = path.join(__dirname, '..', '..');
 if (!TOKEN) { console.error('VERCEL_TOKEN is required'); process.exit(2); }
 
-async function api(pathname) {
-  const res = await fetch(`https://api.vercel.com${pathname}`, { headers: { Authorization: `Bearer ${TOKEN}` } });
-  if (!res.ok) throw new Error(`${pathname} → ${res.status}`);
-  return res.json();
+async function api(pathname, method = 'GET', body) {
+  const res = await fetch(`https://api.vercel.com${pathname}`, {
+    method, headers: { Authorization: `Bearer ${TOKEN}`, 'Content-Type': 'application/json' },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const data = await res.json().catch(() => null);
+  if (!res.ok) throw new Error(`${method} ${pathname} → ${(data && data.error && data.error.message) || res.status}`);
+  return data;
 }
 
 function vercel(args) {
@@ -39,14 +43,31 @@ async function main() {
   if (!targets.length) { console.log('no unlinked toolsrift-* projects — nothing to deploy'); return; }
   console.log(`unlinked projects: ${targets.map(p => p.name).join(', ')}`);
 
+  // Repo id of the hub project (git-linked): lets Vercel build an UNLINKED
+  // project straight from the repo's main branch, no upload needed.
+  const hub = (all.projects || []).find(p => p.name === (process.env.HUB_PROJECT || 'toolsrift'));
+  const repoId = hub && hub.link && hub.link.repoId;
+  const ref = process.env.GIT_REF || 'main';
+
   let failed = 0;
   for (const p of targets) {
     console.log(`\n══ ${p.name}`);
+    if (repoId) {
+      try {
+        const d = await api(`/v13/deployments?forceNew=1&teamId=${team.id}`, 'POST', {
+          name: p.name, project: p.id, target: 'production', gitSource: { type: 'github', repoId, ref },
+        });
+        console.log(`   ✓ git-source deployment → https://${d.url}`);
+        continue;
+      } catch (e) {
+        console.log(`   (git-source deploy refused: ${e.message} — trying CLI upload)`);
+      }
+    }
     const link = vercel(['link', '--yes', '--project', p.name]);
     if (link.status !== 0) { console.log(`   ✗ link: ${(link.stderr || '').trim().split('\n').pop()}`); failed++; continue; }
     const dep = vercel(['deploy', '--prod', '--yes', '--no-wait']);
     try { fs.rmSync(path.join(ROOT, '.vercel'), { recursive: true, force: true }); } catch (_) { /* ignore */ }
-    if (dep.status !== 0) { console.log(`   ✗ deploy: ${(dep.stderr || '').trim().split('\n').pop()}`); failed++; continue; }
+    if (dep.status !== 0) { console.log(`   ✗ deploy:\n${(dep.stderr || dep.stdout || '').trim().split('\n').slice(-12).map(l => '      ' + l).join('\n')}`); failed++; continue; }
     console.log(`   ✓ ${(dep.stdout || '').trim().split('\n').pop()}`);
   }
   process.exit(failed ? 1 : 0);
