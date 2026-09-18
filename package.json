@@ -18,7 +18,7 @@
     "android:generate": "node scripts/android/generate.js",
     "android:keystore": "bash scripts/android/keystore.sh",
     "android:build": "bash scripts/android/build.sh",
-    "vercel:bootstrap": "bash scripts/vercel/bootstrap.sh",
+    "vercel:bootstrap": "node scripts/vercel/bootstrap.js",
     "vercel:deploy": "bash scripts/vercel/deploy.sh"
   },
   "dependencies": {
