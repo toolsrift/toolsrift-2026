@@ -156,6 +156,17 @@ tool up automatically on the next deploy.
    `android/apps/<id>/feature-graphic.png`. Full guide, signing key, Play
    Console steps: `android/README.md`.
 
+### Vercel Hobby quotas (until the team is on Pro)
+
+- 100 deployments per **rolling** 24 h across the team and one build at a
+  time. Every push to `main` is up to 30 deployments (25 git-linked projects +
+  5 via `vercel-deploy-unlinked`), so a PR push used to add another 25 preview
+  deployments for nothing: `vercel.json` → `git.deploymentEnabled` turns
+  previews off for the working branch (CI builds the sites on GitHub instead).
+- Refused deployments are picked up by the daily catch-up (17:00 UTC), or run
+  it by hand: Actions → vercel-deploy-unlinked → Run workflow → `--catch-up`.
+- Hobby also forbids commercial (ad-monetised) use; upgrade to Pro before launch.
+
 ## 5. Adding a 30th site
 
 1. Add the category component + registry entry as usual (CLAUDE.md).
