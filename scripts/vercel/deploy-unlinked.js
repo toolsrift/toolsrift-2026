@@ -1,13 +1,23 @@
 #!/usr/bin/env node
 /**
- * scripts/vercel/deploy-unlinked.js — deploy the network-site projects that
- * have NO Git link (Vercel allows at most 25 projects per repository; the
- * hub + 24 sites use that allowance) by uploading this checkout with the
- * Vercel CLI. Runs on every push to main via
- * .github/workflows/vercel-deploy-unlinked.yml.
+ * scripts/vercel/deploy-unlinked.js — production deployments Vercel's git
+ * integration does not make for us:
  *
- *   VERCEL_TOKEN=... node scripts/vercel/deploy-unlinked.js          # all unlinked toolsrift-* projects
- *   VERCEL_TOKEN=... node scripts/vercel/deploy-unlinked.js audio    # one site id
+ *   default      the network-site projects that have NO git link (Vercel
+ *                allows at most 25 projects per repository; the hub + 24 sites
+ *                use that allowance). Runs on every push to main.
+ *   --catch-up   additionally every toolsrift-* project (and the hub) whose
+ *                latest production deployment is not at the current main
+ *                commit — e.g. after Vercel refused deployments for a while
+ *                (Hobby plan: 100 deployments/day). Runs on a daily schedule.
+ *
+ * Deployments are created through the API from the repo's main branch
+ * (gitSource + the repo id taken from the hub project), falling back to a
+ * Vercel CLI upload of this checkout. See .github/workflows/vercel-deploy-unlinked.yml.
+ *
+ *   VERCEL_TOKEN=... node scripts/vercel/deploy-unlinked.js               # unlinked projects
+ *   VERCEL_TOKEN=... node scripts/vercel/deploy-unlinked.js audio video   # some site ids
+ *   VERCEL_TOKEN=... node scripts/vercel/deploy-unlinked.js --catch-up    # everything behind main
  */
 const { spawnSync } = require('child_process');
 const fs = require('fs');
@@ -36,22 +46,41 @@ function vercel(args) {
 async function main() {
   const team = await api(`/v2/teams?slug=${encodeURIComponent(TEAM_SLUG)}`);
   const all = await api(`/v9/projects?teamId=${team.id}&limit=100`);
-  const wanted = process.argv.slice(2).map(findBrand).filter(Boolean).map(b => `toolsrift-${b.id}`);
-  const targets = (all.projects || []).filter(p =>
-    /^toolsrift-/.test(p.name) && !p.link && (!wanted.length || wanted.includes(p.name))
-  );
-  if (!targets.length) { console.log('no unlinked toolsrift-* projects — nothing to deploy'); return; }
-  console.log(`unlinked projects: ${targets.map(p => p.name).join(', ')}`);
-
+  const args = process.argv.slice(2);
+  const catchUp = args.includes('--catch-up');
+  const wanted = args.filter(a => !a.startsWith('--')).map(findBrand).filter(Boolean).map(b => `toolsrift-${b.id}`);
+  const hubName = process.env.HUB_PROJECT || 'toolsrift';
+  const hub = (all.projects || []).find(p => p.name === hubName);
   // Repo id of the hub project (git-linked): lets Vercel build an UNLINKED
   // project straight from the repo's main branch, no upload needed.
-  const hub = (all.projects || []).find(p => p.name === (process.env.HUB_PROJECT || 'toolsrift'));
   const repoId = hub && hub.link && hub.link.repoId;
   const ref = process.env.GIT_REF || 'main';
+  const headSha = (process.env.GITHUB_SHA || '').toLowerCase();
+
+  const network = (all.projects || []).filter(p => /^toolsrift-/.test(p.name));
+  let targets;
+  if (catchUp) {
+    targets = [];
+    for (const p of [...network, ...(hub ? [hub] : [])]) {
+      const deps = (await api(`/v6/deployments?projectId=${p.id}&target=production&limit=1&teamId=${team.id}`)).deployments || [];
+      const d = deps[0];
+      const sha = d && d.meta && (d.meta.githubCommitSha || '').toLowerCase();
+      const state = d && (d.state || d.readyState);
+      const behind = !d || (headSha && sha && sha !== headSha) || state === 'ERROR' || state === 'CANCELED';
+      if (behind) targets.push(p);
+      else console.log(`   ${p.name}: up to date (${state} @ ${(sha || '').slice(0, 7)})`);
+    }
+  } else {
+    targets = network.filter(p => !p.link && (!wanted.length || wanted.includes(p.name)));
+  }
+  if (!targets.length) { console.log(catchUp ? 'everything is at main — nothing to deploy' : 'no unlinked toolsrift-* projects — nothing to deploy'); return; }
+  console.log(`${catchUp ? 'projects behind main' : 'unlinked projects'}: ${targets.map(p => p.name).join(', ')}`);
+  const pause = (ms) => new Promise(r => setTimeout(r, ms));
 
   let failed = 0;
   for (const p of targets) {
     console.log(`\n══ ${p.name}`);
+    await pause(4000); // stay under Vercel's deployments-per-minute flood limit
     if (repoId) {
       try {
         const d = await api(`/v13/deployments?forceNew=1&teamId=${team.id}`, 'POST', {

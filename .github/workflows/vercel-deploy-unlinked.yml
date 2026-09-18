@@ -1,4 +1,6 @@
-# Deploys the network-site projects that have no Git link on Vercel.
+# Deploys what Vercel's git integration does not: the network-site projects
+# that have no Git link (on push), and — daily — any project that fell behind
+# main because Vercel refused deployments (Hobby quota).
 #
 # Vercel connects at most 25 projects to one repository (the hub + 24 sites).
 # The remaining sites are plain projects; this workflow uploads the repo with
@@ -9,10 +11,14 @@ name: vercel-deploy-unlinked
 on:
   push:
     branches: [main]
+  schedule:
+    # Daily catch-up: deploy every project whose production deployment is not
+    # at main (e.g. after Vercel's daily deployment quota refused some).
+    - cron: '15 4 * * *'
   workflow_dispatch:
     inputs:
       sites:
-        description: 'Site ids (space-separated) or empty for all unlinked projects'
+        description: 'Site ids (space-separated), "--catch-up" for everything behind main, or empty for all unlinked projects'
         type: string
         default: ''
 
@@ -33,4 +39,8 @@ jobs:
           VERCEL_TEAM: toolsrifts-projects
         run: |
           if [ -z "$VERCEL_TOKEN" ]; then echo "::error::VERCEL_TOKEN secret is not set"; exit 1; fi
-          node scripts/vercel/deploy-unlinked.js ${{ inputs.sites }}
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            node scripts/vercel/deploy-unlinked.js --catch-up
+          else
+            node scripts/vercel/deploy-unlinked.js ${{ inputs.sites }}
+          fi
