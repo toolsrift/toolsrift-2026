@@ -14,7 +14,11 @@ on:
   schedule:
     # Daily catch-up: deploy every project whose production deployment is not
     # at main (e.g. after Vercel's daily deployment quota refused some).
-    - cron: '15 4 * * *'
+    # 17:00 UTC: the Hobby quota is a ROLLING 24-hour window of 100
+    # deployments, and the day's merges land during the Indian working day
+    # (07:00–13:00 UTC), so an early-morning run would still be inside the
+    # window of the previous day's refusals.
+    - cron: '0 17 * * *'
   workflow_dispatch:
     inputs:
       sites:
