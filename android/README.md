@@ -82,8 +82,17 @@ icon path (`public/brands/<id>/icon-512.png`), and the Data safety answers.
    Setup → App integrity and add it to `android/fingerprints.json` under that
    site's id (keep the upload key in `"all"`). Without this the Play-signed
    build opens with a browser bar instead of full-screen.
-3. Feature graphic 1024×500: export `public/brands/<id>/og.svg` at that size.
-4. Screenshots: phone 1080×1920 of the home, three tools and a tool article.
+3. Feature graphic 1024×500: `android/apps/<id>/feature-graphic.png` (rendered
+   by `npm run brands:assets`).
+4. Screenshots: run the **android-listing** workflow (Actions → Run workflow);
+   it takes 1080×1920 phone screenshots of the live site's home and top tools
+   and uploads a `play-listing-assets` artifact with the feature graphic, icon
+   and listing copy per app. Locally: `npm i --no-save playwright &&
+   npx playwright install chromium && node scripts/android/screenshots.js pdf`
+   (→ `android/build/listing/pdf/`).
+5. When the app is live on Play, set `android.published: true` on the brand in
+   `brands.js`: the site's web manifest then prefers the Play app over the PWA
+   install prompt (`related_applications`).
 
 Once an app exists in the Console, the workflow can upload new versions for
 you: add a Play service-account JSON (Play Console → Setup → API access) as the

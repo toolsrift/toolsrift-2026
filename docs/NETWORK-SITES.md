@@ -130,11 +130,20 @@ tool up automatically on the next deploy.
    - `GOOGLE_SERVICE_ACCOUNT_KEY`, `CRON_SECRET` — optional, same as the hub;
      the daily cron resubmits *this* site's sitemap to the `sc-domain:toolsrift.com`
      property (which covers subdomains).
-5. **Flip `live: true`** for the brand in `brands.js` and push. From then on
-   every other site (and the hub's network footer) links to the new domain
-   instead of `toolsrift.com/<category>`.
+5. **Flip `live: true`** for the brand in `brands.js`, run
+   `node scripts/generate-sitemap.js`, and push. From then on the hub 301s
+   `/pdf` and `/pdf/<tool>` to the new site (one canonical copy of every
+   tool), every other site links to the new domain, the hub's `sitemap.xml`
+   (a sitemap index) lists `https://<domain>/sitemap.xml`, and the hub's own
+   pages move to `sitemap-hub.xml`.
 6. **Search Console**: the `sc-domain:toolsrift.com` property already covers
-   every subdomain — just submit `https://<domain>/sitemap.xml` there.
+   every subdomain, and the hub's sitemap index references every live site's
+   sitemap, so nothing needs submitting per site (submitting
+   `https://<domain>/sitemap.xml` there anyway speeds discovery up). Each site's
+   daily cron pushes its own URLs to IndexNow; only the hub needs
+   `GOOGLE_SERVICE_ACCOUNT_KEY`, and it submits the index to the root property.
+   Indexation follows the hub's allowlist (`lib/coreTools.js`): non-core tool
+   pages are served with `noindex` and left out of every sitemap.
    **AdSense**: subdomains are covered by the approved root site (ads.txt is
    served from `public/ads.txt` on every host). **IndexNow**: the key file
    `public/509a…txt` is served on every domain, so
@@ -142,8 +151,10 @@ tool up automatically on the next deploy.
    (it reads the sitemap; run it from a checkout with `NEXT_PUBLIC_SITE_ID` set).
 7. **Android**: run the `android-build` GitHub workflow (Actions → android-build →
    Run workflow, `--all` or site ids); it builds and signs every app with
-   Bubblewrap and publishes the `.aab`/`.apk` artifacts. Full guide, signing
-   key, Play Console steps: `android/README.md`.
+   Bubblewrap and publishes the `.aab`/`.apk` artifacts. `android-listing`
+   takes the Play screenshots from the live site; the feature graphic is
+   `android/apps/<id>/feature-graphic.png`. Full guide, signing key, Play
+   Console steps: `android/README.md`.
 
 ## 5. Adding a 30th site
 

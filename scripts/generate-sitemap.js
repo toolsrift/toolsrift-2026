@@ -20,6 +20,16 @@ const coreStart = coreSrc.indexOf('CORE_TOOL_IDS = [') + 'CORE_TOOL_IDS = '.leng
 const coreEnd = coreSrc.indexOf('];', coreStart) + 1
 const CORE_TOOLS = new Set(JSON.parse(coreSrc.slice(coreStart, coreEnd).replace(/\/\/[^\n]*/g, '')))
 
+// Network sites (lib/sites/brands.js): a category whose brand is `live` is
+// served ONLY on its own subdomain (middleware.js 301s the hub's /pdf and
+// /pdf/<tool> there), so its pages leave the hub sitemap and its own
+// https://<sub>/sitemap.xml (pages/api/site/sitemap.js) joins the sitemap
+// index instead. Google accepts cross-host sitemaps in an index when every
+// host is verified under the same Search Console property — the
+// sc-domain:toolsrift.com Domain property covers all subdomains.
+const { BRANDS } = require('../lib/sites/brands')
+const LIVE_BY_SLUG = Object.fromEntries(BRANDS.filter(b => b.live).map(b => [b.slug, b.domain]))
+
 const BASE = 'https://toolsrift.com'
 const today = new Date().toISOString().slice(0, 10)
 
@@ -55,7 +65,9 @@ for (const [slug, data] of Object.entries(REGISTRY)) {
 
 let skippedDupe = 0
 let skippedNonCore = 0
+let skippedLive = 0
 for (const [slug, data] of Object.entries(REGISTRY)) {
+  if (LIVE_BY_SLUG[slug]) { skippedLive += 1 + data.tools.length; continue }
   // Category page — real, hand-written content per lib/categoryContent.js,
   // not part of the thin-content pattern, so these stay indexed.
   urls.push(`  <url><loc>${BASE}/${slug}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>`)
@@ -68,5 +80,12 @@ for (const [slug, data] of Object.entries(REGISTRY)) {
 }
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`
-fs.writeFileSync(path.join(__dirname, '../public/sitemap.xml'), xml)
-console.log(`sitemap.xml written: ${urls.length} URLs (${skippedDupe} non-canonical duplicates skipped, ${skippedNonCore} non-core tool pages excluded)`)
+fs.writeFileSync(path.join(__dirname, '../public/sitemap-hub.xml'), xml)
+
+// /sitemap.xml itself is the index: the hub's own pages + every live network site.
+const sitemaps = [`${BASE}/sitemap-hub.xml`, ...Object.values(LIVE_BY_SLUG).map(d => `https://${d}/sitemap.xml`)]
+const index = `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${
+  sitemaps.map(u => `  <sitemap><loc>${u}</loc><lastmod>${today}</lastmod></sitemap>`).join('\n')}\n</sitemapindex>\n`
+fs.writeFileSync(path.join(__dirname, '../public/sitemap.xml'), index)
+console.log(`sitemap-hub.xml written: ${urls.length} URLs (${skippedDupe} non-canonical duplicates skipped, ${skippedNonCore} non-core tool pages excluded, ${skippedLive} pages of live network sites left to their own sitemaps)`)
+console.log(`sitemap.xml written as a sitemap index: ${sitemaps.length} sitemaps (hub + ${sitemaps.length - 1} network sites)`)
