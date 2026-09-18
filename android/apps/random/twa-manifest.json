@@ -26,25 +26,25 @@
   "shortcuts": [
     {
       "name": "Spinner Wheel",
-      "short_name": "Spinner Whe…",
+      "shortName": "Spinner Whe…",
       "url": "/spinner-wheel?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/random/icon-192.png"
     },
     {
       "name": "Random Team Generator",
-      "short_name": "Random Team…",
+      "shortName": "Random Team…",
       "url": "/random-team-generator?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/random/icon-192.png"
     },
     {
       "name": "Random Picker",
-      "short_name": "Random Pick…",
+      "shortName": "Random Pick…",
       "url": "/random-picker?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/random/icon-192.png"
     },
     {
       "name": "Random Number Generator",
-      "short_name": "Random Numb…",
+      "shortName": "Random Numb…",
       "url": "/random-number-generator?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/random/icon-192.png"
     }

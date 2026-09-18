@@ -26,25 +26,25 @@
   "shortcuts": [
     {
       "name": "Video Trimmer",
-      "short_name": "Video Trimm…",
+      "shortName": "Video Trimm…",
       "url": "/video-trimmer?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/video/icon-192.png"
     },
     {
       "name": "Video Merger",
-      "short_name": "Video Merger",
+      "shortName": "Video Merger",
       "url": "/video-merger?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/video/icon-192.png"
     },
     {
       "name": "Video Rotator",
-      "short_name": "Video Rotat…",
+      "shortName": "Video Rotat…",
       "url": "/video-rotate?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/video/icon-192.png"
     },
     {
       "name": "Video Cropper",
-      "short_name": "Video Cropp…",
+      "shortName": "Video Cropp…",
       "url": "/video-crop?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/video/icon-192.png"
     }

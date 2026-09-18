@@ -26,25 +26,25 @@
   "shortcuts": [
     {
       "name": "HTML Formatter",
-      "short_name": "HTML Format…",
+      "shortName": "HTML Format…",
       "url": "/html-formatter?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/html/icon-192.png"
     },
     {
       "name": "HTML Minifier",
-      "short_name": "HTML Minifi…",
+      "shortName": "HTML Minifi…",
       "url": "/html-minifier?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/html/icon-192.png"
     },
     {
       "name": "HTML Validator",
-      "short_name": "HTML Valida…",
+      "shortName": "HTML Valida…",
       "url": "/html-validator?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/html/icon-192.png"
     },
     {
       "name": "HTML Cleaner",
-      "short_name": "HTML Cleaner",
+      "shortName": "HTML Cleaner",
       "url": "/html-cleaner?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/html/icon-192.png"
     }

@@ -26,25 +26,25 @@
   "shortcuts": [
     {
       "name": "Image Resizer",
-      "short_name": "Image Resiz…",
+      "shortName": "Image Resiz…",
       "url": "/image-resizer?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/image/icon-192.png"
     },
     {
       "name": "Image Cropper",
-      "short_name": "Image Cropp…",
+      "shortName": "Image Cropp…",
       "url": "/image-cropper?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/image/icon-192.png"
     },
     {
       "name": "Image Compressor",
-      "short_name": "Image Compr…",
+      "shortName": "Image Compr…",
       "url": "/image-compressor?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/image/icon-192.png"
     },
     {
       "name": "Image Converter",
-      "short_name": "Image Conve…",
+      "shortName": "Image Conve…",
       "url": "/image-converter?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/image/icon-192.png"
     }

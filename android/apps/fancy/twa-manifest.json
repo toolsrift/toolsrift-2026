@@ -26,25 +26,25 @@
   "shortcuts": [
     {
       "name": "Bold Text Generator",
-      "short_name": "Bold Text G…",
+      "shortName": "Bold Text G…",
       "url": "/bold-text-generator?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/fancy/icon-192.png"
     },
     {
       "name": "Italic Text Generator",
-      "short_name": "Italic Text…",
+      "shortName": "Italic Text…",
       "url": "/italic-text-generator?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/fancy/icon-192.png"
     },
     {
       "name": "Bold Italic Generator",
-      "short_name": "Bold Italic…",
+      "shortName": "Bold Italic…",
       "url": "/bold-italic-generator?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/fancy/icon-192.png"
     },
     {
       "name": "Underline Text",
-      "short_name": "Underline T…",
+      "shortName": "Underline T…",
       "url": "/underline-text?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/fancy/icon-192.png"
     }

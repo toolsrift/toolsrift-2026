@@ -26,25 +26,25 @@
   "shortcuts": [
     {
       "name": "Invoice Generator",
-      "short_name": "Invoice Gen…",
+      "shortName": "Invoice Gen…",
       "url": "/invoice-gen?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/business/icon-192.png"
     },
     {
       "name": "Receipt Generator",
-      "short_name": "Receipt Gen…",
+      "shortName": "Receipt Gen…",
       "url": "/receipt-gen?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/business/icon-192.png"
     },
     {
       "name": "Quotation Generator",
-      "short_name": "Quotation G…",
+      "shortName": "Quotation G…",
       "url": "/quotation-gen?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/business/icon-192.png"
     },
     {
       "name": "Business Card Generator",
-      "short_name": "Business Ca…",
+      "shortName": "Business Ca…",
       "url": "/business-card-gen?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/business/icon-192.png"
     }

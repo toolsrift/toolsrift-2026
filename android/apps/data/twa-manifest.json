@@ -26,25 +26,25 @@
   "shortcuts": [
     {
       "name": "Bar Chart Maker",
-      "short_name": "Bar Chart M…",
+      "shortName": "Bar Chart M…",
       "url": "/bar-chart-maker?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/data/icon-192.png"
     },
     {
       "name": "Line Chart Maker",
-      "short_name": "Line Chart …",
+      "shortName": "Line Chart …",
       "url": "/line-chart-maker?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/data/icon-192.png"
     },
     {
       "name": "Pie Chart Maker",
-      "short_name": "Pie Chart M…",
+      "shortName": "Pie Chart M…",
       "url": "/pie-chart-maker?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/data/icon-192.png"
     },
     {
       "name": "Donut Chart Maker",
-      "short_name": "Donut Chart…",
+      "shortName": "Donut Chart…",
       "url": "/donut-chart-maker?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/data/icon-192.png"
     }

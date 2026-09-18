@@ -26,25 +26,25 @@
   "shortcuts": [
     {
       "name": "Color Picker",
-      "short_name": "Color Picker",
+      "shortName": "Color Picker",
       "url": "/color-picker?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/colors/icon-192.png"
     },
     {
       "name": "Color Format Converter",
-      "short_name": "Color Forma…",
+      "shortName": "Color Forma…",
       "url": "/color-converter?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/colors/icon-192.png"
     },
     {
       "name": "Color Contrast Checker",
-      "short_name": "Color Contr…",
+      "shortName": "Color Contr…",
       "url": "/color-contrast?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/colors/icon-192.png"
     },
     {
       "name": "WCAG Color Compliance",
-      "short_name": "WCAG Color …",
+      "shortName": "WCAG Color …",
       "url": "/wcag-checker?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/colors/icon-192.png"
     }

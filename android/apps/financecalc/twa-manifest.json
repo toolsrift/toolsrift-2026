@@ -26,25 +26,25 @@
   "shortcuts": [
     {
       "name": "Investment Return Calculator",
-      "short_name": "Investment …",
+      "shortName": "Investment …",
       "url": "/investment-return-calc?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/financecalc/icon-192.png"
     },
     {
       "name": "RD Calculator",
-      "short_name": "RD Calculat…",
+      "shortName": "RD Calculat…",
       "url": "/rd-calc?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/financecalc/icon-192.png"
     },
     {
       "name": "PPF Calculator",
-      "short_name": "PPF Calcula…",
+      "shortName": "PPF Calcula…",
       "url": "/ppf-calc?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/financecalc/icon-192.png"
     },
     {
       "name": "Gratuity Calculator",
-      "short_name": "Gratuity Ca…",
+      "shortName": "Gratuity Ca…",
       "url": "/gratuity-calc?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/financecalc/icon-192.png"
     }

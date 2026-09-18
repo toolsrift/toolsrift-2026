@@ -26,25 +26,25 @@
   "shortcuts": [
     {
       "name": "Length Converter",
-      "short_name": "Length Conv…",
+      "shortName": "Length Conv…",
       "url": "/length-converter?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/units/icon-192.png"
     },
     {
       "name": "Weight / Mass Converter",
-      "short_name": "Weight / Ma…",
+      "shortName": "Weight / Ma…",
       "url": "/weight-converter?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/units/icon-192.png"
     },
     {
       "name": "Temperature Converter",
-      "short_name": "Temperature…",
+      "shortName": "Temperature…",
       "url": "/temperature-converter?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/units/icon-192.png"
     },
     {
       "name": "Area Converter",
-      "short_name": "Area Conver…",
+      "shortName": "Area Conver…",
       "url": "/area-converter?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/units/icon-192.png"
     }

@@ -26,25 +26,25 @@
   "shortcuts": [
     {
       "name": "JavaScript Formatter",
-      "short_name": "JavaScript …",
+      "shortName": "JavaScript …",
       "url": "/js-formatter?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/js/icon-192.png"
     },
     {
       "name": "JavaScript Minifier",
-      "short_name": "JavaScript …",
+      "shortName": "JavaScript …",
       "url": "/js-minifier?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/js/icon-192.png"
     },
     {
       "name": "JavaScript Validator",
-      "short_name": "JavaScript …",
+      "shortName": "JavaScript …",
       "url": "/js-validator?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/js/icon-192.png"
     },
     {
       "name": "JSON to JS Object",
-      "short_name": "JSON to JS …",
+      "shortName": "JSON to JS …",
       "url": "/json-to-js?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/js/icon-192.png"
     }

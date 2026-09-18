@@ -26,25 +26,25 @@
   "shortcuts": [
     {
       "name": "Hash Generator (All)",
-      "short_name": "Hash Genera…",
+      "shortName": "Hash Genera…",
       "url": "/hash-all?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/hash/icon-192.png"
     },
     {
       "name": "MD5 Hash Generator",
-      "short_name": "MD5 Hash Ge…",
+      "shortName": "MD5 Hash Ge…",
       "url": "/md5-hash?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/hash/icon-192.png"
     },
     {
       "name": "SHA-1 Hash Generator",
-      "short_name": "SHA-1 Hash …",
+      "shortName": "SHA-1 Hash …",
       "url": "/sha1-hash?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/hash/icon-192.png"
     },
     {
       "name": "SHA-256 Hash Generator",
-      "short_name": "SHA-256 Has…",
+      "shortName": "SHA-256 Has…",
       "url": "/sha256-hash?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/hash/icon-192.png"
     }
