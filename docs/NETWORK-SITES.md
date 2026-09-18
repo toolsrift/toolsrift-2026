@@ -111,6 +111,12 @@ tool up automatically on the next deploy.
    the first production deploy. Locally the same script runs with
    `VERCEL_TOKEN=… node scripts/vercel/bootstrap-api.js --all`, and
    `npm run vercel:bootstrap -- pdf` is the CLI-based alternative.
+   **Vercel limit:** one Git repository can be connected to at most 25
+   projects. The hub + 24 sites use that allowance; the remaining sites
+   (`audio`, `office`, `data`, `study`, `video`) are created *without* a Git
+   link and are deployed by `.github/workflows/vercel-deploy-unlinked.yml`
+   (Vercel CLI, `VERCEL_TOKEN` secret) on every push to `main` — same result,
+   one extra CI job.
 3. **Attach the subdomain to the project** (Vercel → project → Settings →
    Domains → add `pdf.toolsrift.com`). A domain can live on only ONE project:
    `pdf.`, `text.`, `image.`, `dev.` and `calc.toolsrift.com` were mirrors on
