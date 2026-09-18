@@ -68,18 +68,24 @@ export function middleware(request) {
   }
 
   // ── Hub (toolsrift.com) ──────────────────────────────────────────────────
-  // Legacy subdomain mirrors, kept until the standalone domains go live.
-  if (host.startsWith('text.')) {
-    url.pathname = '/text'
-    return NextResponse.rewrite(url)
-  }
-  if (host.startsWith('image.')) {
-    url.pathname = '/images'
-    return NextResponse.rewrite(url)
-  }
-  if (host.startsWith('pdf.')) {
-    url.pathname = '/pdf'
-    return NextResponse.rewrite(url)
+  // Legacy subdomain mirrors (text./image./pdf. still attached to the hub
+  // project). Only the ROOT mirrors the category page; the category's own
+  // paths pass through; anything else belongs to the apex, so redirect there
+  // instead of showing the same category page under every URL (that is what
+  // made pdf.toolsrift.com/json render the PDF page). These branches become
+  // dead the moment each subdomain moves to its own toolsrift-<id> project.
+  const MIRRORS = { 'text.': '/text', 'image.': '/images', 'pdf.': '/pdf' }
+  for (const [prefix, route] of Object.entries(MIRRORS)) {
+    if (!host.startsWith(prefix)) continue
+    if (pathname === '/') {
+      url.pathname = route
+      return NextResponse.rewrite(url)
+    }
+    if (pathname === route || pathname.startsWith(`${route}/`)) return NextResponse.next()
+    if (pathname.startsWith('/_next') || pathname.startsWith('/api/') || /\.[a-z0-9]+$/i.test(pathname)) {
+      return NextResponse.next()
+    }
+    return NextResponse.redirect(`${HUB_BASE}${pathname}${url.search}`, 302)
   }
 
   return NextResponse.next()
