@@ -1,0 +1,45 @@
+# Creates / configures the Vercel projects for the ToolsRift network sites
+# through the Vercel REST API (scripts/vercel/bootstrap-api.js).
+#
+# One-time setup: add a repository secret VERCEL_TOKEN (Settings → Secrets and
+# variables → Actions) containing a Vercel token that has access to the
+# "toolsrifts-projects" team (vercel.com/account/tokens).
+#
+# Then run it from the Actions tab ("Run workflow") — or let Claude trigger it.
+name: vercel-bootstrap
+
+on:
+  workflow_dispatch:
+    inputs:
+      sites:
+        description: 'Site ids to bootstrap, space-separated, or "--all"'
+        type: string
+        default: '--all'
+      move_domains:
+        description: 'Detach pdf./text./image./dev./calc. from the hub project so they can attach to their own project'
+        type: boolean
+        default: true
+      deploy:
+        description: 'Trigger a production deployment of each project from main'
+        type: boolean
+        default: true
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Bootstrap Vercel projects
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_TEAM: toolsrifts-projects
+          GIT_REPO: ${{ github.repository }}
+          MOVE_DOMAINS: ${{ inputs.move_domains && '1' || '0' }}
+          DEPLOY: ${{ inputs.deploy && '1' || '0' }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "::error::VERCEL_TOKEN secret is not set (Settings → Secrets and variables → Actions)"; exit 1
+          fi
+          node scripts/vercel/bootstrap-api.js ${{ inputs.sites }}
