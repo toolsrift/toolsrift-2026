@@ -1,0 +1,67 @@
+# ToolsRift network — CI for the 29 standalone sites + the hub.
+#
+# On every PR / push: verifies the brand registry, then builds a sample of
+# sites (hub + 3 standalone) so a change to the shared layouts can never break
+# a site silently. The full 30-site build runs nightly and on demand.
+#
+# Deploys are NOT done here: each Vercel project (toolsrift-<id>) is connected
+# to this repo and deploys itself on push to main. See docs/NETWORK-SITES.md.
+name: network-sites
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '30 2 * * *'
+  workflow_dispatch:
+    inputs:
+      all:
+        description: 'Build every site (not just the sample)'
+        type: boolean
+        default: false
+
+jobs:
+  registry:
+    runs-on: ubuntu-latest
+    outputs:
+      sites: ${{ steps.sites.outputs.sites }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci
+      - run: node scripts/sites/check.js
+      - id: sites
+        run: |
+          if [[ "${{ github.event_name }}" == "schedule" || "${{ inputs.all }}" == "true" ]]; then
+            echo "sites=$(node scripts/sites/list.js --json | node -e 'const r=JSON.parse(require("fs").readFileSync(0,"utf8")).map(x=>x.id);r.unshift("hub");console.log(JSON.stringify(r))')" >> "$GITHUB_OUTPUT"
+          else
+            echo 'sites=["hub","pdf","image","devtools"]' >> "$GITHUB_OUTPUT"
+          fi
+
+  build:
+    needs: registry
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        site: ${{ fromJson(needs.registry.outputs.sites) }}
+    env:
+      NEXT_PUBLIC_SITE_ID: ${{ matrix.site }}
+      NEXT_TELEMETRY_DISABLED: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci
+      - run: npx next build
+      - name: Smoke-test generated site files
+        if: matrix.site != 'hub'
+        run: |
+          npx next start -p 3123 & sleep 6
+          curl -fsS http://localhost:3123/robots.txt | grep -q "Sitemap: https://"
+          curl -fsS http://localhost:3123/sitemap.xml | grep -q "<urlset"
+          curl -fsS http://localhost:3123/manifest.json | grep -q '"short_name"'
+          curl -fsS http://localhost:3123/.well-known/assetlinks.json | grep -q "package_name"
+          curl -fsS -o /dev/null -w '%{http_code}\n' http://localhost:3123/ | grep -q 200

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 509 72" width="509" height="72" role="img" aria-label="ToolsRift Generators">
+  <title>ToolsRift Generators</title>
+  <g>
+  <defs>
+    <linearGradient id="l-g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#D9F99D"/>
+      <stop offset="0.55" stop-color="#84CC16"/>
+      <stop offset="1" stop-color="#65A30D"/>
+    </linearGradient>
+    <radialGradient id="l-hl" cx="0.3" cy="0.2" r="0.8">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="l-c"><polygon points="67.18,54.00 36.00,72.00 4.82,54.00 4.82,18.00 36.00,0.00 67.18,18.00"/></clipPath>
+  </defs>
+  <g clip-path="url(#l-c)">
+    <rect width="72" height="72" fill="url(#l-g)"/>
+    <rect width="72" height="72" fill="url(#l-hl)"/>
+    <rect x="4.32" y="4.32" width="63.36" height="63.36" rx="11.52" fill="none" stroke="#070A05" stroke-opacity="0.18" stroke-width="1"/>
+  </g>
+  <g transform="translate(12.96 12.96) scale(0.4608)" color="#0B1202">
+    <circle cx="36" cy="40" r="16" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M48 50l30 30M70 72l8-8M62 64l8-8" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  </g></g>
+  <text x="88" y="46" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="800" font-size="30" letter-spacing="-0.6" fill="#F8FAFC">ToolsRift</text>
+  <text x="285" y="46" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="800" font-size="30" letter-spacing="-0.6" fill="#84CC16">Generators</text>
+</svg>

@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Video Trimmer",
+    "url": "/video-trimmer"
+  },
+  {
+    "name": "Video Merger",
+    "url": "/video-merger"
+  },
+  {
+    "name": "Video Rotator",
+    "url": "/video-rotate"
+  },
+  {
+    "name": "Video Cropper",
+    "url": "/video-crop"
+  }
+]

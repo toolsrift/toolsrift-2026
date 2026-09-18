@@ -6,6 +6,7 @@
 // Editing this single file updates every tool category page in the project.
 
 import { useState, useEffect, useRef } from 'react';
+import { toolHref } from './toolLink';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COLORS, FS, MQ, RADIUS, SPRING } from '../../lib/designTokens';
 import { FadeUp, BlurUp, Stagger, StaggerItem, CountUp, GradientBlob, ParticlesField } from './motion';
@@ -14,6 +15,8 @@ import SiteFooter from '../SiteFooter';
 import { groupTools } from './ToolNavSidebar';
 import { resolveIcon } from '../../lib/toolIcons';
 import { isArticleOwnedByPage } from '../../lib/appRoute';
+import { SITE, HUB_BASE } from '../../lib/sites';
+import BrandBackdrop from '../site/BrandBackdrop';
 
 // ── "All <category> tools" mega-menu ────────────────────────────────────────
 // Every tool in the category, grouped by subcategory — reachable from the header
@@ -96,7 +99,7 @@ function ToolsMegaMenu({ theme, tools, subcats }) {
                 {g.tools.map(t => (
                   <a
                     key={t.id}
-                    href={`${theme.pageRoute}/${t.id}`}
+                    href={toolHref(theme, t.id)}
                     onClick={e => go(e, t.id)}
                     style={{
                       display: 'flex', alignItems: 'center', gap: 8,
@@ -148,7 +151,7 @@ function CategoryHeader({ theme, tools, subcats }) {
         height: 60,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '0 clamp(16px, 4vw, 28px)',
-        background: scrolled ? 'rgba(6,9,15,0.92)' : 'rgba(6,9,15,0.75)',
+        background: scrolled ? COLORS.navBgSolid : COLORS.navBgSoft,
         backdropFilter: 'blur(14px) saturate(140%)',
         WebkitBackdropFilter: 'blur(14px) saturate(140%)',
         borderBottom: `1px solid ${scrolled ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.03)'}`,
@@ -156,30 +159,38 @@ function CategoryHeader({ theme, tools, subcats }) {
         fontFamily: theme.fonts.body,
       }}
     >
-      <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-        <img src="/logo.svg" alt="ToolsRift" style={{ height: 28, display: 'block' }} />
-        <span style={{ color: 'rgba(255,255,255,0.18)', fontSize: 16, fontWeight: 300 }}>/</span>
-        <span style={{
-          fontSize: 14, fontWeight: 600,
-          color: COLORS.text,
-          fontFamily: theme.fonts.head,
-          letterSpacing: '-0.01em',
-        }}>
-          {theme.name}
-        </span>
-      </a>
+      {theme.isSiteRoot ? (
+        // Standalone network site: its own logo IS the brand — no "ToolsRift / Category" split.
+        <a href="/" aria-label={SITE.siteName} style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+          <img src={SITE.logo} alt={SITE.siteName} style={{ height: 30, display: 'block' }} />
+        </a>
+      ) : (
+        <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+          <img src="/logo.svg" alt="ToolsRift" style={{ height: 28, display: 'block' }} />
+          <span style={{ color: 'rgba(255,255,255,0.18)', fontSize: 16, fontWeight: 300 }}>/</span>
+          <span style={{
+            fontSize: 14, fontWeight: 600,
+            color: COLORS.text,
+            fontFamily: theme.fonts.head,
+            letterSpacing: '-0.01em',
+          }}>
+            {theme.name}
+          </span>
+        </a>
+      )}
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
         <ToolsMegaMenu theme={theme} tools={tools} subcats={subcats} />
         <a
-          href="/"
+          href={theme.isSiteRoot ? `${HUB_BASE}/` : '/'}
           className="tr-hide-on-mobile"
+          rel={theme.isSiteRoot ? 'noopener' : undefined}
           style={{
             fontSize: 13, color: COLORS.muted, textDecoration: 'none', fontWeight: 500,
             display: 'none',
           }}
         >
-          All categories
+          {theme.isSiteRoot ? 'ToolsRift network' : 'All categories'}
         </a>
         <span style={{
           fontSize: 12, fontWeight: 700,
@@ -229,6 +240,13 @@ const BANNER_CSS = `
 
 function CategoryBanner({ theme }) {
   const accent = theme.accent2 || theme.colorDark || theme.color;
+  // A standalone network site leads with its own design-concept headline
+  // (lib/sites/brands.js → concept.headline / concept.sub).
+  const concept = theme.brand && theme.brand.concept;
+  const headline = (concept && concept.headline) || 'Your data never leaves this tab.';
+  const sub = (concept && concept.sub)
+    ? concept.sub
+    : `${theme.tagline || theme.description} Every tool in this category runs entirely in your browser — no account, no uploads, no exceptions.`;
   const stats = [
     { v: theme.toolCount, suffix: '', label: 'Tools' },
     { v: 100, suffix: '%', label: 'Free' },
@@ -289,7 +307,7 @@ function CategoryBanner({ theme }) {
                   color: COLORS.textBright, margin: '0 0 16px',
                 }}
               >
-                Your data never leaves this tab.
+                {headline}
               </h2>
             </FadeUp>
 
@@ -300,7 +318,7 @@ function CategoryBanner({ theme }) {
                   lineHeight: 1.7, maxWidth: '40ch', margin: 0,
                 }}
               >
-                {theme.tagline || theme.description} Every tool in this category runs entirely in your browser — no account, no uploads, no exceptions.
+                {sub}
               </p>
             </FadeUp>
 
@@ -420,7 +438,8 @@ export default function CategoryLayout({ theme, currentTool, tools, subcats, chi
   useEffect(() => { setPageOwnsArticle(isArticleOwnedByPage()); }, [currentTool]);
 
   return (
-    <div style={{ minHeight: '100vh', background: COLORS.bg, display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: COLORS.bg, display: 'flex', flexDirection: 'column', position: 'relative' }}>
+      <BrandBackdrop />
       <CategoryHeader theme={theme} tools={tools} subcats={subcats} />
 
       {/* `banner` lets a specific category (e.g. PDF) swap in a bespoke hero in
@@ -444,7 +463,7 @@ export default function CategoryLayout({ theme, currentTool, tools, subcats, chi
       </main>
 
       {/* Footer renders here ONLY on tool detail pages reached by in-app hash
-          navigation. On a /[category]/[tool] URL the page server-renders both
+          navigation. On a /[slug]/[tool] URL the page server-renders both
           the article and the footer below this widget, so rendering one here too
           would show two. On category LANDING pages the footer comes from the end
           of the server-side SEO block (CategoryContent) so it is never stranded

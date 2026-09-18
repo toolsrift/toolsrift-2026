@@ -1,0 +1,68 @@
+{
+  "packageId": "com.toolsrift.finance",
+  "host": "toolsriftfinance.com",
+  "name": "ToolsRift Finance & Health",
+  "launcherName": "Finance",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#050A07",
+  "themeColorDark": "#050A07",
+  "navigationColor": "#050A07",
+  "navigationColorDark": "#050A07",
+  "navigationDividerColor": "#101913",
+  "navigationDividerColorDark": "#101913",
+  "backgroundColor": "#050A07",
+  "enableNotifications": false,
+  "startUrl": "/?source=twa",
+  "iconUrl": "https://toolsriftfinance.com/brands/financecalc/icon-512.png",
+  "maskableIconUrl": "https://toolsriftfinance.com/brands/financecalc/icon-maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "../../keys/financecalc.keystore",
+    "alias": "financecalc"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "Investment Return Calculator",
+      "short_name": "Investment …",
+      "url": "/investment-return-calc?source=shortcut",
+      "chosenIconUrl": "https://toolsriftfinance.com/brands/financecalc/icon-192.png"
+    },
+    {
+      "name": "RD Calculator",
+      "short_name": "RD Calculat…",
+      "url": "/rd-calc?source=shortcut",
+      "chosenIconUrl": "https://toolsriftfinance.com/brands/financecalc/icon-192.png"
+    },
+    {
+      "name": "PPF Calculator",
+      "short_name": "PPF Calcula…",
+      "url": "/ppf-calc?source=shortcut",
+      "chosenIconUrl": "https://toolsriftfinance.com/brands/financecalc/icon-192.png"
+    },
+    {
+      "name": "Gratuity Calculator",
+      "short_name": "Gratuity Ca…",
+      "url": "/gratuity-calc?source=shortcut",
+      "chosenIconUrl": "https://toolsriftfinance.com/brands/financecalc/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://toolsriftfinance.com/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://toolsriftfinance.com/",
+  "minSdkVersion": 21,
+  "orientationLock": false,
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "appVersion": "1.0.0"
+}

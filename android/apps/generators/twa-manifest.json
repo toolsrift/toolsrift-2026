@@ -1,0 +1,68 @@
+{
+  "packageId": "com.toolsrift.generators",
+  "host": "toolsriftgenerators.com",
+  "name": "ToolsRift Generators",
+  "launcherName": "Generators",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#070A05",
+  "themeColorDark": "#070A05",
+  "navigationColor": "#070A05",
+  "navigationColorDark": "#070A05",
+  "navigationDividerColor": "#141A10",
+  "navigationDividerColorDark": "#141A10",
+  "backgroundColor": "#070A05",
+  "enableNotifications": false,
+  "startUrl": "/?source=twa",
+  "iconUrl": "https://toolsriftgenerators.com/brands/generators/icon-512.png",
+  "maskableIconUrl": "https://toolsriftgenerators.com/brands/generators/icon-maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "../../keys/generators.keystore",
+    "alias": "generators"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "Strong Password Generator",
+      "short_name": "Strong Pass…",
+      "url": "/strong-password-gen?source=shortcut",
+      "chosenIconUrl": "https://toolsriftgenerators.com/brands/generators/icon-192.png"
+    },
+    {
+      "name": "Passphrase Generator",
+      "short_name": "Passphrase …",
+      "url": "/passphrase-gen?source=shortcut",
+      "chosenIconUrl": "https://toolsriftgenerators.com/brands/generators/icon-192.png"
+    },
+    {
+      "name": "PIN Generator",
+      "short_name": "PIN Generat…",
+      "url": "/pin-gen?source=shortcut",
+      "chosenIconUrl": "https://toolsriftgenerators.com/brands/generators/icon-192.png"
+    },
+    {
+      "name": "API Key Generator",
+      "short_name": "API Key Gen…",
+      "url": "/api-key-gen?source=shortcut",
+      "chosenIconUrl": "https://toolsriftgenerators.com/brands/generators/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://toolsriftgenerators.com/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://toolsriftgenerators.com/",
+  "minSdkVersion": 21,
+  "orientationLock": false,
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "appVersion": "1.0.0"
+}

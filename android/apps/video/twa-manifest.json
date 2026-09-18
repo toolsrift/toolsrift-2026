@@ -1,0 +1,68 @@
+{
+  "packageId": "com.toolsrift.video",
+  "host": "toolsriftvideo.com",
+  "name": "ToolsRift Video Tools",
+  "launcherName": "Video",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#0B0604",
+  "themeColorDark": "#0B0604",
+  "navigationColor": "#0B0604",
+  "navigationColorDark": "#0B0604",
+  "navigationDividerColor": "#1B120E",
+  "navigationDividerColorDark": "#1B120E",
+  "backgroundColor": "#0B0604",
+  "enableNotifications": false,
+  "startUrl": "/?source=twa",
+  "iconUrl": "https://toolsriftvideo.com/brands/video/icon-512.png",
+  "maskableIconUrl": "https://toolsriftvideo.com/brands/video/icon-maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "../../keys/video.keystore",
+    "alias": "video"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "Video Trimmer",
+      "short_name": "Video Trimm…",
+      "url": "/video-trimmer?source=shortcut",
+      "chosenIconUrl": "https://toolsriftvideo.com/brands/video/icon-192.png"
+    },
+    {
+      "name": "Video Merger",
+      "short_name": "Video Merger",
+      "url": "/video-merger?source=shortcut",
+      "chosenIconUrl": "https://toolsriftvideo.com/brands/video/icon-192.png"
+    },
+    {
+      "name": "Video Rotator",
+      "short_name": "Video Rotat…",
+      "url": "/video-rotate?source=shortcut",
+      "chosenIconUrl": "https://toolsriftvideo.com/brands/video/icon-192.png"
+    },
+    {
+      "name": "Video Cropper",
+      "short_name": "Video Cropp…",
+      "url": "/video-crop?source=shortcut",
+      "chosenIconUrl": "https://toolsriftvideo.com/brands/video/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://toolsriftvideo.com/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://toolsriftvideo.com/",
+  "minSdkVersion": 21,
+  "orientationLock": false,
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "appVersion": "1.0.0"
+}

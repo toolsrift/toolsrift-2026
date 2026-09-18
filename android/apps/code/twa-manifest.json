@@ -1,0 +1,68 @@
+{
+  "packageId": "com.toolsrift.json",
+  "host": "toolsriftjson.com",
+  "name": "ToolsRift JSON Tools",
+  "launcherName": "JSON Tools",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#060A08",
+  "themeColorDark": "#060A08",
+  "navigationColor": "#060A08",
+  "navigationColorDark": "#060A08",
+  "navigationDividerColor": "#121A15",
+  "navigationDividerColorDark": "#121A15",
+  "backgroundColor": "#060A08",
+  "enableNotifications": false,
+  "startUrl": "/?source=twa",
+  "iconUrl": "https://toolsriftjson.com/brands/code/icon-512.png",
+  "maskableIconUrl": "https://toolsriftjson.com/brands/code/icon-maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "../../keys/code.keystore",
+    "alias": "code"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "JSON Formatter",
+      "short_name": "JSON Format…",
+      "url": "/json-formatter?source=shortcut",
+      "chosenIconUrl": "https://toolsriftjson.com/brands/code/icon-192.png"
+    },
+    {
+      "name": "JSON Minifier",
+      "short_name": "JSON Minifi…",
+      "url": "/json-minifier?source=shortcut",
+      "chosenIconUrl": "https://toolsriftjson.com/brands/code/icon-192.png"
+    },
+    {
+      "name": "JSON Validator",
+      "short_name": "JSON Valida…",
+      "url": "/json-validator?source=shortcut",
+      "chosenIconUrl": "https://toolsriftjson.com/brands/code/icon-192.png"
+    },
+    {
+      "name": "JSON String Escape",
+      "short_name": "JSON String…",
+      "url": "/json-escape?source=shortcut",
+      "chosenIconUrl": "https://toolsriftjson.com/brands/code/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://toolsriftjson.com/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://toolsriftjson.com/",
+  "minSdkVersion": 21,
+  "orientationLock": false,
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "appVersion": "1.0.0"
+}

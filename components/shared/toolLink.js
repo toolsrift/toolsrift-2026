@@ -14,7 +14,12 @@
 /** Canonical, crawlable URL for a tool. */
 export function toolHref(theme, toolId) {
   if (!theme || !theme.pageRoute || !toolId) return undefined;
-  return `${theme.pageRoute}/${toolId}`;
+  // On a standalone network site the category's pageRoute is "/" (its own
+  // root) and sibling categories are absolute URLs ending in "/" — never
+  // produce "//tool" (protocol-relative!) or ".com//tool".
+  const base = theme.pageRoute;
+  if (base === '/') return `/${toolId}`;
+  return base.endsWith('/') ? `${base}${toolId}` : `${base}/${toolId}`;
 }
 
 /**

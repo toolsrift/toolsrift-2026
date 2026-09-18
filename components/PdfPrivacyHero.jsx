@@ -1,10 +1,12 @@
 import { FadeUp, BlurUp, Stagger, StaggerItem, CountUp, GradientBlob, ParticlesField, motion } from './shared/motion'
+import { SITE } from '../lib/sites';
 import { SPRING } from '../lib/designTokens'
 import { SITE_FEATURES } from '../lib/siteFeatures'
 
 const C = {
-  bg: '#06090F',
-  surface: '#0D1117',
+  // Site-aware: on toolsriftpdf.com these are the brand's warm charcoal.
+  bg: SITE.brand ? SITE.brand.palette.bg : '#06090F',
+  surface: SITE.brand ? SITE.brand.palette.surface : '#0D1117',
   border: 'rgba(255,255,255,0.08)',
   borderLight: 'rgba(255,255,255,0.05)',
   text: '#F1F5F9',

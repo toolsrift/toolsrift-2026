@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { SITE } from '../lib/sites'
 
 // Lightweight cookie-consent banner. Rendered once in _app.js so it appears on
 // every page. The banner element is always in the DOM (hidden via CSS) and is
@@ -29,7 +30,7 @@ export default function CookieConsent() {
         <p style={{ fontSize: 13, lineHeight: 1.6, color: '#94A3B8', margin: '0 0 14px' }}>
           ToolsRift processes your files in your browser. We use cookies only for basic
           analytics and to support ads that keep every tool free. See our{' '}
-          <a href="/cookies" style={{ color: '#3B82F6', textDecoration: 'none' }}>Cookie Policy</a>.
+          <a href="/cookies" style={{ color: SITE.themeColor, textDecoration: 'none' }}>Cookie Policy</a>.
         </p>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
           <button
@@ -37,7 +38,7 @@ export default function CookieConsent() {
             onClick={() => choose('accepted')}
             style={{
               flex: '1 1 120px', minHeight: 40, borderRadius: 10, cursor: 'pointer',
-              border: 'none', background: '#3B82F6', color: '#fff',
+              border: 'none', background: SITE.themeColor, color: SITE.brand ? SITE.brand.palette.textOnPrimary : '#fff',
               fontSize: 13.5, fontWeight: 700, fontFamily: 'inherit',
             }}
           >

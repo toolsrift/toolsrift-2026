@@ -1,0 +1,68 @@
+{
+  "packageId": "com.toolsrift.js",
+  "host": "toolsriftjs.com",
+  "name": "ToolsRift JavaScript Tools",
+  "launcherName": "JS Tools",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#0A0A06",
+  "themeColorDark": "#0A0A06",
+  "navigationColor": "#0A0A06",
+  "navigationColorDark": "#0A0A06",
+  "navigationDividerColor": "#1A1A11",
+  "navigationDividerColorDark": "#1A1A11",
+  "backgroundColor": "#0A0A06",
+  "enableNotifications": false,
+  "startUrl": "/?source=twa",
+  "iconUrl": "https://toolsriftjs.com/brands/js/icon-512.png",
+  "maskableIconUrl": "https://toolsriftjs.com/brands/js/icon-maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "../../keys/js.keystore",
+    "alias": "js"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "JavaScript Formatter",
+      "short_name": "JavaScript …",
+      "url": "/js-formatter?source=shortcut",
+      "chosenIconUrl": "https://toolsriftjs.com/brands/js/icon-192.png"
+    },
+    {
+      "name": "JavaScript Minifier",
+      "short_name": "JavaScript …",
+      "url": "/js-minifier?source=shortcut",
+      "chosenIconUrl": "https://toolsriftjs.com/brands/js/icon-192.png"
+    },
+    {
+      "name": "JavaScript Validator",
+      "short_name": "JavaScript …",
+      "url": "/js-validator?source=shortcut",
+      "chosenIconUrl": "https://toolsriftjs.com/brands/js/icon-192.png"
+    },
+    {
+      "name": "JSON to JS Object",
+      "short_name": "JSON to JS …",
+      "url": "/json-to-js?source=shortcut",
+      "chosenIconUrl": "https://toolsriftjs.com/brands/js/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://toolsriftjs.com/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://toolsriftjs.com/",
+  "minSdkVersion": 21,
+  "orientationLock": false,
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "appVersion": "1.0.0"
+}

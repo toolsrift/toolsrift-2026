@@ -7,6 +7,7 @@
 // Mobile:  a floating "All Tools" bar that opens a drawer with the same content.
 
 import { useState, useMemo, useEffect, useRef } from 'react';
+import { toolHref } from './toolLink';
 import { COLORS, RADIUS } from '../../lib/designTokens';
 import { resolveIcon } from '../../lib/toolIcons';
 
@@ -43,7 +44,7 @@ function ToolLink({ tool, theme, isActive, onNavigate, innerRef }) {
   return (
     <a
       ref={innerRef}
-      href={`${theme.pageRoute}/${tool.id}`}
+      href={toolHref(theme, tool.id)}
       onClick={e => onNavigate(e, tool.id)}
       aria-current={isActive ? 'page' : undefined}
       style={{

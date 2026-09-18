@@ -1,0 +1,68 @@
+{
+  "packageId": "com.toolsrift.encoders",
+  "host": "toolsriftencoders.com",
+  "name": "ToolsRift Encoders",
+  "launcherName": "Encoders",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#0B0904",
+  "themeColorDark": "#0B0904",
+  "navigationColor": "#0B0904",
+  "navigationColorDark": "#0B0904",
+  "navigationDividerColor": "#1B160E",
+  "navigationDividerColorDark": "#1B160E",
+  "backgroundColor": "#0B0904",
+  "enableNotifications": false,
+  "startUrl": "/?source=twa",
+  "iconUrl": "https://toolsriftencoders.com/brands/encoders/icon-512.png",
+  "maskableIconUrl": "https://toolsriftencoders.com/brands/encoders/icon-maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "../../keys/encoders.keystore",
+    "alias": "encoders"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "Base64 Encoder",
+      "short_name": "Base64 Enco…",
+      "url": "/base64-encode?source=shortcut",
+      "chosenIconUrl": "https://toolsriftencoders.com/brands/encoders/icon-192.png"
+    },
+    {
+      "name": "Base64 Decoder",
+      "short_name": "Base64 Deco…",
+      "url": "/base64-decode?source=shortcut",
+      "chosenIconUrl": "https://toolsriftencoders.com/brands/encoders/icon-192.png"
+    },
+    {
+      "name": "Base64 Image Encoder",
+      "short_name": "Base64 Imag…",
+      "url": "/base64-image?source=shortcut",
+      "chosenIconUrl": "https://toolsriftencoders.com/brands/encoders/icon-192.png"
+    },
+    {
+      "name": "Base32 Encoder",
+      "short_name": "Base32 Enco…",
+      "url": "/base32-encode?source=shortcut",
+      "chosenIconUrl": "https://toolsriftencoders.com/brands/encoders/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://toolsriftencoders.com/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://toolsriftencoders.com/",
+  "minSdkVersion": 21,
+  "orientationLock": false,
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "appVersion": "1.0.0"
+}

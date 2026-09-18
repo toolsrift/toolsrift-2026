@@ -1,14 +1,25 @@
 {
   "name": "toolsrift",
   "version": "1.0.0",
-  "description": "ToolsRift — 590+ Free Online Tools",
+  "description": "ToolsRift \u2014 590+ Free Online Tools",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "submit:indexnow": "node scripts/submit-indexnow.js"
+    "submit:indexnow": "node scripts/submit-indexnow.js",
+    "dev:site": "node scripts/sites/run.js dev",
+    "build:site": "node scripts/sites/run.js build",
+    "start:site": "node scripts/sites/run.js start",
+    "sites:list": "node scripts/sites/list.js",
+    "sites:check": "node scripts/sites/check.js",
+    "brands:assets": "node scripts/generate-brand-assets.js",
+    "android:generate": "node scripts/android/generate.js",
+    "android:keystore": "bash scripts/android/keystore.sh",
+    "android:build": "bash scripts/android/build.sh",
+    "vercel:bootstrap": "bash scripts/vercel/bootstrap.sh",
+    "vercel:deploy": "bash scripts/vercel/deploy.sh"
   },
   "dependencies": {
     "framer-motion": "^12.38.0",

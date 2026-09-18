@@ -1,0 +1,68 @@
+{
+  "packageId": "com.toolsrift.pdf",
+  "host": "toolsriftpdf.com",
+  "name": "ToolsRift PDF Tools",
+  "launcherName": "PDF Tools",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#0E0A09",
+  "themeColorDark": "#0E0A09",
+  "navigationColor": "#0E0A09",
+  "navigationColorDark": "#0E0A09",
+  "navigationDividerColor": "#1E1613",
+  "navigationDividerColorDark": "#1E1613",
+  "backgroundColor": "#0E0A09",
+  "enableNotifications": false,
+  "startUrl": "/?source=twa",
+  "iconUrl": "https://toolsriftpdf.com/brands/pdf/icon-512.png",
+  "maskableIconUrl": "https://toolsriftpdf.com/brands/pdf/icon-maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "../../keys/pdf.keystore",
+    "alias": "pdf"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "PDF Viewer",
+      "short_name": "PDF Viewer",
+      "url": "/pdf-viewer?source=shortcut",
+      "chosenIconUrl": "https://toolsriftpdf.com/brands/pdf/icon-192.png"
+    },
+    {
+      "name": "PDF Page Counter",
+      "short_name": "PDF Page Co…",
+      "url": "/pdf-page-count?source=shortcut",
+      "chosenIconUrl": "https://toolsriftpdf.com/brands/pdf/icon-192.png"
+    },
+    {
+      "name": "PDF Metadata Viewer",
+      "short_name": "PDF Metadat…",
+      "url": "/pdf-metadata?source=shortcut",
+      "chosenIconUrl": "https://toolsriftpdf.com/brands/pdf/icon-192.png"
+    },
+    {
+      "name": "PDF Text Extractor",
+      "short_name": "PDF Text Ex…",
+      "url": "/pdf-text-extractor?source=shortcut",
+      "chosenIconUrl": "https://toolsriftpdf.com/brands/pdf/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://toolsriftpdf.com/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://toolsriftpdf.com/",
+  "minSdkVersion": 21,
+  "orientationLock": false,
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "appVersion": "1.0.0"
+}

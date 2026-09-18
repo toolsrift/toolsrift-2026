@@ -1,0 +1,68 @@
+{
+  "packageId": "com.toolsrift.formatters",
+  "host": "toolsriftformatters.com",
+  "name": "ToolsRift Code Formatters",
+  "launcherName": "Formatters",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#050B0A",
+  "themeColorDark": "#050B0A",
+  "navigationColor": "#050B0A",
+  "navigationColorDark": "#050B0A",
+  "navigationDividerColor": "#101B19",
+  "navigationDividerColorDark": "#101B19",
+  "backgroundColor": "#050B0A",
+  "enableNotifications": false,
+  "startUrl": "/?source=twa",
+  "iconUrl": "https://toolsriftformatters.com/brands/formatters/icon-512.png",
+  "maskableIconUrl": "https://toolsriftformatters.com/brands/formatters/icon-maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "../../keys/formatters.keystore",
+    "alias": "formatters"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "CSS Formatter",
+      "short_name": "CSS Formatt…",
+      "url": "/css-formatter?source=shortcut",
+      "chosenIconUrl": "https://toolsriftformatters.com/brands/formatters/icon-192.png"
+    },
+    {
+      "name": "CSS Minifier",
+      "short_name": "CSS Minifier",
+      "url": "/css-minifier?source=shortcut",
+      "chosenIconUrl": "https://toolsriftformatters.com/brands/formatters/icon-192.png"
+    },
+    {
+      "name": "SQL Formatter",
+      "short_name": "SQL Formatt…",
+      "url": "/sql-formatter?source=shortcut",
+      "chosenIconUrl": "https://toolsriftformatters.com/brands/formatters/icon-192.png"
+    },
+    {
+      "name": "XML Formatter",
+      "short_name": "XML Formatt…",
+      "url": "/xml-formatter?source=shortcut",
+      "chosenIconUrl": "https://toolsriftformatters.com/brands/formatters/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://toolsriftformatters.com/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://toolsriftformatters.com/",
+  "minSdkVersion": 21,
+  "orientationLock": false,
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "appVersion": "1.0.0"
+}

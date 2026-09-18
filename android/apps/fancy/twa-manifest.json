@@ -1,0 +1,68 @@
+{
+  "packageId": "com.toolsrift.fancy",
+  "host": "toolsriftfancy.com",
+  "name": "ToolsRift Fancy Text",
+  "launcherName": "Fancy Text",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#0D0612",
+  "themeColorDark": "#0D0612",
+  "navigationColor": "#0D0612",
+  "navigationColorDark": "#0D0612",
+  "navigationDividerColor": "#1E1226",
+  "navigationDividerColorDark": "#1E1226",
+  "backgroundColor": "#0D0612",
+  "enableNotifications": false,
+  "startUrl": "/?source=twa",
+  "iconUrl": "https://toolsriftfancy.com/brands/fancy/icon-512.png",
+  "maskableIconUrl": "https://toolsriftfancy.com/brands/fancy/icon-maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "../../keys/fancy.keystore",
+    "alias": "fancy"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "Bold Text Generator",
+      "short_name": "Bold Text G…",
+      "url": "/bold-text-generator?source=shortcut",
+      "chosenIconUrl": "https://toolsriftfancy.com/brands/fancy/icon-192.png"
+    },
+    {
+      "name": "Italic Text Generator",
+      "short_name": "Italic Text…",
+      "url": "/italic-text-generator?source=shortcut",
+      "chosenIconUrl": "https://toolsriftfancy.com/brands/fancy/icon-192.png"
+    },
+    {
+      "name": "Bold Italic Generator",
+      "short_name": "Bold Italic…",
+      "url": "/bold-italic-generator?source=shortcut",
+      "chosenIconUrl": "https://toolsriftfancy.com/brands/fancy/icon-192.png"
+    },
+    {
+      "name": "Underline Text",
+      "short_name": "Underline T…",
+      "url": "/underline-text?source=shortcut",
+      "chosenIconUrl": "https://toolsriftfancy.com/brands/fancy/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://toolsriftfancy.com/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://toolsriftfancy.com/",
+  "minSdkVersion": 21,
+  "orientationLock": false,
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "appVersion": "1.0.0"
+}
