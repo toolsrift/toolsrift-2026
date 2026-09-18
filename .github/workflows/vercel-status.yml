@@ -1,0 +1,18 @@
+# Prints the live status of every network-site Vercel project (git link,
+# domain, latest production deployment). Green only when all 29 are live.
+name: vercel-status
+
+on:
+  workflow_dispatch:
+
+jobs:
+  status:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_TEAM: toolsrifts-projects
+        run: node scripts/vercel/status.js
