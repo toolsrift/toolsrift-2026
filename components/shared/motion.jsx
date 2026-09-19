@@ -50,6 +50,31 @@ export function BlurUp({ children, delay = 0, style, ...rest }) {
   );
 }
 
+// ── WordReveal — headline words rise in one after another ───────────────────
+export function WordReveal({ text, as: Tag = 'h2', delay = 0, stagger = 0.06, style, ...rest }) {
+  const reduce = useReducedMotion();
+  const words = String(text).split(' ');
+  return (
+    <Tag style={style} {...rest}>
+      {words.map((w, i) => (
+        <span key={i}>
+          <span style={{ display: 'inline-block', overflow: 'hidden', verticalAlign: 'bottom', padding: '0 0.04em 0.12em', margin: '0 -0.04em -0.12em' }}>
+            <motion.span
+              style={{ display: 'inline-block' }}
+              initial={reduce ? false : { y: '110%', opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.7, ease: EASE.snap, delay: delay + i * stagger }}
+            >
+              {w}
+            </motion.span>
+          </span>
+          {i < words.length - 1 ? ' ' : ''}
+        </span>
+      ))}
+    </Tag>
+  );
+}
+
 // ── Stagger container — children animate in sequence ────────────────────────
 export function Stagger({ children, gap = 0.06, delay = 0.05, once = true, style, ...rest }) {
   const ref = useRef(null);

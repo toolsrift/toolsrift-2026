@@ -5,11 +5,11 @@
 //
 // Editing this single file updates every tool category page in the project.
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { toolHref } from './toolLink';
-import { motion, AnimatePresence } from 'framer-motion';
-import { COLORS, FS, MQ, RADIUS, SPRING } from '../../lib/designTokens';
-import { FadeUp, BlurUp, Stagger, StaggerItem, CountUp, GradientBlob, ParticlesField } from './motion';
+import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
+import { COLORS, FS, MQ, RADIUS, SPRING, EASE } from '../../lib/designTokens';
+import { FadeUp, BlurUp, Stagger, StaggerItem, CountUp, GradientBlob, ParticlesField, WordReveal } from './motion';
 import { SITE_FEATURES } from '../../lib/siteFeatures';
 import SiteFooter from '../SiteFooter';
 import { groupTools } from './ToolNavSidebar';
@@ -17,23 +17,60 @@ import { resolveIcon } from '../../lib/toolIcons';
 import { isArticleOwnedByPage } from '../../lib/appRoute';
 import { SITE, HUB_BASE } from '../../lib/sites';
 import BrandBackdrop from '../site/BrandBackdrop';
+import BrandLogo from '../site/BrandLogo';
+import PrivacyFigure from './PrivacyFigure';
 
-// ── "All <category> tools" mega-menu ────────────────────────────────────────
-// Every tool in the category, grouped by subcategory — reachable from the header
-// of any page in the category. Opens on hover (desktop) and on click/keyboard.
-function ToolsMegaMenu({ theme, tools, subcats }) {
-  const [open, setOpen] = useState(false);
-  const closeTimer = useRef(null);
+// ── "All <category> tools" panel ────────────────────────────────────────────
+// Every tool in the category, grouped by subcategory, with a search box.
+// One panel, two triggers in the header: the "All <category>" text (desktop,
+// opens on hover) and the "<n> tools" chip (every screen size, opens on tap).
+// On phones it is a full-height sheet under the header; from the `lg`
+// breakpoint it becomes the familiar dropdown.
+const PANEL_CSS = `
+.tr-toolspanel{position:fixed;left:0;right:0;top:60px;bottom:0;z-index:200;display:flex;flex-direction:column;overflow:hidden;border-top:1px solid rgba(255,255,255,0.08)}
+.tr-toolspanel-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 16px 32px;display:grid;grid-template-columns:1fr;gap:18px 24px;align-content:start}
+.tr-toolspanel-head{display:flex;align-items:center;gap:10px;padding:12px 16px 10px}
+.tr-toolspanel-close{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:999px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:#F1F5F9;font-size:18px;cursor:pointer}
+.tr-toolspanel-search{flex:1;display:flex;align-items:center;gap:10px;height:42px;padding:0 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04)}
+.tr-toolspanel-search input{flex:1;min-width:0;background:transparent;border:none;outline:none;color:#F8FAFC;font-size:15px;font-family:inherit}
+.tr-megatrigger{display:none}
+@media ${MQ.md}{.tr-toolspanel-body{grid-template-columns:repeat(2,1fr)}}
+@media ${MQ.lg}{
+  .tr-megatrigger{display:inline-flex}
+  .tr-toolspanel{position:absolute;top:100%;left:auto;right:clamp(16px,4vw,28px);bottom:auto;margin-top:8px;width:min(860px,92vw);max-height:72vh;border-radius:${RADIUS.lg}px;border:1px solid rgba(255,255,255,0.08);box-shadow:0 24px 60px rgba(0,0,0,0.5)}
+  .tr-toolspanel-body{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));padding:8px 20px 20px}
+  .tr-toolspanel-close{display:none}
+}
+`;
+
+function ToolsPanel({ theme, tools, subcats, open, onClose, onMouseEnter, onMouseLeave }) {
+  const [q, setQ] = useState('');
+  const inputRef = useRef(null);
+
+  // Escape closes; the phone sheet also locks page scroll while open.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    const mobile = !window.matchMedia(MQ.lg).matches;
+    const prev = document.body.style.overflow;
+    if (mobile) document.body.style.overflow = 'hidden';
+    if (mobile) setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 220);
+    return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = prev; };
+  }, [open, onClose]);
+
+  useEffect(() => { if (!open) setQ(''); }, [open]);
 
   if (!tools?.length) return null;
-  const groups = groupTools(tools, subcats);
-
-  const openNow  = () => { clearTimeout(closeTimer.current); setOpen(true); };
-  const closeSoon = () => { closeTimer.current = setTimeout(() => setOpen(false), 120); };
+  const needle = q.trim().toLowerCase();
+  const groups = groupTools(
+    needle ? tools.filter(t => (t.name || '').toLowerCase().includes(needle) || (t.desc || t.description || '').toLowerCase().includes(needle)) : tools,
+    subcats,
+  ).filter(g => g.tools.length);
 
   const go = (e, id) => {
     if (typeof window === 'undefined') return;
-    setOpen(false);
+    onClose();
     if (window.location.pathname !== theme.pageRoute) return; // let the browser navigate
     e.preventDefault();
     window.scrollTo(0, 0);
@@ -42,58 +79,49 @@ function ToolsMegaMenu({ theme, tools, subcats }) {
   };
 
   return (
-    <div
-      className="tr-megamenu"
-      style={{ position: 'relative', display: 'none' }}
-      onMouseEnter={openNow}
-      onMouseLeave={closeSoon}
-    >
-      <button
-        onClick={() => setOpen(o => !o)}
-        aria-expanded={open}
-        aria-haspopup="true"
-        style={{
-          display: 'inline-flex', alignItems: 'center', gap: 6,
-          background: 'none', border: 'none', cursor: 'pointer',
-          fontSize: 13, fontWeight: 600, fontFamily: theme.fonts.body,
-          color: open ? theme.color : COLORS.muted,
-          padding: '8px 0', minHeight: 40, transition: 'color .15s',
-        }}
-      >
-        All {theme.name}
-        <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.18 }} style={{ fontSize: 9 }}>▼</motion.span>
-      </button>
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          key="panel"
+          className="tr-toolspanel"
+          role="dialog"
+          aria-label={`All ${theme.name}`}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 8 }}
+          transition={{ duration: 0.2, ease: EASE.snap }}
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
+          style={{ background: COLORS.navBgSolid, backdropFilter: 'blur(18px) saturate(140%)', WebkitBackdropFilter: 'blur(18px) saturate(140%)', fontFamily: theme.fonts.body }}
+        >
+          <div className="tr-toolspanel-head">
+            <div className="tr-toolspanel-search">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={q ? theme.color : '#94A3B8'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+              <input ref={inputRef} value={q} onChange={e => setQ(e.target.value)} placeholder={`Search ${tools.length} ${theme.name.toLowerCase()}…`} aria-label="Search tools" />
+              {q && <button onClick={() => setQ('')} aria-label="Clear" style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: COLORS.muted, width: 24, height: 24, borderRadius: '50%', cursor: 'pointer' }}>×</button>}
+            </div>
+            <button className="tr-toolspanel-close" onClick={onClose} aria-label="Close">×</button>
+          </div>
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: -6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.16 }}
-            style={{
-              position: 'absolute', top: '100%', right: 0, marginTop: 8,
-              width: 'min(860px, 92vw)',
-              background: COLORS.surface,
-              border: `1px solid ${COLORS.border}`,
-              borderRadius: RADIUS.lg,
-              boxShadow: '0 24px 60px rgba(0,0,0,0.5)',
-              padding: 20, zIndex: 200,
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-              gap: '20px 24px',
-              maxHeight: '72vh', overflowY: 'auto',
-            }}
-          >
-            {groups.map(g => (
-              <div key={g.id || 'flat'}>
+          <div className="tr-toolspanel-body">
+            {groups.length === 0 && (
+              <div style={{ color: COLORS.muted, fontSize: 14, padding: '24px 4px' }}>No tools match “{q}”.</div>
+            )}
+            {groups.map((g, gi) => (
+              <motion.div
+                key={g.id || 'flat'}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: Math.min(gi * 0.04, 0.3), ease: EASE.snap }}
+              >
                 {g.name && (
                   <div style={{
                     fontSize: 11, fontWeight: 700, letterSpacing: '0.1em',
-                    textTransform: 'uppercase', color: COLORS.faint,
-                    fontFamily: theme.fonts.body, marginBottom: 8,
+                    textTransform: 'uppercase', color: theme.color,
+                    marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8,
                   }}>
                     {g.name}
+                    <span style={{ color: COLORS.faint, fontWeight: 600, letterSpacing: 0 }}>{g.tools.length}</span>
                   </div>
                 )}
                 {g.tools.map(t => (
@@ -102,41 +130,55 @@ function ToolsMegaMenu({ theme, tools, subcats }) {
                     href={toolHref(theme, t.id)}
                     onClick={e => go(e, t.id)}
                     style={{
-                      display: 'flex', alignItems: 'center', gap: 8,
-                      padding: '6px 8px', borderRadius: RADIUS.sm,
-                      textDecoration: 'none', color: COLORS.muted,
-                      fontSize: 13, fontFamily: theme.fonts.body,
+                      display: 'flex', alignItems: 'center', gap: 10,
+                      padding: '9px 10px', borderRadius: RADIUS.sm, minHeight: 42,
+                      textDecoration: 'none', color: COLORS.text,
+                      fontSize: 14, fontFamily: theme.fonts.body,
                       transition: 'background .12s, color .12s',
                     }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.background = theme.tint12;
-                      e.currentTarget.style.color = COLORS.textBright;
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.background = 'transparent';
-                      e.currentTarget.style.color = COLORS.muted;
-                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = theme.tint12; e.currentTarget.style.color = COLORS.textBright; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = COLORS.text; }}
                   >
-                    <span aria-hidden style={{ fontSize: 13, width: 18, textAlign: 'center', flexShrink: 0 }}>
+                    <span aria-hidden style={{ fontSize: 14, width: 26, height: 26, borderRadius: 7, background: theme.tint12, display: 'grid', placeItems: 'center', flexShrink: 0 }}>
                       {resolveIcon(t, theme)}
                     </span>
                     <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.name}</span>
                   </a>
                 ))}
-              </div>
+              </motion.div>
             ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <style>{`@media ${MQ.lg}{.tr-megamenu{display:block!important}}`}</style>
-    </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
-// ── Sticky top nav (single line, no decorative animations) ──────────────────
+// ── Scroll progress — hairline under the header that fills as you read ──────
+function ScrollProgress({ color }) {
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 140, damping: 26, mass: 0.4 });
+  return (
+    <motion.div
+      aria-hidden
+      style={{
+        position: 'absolute', left: 0, right: 0, bottom: -1, height: 2,
+        transformOrigin: '0 50%', scaleX,
+        background: `linear-gradient(90deg, ${color}, ${color}66)`,
+        boxShadow: `0 0 12px ${color}88`,
+        pointerEvents: 'none',
+      }}
+    />
+  );
+}
+
+// ── Sticky top nav ──────────────────────────────────────────────────────────
 function CategoryHeader({ theme, tools, subcats }) {
   const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
+  const closeTimer = useRef(null);
+  const hoverOpenedAt = useRef(0);
+  const wrapRef = useRef(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -144,10 +186,38 @@ function CategoryHeader({ theme, tools, subcats }) {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // Click outside closes the desktop dropdown.
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e) => { if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('pointerdown', onDown);
+    return () => document.removeEventListener('pointerdown', onDown);
+  }, [open]);
+
+  const hoverOpen  = () => {
+    if (typeof window !== 'undefined' && !window.matchMedia(MQ.hover).matches) return; // touch: tap only
+    clearTimeout(closeTimer.current); hoverOpenedAt.current = Date.now(); setOpen(true);
+  };
+  const hoverClose = () => {
+    if (typeof window !== 'undefined' && !window.matchMedia(MQ.lg).matches) return;   // phone sheet: explicit close only
+    closeTimer.current = setTimeout(() => setOpen(false), 140);
+  };
+  const toggle = () => {
+    if (Date.now() - hoverOpenedAt.current < 350) return; // the hover just opened it; don't bounce shut
+    clearTimeout(closeTimer.current);
+    setOpen(o => !o);
+  };
+  const close = useCallback(() => setOpen(false), []);
+
+  const hasTools = !!tools?.length;
+
+  // The panel lives OUTSIDE <header>: its backdrop-filter would otherwise make
+  // the 60px header the containing block of the phone sheet's position:fixed.
   return (
+    <div ref={wrapRef} style={{ position: 'sticky', top: 0, zIndex: 100 }}>
     <header
       style={{
-        position: 'sticky', top: 0, zIndex: 100,
+        position: 'relative',
         height: 60,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '0 clamp(16px, 4vw, 28px)',
@@ -159,11 +229,12 @@ function CategoryHeader({ theme, tools, subcats }) {
         fontFamily: theme.fonts.body,
       }}
     >
+      <style>{PANEL_CSS}</style>
+      <style>{`@media ${MQ.sm}{.tr-hide-on-mobile{display:inline!important}}`}</style>
+
       {theme.isSiteRoot ? (
-        // Standalone network site: its own logo IS the brand — no "ToolsRift / Category" split.
-        <a href="/" aria-label={SITE.siteName} style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-          <img src={SITE.logo} alt={SITE.siteName} style={{ height: 30, display: 'block' }} />
-        </a>
+        // Standalone network site: the ToolsRift badge in the site's colour + "ToolsRift <Category>".
+        <BrandLogo size={32} />
       ) : (
         <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
           <img src="/logo.svg" alt="ToolsRift" style={{ height: 28, display: 'block' }} />
@@ -179,8 +250,26 @@ function CategoryHeader({ theme, tools, subcats }) {
         </a>
       )}
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
-        <ToolsMegaMenu theme={theme} tools={tools} subcats={subcats} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: 18 }} onMouseLeave={hoverClose}>
+        {hasTools && (
+          <button
+            className="tr-megatrigger"
+            onMouseEnter={hoverOpen}
+            onClick={toggle}
+            aria-expanded={open}
+            aria-haspopup="dialog"
+            style={{
+              alignItems: 'center', gap: 6,
+              background: 'none', border: 'none', cursor: 'pointer',
+              fontSize: 13, fontWeight: 600, fontFamily: theme.fonts.body,
+              color: open ? theme.color : COLORS.muted,
+              padding: '8px 0', minHeight: 40, transition: 'color .15s',
+            }}
+          >
+            All {theme.name}
+            <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.18 }} style={{ fontSize: 9 }}>▼</motion.span>
+          </button>
+        )}
         <a
           href={theme.isSiteRoot ? `${HUB_BASE}/` : '/'}
           className="tr-hide-on-mobile"
@@ -192,20 +281,41 @@ function CategoryHeader({ theme, tools, subcats }) {
         >
           {theme.isSiteRoot ? 'ToolsRift network' : 'All categories'}
         </a>
-        <span style={{
-          fontSize: 12, fontWeight: 700,
-          padding: '5px 10px',
-          borderRadius: 999,
-          background: `${theme.color}15`,
-          color: theme.color,
-          letterSpacing: '0.04em',
-          fontFamily: theme.fonts.body,
-        }}>
+        <motion.button
+          onClick={hasTools ? toggle : undefined}
+          aria-expanded={hasTools ? open : undefined}
+          aria-haspopup={hasTools ? 'dialog' : undefined}
+          aria-label={`Browse all ${theme.toolCount} ${theme.name.toLowerCase()}`}
+          whileTap={{ scale: 0.94 }}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            fontSize: 12, fontWeight: 700,
+            padding: '7px 12px', minHeight: 34,
+            borderRadius: 999,
+            background: open ? theme.color : `${theme.color}15`,
+            color: open ? (theme.textOnColor || '#fff') : theme.color,
+            border: `1px solid ${open ? theme.color : `${theme.color}33`}`,
+            letterSpacing: '0.04em',
+            fontFamily: theme.fonts.body,
+            cursor: hasTools ? 'pointer' : 'default',
+            transition: 'background .2s, color .2s, border-color .2s',
+            '--tr-chip-glow': `${theme.color}55`,
+            animation: hasTools && !open ? 'tr-chipPulse 2.4s ease-out 1.2s 2' : 'none',
+          }}
+        >
           {theme.toolCount} tools
-        </span>
-        <style>{`@media ${MQ.sm}{.tr-hide-on-mobile{display:inline!important}}`}</style>
+          {hasTools && (
+            <motion.svg animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.18 }} width="10" height="10" viewBox="0 0 10 10" aria-hidden><path d="M1.5 3.5 5 7l3.5-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></motion.svg>
+          )}
+        </motion.button>
       </div>
+
+      <ScrollProgress color={theme.color} />
     </header>
+    {hasTools && (
+      <ToolsPanel theme={theme} tools={tools} subcats={subcats} open={open} onClose={close} onMouseEnter={() => clearTimeout(closeTimer.current)} onMouseLeave={hoverClose} />
+    )}
+    </div>
   );
 }
 
@@ -224,18 +334,15 @@ function CategoryHeader({ theme, tools, subcats }) {
 // the shared, theme-driven default for the other 23.
 const BANNER_CSS = `
 .trb-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center}
-.trb-fig{position:relative;height:300px}
-.trb-card{animation:trbFloat 6s ease-in-out infinite}
-@keyframes trbFloat{0%,100%{transform:rotate(-4deg) translateY(0)}50%{transform:rotate(-4deg) translateY(-10px)}}
+.trb-fig{position:relative;display:flex;align-items:center;justify-content:center}
 .trb-proof{display:grid;grid-template-columns:1fr 1fr}
 .trb-stats{display:flex;flex-wrap:wrap;gap:clamp(18px,4vw,36px);margin-top:28px}
 @media (max-width:820px){
   .trb-grid{grid-template-columns:1fr}
-  .trb-fig{height:260px;margin-top:8px}
+  .trb-fig{max-width:400px;margin:12px auto 0}
   .trb-proof{grid-template-columns:1fr}
   .trb-devtools{border-left:none!important;border-top:1px solid rgba(255,255,255,0.08)}
 }
-@media (prefers-reduced-motion:reduce){.trb-card{animation:none}}
 `;
 
 function CategoryBanner({ theme }) {
@@ -298,18 +405,17 @@ function CategoryBanner({ theme }) {
               </motion.div>
             </BlurUp>
 
-            <FadeUp delay={0.1}>
-              {/* h2, not h1 — CategoryContent renders the page's one canonical SEO <h1> further down */}
-              <h2
-                style={{
-                  fontFamily: theme.fonts.head, fontWeight: 800,
-                  fontSize: 'clamp(28px, 4vw, 42px)', lineHeight: 1.12, letterSpacing: '-0.02em',
-                  color: COLORS.textBright, margin: '0 0 16px',
-                }}
-              >
-                {headline}
-              </h2>
-            </FadeUp>
+            {/* h2, not h1 — CategoryContent renders the page's one canonical SEO <h1> further down */}
+            <WordReveal
+              as="h2"
+              text={headline}
+              delay={0.1}
+              style={{
+                fontFamily: theme.fonts.head, fontWeight: 800,
+                fontSize: 'clamp(28px, 4vw, 42px)', lineHeight: 1.12, letterSpacing: '-0.02em',
+                color: COLORS.textBright, margin: '0 0 16px',
+              }}
+            />
 
             <FadeUp delay={0.2}>
               <p
@@ -367,34 +473,9 @@ function CategoryBanner({ theme }) {
             </Stagger>
           </div>
 
-          {/* Privacy figure — generic device + cloud + severed-network visual, theme-tinted */}
+          {/* Privacy figure — device + cloud + severed upload line, theme-tinted, scales to any width */}
           <FadeUp delay={0.25} className="trb-fig" aria-hidden="true">
-            <div style={{ position: 'absolute', right: 6, top: 0, width: 110, textAlign: 'center', opacity: 0.5 }}>
-              <svg viewBox="0 0 120 70" style={{ width: 110 }}><path d="M30 50h60a18 18 0 0 0 2-36 24 24 0 0 0-46-4 16 16 0 0 0-16 40z" fill="none" stroke={accent} strokeWidth="2" strokeDasharray="5 5" /></svg>
-              <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 10.5, color: accent, marginTop: 2, fontWeight: 600 }}>server · unreached</div>
-            </div>
-            <div style={{ position: 'absolute', right: 80, top: 96, width: 140, height: 2, background: `repeating-linear-gradient(90deg,${theme.color} 0 8px,transparent 8px 16px)`, opacity: 0.7 }}>
-              <span style={{ position: 'absolute', left: '50%', top: -14, transform: 'translateX(-50%)', width: 30, height: 30, borderRadius: '50%', background: COLORS.bg, border: `2px solid ${theme.color}`, display: 'grid', placeItems: 'center', color: accent, fontSize: 14, fontWeight: 700 }}>✕</span>
-            </div>
-            <div style={{ position: 'absolute', left: 0, bottom: 0, width: 220, height: 230, borderRadius: 20, background: 'linear-gradient(180deg,#0F1626,#0A0F1A)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 40px 80px -30px rgba(0,0,0,.8)' }}>
-              <div style={{ height: 32, borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: 6, padding: '0 12px' }}>
-                {[0, 1, 2].map(i => <span key={i} style={{ width: 8, height: 8, borderRadius: '50%', background: '#2a3550' }} />)}
-              </div>
-            </div>
-            <div
-              className="trb-card"
-              style={{
-                position: 'absolute', left: 28, top: 56, width: 130, height: 150, borderRadius: 12,
-                background: theme.gradient || `linear-gradient(135deg, ${theme.color}, ${theme.colorDark || theme.color})`,
-                boxShadow: '0 20px 40px -14px rgba(0,0,0,.6)',
-                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8,
-              }}
-            >
-              <span style={{ fontSize: 44 }}>{theme.icon}</span>
-              <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 9, color: 'rgba(255,255,255,0.85)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                {theme.name}
-              </span>
-            </div>
+            <PrivacyFigure color={theme.color} accent={accent} bg={COLORS.bg} icon={theme.icon} label={theme.name} />
           </FadeUp>
         </div>
 
@@ -423,12 +504,68 @@ function CategoryBanner({ theme }) {
                 <span style={{ fontSize: 34, color: '#34D399', fontFamily: theme.fonts.head, fontWeight: 800, display: 'block', marginBottom: 6 }}>0</span>
                 bytes of your data uploaded while using {theme.name}
               </div>
-              <div style={{ padding: '10px 16px', borderTop: `1px solid ${COLORS.borderLight}`, color: '#34D399' }}>&#9679; Your data never leaves the device &mdash; nothing you enter is ever uploaded</div>
+              <div style={{ padding: '10px 16px', borderTop: `1px solid ${COLORS.borderLight}`, color: '#34D399', display: 'flex', alignItems: 'center', gap: 10 }}><span aria-hidden style={{ width: 8, height: 8, borderRadius: '50%', background: '#34D399', animation: 'tr-dotPulse 2s ease-out infinite', flexShrink: 0 }} />Your data never leaves the device &mdash; nothing you enter is ever uploaded</div>
             </div>
           </div>
         </FadeUp>
       </div>
     </section>
+  );
+}
+
+// ── Tool ticker — every tool in the category glides past under the hero ─────
+// Pauses on hover; each chip is a real link. The list is split in two rows
+// running opposite ways so it reads as motion, not a marquee ad.
+const TICKER_CSS = `
+.tr-ticker{overflow:hidden;width:100%;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.tr-ticker-row{display:flex;gap:10px;width:max-content;padding:5px 0}
+.tr-ticker-row.a{animation:tr-marquee var(--tr-ticker-dur,60s) linear infinite}
+.tr-ticker-row.b{animation:tr-marqueeRev var(--tr-ticker-dur,60s) linear infinite}
+.tr-ticker:hover .tr-ticker-row,.tr-ticker:focus-within .tr-ticker-row{animation-play-state:paused}
+.tr-ticker-chip{display:inline-flex;align-items:center;gap:8px;padding:8px 14px 8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);color:#CBD5E1;font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap;transition:background .15s,border-color .15s,color .15s,transform .15s}
+.tr-ticker-chip:hover{color:#F8FAFC;transform:translateY(-2px)}
+@media (prefers-reduced-motion:reduce){.tr-ticker-row{animation:none!important;flex-wrap:wrap;width:auto}}
+`;
+
+function ToolTicker({ theme, tools }) {
+  if (!tools || tools.length < 6) return null;
+  const half = Math.ceil(tools.length / 2);
+  const rows = [tools.slice(0, half), tools.slice(half)];
+  const go = (e, id) => {
+    if (typeof window === 'undefined' || window.location.pathname !== theme.pageRoute) return;
+    e.preventDefault();
+    window.scrollTo(0, 0);
+    window.location.hash = `#/tool/${id}`;
+    window.dispatchEvent(new Event('hashchange'));
+  };
+  const chip = (t, k, dup = false) => (
+    <a
+      key={k}
+      aria-hidden={dup || undefined}
+      tabIndex={dup ? -1 : undefined}
+      href={toolHref(theme, t.id)}
+      onClick={e => go(e, t.id)}
+      className="tr-ticker-chip"
+      style={{ fontFamily: theme.fonts.body }}
+      onMouseEnter={e => { e.currentTarget.style.background = theme.tint12; e.currentTarget.style.borderColor = theme.color; }}
+      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; }}
+    >
+      <span aria-hidden style={{ width: 24, height: 24, borderRadius: 7, background: theme.tint12, display: 'grid', placeItems: 'center', fontSize: 12 }}>{resolveIcon(t, theme)}</span>
+      {t.name}
+    </a>
+  );
+  return (
+    <div aria-label={`All ${theme.name}`} style={{ position: 'relative', zIndex: 1, padding: '14px 0 4px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+      <style>{TICKER_CSS}</style>
+      <div className="tr-ticker" style={{ '--tr-ticker-dur': `${Math.max(40, half * 4.5)}s` }}>
+        {rows.map((row, r) => (
+          <div key={r} className={`tr-ticker-row ${r === 0 ? 'a' : 'b'}`}>
+            {row.map((t, i) => chip(t, `${t.id}-${i}`))}
+            {row.map((t, i) => chip(t, `${t.id}-dup-${i}`, true))}
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -446,6 +583,7 @@ export default function CategoryLayout({ theme, currentTool, tools, subcats, chi
           place of the default compact banner. Omit the prop and every other
           category keeps the standard CategoryBanner — unaffected. */}
       {!currentTool && (banner || <CategoryBanner theme={theme} />)}
+      {!currentTool && <ToolTicker theme={theme} tools={tools} />}
 
       <main
         style={{
@@ -459,7 +597,15 @@ export default function CategoryLayout({ theme, currentTool, tools, subcats, chi
           zIndex: 1,
         }}
       >
-        {children}
+        {/* Soft enter whenever the view switches (dashboard ↔ tool). */}
+        <motion.div
+          key={currentTool || '__dashboard'}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.38, ease: EASE.snap }}
+        >
+          {children}
+        </motion.div>
       </main>
 
       {/* Footer renders here ONLY on tool detail pages reached by in-app hash
