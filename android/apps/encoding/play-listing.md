@@ -15,7 +15,7 @@
 
 ## Short description (≤80 chars)
 
-Morse code, binary, NATO alphabet, Caesar & ROT13 translators. 28 free tools.
+Morse code, binary, NATO alphabet, Caesar & ROT13 translators. 28 tools.
 
 ## Full description (≤4000 chars)
 

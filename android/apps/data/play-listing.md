@@ -15,7 +15,7 @@
 
 ## Short description (≤80 chars)
 
-Chart maker, CSV cleaner, pivot table & statistics tools. 25 free tools.
+Chart maker, CSV cleaner, pivot table & statistics tools. 25 tools.
 
 ## Full description (≤4000 chars)
 

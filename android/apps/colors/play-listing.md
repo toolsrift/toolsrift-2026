@@ -15,7 +15,7 @@
 
 ## Short description (≤80 chars)
 
-Color picker, palette generator, HEX/RGB/HSL converter & contrast checker. Free.
+Color picker, palette generator, HEX/RGB/HSL converter & contrast checker.
 
 ## Full description (≤4000 chars)
 

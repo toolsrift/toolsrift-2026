@@ -15,7 +15,7 @@
 
 ## Short description (≤80 chars)
 
-Trim, compress, convert video & make GIFs on-device. 25 free tools, no uploads.
+Trim, compress, convert video & make GIFs on-device. 25 tools, no uploads.
 
 ## Full description (≤4000 chars)
 

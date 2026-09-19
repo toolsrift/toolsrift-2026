@@ -15,13 +15,13 @@
 
 ## Short description (≤80 chars)
 
-EMI, SIP, loan, tax, BMI, TDEE & calorie calculators. 64 free tools, offline.
+EMI, SIP, loan, tax, BMI, TDEE & calorie calculators. 64 tools, offline.
 
 ## Full description (≤4000 chars)
 
 ToolsRift Finance & Health puts 64 free finance & health calculators in your pocket — numbers that matter.
 
-EMI, SIP, loan, tax, retirement, BMI, TDEE and calorie calculators — private, precise and free.
+EMI, SIP, loan, tax, retirement, BMI, TDEE and calorie calculators — private and precise.
 
 EVERYTHING RUNS ON YOUR DEVICE
 No uploads, no accounts, no limits. Your files and text are processed locally, so nothing you work on ever leaves your phone. Most tools work fully offline once loaded.

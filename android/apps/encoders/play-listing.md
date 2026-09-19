@@ -15,7 +15,7 @@
 
 ## Short description (≤80 chars)
 
-Base64, URL, HTML, JWT & hex encoders and decoders. 40+ free tools, offline.
+Base64, URL, HTML, JWT & hex encoders and decoders. 40+ tools, offline.
 
 ## Full description (≤4000 chars)
 

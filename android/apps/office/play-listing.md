@@ -15,7 +15,7 @@
 
 ## Short description (≤80 chars)
 
-vCard, calendar invite, QR, notes, labels & signature tools. 25 free tools.
+vCard, calendar invite, QR, notes, labels & signature tools. 25 tools.
 
 ## Full description (≤4000 chars)
 

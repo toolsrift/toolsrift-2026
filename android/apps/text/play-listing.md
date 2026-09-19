@@ -15,7 +15,7 @@
 
 ## Short description (≤80 chars)
 
-Word counter, case converter, lorem ipsum & 60+ free text tools. Private.
+Word counter, case converter, lorem ipsum & 60+ text tools. Private.
 
 ## Full description (≤4000 chars)
 

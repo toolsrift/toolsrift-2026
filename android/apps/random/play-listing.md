@@ -15,7 +15,7 @@
 
 ## Short description (≤80 chars)
 
-Spinner wheel, dice, coin flip, name picker & party games. 40 free randomizers.
+Spinner wheel, dice, coin flip, name picker & party games. 40 randomizers.
 
 ## Full description (≤4000 chars)
 

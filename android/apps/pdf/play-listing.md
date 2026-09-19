@@ -15,7 +15,7 @@
 
 ## Short description (≤80 chars)
 
-Merge, split, compress, sign & convert PDFs offline. 40 free tools, no uploads.
+Merge, split, compress, sign & convert PDFs offline. 40 tools, no uploads.
 
 ## Full description (≤4000 chars)
 

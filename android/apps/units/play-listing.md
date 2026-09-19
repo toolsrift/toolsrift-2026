@@ -15,7 +15,7 @@
 
 ## Short description (≤80 chars)
 
-Length, weight, temperature, speed, area & volume converter. 37 free tools.
+Length, weight, temperature, speed, area & volume converter. 37 tools.
 
 ## Full description (≤4000 chars)
 

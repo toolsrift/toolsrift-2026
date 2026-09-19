@@ -15,7 +15,7 @@
 
 ## Short description (≤80 chars)
 
-Privacy policy, terms, SVG art, ad copy & bio generators. 48 free content tools.
+Privacy policy, terms, SVG art, ad copy & bio generators. 48 content tools.
 
 ## Full description (≤4000 chars)
 

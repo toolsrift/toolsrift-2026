@@ -33,12 +33,14 @@ const dataUri = (file) => `data:image/png;base64,${fs.readFileSync(file).toStrin
 const clip = (s, n) => (s.length > n ? s.slice(0, n - 1).replace(/\s+\S*$/, '') + '…' : s);
 
 // Copy for each frame: the home frame sells the site, tool frames sell a tool.
+// No "free" / "best" / "#1": Play excludes listings with promotional words in
+// graphics or short descriptions from featuring and recommendations.
 function copyFor(b, page, tools, index) {
   if (page === 'home') {
-    return { kicker: `${tools.length} FREE TOOLS · NO SIGN-UP · OFFLINE`, headline: b.concept.headline, sub: clip(b.concept.sub, 110) };
+    return { kicker: `${tools.length} TOOLS · NO SIGN-UP · OFFLINE`, headline: b.concept.headline, sub: clip(b.concept.sub, 110) };
   }
   const t = tools.find(x => x.id === page);
-  const kickers = ['INSTANT · PRIVATE', 'RUNS ON YOUR DEVICE', 'NO UPLOADS, EVER', 'FREE FOREVER'];
+  const kickers = ['INSTANT · PRIVATE', 'RUNS ON YOUR DEVICE', 'NO UPLOADS, EVER', 'WORKS OFFLINE'];
   return {
     kicker: kickers[index % kickers.length],
     headline: t ? t.name : page.replace(/-/g, ' '),
@@ -99,8 +101,8 @@ function featureHtml(b, capture, toolCount) {
   .bar{position:absolute;left:0;right:0;bottom:0;height:8px;background:${primary}}
   </style></head><body><div class="bg"></div><div class="grid"></div>
   <div class="txt"><div class="brand"><img src="${dataUri(path.join(ROOT, 'public', 'brands', b.id, 'icon-192.png'))}"><span>${esc(b.wordmark[0])} <b>${esc(b.wordmark[1])}</b></span></div>
-  <h1>${esc(b.concept.headline)}</h1><p>${esc(`${toolCount} free ${b.wordmark[1].toLowerCase()} tools · 100% on your device · no sign-up`)}</p>
-  <div class="chips"><span>FREE FOREVER</span><span>NO UPLOADS</span><span>WORKS OFFLINE</span></div></div>
+  <h1>${esc(b.concept.headline)}</h1><p>${esc(`${toolCount} ${b.wordmark[1].toLowerCase()} tools · 100% on your device · no sign-up`)}</p>
+  <div class="chips"><span>NO SIGN-UP</span><span>NO UPLOADS</span><span>WORKS OFFLINE</span></div></div>
   <div class="phone"><div class="screen"><img src="${dataUri(capture)}"></div></div><div class="bar"></div></body></html>`;
 }
 

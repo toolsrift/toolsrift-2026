@@ -15,7 +15,7 @@
 
 ## Short description (≤80 chars)
 
-.gitignore, Dockerfile, nginx, package.json & .env generators. 43 free tools.
+.gitignore, Dockerfile, nginx, package.json & .env generators. 43 tools.
 
 ## Full description (≤4000 chars)
 

@@ -15,7 +15,7 @@
 
 ## Short description (≤80 chars)
 
-Password, UUID, QR code, barcode & fake data generators. 43 free tools, offline.
+Password, UUID, QR code, barcode & fake data generators. 43 tools, offline.
 
 ## Full description (≤4000 chars)
 

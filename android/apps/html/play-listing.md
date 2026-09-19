@@ -15,7 +15,7 @@
 
 ## Short description (≤80 chars)
 
-HTML formatter, minifier, validator, encoder & generators. 43 free tools.
+HTML formatter, minifier, validator, encoder & generators. 43 tools.
 
 ## Full description (≤4000 chars)
 

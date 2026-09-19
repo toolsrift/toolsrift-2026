@@ -15,7 +15,7 @@
 
 ## Short description (≤80 chars)
 
-Geometry, algebra, trig, matrix & statistics calculators. 56 free solvers.
+Geometry, algebra, trig, matrix & statistics calculators. 56 solvers.
 
 ## Full description (≤4000 chars)
 
