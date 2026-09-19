@@ -226,15 +226,25 @@ async function publishApp(b, report, { draft = false } = {}) {
     notes.push(`bundle ${versionCode} → ${OPTS.tracks.join(', ')}${draft ? ' (draft — roll out in the Console)' : ''}`);
   }
 
-  try { await api('POST', `${E}:commit?changesNotSentForReview=true`); }
+  // Commit without sending for review; Play refuses that flag in some states,
+  // so fall back to a plain commit (still nothing is submitted for review on
+  // an unpublished app — that needs the Console's "Send changes for review").
+  const commit = async () => {
+    try { await api('POST', `${E}:commit?changesNotSentForReview=true`); }
+    catch (e) {
+      if (e.status !== 400) throw e;
+      log(`commit (not sent for review) refused: ${errText(e)} — retrying plain commit`);
+      await api('POST', `${E}:commit`);
+    }
+  };
+  try { await commit(); }
   catch (e) {
-    if (e.status === 400 && /changesNotSentForReview|not sent for review/i.test(errText(e))) await api('POST', `${E}:commit`);
-    else if (!draft && /draft app/i.test(errText(e))) {
+    if (!draft && /draft app|status draft/i.test(errText(e))) {
       // Nothing from this edit was kept (edits are atomic) — redo it with draft releases.
       log('app has never been published — redoing with draft releases');
       return publishApp(b, report, { draft: true });
     }
-    else throw e;
+    throw e;
   }
   log('✓ committed (not sent for review — click "Send changes for review" in the Console)');
   if (noBundle) notes.push('⚠ no .aab in artifact — no release created');
