@@ -20,8 +20,17 @@ import { SITE } from '../../lib/sites';
 // ── Themed tool tile (style varies per anim feel) ───────────────────────────
 function ThemedToolTile({ theme, tool, onClick, index = 0 }) {
   const [hov, setHov] = useState(false);
+  const ref = useRef(null);
   const feel = theme.animStyleId;
   const isMono = feel === 'glitch' || feel === 'precise';
+
+  // Cursor spotlight: a soft radial glow follows the pointer across the tile.
+  const onMove = (e) => {
+    const el = ref.current; if (!el) return;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty('--tr-mx', `${e.clientX - r.left}px`);
+    el.style.setProperty('--tr-my', `${e.clientY - r.top}px`);
+  };
 
   const tileTransform = hov
     ? feel === 'bouncy'    ? 'translateY(-6px) rotate(-1.5deg)'
@@ -36,8 +45,10 @@ function ThemedToolTile({ theme, tool, onClick, index = 0 }) {
       // The onClick below still gives an instant in-app switch for plain clicks.
       href={toolHref(theme, tool.id)}
       onClick={(e) => { if (shouldInterceptClick(e, theme.pageRoute)) { e.preventDefault(); onClick?.(); } }}
+      ref={ref}
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
+      onMouseMove={onMove}
       whileTap={{ scale: 0.97 }}
       transition={SPRING.smooth}
       style={{
@@ -58,6 +69,13 @@ function ThemedToolTile({ theme, tool, onClick, index = 0 }) {
         height: '100%',
       }}
     >
+      {/* Cursor spotlight */}
+      <div aria-hidden style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none', borderRadius: 'inherit',
+        opacity: hov ? 1 : 0, transition: 'opacity .25s',
+        background: `radial-gradient(180px circle at var(--tr-mx, 50%) var(--tr-my, 50%), ${theme.tint25}, transparent 70%)`,
+      }} />
+
       {/* Glitch scanline accent on hover */}
       {feel === 'glitch' && hov && <ScanlineOverlay color={`${theme.color}44`} />}
 

@@ -28,6 +28,7 @@ const os = require('os');
 const { execFileSync } = require('child_process');
 const { BRANDS } = require('../lib/sites/brands');
 const GLYPHS = require('./brand-glyphs');
+const { networkLogoSvg } = require('../lib/sites/logo');
 
 const ROOT = path.join(__dirname, '..');
 const OUT_ROOT = path.join(ROOT, 'public', 'brands');
@@ -130,23 +131,10 @@ function maskableSvg(b, size = 512) {
 }
 
 function logoSvg(b) {
-  // 72px mark + wordmark. Width grows with the second word.
-  const [w1, w2] = b.wordmark;
-  const fontHead = "Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif";
-  // Bold sans averages ~0.66em per glyph; over-estimate slightly so nothing
-  // is ever clipped in browsers whose fallback font is wider.
-  const approx = (t, fs) => t.length * fs * 0.7;
-  const fs = 30;
-  const x1 = 88;
-  const x2 = x1 + approx(w1, fs) + 8;
-  const width = Math.ceil(x2 + approx(w2, fs) + 14);
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} 72" width="${width}" height="72" role="img" aria-label="${esc(b.siteName)}">
-  <title>${esc(b.siteName)}</title>
-  <g>${markSvg(b, 72, { id: 'l' })}</g>
-  <text x="${x1}" y="46" font-family="${fontHead}" font-weight="800" font-size="${fs}" letter-spacing="-0.6" fill="#F8FAFC">${esc(w1)}</text>
-  <text x="${x2}" y="46" font-family="${fontHead}" font-weight="800" font-size="${fs}" letter-spacing="-0.6" fill="${b.palette.primary}">${esc(w2)}</text>
-</svg>
-`;
+  // Network lockup: the main ToolsRift badge recoloured for the brand, with the
+  // category glyph in a corner chip — see lib/sites/logo.js (shared with the
+  // inline header logo, components/site/BrandLogo.jsx).
+  return networkLogoSvg(b);
 }
 
 function ogSvg(b, toolCount) {
@@ -266,15 +254,19 @@ function main() {
     fs.mkdirSync(dir, { recursive: true });
     const count = toolCountFor(b.slug);
 
-    const files = {
-      'logo.svg': logoSvg(b),
-      'icon.svg': iconSvg(b, 512),
-      'icon-maskable.svg': maskableSvg(b, 512),
-      'og.svg': ogSvg(b, count),
-    };
+    // LOGO_ONLY=1 rewrites just the header/footer lockup (public/brands/<id>/logo.svg)
+    // and leaves the icons / OG / feature graphics — the Play Store assets — untouched.
+    const files = process.env.LOGO_ONLY
+      ? { 'logo.svg': logoSvg(b) }
+      : {
+          'logo.svg': logoSvg(b),
+          'icon.svg': iconSvg(b, 512),
+          'icon-maskable.svg': maskableSvg(b, 512),
+          'og.svg': ogSvg(b, count),
+        };
     for (const [name, content] of Object.entries(files)) fs.writeFileSync(path.join(dir, name), content);
 
-    if (chrome) {
+    if (chrome && !process.env.LOGO_ONLY) {
       rasterise(chrome, path.join(dir, 'icon.svg'), path.join(dir, 'icon-192.png'), 192, 192);
       rasterise(chrome, path.join(dir, 'icon.svg'), path.join(dir, 'icon-512.png'), 512, 512);
       rasterise(chrome, path.join(dir, 'icon-maskable.svg'), path.join(dir, 'icon-maskable-512.png'), 512, 512);

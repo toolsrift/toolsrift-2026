@@ -887,6 +887,15 @@ apps: `android/README.md`.
 - `lib/sites/brands.js` — the 29 brands (domain, palette, fonts, shape, pattern,
   concept copy, logo spec, Android package id + Play listing). `lib/sites/index.js`
   resolves the active `SITE`; `categoryHome()` / `toolPath()` give network-aware URLs.
+- **Logo lockup** (`lib/sites/logo.js`): the main ToolsRift badge recoloured in the
+  brand's palette + the category glyph in a corner chip + "ToolsRift <Category>".
+  Rendered inline in the header by `components/site/BrandLogo.jsx` and written to
+  `public/brands/<id>/logo.svg` by the asset script. App icons / OG images keep the
+  gradient tile mark (they are already published on Google Play).
+- **Motion** lives in `components/shared/motion.jsx` (framer-motion primitives:
+  FadeUp, WordReveal, Stagger, CountUp, …) and `styles/globals.css` keyframes; every
+  animation honours `prefers-reduced-motion`. The category header's "N tools" chip
+  opens the all-tools panel (phone sheet / desktop dropdown) — `CategoryLayout.jsx`.
 - Shared layouts are site-aware through `COLORS`/`RADIUS` (`lib/designTokens.js`),
   `theme.isSiteRoot` / `theme.brand` (`lib/categoryThemes.js`), `<BrandBackdrop />`,
   `SiteFooter`, `_document.js`. Category components are untouched.
@@ -902,7 +911,8 @@ apps: `android/README.md`.
   the hub (non-core → `noindex`, out of the sitemap).
 - Commands: `npm run sites:list`, `npm run sites:check`, `npm run dev:site -- pdf`,
   `npm run build:site -- pdf`, `npm run brands:assets` (regenerates
-  `public/brands/<id>/` logos/icons/OG via headless Chromium), `npm run android:generate`
+  `public/brands/<id>/` logos/icons/OG via headless Chromium; `LOGO_ONLY=1` rewrites
+  just the header/footer lockup and leaves the Play Store icons alone), `npm run android:generate`
   (regenerates `android/apps/<id>/`), `npm run vercel:bootstrap -- <id>|--all`.
 - **Android apps** are built in CI: the `android-build` workflow (Actions → Run
   workflow) runs Bubblewrap for all 29 (or given) sites, signs them with the

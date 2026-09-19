@@ -1,4 +1,5 @@
-import { FadeUp, BlurUp, Stagger, StaggerItem, CountUp, GradientBlob, ParticlesField, motion } from './shared/motion'
+import { FadeUp, BlurUp, Stagger, StaggerItem, CountUp, GradientBlob, ParticlesField, WordReveal, motion } from './shared/motion'
+import PrivacyFigure from './shared/PrivacyFigure'
 import { SITE } from '../lib/sites';
 import { SPRING } from '../lib/designTokens'
 import { SITE_FEATURES } from '../lib/siteFeatures'
@@ -25,19 +26,16 @@ const STATS = [
 
 // Static string — never changes, so injecting via <style> is hydration-safe.
 const CSS = `
-.pph-fig{position:relative;height:300px}
-.pph-doc{animation:pphFloat 6s ease-in-out infinite}
-@keyframes pphFloat{0%,100%{transform:rotate(-4deg) translateY(0)}50%{transform:rotate(-4deg) translateY(-10px)}}
+.pph-fig{position:relative;display:flex;align-items:center;justify-content:center}
 .pph-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center}
 .pph-proof{display:grid;grid-template-columns:1fr 1fr}
 .pph-stats{display:flex;flex-wrap:wrap;gap:clamp(18px,4vw,36px);margin-top:28px}
 @media (max-width:820px){
   .pph-grid{grid-template-columns:1fr}
-  .pph-fig{height:260px;margin-top:8px}
+  .pph-fig{max-width:400px;margin:12px auto 0}
   .pph-proof{grid-template-columns:1fr}
   .pph-devtools{border-left:none!important;border-top:1px solid rgba(255,255,255,0.08)}
 }
-@media (prefers-reduced-motion:reduce){.pph-doc{animation:none}}
 `
 
 /**
@@ -50,9 +48,6 @@ const CSS = `
  * (lib/categoryThemes.js) — the ambient blob + particle treatment homepage hero uses.
  */
 export default function PdfPrivacyHero() {
-  const ln = { height: 7, borderRadius: 3, background: '#E2E8F0', margin: '11px 16px' }
-  const redact = (w) => ({ background: '#111', height: 9, margin: '11px 16px', borderRadius: 2, width: w })
-
   return (
     <div style={{
       position: 'relative', overflow: 'hidden',
@@ -90,12 +85,8 @@ export default function PdfPrivacyHero() {
               </motion.div>
             </BlurUp>
 
-            <FadeUp delay={0.1}>
-              {/* h2, not h1 — CategoryContent renders the page's one canonical SEO <h1> further down */}
-              <h2 style={{ fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 'clamp(30px,4.5vw,44px)', lineHeight: 1.1, letterSpacing: '-0.02em', margin: '0 0 16px' }}>
-                Your PDF never leaves this tab.
-              </h2>
-            </FadeUp>
+            {/* h2, not h1 — CategoryContent renders the page's one canonical SEO <h1> further down */}
+            <WordReveal as="h2" text="Your PDF never leaves this tab." delay={0.1} style={{ fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 'clamp(30px,4.5vw,44px)', lineHeight: 1.1, letterSpacing: '-0.02em', margin: '0 0 16px' }} />
 
             <FadeUp delay={0.2}>
               <p style={{ fontSize: 15.5, color: C.muted, lineHeight: 1.75, maxWidth: '38ch', margin: 0 }}>
@@ -148,24 +139,7 @@ export default function PdfPrivacyHero() {
           </div>
 
           <FadeUp delay={0.25} className="pph-fig" aria-hidden="true">
-            <div style={{ position: 'absolute', right: 6, top: 6, width: 120, textAlign: 'center', opacity: 0.55 }}>
-              <svg viewBox="0 0 120 70" style={{ width: 120 }}><path d="M30 50h60a18 18 0 0 0 2-36 24 24 0 0 0-46-4 16 16 0 0 0-16 40z" fill="none" stroke={C.redLight} strokeWidth="2" strokeDasharray="5 5" /></svg>
-              <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 11, color: C.redLight, marginTop: 2, fontWeight: 600 }}>server · unreached</div>
-            </div>
-            <div style={{ position: 'absolute', right: 92, top: 108, width: 150, height: 2, background: `repeating-linear-gradient(90deg,${C.red} 0 8px,transparent 8px 16px)`, opacity: 0.7 }}>
-              <span style={{ position: 'absolute', left: '50%', top: -15, transform: 'translateX(-50%)', width: 34, height: 34, borderRadius: '50%', background: C.bg, border: `2px solid ${C.red}`, display: 'grid', placeItems: 'center', color: C.redLight, fontSize: 16, fontWeight: 700 }}>✕</span>
-            </div>
-            <div style={{ position: 'absolute', left: 0, bottom: 0, width: 250, height: 260, borderRadius: 20, background: 'linear-gradient(180deg,#0F1626,#0A0F1A)', border: `1px solid ${C.border}`, boxShadow: '0 40px 80px -30px rgba(0,0,0,.8)' }}>
-              <div style={{ height: 34, borderBottom: `1px solid ${C.borderLight}`, display: 'flex', alignItems: 'center', gap: 6, padding: '0 12px' }}>
-                {[0, 1, 2].map(i => <span key={i} style={{ width: 9, height: 9, borderRadius: '50%', background: '#2a3550' }} />)}
-              </div>
-            </div>
-            <div className="pph-doc" style={{ position: 'absolute', left: 34, top: 64, width: 150, height: 190, background: '#F8FAFC', borderRadius: 8, boxShadow: '0 20px 40px -14px rgba(0,0,0,.6)', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: 0, right: 0, borderWidth: '0 26px 26px 0', borderStyle: 'solid', borderColor: `transparent ${C.red} transparent transparent` }} />
-              <div style={{ ...ln, width: '52%' }} /><div style={ln} /><div style={ln} />
-              <div style={redact('60%')} /><div style={ln} /><div style={{ ...ln, width: '52%' }} /><div style={redact('40%')} />
-              <div style={{ position: 'absolute', bottom: 10, left: 16, fontFamily: "'JetBrains Mono',monospace", fontSize: 9, color: '#94A3B8', letterSpacing: '0.1em' }}>tax-return.pdf</div>
-            </div>
+            <PrivacyFigure color={C.red} accent={C.redLight} bg={C.bg} label="tax-return.pdf" />
           </FadeUp>
         </div>
       </div>
@@ -196,7 +170,7 @@ export default function PdfPrivacyHero() {
                 <span style={{ fontSize: 38, color: C.emerald, fontFamily: "'Sora',sans-serif", fontWeight: 800, display: 'block', marginBottom: 6 }}>0</span>
                 bytes of your PDF sent to any server while merging 40 pages
               </div>
-              <div style={{ padding: '11px 16px', borderTop: `1px solid ${C.borderLight}`, color: C.emerald }}>&#9679; Your file never leaves the device &mdash; no upload, no server round-trip</div>
+              <div style={{ padding: '11px 16px', borderTop: `1px solid ${C.borderLight}`, color: C.emerald, display: 'flex', alignItems: 'center', gap: 10 }}><span aria-hidden="true" style={{ width: 8, height: 8, borderRadius: '50%', background: C.emerald, animation: 'tr-dotPulse 2s ease-out infinite', flexShrink: 0 }} />Your file never leaves the device &mdash; no upload, no server round-trip</div>
             </div>
           </div>
         </div>
