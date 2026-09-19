@@ -6,8 +6,9 @@ import CATEGORY_THEMES from '../lib/categoryThemes';
 import { COLORS, RADIUS, FS, MQ, SPRING, EASE } from '../lib/designTokens';
 import {
   FadeUp, BlurUp, Stagger, StaggerItem, ScaleIn, MagneticBtn, HoverLift, Tilt3D,
-  GradientBlob, Marquee, Typewriter, CountUp, ParallaxY, ParticlesField,
+  GradientBlob, Marquee, Typewriter, CountUp, ParallaxY, ParticlesField, ScrollProgress,
 } from './shared/motion';
+import BrandLogo from './site/BrandLogo';
 import { ThemedButton, Pill, SectionHeading } from './shared/ui';
 // PHASE 2: import { trackUse, isLimitReached, isPro, getRemaining, DAILY_LIMIT } from '../lib/usage';
 // PHASE 2: import UpgradeModal from './UpgradeModal';
@@ -96,129 +97,216 @@ function LandingPage() {
   );
 }
 
-// ───── CATEGORIES DROPDOWN ────────────────────────────────────────────────
-function CategoriesDropdown() {
-  const [open, setOpen] = useState(false);
+// ───── CATEGORIES PANEL ────────────────────────────────────────────────────
+// Every category with its tool count, searchable. One panel, two triggers in
+// the nav: "Categories ▾" (desktop, opens on hover) and the "29 categories"
+// chip (every screen size, opens on tap). A full-height sheet on phones —
+// where it also carries the nav links — and a dropdown from the `md` breakpoint.
+const HUB_PANEL_CSS = `
+.tr-hubpanel{position:fixed;left:0;right:0;top:64px;bottom:0;z-index:200;display:flex;flex-direction:column;overflow:hidden;border-top:1px solid rgba(255,255,255,0.08);background:rgba(6,9,15,0.94);backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%)}
+.tr-hubpanel-head{display:flex;align-items:center;gap:10px;padding:12px 16px 10px}
+.tr-hubpanel-search{flex:1;display:flex;align-items:center;gap:10px;height:42px;padding:0 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04)}
+.tr-hubpanel-search input{flex:1;min-width:0;background:transparent;border:none;outline:none;color:#F8FAFC;font-size:15px;font-family:inherit}
+.tr-hubpanel-close{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:999px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:#F1F5F9;font-size:18px;cursor:pointer}
+.tr-hubpanel-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px 12px 32px;display:grid;grid-template-columns:1fr;gap:4px;align-content:start}
+.tr-hubpanel-links{display:flex;flex-wrap:wrap;gap:8px 18px;padding:12px 16px 4px;border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:6px}
+.tr-hubpanel-links a{color:#94A3B8;font-size:14px;font-weight:600;text-decoration:none;min-height:40px;display:inline-flex;align-items:center}
+.tr-nav-links{display:none}
+@media ${MQ.sm}{.tr-hubpanel-body{grid-template-columns:repeat(2,1fr)}}
+@media ${MQ.md}{
+  .tr-nav-links{display:flex!important}
+  .tr-hubpanel-links{display:none}
+  .tr-hubpanel-close{display:none}
+  .tr-hubpanel{position:absolute;top:100%;left:auto;right:clamp(16px,4vw,32px);bottom:auto;margin-top:8px;width:min(760px,92vw);max-height:72vh;border-radius:16px;border:1px solid rgba(255,255,255,0.08);box-shadow:0 20px 60px rgba(0,0,0,0.5);background:rgba(10,15,26,0.96)}
+  .tr-hubpanel-body{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));padding:0 12px 14px}
+}
+`;
+
+const HUB_NAV_LINKS = [['All Tools', '/tools'], ['Why ToolsRift', '/#why'], ['About', '/about'], ['Contact', '/contact']];
+
+function CategoriesPanel({ open, onClose, onMouseEnter, onMouseLeave }) {
+  const [q, setQ] = useState('');
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    const mobile = !window.matchMedia(MQ.md).matches;
+    const prev = document.body.style.overflow;
+    if (mobile) document.body.style.overflow = 'hidden';
+    if (mobile) setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 220);
+    return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = prev; };
+  }, [open, onClose]);
+  useEffect(() => { if (!open) setQ(''); }, [open]);
+
+  const needle = q.trim().toLowerCase();
+  const list = needle
+    ? CATEGORY_THEMES.filter(t => t.name.toLowerCase().includes(needle) || t.description.toLowerCase().includes(needle) || t.tagline.toLowerCase().includes(needle))
+    : CATEGORY_THEMES;
+
   return (
-    <div
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-      style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}
-    >
-      <span style={{ ...navLinkStyle, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-        Categories <span style={{ fontSize: 10, opacity: 0.7 }}>▾</span>
-      </span>
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.15 }}
-            style={{
-              position: 'absolute', top: '100%', right: 0, marginTop: 8,
-              width: 'min(720px, 90vw)',
-              background: 'rgba(10,15,26,0.96)', backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16,
-              padding: 16, boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
-              display: 'grid', gap: 4,
-              gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-              zIndex: 200,
-            }}
-          >
-            {CATEGORY_THEMES.map(t => (
-              <a key={t.id} href={t.pageRoute} style={{
-                display: 'flex', alignItems: 'center', gap: 10,
-                padding: '10px 12px', borderRadius: 10, textDecoration: 'none',
-                color: '#E2E8F0', fontSize: 13, transition: 'background .15s',
-              }}
-                onMouseEnter={e => e.currentTarget.style.background = t.tint12}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          key="hubpanel"
+          className="tr-hubpanel"
+          role="dialog"
+          aria-label="All categories"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 8 }}
+          transition={{ duration: 0.2, ease: EASE.snap }}
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
+        >
+          <div className="tr-hubpanel-head">
+            <div className="tr-hubpanel-search">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={q ? '#6366F1' : '#94A3B8'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+              <input ref={inputRef} value={q} onChange={e => setQ(e.target.value)} placeholder={`Search ${CATEGORY_THEMES.length} categories…`} aria-label="Search categories" />
+              {q && <button onClick={() => setQ('')} aria-label="Clear" style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: '#94A3B8', width: 24, height: 24, borderRadius: '50%', cursor: 'pointer' }}>×</button>}
+            </div>
+            <button className="tr-hubpanel-close" onClick={onClose} aria-label="Close">×</button>
+          </div>
+          <div className="tr-hubpanel-links">
+            {HUB_NAV_LINKS.map(([l, h]) => <a key={h} href={h} onClick={onClose}>{l}</a>)}
+          </div>
+          <div className="tr-hubpanel-body">
+            {list.length === 0 && <div style={{ color: '#64748B', fontSize: 14, padding: '24px 8px' }}>No categories match “{q}”.</div>}
+            {list.map((t, i) => (
+              <motion.a
+                key={t.id}
+                href={t.pageRoute}
+                onClick={onClose}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25, delay: Math.min(i * 0.015, 0.25), ease: EASE.snap }}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  padding: '9px 10px', borderRadius: 12, textDecoration: 'none', minHeight: 50,
+                  color: '#E2E8F0', fontSize: 14, transition: 'background .15s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = t.tint12; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
               >
-                <span style={{ fontSize: 18 }}>{t.icon}</span>
-                <span style={{ fontWeight: 500 }}>{t.name}</span>
-              </a>
+                <span aria-hidden style={{ width: 34, height: 34, borderRadius: 10, background: t.gradient, display: 'grid', placeItems: 'center', fontSize: 17, flexShrink: 0 }}>{t.icon}</span>
+                <span style={{ minWidth: 0 }}>
+                  <span style={{ display: 'block', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.name}</span>
+                  <span style={{ display: 'block', fontSize: 11.5, color: t.color, fontWeight: 600, marginTop: 1 }}>{t.toolCount} tools</span>
+                </span>
+              </motion.a>
             ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
 // ───── NAV ─────────────────────────────────────────────────────────────────
+// `mobileOpen` / `setMobileOpen` (also driven by /tools) now control the
+// categories panel, which carries the nav links on phones.
 export function LandingNav({ mobileOpen, setMobileOpen }) {
   const [scrolled, setScrolled] = useState(false);
+  const closeTimer = useRef(null);
+  const hoverOpenedAt = useRef(0);
+  const wrapRef = useRef(null);
+  const open = !!mobileOpen;
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e) => { if (wrapRef.current && !wrapRef.current.contains(e.target)) setMobileOpen(false); };
+    document.addEventListener('pointerdown', onDown);
+    return () => document.removeEventListener('pointerdown', onDown);
+  }, [open, setMobileOpen]);
+
+  const hoverOpen = () => {
+    if (typeof window !== 'undefined' && !window.matchMedia(MQ.hover).matches) return;
+    clearTimeout(closeTimer.current); hoverOpenedAt.current = Date.now(); setMobileOpen(true);
+  };
+  const hoverClose = () => {
+    if (typeof window !== 'undefined' && !window.matchMedia(MQ.md).matches) return;
+    closeTimer.current = setTimeout(() => setMobileOpen(false), 140);
+  };
+  const toggle = () => {
+    if (Date.now() - hoverOpenedAt.current < 350) return;
+    clearTimeout(closeTimer.current);
+    setMobileOpen(o => !o);
+  };
+  const close = useCallback(() => setMobileOpen(false), [setMobileOpen]);
+
   return (
-    <>
-      <style>{`
-        .tr-nav-links { display:none; }
-        @media ${MQ.md} { .tr-nav-links { display:flex !important; } .tr-nav-burger { display:none !important; } }
-      `}</style>
+    // The panel sits OUTSIDE <nav>: its backdrop-filter would otherwise become
+    // the containing block of the phone sheet's position:fixed.
+    <div ref={wrapRef} style={{ position: 'sticky', top: 0, zIndex: 100 }}>
+      <style>{HUB_PANEL_CSS}</style>
       <motion.nav
         initial={{ y: -60, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ ...SPRING.smooth, delay: 0.1 }}
         style={{
-          position: 'sticky', top: 0, zIndex: 100, height: 64,
+          position: 'relative', height: 64,
           background: `rgba(6,9,15,${scrolled ? 0.92 : 0.65})`,
           backdropFilter: `blur(${scrolled ? 18 : 12}px) saturate(140%)`,
           WebkitBackdropFilter: `blur(${scrolled ? 18 : 12}px) saturate(140%)`,
           borderBottom: `1px solid rgba(255,255,255,${scrolled ? 0.08 : 0.04})`,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '0 clamp(16px,4vw,32px)',
-          transition: 'all .25s ease',
+          transition: 'background .25s ease, border-color .25s ease',
         }}
       >
-        <a href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }} aria-label="ToolsRift home">
-          <img src="/logo.svg" alt="ToolsRift" style={{ height: 30, display: 'block' }} />
-        </a>
+        <BrandLogo size={34} />
 
-        <div className="tr-nav-links" style={{ alignItems: 'center', gap: 28 }}>
-          <a href="/tools" style={navLinkStyle}>All Tools</a>
-          <CategoriesDropdown />
-          <a href="/#why"       style={navLinkStyle}>Why</a>
-          <a href="/about"      style={navLinkStyle}>About</a>
-          <a href="/contact"    style={navLinkStyle}>Contact</a>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 22 }} onMouseLeave={hoverClose}>
+          <div className="tr-nav-links" style={{ alignItems: 'center', gap: 28 }}>
+            <a href="/tools" style={navLinkStyle}>All Tools</a>
+            <button
+              onMouseEnter={hoverOpen}
+              onClick={toggle}
+              aria-expanded={open}
+              aria-haspopup="dialog"
+              style={{ ...navLinkStyle, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', display: 'inline-flex', alignItems: 'center', gap: 4, color: open ? '#F8FAFC' : navLinkStyle.color, padding: '8px 0' }}
+            >
+              Categories <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.18 }} style={{ fontSize: 10, opacity: 0.7 }}>▾</motion.span>
+            </button>
+            <a href="/#why"    style={navLinkStyle}>Why</a>
+            <a href="/about"   style={navLinkStyle}>About</a>
+            <a href="/contact" style={navLinkStyle}>Contact</a>
+          </div>
+
+          <motion.button
+            onClick={toggle}
+            aria-expanded={open}
+            aria-haspopup="dialog"
+            aria-label={`Browse all ${CATEGORY_THEMES.length} categories`}
+            whileTap={{ scale: 0.94 }}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              fontSize: 12, fontWeight: 700, padding: '7px 12px', minHeight: 34,
+              borderRadius: 999, letterSpacing: '0.04em', cursor: 'pointer',
+              background: open ? '#3B82F6' : 'rgba(59,130,246,0.12)',
+              color: open ? '#fff' : '#60A5FA',
+              border: `1px solid ${open ? '#3B82F6' : 'rgba(59,130,246,0.25)'}`,
+              transition: 'background .2s, color .2s, border-color .2s',
+              '--tr-chip-glow': 'rgba(59,130,246,0.4)',
+              animation: open ? 'none' : 'tr-chipPulse 2.4s ease-out 1.2s 2',
+            }}
+          >
+            {CATEGORY_THEMES.length} categories
+            <motion.svg animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.18 }} width="10" height="10" viewBox="0 0 10 10" aria-hidden><path d="M1.5 3.5 5 7l3.5-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></motion.svg>
+          </motion.button>
         </div>
-
-        <button
-          className="tr-nav-burger"
-          onClick={() => setMobileOpen(o => !o)}
-          aria-label="Menu"
-          style={{
-            background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
-            color: '#F1F5F9', width: 40, height: 40, borderRadius: 10, cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18,
-          }}
-        >☰</button>
+        <ScrollProgress color="#3B82F6" />
       </motion.nav>
 
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25, ease: EASE.snap }}
-            style={{ overflow: 'hidden', background: '#0A0F1A', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
-          >
-            <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 14 }}>
-              {[['All Tools', '/tools'], ['Why ToolsRift', '/#why'], ['About', '/about'], ['Contact', '/contact']].map(([l, h]) => (
-                <a key={h} href={h} onClick={() => setMobileOpen(false)} style={{ color: '#94A3B8', fontSize: 15, textDecoration: 'none', minHeight: 44, display: 'flex', alignItems: 'center' }}>{l}</a>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+      <CategoriesPanel open={open} onClose={close} onMouseEnter={() => clearTimeout(closeTimer.current)} onMouseLeave={hoverClose} />
+    </div>
   );
 }
 const navLinkStyle = { color: '#94A3B8', fontSize: 14, textDecoration: 'none', fontWeight: 500, transition: 'color .2s' };
@@ -467,11 +555,21 @@ export function CategoryMosaic({ id, themes, query }) {
 
 function CategoryTile({ theme }) {
   const [hov, setHov] = useState(false);
+  const ref = useRef(null);
+  // Cursor spotlight: a soft radial glow follows the pointer across the tile.
+  const onMove = (e) => {
+    const el = ref.current; if (!el) return;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty('--tr-mx', `${e.clientX - r.left}px`);
+    el.style.setProperty('--tr-my', `${e.clientY - r.top}px`);
+  };
   return (
     <a
+      ref={ref}
       href={theme.pageRoute}
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
+      onMouseMove={onMove}
       style={{ textDecoration: 'none', display: 'block', height: '100%' }}
     >
       <Tilt3D max={5} style={{ height: '100%' }}>
@@ -489,6 +587,13 @@ function CategoryTile({ theme }) {
             boxShadow: hov ? `0 16px 40px ${theme.tint25}` : '0 1px 0 rgba(255,255,255,0.03) inset',
           }}
         >
+          {/* Cursor spotlight */}
+          <div aria-hidden style={{
+            position: 'absolute', inset: 0, pointerEvents: 'none', borderRadius: 'inherit',
+            opacity: hov ? 1 : 0, transition: 'opacity .25s',
+            background: `radial-gradient(220px circle at var(--tr-mx, 50%) var(--tr-my, 50%), ${theme.tint25}, transparent 70%)`,
+          }} />
+
           {/* Themed gradient accent (top-left) */}
           <div aria-hidden style={{
             position: 'absolute', top: -40, left: -40, width: 140, height: 140,

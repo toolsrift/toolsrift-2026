@@ -7,9 +7,9 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { toolHref } from './toolLink';
-import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { COLORS, FS, MQ, RADIUS, SPRING, EASE } from '../../lib/designTokens';
-import { FadeUp, BlurUp, Stagger, StaggerItem, CountUp, GradientBlob, ParticlesField, WordReveal } from './motion';
+import { FadeUp, BlurUp, Stagger, StaggerItem, CountUp, GradientBlob, ParticlesField, WordReveal, ScrollProgress } from './motion';
 import { SITE_FEATURES } from '../../lib/siteFeatures';
 import SiteFooter from '../SiteFooter';
 import { groupTools } from './ToolNavSidebar';
@@ -151,24 +151,6 @@ function ToolsPanel({ theme, tools, subcats, open, onClose, onMouseEnter, onMous
         </motion.div>
       )}
     </AnimatePresence>
-  );
-}
-
-// ── Scroll progress — hairline under the header that fills as you read ──────
-function ScrollProgress({ color }) {
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, { stiffness: 140, damping: 26, mass: 0.4 });
-  return (
-    <motion.div
-      aria-hidden
-      style={{
-        position: 'absolute', left: 0, right: 0, bottom: -1, height: 2,
-        transformOrigin: '0 50%', scaleX,
-        background: `linear-gradient(90deg, ${color}, ${color}66)`,
-        boxShadow: `0 0 12px ${color}88`,
-        pointerEvents: 'none',
-      }}
-    />
   );
 }
 
