@@ -124,7 +124,7 @@ ${b.siteName} is the ${word.toLowerCase()} edition of ToolsRift (toolsrift.com),
 | Privacy policy | https://${b.domain}/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | \`public/brands/${b.id}/icon-512.png\` |
-| Feature graphic (1024×500) | export from \`public/brands/${b.id}/og.svg\` |
+| Feature graphic (1024×500) | \`android/apps/${b.id}/feature-graphic.png\` |
 | Theme colour | ${b.palette.primary} |
 
 ## Short description (≤80 chars)
@@ -139,7 +139,9 @@ ${full}
 
 ${b.seo.keywords}
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the \`android-listing\` workflow (artifact \`play-listing-assets\`, folder \`${b.id}/\`):
 
 1. Home — the ${categoryName} dashboard
 2. ${tools[0] ? tools[0].name : 'A tool'} in use

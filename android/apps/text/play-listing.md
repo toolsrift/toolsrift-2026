@@ -10,7 +10,7 @@
 | Privacy policy | https://text.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/text/icon-512.png` |
-| Feature graphic (1024×500) | export from `public/brands/text/og.svg` |
+| Feature graphic (1024×500) | `android/apps/text/feature-graphic.png` |
 | Theme colour | #3B82F6 |
 
 ## Short description (≤80 chars)
@@ -55,7 +55,9 @@ ToolsRift Text is the text edition of ToolsRift (toolsrift.com), the free online
 
 text tools, word counter, character counter, case converter, lorem ipsum generator, remove line breaks, text cleaner
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the `android-listing` workflow (artifact `play-listing-assets`, folder `text/`):
 
 1. Home — the Text Tools dashboard
 2. Word Counter Pro in use

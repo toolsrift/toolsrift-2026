@@ -10,7 +10,7 @@
 | Privacy policy | https://devgen.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/devgen/icon-512.png` |
-| Feature graphic (1024×500) | export from `public/brands/devgen/og.svg` |
+| Feature graphic (1024×500) | `android/apps/devgen/feature-graphic.png` |
 | Theme colour | #8B5CF6 |
 
 ## Short description (≤80 chars)
@@ -55,7 +55,9 @@ ToolsRift DevGen is the devgen edition of ToolsRift (toolsrift.com), the free on
 
 gitignore generator, dockerfile generator, nginx config generator, package.json generator, env file generator
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the `android-listing` workflow (artifact `play-listing-assets`, folder `devgen/`):
 
 1. Home — the Dev Config Generators dashboard
 2. Gitignore Generator in use

@@ -10,7 +10,7 @@
 | Privacy policy | https://business.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/business/icon-512.png` |
-| Feature graphic (1024×500) | export from `public/brands/business/og.svg` |
+| Feature graphic (1024×500) | `android/apps/business/feature-graphic.png` |
 | Theme colour | #059669 |
 
 ## Short description (≤80 chars)
@@ -55,7 +55,9 @@ ToolsRift Business is the business edition of ToolsRift (toolsrift.com), the fre
 
 invoice generator, quotation generator, receipt maker, resume builder, cover letter generator, swot analysis template
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the `android-listing` workflow (artifact `play-listing-assets`, folder `business/`):
 
 1. Home — the Business Tools dashboard
 2. Invoice Generator in use

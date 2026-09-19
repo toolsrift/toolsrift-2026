@@ -10,7 +10,7 @@
 | Privacy policy | https://video.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/video/icon-512.png` |
-| Feature graphic (1024×500) | export from `public/brands/video/og.svg` |
+| Feature graphic (1024×500) | `android/apps/video/feature-graphic.png` |
 | Theme colour | #C2410C |
 
 ## Short description (≤80 chars)
@@ -55,7 +55,9 @@ ToolsRift Video is the video edition of ToolsRift (toolsrift.com), the free onli
 
 video trimmer, video compressor, video converter, video to gif, screen recorder, mp4 converter online
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the `android-listing` workflow (artifact `play-listing-assets`, folder `video/`):
 
 1. Home — the Video Tools dashboard
 2. Video Trimmer in use

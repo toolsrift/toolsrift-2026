@@ -10,7 +10,7 @@
 | Privacy policy | https://finance.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/financecalc/icon-512.png` |
-| Feature graphic (1024×500) | export from `public/brands/financecalc/og.svg` |
+| Feature graphic (1024×500) | `android/apps/financecalc/feature-graphic.png` |
 | Theme colour | #22C55E |
 
 ## Short description (≤80 chars)
@@ -55,7 +55,9 @@ ToolsRift Finance is the finance edition of ToolsRift (toolsrift.com), the free 
 
 emi calculator, sip calculator, loan calculator, income tax calculator, bmi calculator, tdee calculator, calorie calculator
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the `android-listing` workflow (artifact `play-listing-assets`, folder `financecalc/`):
 
 1. Home — the Finance & Health Calculators dashboard
 2. Investment Return Calculator in use

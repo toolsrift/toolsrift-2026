@@ -10,7 +10,7 @@
 | Privacy policy | https://hash.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/hash/icon-512.png` |
-| Feature graphic (1024×500) | export from `public/brands/hash/og.svg` |
+| Feature graphic (1024×500) | `android/apps/hash/feature-graphic.png` |
 | Theme colour | #7C3AED |
 
 ## Short description (≤80 chars)
@@ -55,7 +55,9 @@ ToolsRift Hash is the hash edition of ToolsRift (toolsrift.com), the free online
 
 sha256 generator, md5 hash, sha512, hmac generator, bcrypt generator, uuid generator, checksum calculator
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the `android-listing` workflow (artifact `play-listing-assets`, folder `hash/`):
 
 1. Home — the Hash & Crypto Tools dashboard
 2. Hash Generator (All) in use

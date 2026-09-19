@@ -10,7 +10,7 @@
 | Privacy policy | https://pdf.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/pdf/icon-512.png` |
-| Feature graphic (1024×500) | export from `public/brands/pdf/og.svg` |
+| Feature graphic (1024×500) | `android/apps/pdf/feature-graphic.png` |
 | Theme colour | #EF4444 |
 
 ## Short description (≤80 chars)
@@ -55,7 +55,9 @@ ToolsRift PDF is the pdf edition of ToolsRift (toolsrift.com), the free online t
 
 pdf tools, merge pdf, split pdf, compress pdf, pdf to image, sign pdf, pdf converter online free
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the `android-listing` workflow (artifact `play-listing-assets`, folder `pdf/`):
 
 1. Home — the PDF Tools dashboard
 2. PDF Viewer in use

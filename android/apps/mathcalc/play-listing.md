@@ -10,7 +10,7 @@
 | Privacy policy | https://math.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/mathcalc/icon-512.png` |
-| Feature graphic (1024×500) | export from `public/brands/mathcalc/og.svg` |
+| Feature graphic (1024×500) | `android/apps/mathcalc/feature-graphic.png` |
 | Theme colour | #6366F1 |
 
 ## Short description (≤80 chars)
@@ -55,7 +55,9 @@ ToolsRift Math is the math edition of ToolsRift (toolsrift.com), the free online
 
 math calculator, geometry calculator, algebra solver, matrix calculator, statistics calculator, trigonometry calculator
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the `android-listing` workflow (artifact `play-listing-assets`, folder `mathcalc/`):
 
 1. Home — the Math Calculators dashboard
 2. Area Calculator in use

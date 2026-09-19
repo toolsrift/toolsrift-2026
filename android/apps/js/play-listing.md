@@ -10,7 +10,7 @@
 | Privacy policy | https://js.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/js/icon-512.png` |
-| Feature graphic (1024×500) | export from `public/brands/js/og.svg` |
+| Feature graphic (1024×500) | `android/apps/js/feature-graphic.png` |
 | Theme colour | #EAB308 |
 
 ## Short description (≤80 chars)
@@ -55,7 +55,9 @@ ToolsRift JS is the js edition of ToolsRift (toolsrift.com), the free online too
 
 javascript formatter, js minifier, javascript beautifier, js validator, javascript obfuscator, json to js
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the `android-listing` workflow (artifact `play-listing-assets`, folder `js/`):
 
 1. Home — the JavaScript Tools dashboard
 2. JavaScript Formatter in use

@@ -95,6 +95,13 @@ jobs:
             android/keys/upload.password
           retention-days: 90
           if-no-files-found: error
+      - name: Upload key certificate (public — for Play Console upload-key resets)
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-upload-certificate
+          path: android/keys/upload-cert.pem
+          retention-days: 90
+          if-no-files-found: warn
       - name: Fingerprint check
         env:
           FP: ${{ steps.keystore.outputs.fingerprint }}

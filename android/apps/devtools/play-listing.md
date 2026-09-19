@@ -10,7 +10,7 @@
 | Privacy policy | https://devtools.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/devtools/icon-512.png` |
-| Feature graphic (1024×500) | export from `public/brands/devtools/og.svg` |
+| Feature graphic (1024×500) | `android/apps/devtools/feature-graphic.png` |
 | Theme colour | #22D3EE |
 
 ## Short description (≤80 chars)
@@ -55,7 +55,9 @@ ToolsRift DevTools is the devtools edition of ToolsRift (toolsrift.com), the fre
 
 regex tester, json diff, jwt debugger, cron expression generator, chmod calculator, cidr calculator, developer tools
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the `android-listing` workflow (artifact `play-listing-assets`, folder `devtools/`):
 
 1. Home — the Developer Tools dashboard
 2. Unix Timestamp in use

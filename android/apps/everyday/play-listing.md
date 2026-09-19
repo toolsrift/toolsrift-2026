@@ -10,7 +10,7 @@
 | Privacy policy | https://everyday.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/everyday/icon-512.png` |
-| Feature graphic (1024×500) | export from `public/brands/everyday/og.svg` |
+| Feature graphic (1024×500) | `android/apps/everyday/feature-graphic.png` |
 | Theme colour | #F97316 |
 
 ## Short description (≤80 chars)
@@ -55,7 +55,9 @@ ToolsRift Everyday is the everyday edition of ToolsRift (toolsrift.com), the fre
 
 age calculator, online timer, stopwatch, typing test, dice roller, countdown timer, everyday tools
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the `android-listing` workflow (artifact `play-listing-assets`, folder `everyday/`):
 
 1. Home — the Everyday Tools dashboard
 2. Age Calculator in use

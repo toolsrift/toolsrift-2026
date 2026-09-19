@@ -10,7 +10,7 @@
 | Privacy policy | https://office.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/office/icon-512.png` |
-| Feature graphic (1024×500) | export from `public/brands/office/og.svg` |
+| Feature graphic (1024×500) | `android/apps/office/feature-graphic.png` |
 | Theme colour | #0891B2 |
 
 ## Short description (≤80 chars)
@@ -55,7 +55,9 @@ ToolsRift Office is the office edition of ToolsRift (toolsrift.com), the free on
 
 vcard generator, calendar invite generator, ics file generator, email signature generator, label maker, sticky notes online
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the `android-listing` workflow (artifact `play-listing-assets`, folder `office/`):
 
 1. Home — the Office & Productivity dashboard
 2. vCard QR Generator in use

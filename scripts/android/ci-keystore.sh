@@ -55,6 +55,9 @@ fp="$(keytool -list -v -keystore "$KS" -alias upload -storepass "$pass" | grep -
 [[ -n "$fp" ]] || { echo "::error::could not read the keystore fingerprint (alias 'upload')"; exit 1; }
 echo "keystore source: $source"
 echo "upload key SHA-256: $fp"
+# Public certificate of the upload key (PEM) — what Play Console asks for in an
+# "upload key reset" request and in Android developer verification → keys.
+keytool -exportcert -rfc -keystore "$KS" -alias upload -storepass "$pass" -file android/keys/upload-cert.pem >/dev/null 2>&1 || true
 if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
   { echo "source=$source"; echo "fingerprint=$fp"; } >> "$GITHUB_OUTPUT"
 fi

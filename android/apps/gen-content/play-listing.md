@@ -10,7 +10,7 @@
 | Privacy policy | https://content.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/gen-content/icon-512.png` |
-| Feature graphic (1024×500) | export from `public/brands/gen-content/og.svg` |
+| Feature graphic (1024×500) | `android/apps/gen-content/feature-graphic.png` |
 | Theme colour | #0EA5E9 |
 
 ## Short description (≤80 chars)
@@ -55,7 +55,9 @@ ToolsRift Content is the content edition of ToolsRift (toolsrift.com), the free 
 
 privacy policy generator, terms of service generator, svg pattern generator, ad copy generator, bio generator
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the `android-listing` workflow (artifact `play-listing-assets`, folder `gen-content/`):
 
 1. Home — the Content Generators dashboard
 2. Privacy Policy Generator in use

@@ -10,7 +10,7 @@
 | Privacy policy | https://fancy.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/fancy/icon-512.png` |
-| Feature graphic (1024×500) | export from `public/brands/fancy/og.svg` |
+| Feature graphic (1024×500) | `android/apps/fancy/feature-graphic.png` |
 | Theme colour | #D946EF |
 
 ## Short description (≤80 chars)
@@ -55,7 +55,9 @@ ToolsRift Fancy is the fancy edition of ToolsRift (toolsrift.com), the free onli
 
 fancy text generator, cursive text, bold text generator, unicode fonts, instagram fonts, cool text generator
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the `android-listing` workflow (artifact `play-listing-assets`, folder `fancy/`):
 
 1. Home — the Fancy Text Generators dashboard
 2. Bold Text Generator in use
