@@ -143,3 +143,27 @@ be ported, and 29 apps stay in lock-step with 29 sites. A native shell only
 becomes worth it if you need native-only features (file system access beyond
 the browser sandbox, background processing, in-app purchases), none of which
 Phase 1 needs.
+
+## Publishing to Google Play from CI (`android-publish`)
+
+Once an app exists in Play Console, everything the Play Developer API allows
+is one workflow run: **Actions → android-publish → Run workflow** (defaults:
+`--all`, tracks `internal,alpha`, listing + bundle). It takes the graphics from
+the latest successful `android-listing` run and the `.aab` files from the
+latest successful `android-build` run (or the run ids you pass), then for each
+app: sets the store listing text from `android/apps/<id>/play-listing.md`,
+uploads icon / feature graphic / phone + 7" + 10" screenshots, uploads the
+bundle and creates a completed release on every track — committed with
+`changesNotSentForReview`, so nothing goes to Google until you click
+**Send changes for review**. Apps that don't exist in the Console yet are
+reported and skipped. Local: `PLAY_SERVICE_ACCOUNT_FILE=key.json npm run android:publish -- --sites pdf --dry-run`.
+
+Needs the `PLAY_SERVICE_ACCOUNT_JSON` secret: a Google Cloud service account
+key (JSON) whose email is invited in Play Console → Users and permissions with
+Admin (all permissions). Never commit the key.
+
+Still manual per app in the Console: **Create app**, the *Set up your app*
+questionnaires (privacy policy, app access, ads, content rating, target
+audience, data safety, advertising ID = no), ticking the tester list on the
+internal and closed tracks, reading the App signing + Digital Asset Links
+SHA-256 (→ `android/fingerprints.json`), and *Send changes for review*.
