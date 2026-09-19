@@ -159,12 +159,15 @@ tool up automatically on the next deploy.
 ### Vercel Hobby quotas (until the team is on Pro)
 
 - 100 deployments per **rolling** 24 h across the team and one build at a
-  time. Every push to `main` is up to 30 deployments (25 git-linked projects +
-  5 via `vercel-deploy-unlinked`), so a PR push used to add another 25 preview
-  deployments for nothing: `vercel.json` → `git.deploymentEnabled` turns
-  previews off for the working branch (CI builds the sites on GitHub instead).
-- Refused deployments are picked up by the daily catch-up (17:00 UTC), or run
-  it by hand: Actions → vercel-deploy-unlinked → Run workflow → `--catch-up`.
+  time. A push to `main` used to be 30 deployments (25 git-linked projects +
+  5 via CI), so a handful of merges in a day exhausted the quota by noon and
+  nothing deployed until the next day. **Git-triggered deployments are now
+  OFF for `main`** (`vercel.json` → `git.deploymentEnabled.main: false`, the
+  working branch too). The network's production deploy is the daily
+  `vercel-deploy-unlinked` run at 17:00 UTC (`--catch-up`: every project whose
+  production deployment is not at main — hub + 29 sites, so ≤ 30 a day however
+  many PRs merged). Urgent change? Actions → vercel-deploy-unlinked → Run
+  workflow with no input, or with the site ids you need.
 - **Deployment Storage (10 GB)** counts every deployment Vercel still keeps —
   old previews and superseded production builds included, ~175 MB each for the
   hub. The `vercel-prune` workflow (`scripts/vercel/prune.js`, nightly 18:30 UTC

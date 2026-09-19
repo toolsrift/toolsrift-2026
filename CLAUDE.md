@@ -926,6 +926,10 @@ apps: `android/README.md`.
   internal + closed testing for every app that already exists in Play Console, without
   sending for review. Creating the app, the set-up questionnaires, testers and
   "Send changes for review" stay manual.
+- **Deploys**: Vercel does NOT deploy `main` on push (Hobby quota — see
+  `docs/NETWORK-SITES.md`). The `vercel-deploy-unlinked` workflow deploys every
+  project that is behind main daily at 17:00 UTC; run it by hand for an urgent
+  change. `vercel-prune` deletes superseded deployments nightly (10 GB storage cap).
 - **When editing `brands.js`**: run `brands:assets`, `android:generate`, `sites:check`
   and commit the generated files. **When adding a category**: also add a brand, a
   glyph in `scripts/brand-glyphs.js`, and register it in `lib/sites/categoryComponents.js`.

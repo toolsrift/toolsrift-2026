@@ -1,16 +1,14 @@
-# Deploys what Vercel's git integration does not: the network-site projects
-# that have no Git link (on push), and — daily — any project that fell behind
-# main because Vercel refused deployments (Hobby quota).
-#
-# Vercel connects at most 25 projects to one repository (the hub + 24 sites).
-# The remaining sites are plain projects; this workflow uploads the repo with
-# the Vercel CLI and builds them on Vercel on every push to main, so they stay
-# in lock-step with the Git-linked ones. Needs the VERCEL_TOKEN secret.
+# THE production deploy of the whole network: once a day (and on demand) it
+# deploys every project — the hub and all 29 sites — whose production
+# deployment is not at main. Git-triggered deployments are OFF for main
+# (vercel.json → git.deploymentEnabled), because on the Hobby plan every push
+# used to fire 25 builds at once and the 100-deployments-per-day quota was
+# gone by noon. Now a day costs at most 30 deployments however many PRs merge.
+# Needs the VERCEL_TOKEN secret. Run it by hand after an urgent merge:
+# Actions → vercel-deploy-unlinked → Run workflow → "--catch-up".
 name: vercel-deploy-unlinked
 
 on:
-  push:
-    branches: [main]
   schedule:
     # Daily catch-up: deploy every project whose production deployment is not
     # at main (e.g. after Vercel's daily deployment quota refused some).
@@ -22,7 +20,7 @@ on:
   workflow_dispatch:
     inputs:
       sites:
-        description: 'Site ids (space-separated), "--catch-up" for everything behind main, or empty for all unlinked projects'
+        description: 'Site ids (space-separated), or empty / "--catch-up" for every project behind main'
         type: string
         default: ''
 
@@ -43,7 +41,7 @@ jobs:
           VERCEL_TEAM: toolsrifts-projects
         run: |
           if [ -z "$VERCEL_TOKEN" ]; then echo "::error::VERCEL_TOKEN secret is not set"; exit 1; fi
-          if [ "${{ github.event_name }}" = "schedule" ]; then
+          if [ "${{ github.event_name }}" = "schedule" ] || [ -z "${{ inputs.sites }}" ]; then
             node scripts/vercel/deploy-unlinked.js --catch-up
           else
             node scripts/vercel/deploy-unlinked.js ${{ inputs.sites }}
