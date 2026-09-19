@@ -15,7 +15,7 @@
 
 ## Short description (≤80 chars)
 
-JSON formatter, validator, minifier, diff & converters. 30 free tools, offline.
+JSON formatter, validator, minifier, diff & converters. 30 tools, offline.
 
 ## Full description (≤4000 chars)
 

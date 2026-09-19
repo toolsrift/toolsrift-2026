@@ -15,7 +15,7 @@
 
 ## Short description (≤80 chars)
 
-Resize, compress, crop & convert images offline. 60+ free tools, no uploads.
+Resize, compress, crop & convert images offline. 60+ tools, no uploads.
 
 ## Full description (≤4000 chars)
 

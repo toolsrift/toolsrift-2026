@@ -15,7 +15,7 @@
 
 ## Short description (≤80 chars)
 
-Format & minify CSS, SQL, XML, YAML, Markdown and 20+ languages. Free, offline.
+Format & minify CSS, SQL, XML, YAML, Markdown and 20+ languages. Works offline.
 
 ## Full description (≤4000 chars)
 

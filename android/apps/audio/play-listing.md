@@ -15,7 +15,7 @@
 
 ## Short description (≤80 chars)
 
-Trim, convert, record & normalize audio plus text-to-speech. 30 free tools.
+Trim, convert, record & normalize audio plus text-to-speech. 30 tools.
 
 ## Full description (≤4000 chars)
 

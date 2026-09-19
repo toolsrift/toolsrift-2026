@@ -15,7 +15,7 @@
 
 ## Short description (≤80 chars)
 
-Invoice, quotation, receipt, resume & cover letter generators. 41 free tools.
+Invoice, quotation, receipt, resume & cover letter generators. 41 tools.
 
 ## Full description (≤4000 chars)
 

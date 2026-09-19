@@ -15,7 +15,7 @@
 
 ## Short description (≤80 chars)
 
-JavaScript formatter, minifier, validator & obfuscator. 24 free tools, offline.
+JavaScript formatter, minifier, validator & obfuscator. 24 tools, offline.
 
 ## Full description (≤4000 chars)
 

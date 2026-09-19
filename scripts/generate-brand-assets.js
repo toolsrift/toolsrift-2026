@@ -215,9 +215,9 @@ function featureSvg(b, toolCount) {
   <text x="72" y="104" font-family="${fontHead}" font-weight="800" font-size="42" letter-spacing="-1" fill="#F8FAFC">${esc(w1)}<tspan fill="${primary}"> ${esc(w2)}</tspan></text>
   <text x="72" y="196" font-family="${fontHead}" font-weight="800" font-size="${hfs}" letter-spacing="-1.2" fill="#F8FAFC">${esc(line(lines[0]))}</text>
   <text x="72" y="248" font-family="${fontHead}" font-weight="800" font-size="${hfs}" letter-spacing="-1.2" fill="#F8FAFC">${esc(line(lines[1]))}</text>
-  <text x="72" y="302" font-family="${fontHead}" font-weight="500" font-size="22" fill="#CBD5E1">${esc(`${toolCount} free ${w2.toLowerCase()} tools · 100% on your device`)}</text>
+  <text x="72" y="302" font-family="${fontHead}" font-weight="500" font-size="22" fill="#CBD5E1">${esc(`${toolCount} ${w2.toLowerCase()} tools · 100% on your device`)}</text>
   <g transform="translate(72 348)">
-    ${['Free forever', 'No sign-up', 'Works offline'].map((t, i) => {
+    ${['No sign-up', 'No uploads', 'Works offline'].map((t, i) => {
       const x = i * 186;
       return `<rect x="${x}" y="0" width="172" height="46" rx="23" fill="${primary}" fill-opacity="0.14" stroke="${primary}" stroke-opacity="0.45"/><text x="${x + 86}" y="30" text-anchor="middle" font-family="${fontHead}" font-weight="700" font-size="17" fill="${accent2}">${esc(t)}</text>`;
     }).join('')}

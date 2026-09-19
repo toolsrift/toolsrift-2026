@@ -15,7 +15,7 @@
 
 ## Short description (≤80 chars)
 
-MD5, SHA-256, SHA-512, HMAC, bcrypt & UUID generators. 31 free tools, offline.
+MD5, SHA-256, SHA-512, HMAC, bcrypt & UUID generators. 31 tools, offline.
 
 ## Full description (≤4000 chars)
 

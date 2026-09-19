@@ -15,7 +15,7 @@
 
 ## Short description (≤80 chars)
 
-Age calculator, timers, stopwatch, typing test, dice & 25+ daily tools. Free.
+Age calculator, timers, stopwatch, typing test, dice & 25+ daily tools. Offline.
 
 ## Full description (≤4000 chars)
 

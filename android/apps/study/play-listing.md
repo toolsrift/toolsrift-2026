@@ -15,13 +15,13 @@
 
 ## Short description (≤80 chars)
 
-Flashcards, quizzes, citations, periodic table & study timers. 30 free tools.
+Flashcards, quizzes, citations, periodic table & study timers. 30 tools.
 
 ## Full description (≤4000 chars)
 
 ToolsRift Study Tools puts 30 free study & education tools in your pocket — learn faster, free.
 
-Flashcards, quizzes, citation generators, periodic table, Pomodoro timers and revision planners — free for every student.
+Flashcards, quizzes, citation generators, periodic table, Pomodoro timers and revision planners — built for students.
 
 EVERYTHING RUNS ON YOUR DEVICE
 No uploads, no accounts, no limits. Your files and text are processed locally, so nothing you work on ever leaves your phone. Most tools work fully offline once loaded.

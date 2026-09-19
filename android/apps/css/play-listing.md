@@ -15,7 +15,7 @@
 
 ## Short description (≤80 chars)
 
-CSS gradient, shadow, border-radius, animation & grid generators. 38 free tools.
+CSS gradient, shadow, border-radius, animation & grid generators. 38 tools.
 
 ## Full description (≤4000 chars)
 

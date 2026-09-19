@@ -15,7 +15,7 @@
 
 ## Short description (≤80 chars)
 
-Electrical, clothing size, paper size & physics converters. 31 free tools.
+Electrical, clothing size, paper size & physics converters. 31 tools.
 
 ## Full description (≤4000 chars)
 
