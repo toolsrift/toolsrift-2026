@@ -165,6 +165,13 @@ tool up automatically on the next deploy.
   previews off for the working branch (CI builds the sites on GitHub instead).
 - Refused deployments are picked up by the daily catch-up (17:00 UTC), or run
   it by hand: Actions → vercel-deploy-unlinked → Run workflow → `--catch-up`.
+- **Deployment Storage (10 GB)** counts every deployment Vercel still keeps —
+  old previews and superseded production builds included, ~175 MB each for the
+  hub. The `vercel-prune` workflow (`scripts/vercel/prune.js`, nightly 18:30 UTC
+  and on demand with a dry-run option) deletes all but the live production
+  deployment plus one rollback per project. Also: every merge to `main`
+  redeploys all 24 linked projects, so batch changes into one merge a day
+  rather than many small ones.
 - Hobby also forbids commercial (ad-monetised) use; upgrade to Pro before launch.
 
 ## 5. Adding a 30th site

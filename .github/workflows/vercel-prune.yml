@@ -1,0 +1,43 @@
+# ── Keep Vercel "Deployment Storage" under the Hobby plan's 10 GB ───────────
+# Deletes every deployment except the live production one (+ `keep` rollback
+# candidates) in the hub project and all 29 toolsrift-<id> projects. Runs
+# nightly after the 17:00 UTC catch-up deploy, and on demand (dry run first).
+name: vercel-prune
+
+on:
+  workflow_dispatch:
+    inputs:
+      keep:
+        description: 'Rollback deployments to keep per project (besides the live one)'
+        default: '1'
+      projects:
+        description: 'Project names, space-separated (blank = hub + all 29 sites)'
+        default: ''
+      dry_run:
+        description: 'Only report what would be deleted'
+        type: boolean
+        default: false
+  schedule:
+    - cron: '30 18 * * *'
+
+concurrency: vercel-prune
+
+jobs:
+  prune:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_TEAM: toolsrifts-projects
+          KEEP: ${{ inputs.keep || '1' }}
+          PROJECTS: ${{ inputs.projects }}
+          DRY: ${{ inputs.dry_run }}
+        run: |
+          args=(--keep "$KEEP")
+          [ -n "$PROJECTS" ] && args+=(--projects "$PROJECTS")
+          [ "$DRY" = "true" ] && args+=(--dry-run)
+          node scripts/vercel/prune.js "${args[@]}"

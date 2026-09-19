@@ -19,6 +19,7 @@
     "android:keystore": "bash scripts/android/keystore.sh",
     "android:build": "bash scripts/android/build.sh",
     "android:publish": "node scripts/android/publish.js",
+    "vercel:prune": "node scripts/vercel/prune.js",
     "vercel:bootstrap": "node scripts/vercel/bootstrap.js",
     "vercel:deploy": "bash scripts/vercel/deploy.sh"
   },
