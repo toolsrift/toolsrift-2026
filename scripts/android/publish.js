@@ -160,7 +160,11 @@ async function publishApp(b, report) {
   if (listing) log(`listing: "${listing.title}" · short ${listing.short.length} chars · full ${listing.full.length} chars`);
   if (images) log(`images: icon ${images.icon ? '✓' : '✗'} · feature ${images.feature ? '✓' : '✗'} · screenshots ${images.shots.length}`);
   if (!OPTS.skipBundle) log(bundle ? `bundle: ${path.relative(process.cwd(), bundle.file)} (versionCode ${bundle.versionCode || '?'})` : 'bundle: none found');
-  if (!OPTS.skipBundle && !bundle) { report.push({ id, pkg, status: 'skipped', note: 'no .aab in --bundles dir' }); return; }
+  // No bundle for this app in the artifact (e.g. a run that only built some
+  // sites): still refresh the listing; releases need a bundle.
+  const noBundle = !OPTS.skipBundle && !bundle;
+  if (noBundle && !listing && !images) { report.push({ id, pkg, status: 'skipped', note: 'no .aab in --bundles dir' }); return; }
+  if (noBundle) log('⚠ no bundle — listing only (releases skipped)');
   if (OPTS.dryRun) { report.push({ id, pkg, status: 'dry-run' }); return; }
 
   const base = `/androidpublisher/v3/applications/${pkg}/edits`;
@@ -210,8 +214,9 @@ async function publishApp(b, report) {
       } else throw e;
     }
     for (const track of OPTS.tracks) {
+      // No countryTargeting: Play only accepts it on staged releases. The
+      // track's country availability is set once in the Console instead.
       const release = { name: bundle.versionName, versionCodes: [String(versionCode)], status: 'completed', releaseNotes: [{ language: 'en-US', text: OPTS.notes }] };
-      if (track !== 'internal') release.countryTargeting = { includeRestOfWorld: true };
       await api('PUT', `${E}/tracks/${track}`, { json: { track, releases: [release] } });
       log(`track ${track}: release ${bundle.versionName} (completed)`);
     }
@@ -224,6 +229,7 @@ async function publishApp(b, report) {
     else throw e;
   }
   log('✓ committed (not sent for review — click "Send changes for review" in the Console)');
+  if (noBundle) notes.push('⚠ no .aab in artifact — no release created');
   report.push({ id, pkg, status: 'ok', note: notes.join(' · ') });
 }
 

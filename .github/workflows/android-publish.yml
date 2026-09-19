@@ -33,7 +33,7 @@ on:
         description: 'android-listing run id to take graphics from (blank = latest successful)'
         default: ''
       build_run_id:
-        description: 'android-build run id to take bundles from (blank = latest successful)'
+        description: 'android-build run id(s) to take bundles from, space-separated (blank = latest successful)'
         default: ''
       release_notes:
         description: 'Release notes (en-US)'
@@ -89,13 +89,19 @@ jobs:
 
       - name: Download bundles
         if: ${{ inputs.bundle }}
-        uses: actions/download-artifact@v4
-        with:
-          pattern: toolsrift-android-apps-*
-          merge-multiple: true
-          run-id: ${{ steps.runs.outputs.build }}
-          github-token: ${{ github.token }}
-          path: dist
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUNS: ${{ steps.runs.outputs.build }}
+        run: |
+          # One or more android-build runs; each run's combined artifact holds
+          # <site>/<package>-<version>.aab. Later runs overwrite earlier ones.
+          mkdir -p dist
+          for run in $RUNS; do
+            echo "── bundles from android-build run $run"
+            gh run download "$run" --pattern 'toolsrift-android-apps-*' --dir dist/_dl || { echo "::warning::no toolsrift-android-apps-* artifact in run $run"; continue; }
+            cp -r dist/_dl/*/. dist/ && rm -rf dist/_dl
+          done
+          find dist -name '*.aab' | sort
 
       - name: Publish
         env:
