@@ -214,8 +214,9 @@ async function publishApp(b, report) {
       } else throw e;
     }
     for (const track of OPTS.tracks) {
+      // No countryTargeting: Play only accepts it on staged releases. The
+      // track's country availability is set once in the Console instead.
       const release = { name: bundle.versionName, versionCodes: [String(versionCode)], status: 'completed', releaseNotes: [{ language: 'en-US', text: OPTS.notes }] };
-      if (track !== 'internal') release.countryTargeting = { includeRestOfWorld: true };
       await api('PUT', `${E}/tracks/${track}`, { json: { track, releases: [release] } });
       log(`track ${track}: release ${bundle.versionName} (completed)`);
     }
