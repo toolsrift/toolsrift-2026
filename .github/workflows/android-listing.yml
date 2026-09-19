@@ -1,6 +1,7 @@
-# Google Play listing assets for every network site's app: phone screenshots
-# (1080×1920) taken from the LIVE sites with Playwright, bundled with the
-# committed feature graphic, icon and listing copy (android/apps/<id>/).
+# Google Play listing assets for every network site's app: phone captures of
+# the LIVE sites (Playwright) turned into store frames — phone mockup, brand
+# background, headline — plus a feature graphic with the same mockup, the
+# icon and the listing copy (android/apps/<id>/). Raw captures stay in raw/.
 # Run from the Actions tab; download the "play-listing-assets" artifact.
 name: android-listing
 
@@ -31,11 +32,17 @@ jobs:
         run: |
           ids="${{ inputs.sites }}"; [ "$ids" = "--all" ] && ids=""
           node scripts/android/screenshots.js $ids || echo "::warning::some screenshots failed (site not live yet?) — see the log"
-      - name: Bundle with feature graphics, icons and listing copy
+      - name: Store frames (phone mockup + headline) and feature graphics
+        run: |
+          ids="${{ inputs.sites }}"; [ "$ids" = "--all" ] && ids=""
+          node scripts/android/listing-frames.js $ids
+      - name: Bundle — store frames at the top, raw captures in raw/, plus icon and listing copy
         run: |
           for d in android/build/listing/*/; do
             id=$(basename "$d")
-            cp "android/apps/$id/feature-graphic.png" "$d" 2>/dev/null || true
+            mkdir -p "$d/raw"
+            mv "$d"/[0-9][0-9]-*.png "$d/raw/" 2>/dev/null || true
+            if [ -d "$d/store" ]; then mv "$d"/store/* "$d/" && rmdir "$d/store"; else cp "android/apps/$id/feature-graphic.png" "$d" 2>/dev/null || true; fi
             cp "android/apps/$id/play-listing.md" "$d" 2>/dev/null || true
             cp "public/brands/$id/icon-512.png" "$d/icon-512.png" 2>/dev/null || true
           done
