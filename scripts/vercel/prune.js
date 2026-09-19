@@ -55,7 +55,11 @@ async function pruneProject(p, report) {
   const deps = (await listAll(p.id)).sort((a, b) => b.created - a.created);
   const state = (d) => d.state || d.readyState;
   const prodReady = deps.filter(d => d.target === 'production' && state(d) === 'READY');
+  // Vercel's own pointer to the current production deployment (survives a
+  // rollback, where the live build is NOT the newest one) is always kept too.
+  const current = p.targets && p.targets.production && (p.targets.production.id || p.targets.production.uid);
   const keep = new Set([...prodReady.slice(0, 1 + KEEP), ...deps.filter(d => ACTIVE.has(state(d)))].map(d => d.uid || d.id));
+  if (current) keep.add(current);
   const doomed = deps.filter(d => !keep.has(d.uid || d.id));
 
   let deleted = 0, failed = 0;
