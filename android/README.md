@@ -85,11 +85,14 @@ icon path (`public/brands/<id>/icon-512.png`), and the Data safety answers.
 3. Feature graphic 1024×500: `android/apps/<id>/feature-graphic.png` (rendered
    by `npm run brands:assets`).
 4. Screenshots: run the **android-listing** workflow (Actions → Run workflow);
-   it takes 1080×1920 phone screenshots of the live site's home and top tools
-   and uploads a `play-listing-assets` artifact with the feature graphic, icon
-   and listing copy per app. Locally: `npm i --no-save playwright &&
-   npx playwright install chromium && node scripts/android/screenshots.js pdf`
-   (→ `android/build/listing/pdf/`).
+   it captures the live site's home and top tools on a phone viewport and
+   turns them into store frames (phone mockup on the brand background with a
+   headline — `scripts/android/listing-frames.js`), renders a feature graphic
+   with the same mockup, and uploads a `play-listing-assets` artifact: per app
+   `01-home.png … 05-*.png` (1080×1920), `feature-graphic.png`, `icon-512.png`,
+   `play-listing.md`, raw captures in `raw/`. Locally: `npm i --no-save playwright
+   && npx playwright install chromium && node scripts/android/screenshots.js pdf
+   && node scripts/android/listing-frames.js pdf` (→ `android/build/listing/pdf/`).
 5. When the app is live on Play, set `android.published: true` on the brand in
    `brands.js`: the site's web manifest then prefers the Play app over the PWA
    install prompt (`related_applications`).
