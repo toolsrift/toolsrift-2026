@@ -18,6 +18,7 @@
     "android:generate": "node scripts/android/generate.js",
     "android:keystore": "bash scripts/android/keystore.sh",
     "android:build": "bash scripts/android/build.sh",
+    "android:publish": "node scripts/android/publish.js",
     "vercel:bootstrap": "node scripts/vercel/bootstrap.js",
     "vercel:deploy": "bash scripts/vercel/deploy.sh"
   },
