@@ -10,7 +10,7 @@
 | Privacy policy | https://formatters.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/formatters/icon-512.png` |
-| Feature graphic (1024×500) | export from `public/brands/formatters/og.svg` |
+| Feature graphic (1024×500) | `android/apps/formatters/feature-graphic.png` |
 | Theme colour | #14B8A6 |
 
 ## Short description (≤80 chars)
@@ -55,7 +55,9 @@ ToolsRift Formatters is the formatters edition of ToolsRift (toolsrift.com), the
 
 code formatter, sql formatter, xml formatter, yaml formatter, css beautifier, markdown formatter, code beautifier
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the `android-listing` workflow (artifact `play-listing-assets`, folder `formatters/`):
 
 1. Home — the Code Formatters dashboard
 2. CSS Formatter in use

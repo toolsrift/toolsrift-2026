@@ -10,7 +10,7 @@
 | Privacy policy | https://generators.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/generators/icon-512.png` |
-| Feature graphic (1024×500) | export from `public/brands/generators/og.svg` |
+| Feature graphic (1024×500) | `android/apps/generators/feature-graphic.png` |
 | Theme colour | #84CC16 |
 
 ## Short description (≤80 chars)
@@ -55,7 +55,9 @@ ToolsRift Generators is the generators edition of ToolsRift (toolsrift.com), the
 
 password generator, uuid generator, qr code generator, barcode generator, random data generator, api key generator
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the `android-listing` workflow (artifact `play-listing-assets`, folder `generators/`):
 
 1. Home — the Security & ID Generators dashboard
 2. Strong Password Generator in use

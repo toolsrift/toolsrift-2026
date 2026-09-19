@@ -10,7 +10,7 @@
 | Privacy policy | https://random.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/random/icon-512.png` |
-| Feature graphic (1024×500) | export from `public/brands/random/og.svg` |
+| Feature graphic (1024×500) | `android/apps/random/feature-graphic.png` |
 | Theme colour | #F43F5E |
 
 ## Short description (≤80 chars)
@@ -55,7 +55,9 @@ ToolsRift Random is the random edition of ToolsRift (toolsrift.com), the free on
 
 spinner wheel, random name picker, dice roller, coin flip, random number generator, team generator, magic 8 ball
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the `android-listing` workflow (artifact `play-listing-assets`, folder `random/`):
 
 1. Home — the Randomizers & Games dashboard
 2. Spinner Wheel in use

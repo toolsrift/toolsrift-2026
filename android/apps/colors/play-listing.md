@@ -10,7 +10,7 @@
 | Privacy policy | https://colors.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/colors/icon-512.png` |
-| Feature graphic (1024×500) | export from `public/brands/colors/og.svg` |
+| Feature graphic (1024×500) | `android/apps/colors/feature-graphic.png` |
 | Theme colour | #A855F7 |
 
 ## Short description (≤80 chars)
@@ -55,7 +55,9 @@ ToolsRift Colors is the colors edition of ToolsRift (toolsrift.com), the free on
 
 color picker, color palette generator, hex to rgb, rgb to hsl, contrast checker, color converter, gradient generator
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the `android-listing` workflow (artifact `play-listing-assets`, folder `colors/`):
 
 1. Home — the Color Tools dashboard
 2. Color Picker in use

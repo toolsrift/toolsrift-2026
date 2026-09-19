@@ -10,7 +10,7 @@
 | Privacy policy | https://encoding.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/encoding/icon-512.png` |
-| Feature graphic (1024×500) | export from `public/brands/encoding/og.svg` |
+| Feature graphic (1024×500) | `android/apps/encoding/feature-graphic.png` |
 | Theme colour | #6366F1 |
 
 ## Short description (≤80 chars)
@@ -55,7 +55,9 @@ ToolsRift Encoding is the encoding edition of ToolsRift (toolsrift.com), the fre
 
 morse code translator, binary translator, caesar cipher, rot13, nato phonetic alphabet, text to binary
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the `android-listing` workflow (artifact `play-listing-assets`, folder `encoding/`):
 
 1. Home — the Text Encoding Tools dashboard
 2. Morse Code Translator in use

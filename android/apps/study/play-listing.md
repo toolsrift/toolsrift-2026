@@ -10,7 +10,7 @@
 | Privacy policy | https://study.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/study/icon-512.png` |
-| Feature graphic (1024×500) | export from `public/brands/study/og.svg` |
+| Feature graphic (1024×500) | `android/apps/study/feature-graphic.png` |
 | Theme colour | #4F46E5 |
 
 ## Short description (≤80 chars)
@@ -55,7 +55,9 @@ ToolsRift Study is the study edition of ToolsRift (toolsrift.com), the free onli
 
 flashcard maker, quiz generator, citation generator, apa citation, periodic table, pomodoro timer, study planner
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the `android-listing` workflow (artifact `play-listing-assets`, folder `study/`):
 
 1. Home — the Study & Education Tools dashboard
 2. Flashcard Maker in use

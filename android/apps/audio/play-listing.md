@@ -10,7 +10,7 @@
 | Privacy policy | https://audio.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/audio/icon-512.png` |
-| Feature graphic (1024×500) | export from `public/brands/audio/og.svg` |
+| Feature graphic (1024×500) | `android/apps/audio/feature-graphic.png` |
 | Theme colour | #9333EA |
 
 ## Short description (≤80 chars)
@@ -55,7 +55,9 @@ ToolsRift Audio is the audio edition of ToolsRift (toolsrift.com), the free onli
 
 audio trimmer, audio converter, mp3 cutter, voice recorder, text to speech, audio normalizer, wav to mp3
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the `android-listing` workflow (artifact `play-listing-assets`, folder `audio/`):
 
 1. Home — the Audio Tools dashboard
 2. Audio Trimmer in use

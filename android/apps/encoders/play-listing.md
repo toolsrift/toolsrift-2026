@@ -10,7 +10,7 @@
 | Privacy policy | https://encoders.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/encoders/icon-512.png` |
-| Feature graphic (1024×500) | export from `public/brands/encoders/og.svg` |
+| Feature graphic (1024×500) | `android/apps/encoders/feature-graphic.png` |
 | Theme colour | #F59E0B |
 
 ## Short description (≤80 chars)
@@ -55,7 +55,9 @@ ToolsRift Encoders is the encoders edition of ToolsRift (toolsrift.com), the fre
 
 base64 encode, base64 decode, url encoder, url decoder, html entity encoder, jwt decoder, hex converter
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the `android-listing` workflow (artifact `play-listing-assets`, folder `encoders/`):
 
 1. Home — the Encoders & Decoders dashboard
 2. Base64 Encoder in use

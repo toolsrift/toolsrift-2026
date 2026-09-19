@@ -10,7 +10,7 @@
 | Privacy policy | https://json.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/code/icon-512.png` |
-| Feature graphic (1024×500) | export from `public/brands/code/og.svg` |
+| Feature graphic (1024×500) | `android/apps/code/feature-graphic.png` |
 | Theme colour | #10B981 |
 
 ## Short description (≤80 chars)
@@ -55,7 +55,9 @@ ToolsRift JSON is the json edition of ToolsRift (toolsrift.com), the free online
 
 json formatter, json validator, json minifier, json to csv, json to yaml, json diff, jsonpath tester
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the `android-listing` workflow (artifact `play-listing-assets`, folder `code/`):
 
 1. Home — the JSON Tools dashboard
 2. JSON Formatter in use

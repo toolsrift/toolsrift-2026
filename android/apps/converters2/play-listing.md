@@ -10,7 +10,7 @@
 | Privacy policy | https://converters.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/converters2/icon-512.png` |
-| Feature graphic (1024×500) | export from `public/brands/converters2/og.svg` |
+| Feature graphic (1024×500) | `android/apps/converters2/feature-graphic.png` |
 | Theme colour | #0EA5E9 |
 
 ## Short description (≤80 chars)
@@ -55,7 +55,9 @@ ToolsRift Converters is the converters edition of ToolsRift (toolsrift.com), the
 
 specialty converters, voltage converter, clothing size converter, shoe size converter, paper size converter, fuel economy converter
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the `android-listing` workflow (artifact `play-listing-assets`, folder `converters2/`):
 
 1. Home — the Special Unit Converters dashboard
 2. Force Converter in use

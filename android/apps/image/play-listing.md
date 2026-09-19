@@ -10,7 +10,7 @@
 | Privacy policy | https://image.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/image/icon-512.png` |
-| Feature graphic (1024×500) | export from `public/brands/image/og.svg` |
+| Feature graphic (1024×500) | `android/apps/image/feature-graphic.png` |
 | Theme colour | #EC4899 |
 
 ## Short description (≤80 chars)
@@ -55,7 +55,9 @@ ToolsRift Image is the image edition of ToolsRift (toolsrift.com), the free onli
 
 image resizer, image compressor, crop image, convert image, png to jpg, webp converter, photo editor online
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the `android-listing` workflow (artifact `play-listing-assets`, folder `image/`):
 
 1. Home — the Image Tools dashboard
 2. Image Resizer in use

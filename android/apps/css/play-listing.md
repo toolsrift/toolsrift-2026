@@ -10,7 +10,7 @@
 | Privacy policy | https://css.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/css/icon-512.png` |
-| Feature graphic (1024×500) | export from `public/brands/css/og.svg` |
+| Feature graphic (1024×500) | `android/apps/css/feature-graphic.png` |
 | Theme colour | #06B6D4 |
 
 ## Short description (≤80 chars)
@@ -55,7 +55,9 @@ ToolsRift CSS is the css edition of ToolsRift (toolsrift.com), the free online t
 
 css generator, css gradient generator, box shadow generator, border radius generator, flexbox generator, css grid generator
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the `android-listing` workflow (artifact `play-listing-assets`, folder `css/`):
 
 1. Home — the CSS Generators dashboard
 2. CSS Gradient Generator in use

@@ -10,7 +10,7 @@
 | Privacy policy | https://data.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/data/icon-512.png` |
-| Feature graphic (1024×500) | export from `public/brands/data/og.svg` |
+| Feature graphic (1024×500) | `android/apps/data/feature-graphic.png` |
 | Theme colour | #2DD4BF |
 
 ## Short description (≤80 chars)
@@ -55,7 +55,9 @@ ToolsRift Data is the data edition of ToolsRift (toolsrift.com), the free online
 
 chart maker, bar chart generator, pie chart maker, csv cleaner, pivot table online, statistics calculator
 
-## Screenshots to capture (phone, 1080×1920)
+## Screenshots (phone, 1080×1920)
+
+Taken by the `android-listing` workflow (artifact `play-listing-assets`, folder `data/`):
 
 1. Home — the Charts & Data Tools dashboard
 2. Bar Chart Maker in use
