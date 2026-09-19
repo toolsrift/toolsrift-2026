@@ -148,10 +148,10 @@ function findBundle(pkg) {
 }
 
 // ── one app ────────────────────────────────────────────────────────────────
-async function publishApp(b, report) {
+async function publishApp(b, report, { draft = false } = {}) {
   const id = b.id, pkg = b.android.packageId;
   const log = (m) => console.log(`  ${m}`);
-  console.log(`\n▶ ${id}  (${pkg})`);
+  console.log(`\n▶ ${id}  (${pkg})${draft ? '  [draft releases]' : ''}`);
 
   const listing = OPTS.skipListing ? null : parseListing(id);
   const images = OPTS.skipImages ? null : findImages(id);
@@ -216,16 +216,24 @@ async function publishApp(b, report) {
     for (const track of OPTS.tracks) {
       // No countryTargeting: Play only accepts it on staged releases. The
       // track's country availability is set once in the Console instead.
-      const release = { name: bundle.versionName, versionCodes: [String(versionCode)], status: 'completed', releaseNotes: [{ language: 'en-US', text: OPTS.notes }] };
+      // An app that has never been published ("draft app") only accepts draft
+      // releases: someone then clicks Review release → Start rollout in the
+      // Console once. Published apps get completed releases straight away.
+      const release = { name: bundle.versionName, versionCodes: [String(versionCode)], status: draft ? 'draft' : 'completed', releaseNotes: [{ language: 'en-US', text: OPTS.notes }] };
       await api('PUT', `${E}/tracks/${track}`, { json: { track, releases: [release] } });
-      log(`track ${track}: release ${bundle.versionName} (completed)`);
+      log(`track ${track}: release ${bundle.versionName} (${release.status})`);
     }
-    notes.push(`bundle ${versionCode} → ${OPTS.tracks.join(', ')}`);
+    notes.push(`bundle ${versionCode} → ${OPTS.tracks.join(', ')}${draft ? ' (draft — roll out in the Console)' : ''}`);
   }
 
   try { await api('POST', `${E}:commit?changesNotSentForReview=true`); }
   catch (e) {
     if (e.status === 400 && /changesNotSentForReview|not sent for review/i.test(errText(e))) await api('POST', `${E}:commit`);
+    else if (!draft && /draft app/i.test(errText(e))) {
+      // Nothing from this edit was kept (edits are atomic) — redo it with draft releases.
+      log('app has never been published — redoing with draft releases');
+      return publishApp(b, report, { draft: true });
+    }
     else throw e;
   }
   log('✓ committed (not sent for review — click "Send changes for review" in the Console)');
