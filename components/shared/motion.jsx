@@ -356,6 +356,24 @@ export function ParticlesField({ color = 'rgba(255,255,255,0.4)', count = 20, st
   );
 }
 
+// ── ScrollProgress — hairline under a sticky header that fills as you read ──
+export function ScrollProgress({ color = '#3B82F6' }) {
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 140, damping: 26, mass: 0.4 });
+  return (
+    <motion.div
+      aria-hidden
+      style={{
+        position: 'absolute', left: 0, right: 0, bottom: -1, height: 2,
+        transformOrigin: '0 50%', scaleX,
+        background: `linear-gradient(90deg, ${color}, ${color}66)`,
+        boxShadow: `0 0 12px ${color}88`,
+        pointerEvents: 'none',
+      }}
+    />
+  );
+}
+
 // ── PageTransition — wrap pages for soft enter/exit ─────────────────────────
 export function PageTransition({ children, keyId }) {
   return (
