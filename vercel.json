@@ -8,6 +8,7 @@
   ],
   "git": {
     "deploymentEnabled": {
+      "main": false,
       "claude/dreamy-galileo-1v6pl9": false
     }
   },

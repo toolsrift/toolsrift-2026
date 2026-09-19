@@ -3,13 +3,14 @@
  * scripts/vercel/deploy-unlinked.js — production deployments Vercel's git
  * integration does not make for us:
  *
- *   default      the network-site projects that have NO git link (Vercel
- *                allows at most 25 projects per repository; the hub + 24 sites
- *                use that allowance). Runs on every push to main.
- *   --catch-up   additionally every toolsrift-* project (and the hub) whose
- *                latest production deployment is not at the current main
- *                commit — e.g. after Vercel refused deployments for a while
- *                (Hobby plan: 100 deployments/day). Runs on a daily schedule.
+ *   --catch-up   every toolsrift-* project AND the hub whose latest production
+ *                deployment is not at the current main commit. This is the
+ *                network's production deploy: git-triggered deployments are
+ *                off for main (vercel.json), so nothing deploys except through
+ *                this script — daily at 17:00 UTC or on demand. Hobby quota:
+ *                100 deployments per rolling 24 h, so at most 30 a day here.
+ *   <site ids>   just those projects (any of them, linked or not).
+ *   default      the projects without a git link.
  *
  * Deployments are created through the API from the repo's main branch
  * (gitSource + the repo id taken from the hub project), falling back to a
@@ -71,7 +72,8 @@ async function main() {
       else console.log(`   ${p.name}: up to date (${state} @ ${(sha || '').slice(0, 7)})`);
     }
   } else {
-    targets = network.filter(p => !p.link && (!wanted.length || wanted.includes(p.name)));
+    // Named sites (any project), else every project without a git link.
+    targets = wanted.length ? network.filter(p => wanted.includes(p.name)) : network.filter(p => !p.link);
   }
   if (!targets.length) { console.log(catchUp ? 'everything is at main — nothing to deploy' : 'no unlinked toolsrift-* projects — nothing to deploy'); return; }
   console.log(`${catchUp ? 'projects behind main' : 'unlinked projects'}: ${targets.map(p => p.name).join(', ')}`);
@@ -94,7 +96,10 @@ async function main() {
     }
     const link = vercel(['link', '--yes', '--project', p.name]);
     if (link.status !== 0) { console.log(`   ✗ link: ${(link.stderr || '').trim().split('\n').pop()}`); failed++; continue; }
-    const dep = vercel(['deploy', '--prod', '--yes', '--no-wait']);
+    // Tag the upload with the commit it was built from: the catch-up decides
+    // "behind main" from meta.githubCommitSha, which a plain upload lacks.
+    const meta = headSha ? ['--meta', `githubCommitSha=${headSha}`, '--meta', `githubCommitRef=${ref}`] : [];
+    const dep = vercel(['deploy', '--prod', '--yes', '--no-wait', ...meta]);
     try { fs.rmSync(path.join(ROOT, '.vercel'), { recursive: true, force: true }); } catch (_) { /* ignore */ }
     if (dep.status !== 0) { console.log(`   ✗ deploy:\n${(dep.stderr || dep.stdout || '').trim().split('\n').slice(-12).map(l => '      ' + l).join('\n')}`); failed++; continue; }
     console.log(`   ✓ ${(dep.stdout || '').trim().split('\n').pop()}`);
