@@ -30,7 +30,7 @@ on:
         type: boolean
         default: true
       listing_run_id:
-        description: 'android-listing run id to take graphics from (blank = latest successful)'
+        description: 'android-listing run id(s) to take graphics from, space-separated (blank = latest successful)'
         default: ''
       build_run_id:
         description: 'android-build run id(s) to take bundles from, space-separated (blank = latest successful)'
@@ -38,6 +38,10 @@ on:
       release_notes:
         description: 'Release notes (en-US)'
         default: 'First release.'
+      new_apps:
+        description: 'Apps never published before: create draft releases straight away (roll out once in the Console)'
+        type: boolean
+        default: false
       dry_run:
         description: 'Only report what would be uploaded'
         type: boolean
@@ -80,12 +84,19 @@ jobs:
 
       - name: Download listing graphics
         if: ${{ inputs.listing }}
-        uses: actions/download-artifact@v4
-        with:
-          name: play-listing-assets
-          run-id: ${{ steps.runs.outputs.listing }}
-          github-token: ${{ github.token }}
-          path: android/build/listing
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUNS: ${{ steps.runs.outputs.listing }}
+        run: |
+          # One or more android-listing runs (each covers the sites it was run
+          # for); later runs overwrite earlier ones per site folder.
+          mkdir -p android/build/listing
+          for run in $RUNS; do
+            echo "── graphics from android-listing run $run"
+            gh run download "$run" --name play-listing-assets --dir android/build/listing/_dl || { echo "::warning::no play-listing-assets artifact in run $run"; continue; }
+            cp -r android/build/listing/_dl/. android/build/listing/ && rm -rf android/build/listing/_dl
+          done
+          ls android/build/listing
 
       - name: Download bundles
         if: ${{ inputs.bundle }}
@@ -115,5 +126,6 @@ jobs:
           args+=(--tracks "$TRACKS" --notes "$NOTES")
           ${{ inputs.listing }} || args+=(--skip-listing --skip-images)
           ${{ inputs.bundle }}  || args+=(--skip-bundle)
+          ${{ inputs.new_apps }} && args+=(--draft)
           ${{ inputs.dry_run }} && args+=(--dry-run)
           node scripts/android/publish.js "${args[@]}"

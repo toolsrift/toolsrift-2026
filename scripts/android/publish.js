@@ -17,6 +17,8 @@
 //      until someone clicks "Send changes for review" in the Console.
 //
 // Flags: --skip-listing  --skip-images  --skip-bundle  --dry-run
+//        --draft   never-published apps (Play only accepts draft releases there;
+//                  without it the script finds out the hard way and redoes the edit)
 //        --notes "First release."  --assets DIR  --bundles DIR
 // Auth:  PLAY_SERVICE_ACCOUNT_JSON (the key file's contents) or
 //        PLAY_SERVICE_ACCOUNT_FILE (path). Never commit the key.
@@ -48,6 +50,7 @@ const OPTS = {
   skipImages: flag('--skip-images'),
   skipBundle: flag('--skip-bundle'),
   dryRun: flag('--dry-run'),
+  draft: flag('--draft'),   // never-published apps: draft releases straight away
 };
 if (!OPTS.all && !OPTS.sites.length) {
   console.error('usage: publish.js (--all | --sites "id id …") [--tracks internal,alpha] [--notes …] [--assets DIR] [--bundles DIR] [--skip-listing] [--skip-images] [--skip-bundle] [--dry-run]');
@@ -261,7 +264,7 @@ async function publishApp(b, report, { draft = false } = {}) {
   const report = [];
   let failed = 0;
   for (const b of wanted) {
-    try { await publishApp(b, report); }
+    try { await publishApp(b, report, { draft: OPTS.draft }); }
     catch (e) { failed++; console.log(`  ✗ ${errText(e)}`); report.push({ id: b.id, pkg: b.android.packageId, status: 'FAILED', note: errText(e).slice(0, 200) }); }
   }
 
