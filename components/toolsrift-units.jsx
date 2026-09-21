@@ -295,7 +295,7 @@ const UNITS = {
     {id:"kt",   label:"Knot (kt)",              toBase:v=>v*0.514444,     fromBase:b=>b/0.514444},
     {id:"ftps", label:"Feet/second (ft/s)",     toBase:v=>v*0.3048,       fromBase:b=>b/0.3048},
     {id:"mach", label:"Mach (at sea level)",    toBase:v=>v*340.29,       fromBase:b=>b/340.29},
-    {id:"c",    label:"Speed of Light (c)",     toBase:v=>v*2.998e8,      fromBase:b=>b/2.998e8},
+    {id:"c",    label:"Speed of Light (c)",     toBase:v=>v*299792458,    fromBase:b=>b/299792458},
   ],
 
   pressure:[
