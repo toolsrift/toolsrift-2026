@@ -2455,6 +2455,14 @@ function StripHtmlTags() {
   const output = useMemo(() => {
     if (!text) return "";
     return text
+      // Drop script and style bodies first: stripping only the tags would leave
+      // the JavaScript and CSS between them sitting in the "plain text".
+      .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, " ")
+      .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, " ")
+      .replace(/<!--[\s\S]*?-->/g, " ")
+      // Block-level elements become line breaks, or paragraphs run together.
+      .replace(/<\/(p|div|h[1-6]|li|tr|blockquote|section|article)\s*>/gi, "\n")
+      .replace(/<(br|hr)\s*\/?>/gi, "\n")
       .replace(/<[^>]*>/g, " ")
       .replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<")
       .replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&apos;/g, "'")
