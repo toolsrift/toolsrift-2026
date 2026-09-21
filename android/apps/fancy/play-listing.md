@@ -5,7 +5,7 @@
 | Package id | `com.toolsrift.fancy` |
 | App name (≤30) | ToolsRift Fancy Text |
 | Launcher name | Fancy Text |
-| Category | SOCIAL |
+| Category | ART_AND_DESIGN |
 | Website | https://fancy.toolsrift.com |
 | Privacy policy | https://fancy.toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
