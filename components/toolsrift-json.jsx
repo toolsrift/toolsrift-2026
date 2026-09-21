@@ -527,7 +527,10 @@ function generateInterface(obj, name="Root", depth=0) {
       nested.push(generateInterface(v,childName,depth));
       type=childName;
     }
-    return `${pad}  ${k}: ${type};`;
+    // A JSON key need not be a valid TS identifier. Emitting "content-type"
+    // unquoted produces TypeScript that does not compile.
+    const key=/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(k)?k:JSON.stringify(k);
+    return `${pad}  ${key}: ${type};`;
   });
   const iface=`${pad}interface ${pascalCase(name)} {\n${fields.join("\n")}\n${pad}}`;
   return [...nested,iface].filter(Boolean).join("\n\n");
