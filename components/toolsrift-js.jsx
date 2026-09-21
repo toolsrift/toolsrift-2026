@@ -814,29 +814,38 @@ function JsObfuscator() {
       
       while ((match = varRegex.exec(input)) !== null) {
         const varName = match[2];
-        if (!varMap.has(varName) && varName.length > 1) {
-          const obfName = '_0x' + varCounter.toString(16);
-          varMap.set(varName, obfName);
-          varCounter++;
-        }
+        if (varMap.has(varName) || varName.length <= 1) continue;
+        // Renaming without parsing cannot tell a variable from a property that
+        // shares its name, and renaming an object key but not the `obj.key`
+        // that reads it produces code that runs and silently returns undefined.
+        // So skip any name that also appears as a property or an object key:
+        // fewer renames, but output that still works.
+        const usedAsProperty = new RegExp(`\\.\\s*${varName}\\b|\\b${varName}\\s*:`).test(input);
+        if (usedAsProperty) continue;
+        varMap.set(varName, '_0x' + varCounter.toString(16));
+        varCounter++;
       }
       
       // Replace variable names
       varMap.forEach((obfName, varName) => {
-        const regex = new RegExp(`\\b${varName}\\b`, 'g');
+        // Skip property accesses: renaming the `count` in `obj.count` renames a
+        // property that was never declared, which breaks the code outright.
+        const regex = new RegExp(`(?<![.\\w$])${varName}\\b`, 'g');
         obfuscated = obfuscated.replace(regex, obfName);
       });
       
       // Encode strings
-      obfuscated = obfuscated.replace(/'([^']*)'/g, (match, str) => {
-        const encoded = Array.from(str).map(c => '\\x' + c.charCodeAt(0).toString(16)).join('');
-        return `'${encoded}'`;
-      });
-      
-      obfuscated = obfuscated.replace(/"([^"]*)"/g, (match, str) => {
-        const encoded = Array.from(str).map(c => '\\x' + c.charCodeAt(0).toString(16)).join('');
-        return `"${encoded}"`;
-      });
+      // \x takes exactly two hex digits, so anything above U+00FF has to use \u
+      // or the escape swallows the wrong characters and corrupts the string.
+      const escapeChars = (str) => str.split('').map(c => {
+        const n = c.charCodeAt(0);
+        return n < 256
+          ? '\\x' + n.toString(16).padStart(2, '0')
+          : '\\u' + n.toString(16).padStart(4, '0');
+      }).join('');
+
+      obfuscated = obfuscated.replace(/'([^'\\\\]*)'/g, (m, str) => `'${escapeChars(str)}'`);
+      obfuscated = obfuscated.replace(/"([^"\\\\]*)"/g, (m, str) => `"${escapeChars(str)}"`);
       
       setOutput(obfuscated);
     } catch (err) {

@@ -1405,19 +1405,25 @@ function JsonToCsv() {
         return;
       }
       
-      const headers = Object.keys(arr[0] || {});
-      let csv = headers.join(',') + '\n';
-      
-      arr.forEach(row => {
-        const values = headers.map(h => {
-          const val = row[h];
-          if (typeof val === 'object') return JSON.stringify(val);
-          return String(val || '');
-        });
-        csv += values.join(',') + '\n';
-      });
-      
-      setOutput(csv);
+      // Union of keys across every row: taking them from arr[0] alone silently
+      // drops columns that only later objects have.
+      const headers = [];
+      arr.forEach(row => Object.keys(row || {}).forEach(k => {
+        if (!headers.includes(k)) headers.push(k);
+      }));
+
+      // RFC 4180: quote a field containing a comma, quote, CR or LF, and double
+      // any quote inside it. Without this a single comma in a value shifts every
+      // column after it.
+      const cell = (val) => {
+        if (val === null || val === undefined) return '';
+        const str = typeof val === 'object' ? JSON.stringify(val) : String(val);
+        return /[",\r\n]/.test(str) ? '"' + str.replace(/"/g, '""') + '"' : str;
+      };
+
+      const lines = [headers.map(cell).join(',')];
+      arr.forEach(row => lines.push(headers.map(h => cell((row || {})[h])).join(',')));
+      setOutput(lines.join('\n') + '\n');
     } catch (err) {
       setOutput('Error: ' + err.message);
     }

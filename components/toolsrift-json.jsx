@@ -527,7 +527,10 @@ function generateInterface(obj, name="Root", depth=0) {
       nested.push(generateInterface(v,childName,depth));
       type=childName;
     }
-    return `${pad}  ${k}: ${type};`;
+    // A JSON key need not be a valid TS identifier. Emitting "content-type"
+    // unquoted produces TypeScript that does not compile.
+    const key=/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(k)?k:JSON.stringify(k);
+    return `${pad}  ${key}: ${type};`;
   });
   const iface=`${pad}interface ${pascalCase(name)} {\n${fields.join("\n")}\n${pad}}`;
   return [...nested,iface].filter(Boolean).join("\n\n");
@@ -894,29 +897,46 @@ function CsvToJson() {
   const output=useMemo(()=>{
     if(!input.trim()) return "";
     try{
-      const lines=input.trim().split(/\r?\n/);
-      const parse=line=>{
-        const fields=[]; let cur="",inQ=false;
-        for(let i=0;i<line.length;i++){
-          const ch=line[i];
-          if(ch==='"'&&inQ&&line[i+1]==='"'){cur+='"';i++;}
+      // Scan the whole document rather than splitting on newlines first: a
+      // quoted field may legally contain a line break (RFC 4180), and a
+      // line-by-line split tears that record in half.
+      const rows=[]; {
+        const text=input.replace(/\r\n/g,"\n").replace(/\n+$/,"");
+        let row=[],cur="",inQ=false;
+        for(let i=0;i<text.length;i++){
+          const ch=text[i];
+          if(ch==='"'&&inQ&&text[i+1]==='"'){cur+='"';i++;}
           else if(ch==='"'){inQ=!inQ;}
-          else if(ch===delimiter&&!inQ){fields.push(cur.trim());cur="";}
+          else if(ch===delimiter&&!inQ){row.push(cur.trim());cur="";}
+          else if(ch==="\n"&&!inQ){row.push(cur.trim());rows.push(row);row=[];cur="";}
           else cur+=ch;
         }
-        fields.push(cur.trim()); return fields;
+        row.push(cur.trim()); rows.push(row);
+      }
+
+      // Only convert a field when the ENTIRE value is a number. parseFloat
+      // reads a prefix, so "12 Main St" became 12 and "1.2.3" became 1.2.
+      // Leading-zero values (postcodes, padded ids) and integers past 2^53
+      // stay strings, because converting them loses information.
+      const coerce=v=>{
+        const t=v.trim();
+        if(t==="true") return true;
+        if(t==="false") return false;
+        if(/^-?(0|[1-9]\d*)(\.\d+)?([eE][+-]?\d+)?$/.test(t)){
+          const n=Number(t);
+          if(!Number.isInteger(n)||Number.isSafeInteger(n)) return n;
+        }
+        return v;
       };
-      const rows=lines.map(parse);
       let result;
       if(hasHeader){
         const headers=rows[0];
         result=rows.slice(1).map(row=>Object.fromEntries(headers.map((h,i)=>{
           const v=row[i]??"";
-          const n=parseFloat(v);
-          return[h,v===""?null:(!isNaN(n)&&v.trim()!=="")? n:(v==="true"?true:v==="false"?false:v)];
+          return[h,v.trim()===""?null:coerce(v)];
         })));
       } else {
-        result=rows.map(r=>r.map(v=>{const n=parseFloat(v);return!isNaN(n)?n:(v==="true"?true:v==="false"?false:v);}));
+        result=rows.map(r=>r.map(v=>v.trim()===""?null:coerce(v)));
       }
       setError(""); return JSON.stringify(result,null,2);
     }catch(e){setError(e.message);return "";}

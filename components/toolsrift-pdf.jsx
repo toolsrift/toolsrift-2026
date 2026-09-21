@@ -1959,7 +1959,7 @@ function PdfPasswordProtect() {
       {notice && (
         <div style={{ padding:14, background:"rgba(245,158,11,0.1)", border:`1px solid rgba(245,158,11,0.3)`, borderRadius:8, fontSize:13, color:C.text, lineHeight:1.6 }}>
           <strong>In-browser PDF encryption isn't available yet.</strong><br />
-          Standard PDF password protection needs an encryption engine that browsers can't run fully client-side, and ToolsRift never uploads your file to a server — so this tool can't lock your PDF right now. Your file stayed entirely on your device. A private, in-browser encryptor is on our roadmap.
+          The in-browser PDF engine we use can read encrypted PDFs but cannot write them — adding a password means rebuilding the document's security handler, which pdf-lib does not support. Your file stayed entirely on your device and was not uploaded. In the meantime, most desktop PDF readers and word processors can set a password when exporting.
         </div>
       )}
       <div style={{ padding:12, background:"rgba(59,130,246,0.08)", border:`1px solid rgba(59,130,246,0.2)`, borderRadius:8, fontSize:12, color:C.text }}>

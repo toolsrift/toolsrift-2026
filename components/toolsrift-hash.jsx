@@ -878,25 +878,32 @@ function PasswordGenerator() {
   const [count, setCount] = useState(1);
   const [passwords, setPasswords] = useState([]);
 
-  const generate = useCallback(()=>{
-    let pool=Object.entries(opts).filter(([,v])=>v).map(([k])=>CHARS[k]).join("");
-    if(exclude) pool=pool.split("").filter(c=>!exclude.includes(c)).join("");
-    if(!pool) return;
+  // Characters left in each selected set once exclusions are applied.
+  const activeSets=useMemo(()=>Object.entries(opts).filter(([,v])=>v)
+    .map(([k])=>CHARS[k].split("").filter(c=>!exclude.includes(c)))
+    .filter(set=>set.length>0),[opts,exclude]);
+  const pool=useMemo(()=>activeSets.flat(),[activeSets]);
+
+  const generate=useCallback(()=>{
+    if(!pool.length) return;
     setPasswords(Array.from({length:count},()=>{
-      // Ensure at least one char from each selected set
-      const required=Object.entries(opts).filter(([,v])=>v).map(([k])=>cryptoRandomChoice(CHARS[k].split("").filter(c=>!exclude.includes(c))));
-      const rest=Array.from({length:Math.max(0,len-required.length)},()=>cryptoRandomChoice(pool.split("")));
-      return [...required,...rest].sort(()=>cryptoRandom()-0.5).join("");
+      // One character from each selected set, so the result passes site rules.
+      const chars=activeSets.slice(0,len).map(set=>cryptoRandomChoice(set));
+      while(chars.length<len) chars.push(cryptoRandomChoice(pool));
+      // Fisher-Yates: a plain sort() comparator is not a uniform shuffle, which
+      // would leave the guaranteed characters clustered at predictable positions.
+      for(let i=chars.length-1;i>0;i--){
+        const j=cryptoRandomInt(0,i+1);
+        [chars[i],chars[j]]=[chars[j],chars[i]];
+      }
+      return chars.join("");
     }));
-  },[len,opts,exclude,count]);
+  },[len,count,pool,activeSets]);
 
   useEffect(()=>generate(),[]);
 
-  const entropy = useMemo(()=>{
-    const pool=Object.entries(opts).filter(([,v])=>v).map(([k])=>CHARS[k]).join("");
-    const size=pool.length;
-    return (len*Math.log2(Math.max(size,1))).toFixed(1);
-  },[len,opts]);
+  // Entropy of the pool the password is actually drawn from, exclusions included.
+  const entropy=useMemo(()=>(len*Math.log2(Math.max(pool.length,1))).toFixed(1),[len,pool]);
 
   return (
     <VStack>
