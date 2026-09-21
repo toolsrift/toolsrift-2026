@@ -2052,6 +2052,27 @@ function TextDiff() {
   const diff = useMemo(() => {
     const la = a.split("\n"), lb = b.split("\n");
     const result = [];
+
+    // Longest common subsequence, so inserting one line marks that line added
+    // rather than every line after it changed. Guarded: the table is O(n*m), so
+    // very large inputs fall back to the positional comparison.
+    if (la.length * lb.length <= 4_000_000) {
+      const n = la.length, m = lb.length;
+      const dp = Array.from({ length: n + 1 }, () => new Uint32Array(m + 1));
+      for (let i = n - 1; i >= 0; i--)
+        for (let j = m - 1; j >= 0; j--)
+          dp[i][j] = la[i] === lb[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+      let i = 0, j = 0;
+      while (i < n && j < m) {
+        if (la[i] === lb[j]) { result.push({ type: "same", text: la[i] }); i++; j++; }
+        else if (dp[i + 1][j] >= dp[i][j + 1]) { result.push({ type: "remove", text: la[i] }); i++; }
+        else { result.push({ type: "add", text: lb[j] }); j++; }
+      }
+      while (i < n) result.push({ type: "remove", text: la[i++] });
+      while (j < m) result.push({ type: "add", text: lb[j++] });
+      return result;
+    }
+
     const maxLen = Math.max(la.length, lb.length);
     for (let i=0; i<maxLen; i++) {
       const al = la[i], bl = lb[i];
@@ -2096,14 +2117,22 @@ function NumberToWords() {
     if (n===0) return "zero";
     const ones = ["","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"];
     const tens_ = ["","","twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"];
-    const h = n => n===0?"":(n<20?ones[n]+" ":(tens_[Math.floor(n/10)]+(n%10?" "+ones[n%10]:"")+" "));
+    // Handles 1-999. The hundreds branch used to be missing, so any group with a
+    // hundreds digit produced "undefined" (500 -> "undefined").
+    const h = n => {
+      if(n===0) return "";
+      if(n<20) return ones[n]+" ";
+      if(n<100) return tens_[Math.floor(n/10)]+(n%10?" "+ones[n%10]:"")+" ";
+      return ones[Math.floor(n/100)]+" hundred "+h(n%100);
+    };
     const crore=Math.floor(n/10000000), lakh=Math.floor((n%10000000)/100000), thousand=Math.floor((n%100000)/1000), rest=n%1000;
     let r="";
-    if(crore) r+=h(crore)+"crore ";
+    // Beyond 999 crore the crore count is itself spelled in lakh/crore groups.
+    if(crore) r+=(crore>999?toIndian(crore)+" ":h(crore))+"crore ";
     if(lakh) r+=h(lakh)+"lakh ";
     if(thousand) r+=h(thousand)+"thousand ";
     if(rest) r+=h(rest);
-    return r.trim();
+    return r.replace(/\s+/g," ").trim();
   };
   const n = parseFloat(num);
   const digitWords = ["zero","one","two","three","four","five","six","seven","eight","nine"];

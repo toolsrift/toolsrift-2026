@@ -617,9 +617,12 @@ function BinaryEncode() {
   const sepChar = { space:" ", none:"", newline:"\n", comma:"," }[sep];
   const output = useMemo(()=>{
     if(!input) return "";
-    return Array.from(input).map(c=>c.charCodeAt(0).toString(2).padStart(8,"0")).join(sepChar);
+    // One group per UTF-8 byte. charCodeAt() would emit a 16-bit surrogate for
+    // an emoji and drop its other half, so non-ASCII text could not round-trip.
+    return Array.from(new TextEncoder().encode(input))
+      .map(b=>b.toString(2).padStart(8,"0")).join(sepChar);
   },[input,sep]);
-  const charCount = Array.from(input).length;
+  const byteCount = new TextEncoder().encode(input).length;
   return (
     <VStack>
       <div style={{ display:"flex", gap:10, alignItems:"center", flexWrap:"wrap" }}>
@@ -628,7 +631,7 @@ function BinaryEncode() {
           <Btn key={v} variant={sep===v?"primary":"secondary"} size="sm" onClick={()=>setSep(v)}>{l}</Btn>
         ))}
       </div>
-      <IOPanel input={input} onInput={setInput} output={output} inputLabel="Plain Text" outputLabel={`Binary (${charCount} chars × 8 bits = ${charCount*8} bits)`} inputMono={false} />
+      <IOPanel input={input} onInput={setInput} output={output} inputLabel="Plain Text" outputLabel={`Binary (${byteCount} bytes × 8 bits = ${byteCount*8} bits)`} inputMono={false} />
     </VStack>
   );
 }
@@ -640,10 +643,10 @@ function BinaryDecode() {
     try{
       const cleaned = input.trim().replace(/[^01\s,]/g,"");
       const groups = cleaned.split(/[\s,]+/).filter(Boolean);
-      const result = groups.map(g=>{
-        const padded = g.padStart(8,"0");
-        return String.fromCharCode(parseInt(padded,2));
-      }).join("");
+      // Groups are UTF-8 bytes; decode the whole sequence at once so multi-byte
+      // characters reassemble instead of appearing as mojibake.
+      const bytes = Uint8Array.from(groups, g=>parseInt(g.padStart(8,"0"),2));
+      const result = new TextDecoder("utf-8").decode(bytes);
       setError(""); return result;
     } catch(e){ setError("Invalid binary: "+e.message); return ""; }
   },[input]);
