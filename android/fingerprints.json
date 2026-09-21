@@ -1,5 +1,5 @@
 {
-  "//": "SHA-256 certificate fingerprints served in every site's /.well-known/assetlinks.json (pages/api/site/assetlinks.js). 'all' = the shared upload key the android-build workflow signs every app with; '<site id>' = extra keys for that app only. List EVERY certificate shown on the app's Play Console \u2192 App integrity \u2192 App signing page: Play's quantum-ready signing (beta) gives an app two keys in use at once (classical + post-quantum) and the Digital Asset Links snippet can still show the previous key, so any of them may sign a store build. Extra fingerprints cost nothing; a missing one makes the app open with a browser address bar instead of full screen. Fingerprints are public \u2014 the keystore itself is not.",
+  "//": "SHA-256 certificate fingerprints served in every site's /.well-known/assetlinks.json (pages/api/site/assetlinks.js). 'all' = the shared upload key the android-build workflow signs every app with; '<site id>' = extra keys for that app only. List EVERY certificate shown on the app's Play Console → App integrity → App signing page: Play's quantum-ready signing (beta) gives an app two keys in use at once (classical + post-quantum) and the Digital Asset Links snippet can still show the previous key, so any of them may sign a store build. Extra fingerprints cost nothing; a missing one makes the app open with a browser address bar instead of full screen. Fingerprints are public — the keystore itself is not.",
   "all": [
     "8B:72:5D:AD:BB:59:AD:AF:C7:4E:9A:AA:D1:81:55:F3:6E:2B:3A:BA:09:E1:C1:81:E0:36:0F:3F:45:8B:F9:F8"
   ],
@@ -68,5 +68,13 @@
     "8B:5C:74:69:58:C1:4A:FD:29:61:A1:2B:5B:6F:02:FB:64:CE:0A:73:71:3B:B5:EF:EB:A7:82:32:C0:03:99:D2",
     "69:7B:B1:71:4A:21:EA:0E:F1:8A:AF:D4:93:E6:1B:96:33:1C:4D:FA:B2:7C:A5:9F:69:A9:75:3A:D7:2C:AF:E4",
     "38:1D:83:DB:77:0B:C6:FC:9A:5C:F6:75:95:FA:A1:42:7B:CA:C5:AA:D0:B9:98:8B:C3:EA:5A:EE:3F:6B:B7:81"
+  ],
+  "generators": [
+    "58:64:8C:48:AE:43:1C:33:19:C3:7E:52:0D:EE:82:E6:F8:D5:C4:0A:8F:93:FE:8C:98:5E:A0:55:6B:CD:25:3A",
+    "EE:B3:23:8C:B1:80:B4:32:B8:8F:89:A2:9D:CE:93:E2:D5:68:64:B9:CD:5C:AF:35:36:DF:F8:3C:BF:38:D2:99"
+  ],
+  "gen-content": [
+    "F9:15:6A:D3:26:CB:2A:0E:E1:9E:9D:5A:6C:A0:40:CE:C7:2A:3A:CF:74:03:F3:24:47:06:47:E6:DB:13:9F:67",
+    "F3:4A:16:FE:3D:63:15:91:11:0B:D2:69:CC:A3:E2:A1:38:29:E8:86:04:68:B5:44:12:1F:D2:BD:7F:D7:87:C9"
   ]
 }
