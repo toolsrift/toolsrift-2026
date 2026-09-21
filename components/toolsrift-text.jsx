@@ -1099,7 +1099,11 @@ function TextSorter() {
     if (mode==="asc") lines.sort((a,b)=>a.toLowerCase().localeCompare(b.toLowerCase()));
     else if (mode==="desc") lines.sort((a,b)=>b.toLowerCase().localeCompare(a.toLowerCase()));
     else if (mode==="length") lines.sort((a,b)=>a.length-b.length);
-    else if (mode==="random") lines.sort(()=>Math.random()-0.5);
+    else if (mode==="random") {
+      // Fisher-Yates. sort(() => Math.random() - 0.5) is not a uniform shuffle:
+      // it leaves lines close to where they started, which is visibly wrong here.
+      for (let i=lines.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [lines[i],lines[j]]=[lines[j],lines[i]]; }
+    }
     else if (mode==="numeric") lines.sort((a,b)=>parseFloat(a)-parseFloat(b));
     if (removeDups) lines = [...new Set(lines)];
     setOutput(lines.join("\n"));
@@ -1285,7 +1289,20 @@ function FindReplace() {
       const flags = `g${caseSens?"":"i"}`;
       const pattern = useRegex ? new RegExp(find, flags) : new RegExp(find.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"), flags);
       let c = 0;
-      const result = text.replace(pattern, (m) => { c++; return replace; });
+      const result = text.replace(pattern, (...args) => {
+        c++;
+        if (!useRegex) return replace;
+        // Expand $1-$99, $& and $$ ourselves: a replacer function receives the
+        // replacement as plain text, so React users lose backreferences otherwise.
+        const named = typeof args[args.length-1] === "object" ? 1 : 0;
+        const groups = args.slice(0, args.length - 2 - named);
+        return replace.replace(/\$(\d{1,2}|[&$])/g, (tok, d) => {
+          if (d === "$") return "$";
+          if (d === "&") return groups[0];
+          const i = Number(d);
+          return i > 0 && i < groups.length ? (groups[i] ?? "") : tok;
+        });
+      });
       setOutput(result); setCount(c);
     } catch(e) { setOutput("Invalid regex: "+e.message); setCount(0); }
   };
