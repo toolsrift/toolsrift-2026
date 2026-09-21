@@ -162,6 +162,14 @@ Needs the `PLAY_SERVICE_ACCOUNT_JSON` secret: a Google Cloud service account
 key (JSON) whose email is invited in Play Console → Users and permissions with
 Admin (all permissions). Never commit the key.
 
+**Signing certificates → `android/fingerprints.json`**: copy EVERY certificate from
+each app's *App integrity → App signing* page, not just the one in the Digital Asset
+Links snippet. Play's quantum-ready signing (beta) puts two keys in use at once
+(classical + post-quantum), and the snippet often still shows the *previous* key, so a
+store build can be signed with any of them. The file already carries the shared upload
+key under `all`; extra fingerprints cost nothing, a missing one makes the app open with
+a browser address bar instead of full screen.
+
 Still manual per app in the Console: **Create app**, the *Set up your app*
 questionnaires (privacy policy, app access, ads, content rating, target
 audience, data safety, advertising ID = no), ticking the tester list on the

@@ -1,5 +1,5 @@
 {
-  "//": "SHA-256 certificate fingerprints served in every site's /.well-known/assetlinks.json (pages/api/site/assetlinks.js). 'all' = the shared upload key the android-build workflow signs every app with; '<site id>' = extra keys for that app only (add BOTH the in-use Play App Signing key and the one in the Digital Asset Links snippet here after enrolling \u2014 Play is rolling out quantum-ready signing keys, so a store build may be signed with either). Fingerprints are public \u2014 the keystore itself is not.",
+  "//": "SHA-256 certificate fingerprints served in every site's /.well-known/assetlinks.json (pages/api/site/assetlinks.js). 'all' = the shared upload key the android-build workflow signs every app with; '<site id>' = extra keys for that app only. List EVERY certificate shown on the app's Play Console \u2192 App integrity \u2192 App signing page: Play's quantum-ready signing (beta) gives an app two keys in use at once (classical + post-quantum) and the Digital Asset Links snippet can still show the previous key, so any of them may sign a store build. Extra fingerprints cost nothing; a missing one makes the app open with a browser address bar instead of full screen. Fingerprints are public \u2014 the keystore itself is not.",
   "all": [
     "8B:72:5D:AD:BB:59:AD:AF:C7:4E:9A:AA:D1:81:55:F3:6E:2B:3A:BA:09:E1:C1:81:E0:36:0F:3F:45:8B:F9:F8"
   ],
@@ -15,7 +15,8 @@
   ],
   "code": [
     "81:73:45:0E:14:37:50:4A:31:68:37:F1:3E:B1:BA:82:82:E6:6E:A6:0D:DC:EB:20:9E:61:A7:97:0F:FF:85:40",
-    "3E:0D:20:06:3F:B1:F6:9D:7B:AF:49:04:E8:0A:63:E1:FF:D9:A6:EB:E7:27:6F:86:9A:F7:7A:26:F1:21:92:7D"
+    "3E:0D:20:06:3F:B1:F6:9D:7B:AF:49:04:E8:0A:63:E1:FF:D9:A6:EB:E7:27:6F:86:9A:F7:7A:26:F1:21:92:7D",
+    "E6:97:0B:1E:07:02:B8:42:24:5E:3C:E1:BC:64:8C:1E:6B:28:3F:03:EF:2C:B5:4D:B9:82:9F:D0:36:2E:65:72"
   ],
   "encoders": [
     "5A:29:92:D9:0B:88:0B:01:39:4B:F7:B2:4F:93:35:E5:69:13:E5:15:51:D5:0D:80:22:AE:66:AE:92:26:46:EA",
