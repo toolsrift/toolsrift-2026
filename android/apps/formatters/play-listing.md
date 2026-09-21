@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift Code Formatters
+# Play Console listing — Code Formatter & Beautifier
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.formatters` |
-| App name (≤30) | ToolsRift Code Formatters |
+| App name (≤30) | Code Formatter & Beautifier |
 | Launcher name | Formatters |
 | Category | TOOLS |
 | Website | https://formatters.toolsrift.com |
@@ -19,7 +19,7 @@ Format & minify CSS, SQL, XML, YAML, Markdown and 20+ languages. Works offline.
 
 ## Full description (≤4000 chars)
 
-ToolsRift Code Formatters puts 37 free code formatters in your pocket — clean code, one click.
+Code Formatter & Beautifier puts 37 free code formatters in your pocket — clean code, one click.
 
 One-click beautifiers and minifiers for CSS, SQL, XML, YAML, Markdown, GraphQL and 20 more.
 

@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.converters",
   "host": "converters.toolsrift.com",
-  "name": "ToolsRift Specialty Converters",
+  "name": "Electrical Unit Converter",
   "launcherName": "Converters",
   "display": "standalone",
   "orientation": "portrait",

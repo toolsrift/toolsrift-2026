@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.content",
   "host": "content.toolsrift.com",
-  "name": "ToolsRift Content Generators",
+  "name": "Privacy Policy Generator",
   "launcherName": "Content Gen",
   "display": "standalone",
   "orientation": "portrait",

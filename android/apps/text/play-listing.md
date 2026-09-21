@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift Text Tools
+# Play Console listing — Word Counter & Text Tools
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.text.twa` |
-| App name (≤30) | ToolsRift Text Tools |
+| App name (≤30) | Word Counter & Text Tools |
 | Launcher name | Text Tools |
 | Category | PRODUCTIVITY |
 | Website | https://text.toolsrift.com |
@@ -19,7 +19,7 @@ Word counter, case converter, lorem ipsum & 60+ text tools. Private.
 
 ## Full description (≤4000 chars)
 
-ToolsRift Text Tools puts 66 free text tools in your pocket — type, transform, refine.
+Word Counter & Text Tools puts 66 free text tools in your pocket — type, transform, refine.
 
 Counters, converters, cleaners and generators for anyone who works with words — writers, students, editors and developers.
 

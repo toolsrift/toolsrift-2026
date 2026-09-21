@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.html",
   "host": "html.toolsrift.com",
-  "name": "ToolsRift HTML Tools",
+  "name": "HTML Formatter & Viewer",
   "launcherName": "HTML Tools",
   "display": "standalone",
   "orientation": "portrait",

@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.pdf",
   "host": "pdf.toolsrift.com",
-  "name": "ToolsRift PDF Tools",
+  "name": "PDF Tools: Merge & Split",
   "launcherName": "PDF Tools",
   "display": "standalone",
   "orientation": "portrait",

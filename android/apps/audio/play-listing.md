@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift Audio Tools
+# Play Console listing — Audio Trimmer & Converter
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.audio` |
-| App name (≤30) | ToolsRift Audio Tools |
+| App name (≤30) | Audio Trimmer & Converter |
 | Launcher name | Audio |
 | Category | MUSIC_AND_AUDIO |
 | Website | https://audio.toolsrift.com |
@@ -19,7 +19,7 @@ Trim, convert, record & normalize audio plus text-to-speech. 30 tools.
 
 ## Full description (≤4000 chars)
 
-ToolsRift Audio Tools puts 30 free audio tools in your pocket — sound, shaped locally.
+Audio Trimmer & Converter puts 30 free audio tools in your pocket — sound, shaped locally.
 
 Trim, convert, record, normalize and visualise audio, plus text-to-speech — powered by the Web Audio API, no uploads.
 

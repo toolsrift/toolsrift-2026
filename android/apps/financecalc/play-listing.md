@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift Finance & Health
+# Play Console listing — EMI & Finance Calculator
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.finance` |
-| App name (≤30) | ToolsRift Finance & Health |
+| App name (≤30) | EMI & Finance Calculator |
 | Launcher name | Finance |
 | Category | FINANCE |
 | Website | https://finance.toolsrift.com |
@@ -19,7 +19,7 @@ EMI, SIP, loan, tax, BMI, TDEE & calorie calculators. 64 tools, offline.
 
 ## Full description (≤4000 chars)
 
-ToolsRift Finance & Health puts 64 free finance & health calculators in your pocket — numbers that matter.
+EMI & Finance Calculator puts 64 free finance & health calculators in your pocket — numbers that matter.
 
 EMI, SIP, loan, tax, retirement, BMI, TDEE and calorie calculators — private and precise.
 

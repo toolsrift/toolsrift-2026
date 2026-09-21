@@ -30,7 +30,7 @@
   <circle cx="60.00" cy="60.00" r="17.50" fill="#1c0f0c"/>
   <circle cx="60.00" cy="60.00" r="15.00" fill="url(#l-cg)"/>
   <circle cx="60.00" cy="60.00" r="15.00" fill="url(#l-hl)"/>
-  <g transform="translate(50.25 50.25) scale(0.1950)" color="#180A02"><path d="M34 30L16 50l18 20M66 30l18 20-18 20M58 22L42 78" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <g transform="translate(50.25 50.25) scale(0.1950)" color="#180A02"><path d="M34 30L16 50l18 20M66 30l18 20-18 20M58 22L42 78" fill="none" stroke="currentColor" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/></g>
   </g>
   <text x="88" y="46" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="800" font-size="30" letter-spacing="-0.6" fill="#F8FAFC">ToolsRift</text>
   <text x="275.20000000000005" y="46" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="800" font-size="30" letter-spacing="-0.6" fill="#F97316">HTML</text>

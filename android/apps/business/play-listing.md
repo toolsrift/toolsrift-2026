@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift Business Tools
+# Play Console listing — Invoice & Resume Generator
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.business` |
-| App name (≤30) | ToolsRift Business Tools |
+| App name (≤30) | Invoice & Resume Generator |
 | Launcher name | Business |
 | Category | BUSINESS |
 | Website | https://business.toolsrift.com |
@@ -19,7 +19,7 @@ Invoice, quotation, receipt, resume & cover letter generators. 41 tools.
 
 ## Full description (≤4000 chars)
 
-ToolsRift Business Tools puts 41 free business tools in your pocket — professional documents in minutes.
+Invoice & Resume Generator puts 41 free business tools in your pocket — professional documents in minutes.
 
 Invoices, quotations, receipts, resumes, cover letters, SWOT and business plans — polished templates, no subscription.
 

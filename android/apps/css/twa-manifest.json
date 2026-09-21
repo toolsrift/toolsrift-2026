@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.css",
   "host": "css.toolsrift.com",
-  "name": "ToolsRift CSS Generators",
+  "name": "CSS Gradient & Shadow Maker",
   "launcherName": "CSS Gen",
   "display": "standalone",
   "orientation": "portrait",

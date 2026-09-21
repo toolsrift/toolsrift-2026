@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.everyday",
   "host": "everyday.toolsrift.com",
-  "name": "ToolsRift Everyday Tools",
+  "name": "Age Calculator & Timers",
   "launcherName": "Everyday",
   "display": "standalone",
   "orientation": "portrait",

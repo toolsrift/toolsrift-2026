@@ -30,7 +30,7 @@
   <circle cx="60.00" cy="60.00" r="17.50" fill="#05151d"/>
   <circle cx="60.00" cy="60.00" r="15.00" fill="url(#l-cg)"/>
   <circle cx="60.00" cy="60.00" r="15.00" fill="url(#l-hl)"/>
-  <g transform="translate(50.25 50.25) scale(0.1950)" color="#03161B"><rect x="14" y="36" width="72" height="28" rx="6" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M28 36v10M42 36v16M56 36v10M70 36v16" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <g transform="translate(50.25 50.25) scale(0.1950)" color="#03161B"><rect x="14" y="36" width="72" height="28" rx="6" fill="none" stroke="currentColor" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/><path d="M28 36v10M42 36v16M56 36v10M70 36v16" fill="none" stroke="currentColor" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/></g>
   </g>
   <text x="88" y="46" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="800" font-size="30" letter-spacing="-0.6" fill="#F8FAFC">ToolsRift</text>
   <text x="275.20000000000005" y="46" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="800" font-size="30" letter-spacing="-0.6" fill="#06B6D4">Units</text>

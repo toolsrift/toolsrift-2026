@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift Dev Config Gen
+# Play Console listing — Gitignore & Dockerfile Maker
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.devgen` |
-| App name (≤30) | ToolsRift Dev Config Gen |
+| App name (≤30) | Gitignore & Dockerfile Maker |
 | Launcher name | DevGen |
 | Category | TOOLS |
 | Website | https://devgen.toolsrift.com |
@@ -19,7 +19,7 @@
 
 ## Full description (≤4000 chars)
 
-ToolsRift Dev Config Gen puts 43 free dev config generators in your pocket — configs, on demand.
+Gitignore & Dockerfile Maker puts 43 free dev config generators in your pocket — configs, on demand.
 
 .gitignore, Dockerfile, nginx, package.json, GitHub Actions, .env and 35 more config generators for every stack.
 

@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.study",
   "host": "study.toolsrift.com",
-  "name": "ToolsRift Study Tools",
+  "name": "Flashcards & Quiz Maker",
   "launcherName": "Study",
   "display": "standalone",
   "orientation": "portrait",

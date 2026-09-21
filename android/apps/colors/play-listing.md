@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift Color Tools
+# Play Console listing — Color Picker & Converter
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.colors` |
-| App name (≤30) | ToolsRift Color Tools |
+| App name (≤30) | Color Picker & Converter |
 | Launcher name | Color Tools |
 | Category | ART_AND_DESIGN |
 | Website | https://colors.toolsrift.com |
@@ -19,7 +19,7 @@ Color picker, palette generator, HEX/RGB/HSL converter & contrast checker.
 
 ## Full description (≤4000 chars)
 
-ToolsRift Color Tools puts 37 free color tools in your pocket — every shade, every space.
+Color Picker & Converter puts 37 free color tools in your pocket — every shade, every space.
 
 Pickers, palettes, converters and contrast checkers for designers who care about every hue.
 

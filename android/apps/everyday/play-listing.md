@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift Everyday Tools
+# Play Console listing — Age Calculator & Timers
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.everyday` |
-| App name (≤30) | ToolsRift Everyday Tools |
+| App name (≤30) | Age Calculator & Timers |
 | Launcher name | Everyday |
 | Category | TOOLS |
 | Website | https://everyday.toolsrift.com |
@@ -19,7 +19,7 @@ Age calculator, timers, stopwatch, typing test, dice & 25+ daily tools. Offline.
 
 ## Full description (≤4000 chars)
 
-ToolsRift Everyday Tools puts 27 free everyday tools in your pocket — daily essentials.
+Age Calculator & Timers puts 27 free everyday tools in your pocket — daily essentials.
 
 Age calculator, timers, stopwatch, typing test, dice, unit quickies and dozens of daily utilities — no app store required.
 

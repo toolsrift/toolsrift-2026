@@ -95,27 +95,33 @@ function markSvg(b, size, { maskable = false, id = 'm' } = {}) {
   const { primary, primaryDark, accent2, textOnPrimary, bg } = b.palette;
   const glyph = GLYPHS[b.logo.glyph];
   if (!glyph) throw new Error(`No glyph "${b.logo.glyph}" for brand ${b.id}`);
-  // Glyph occupies 64% of the mark; 52% inside the maskable safe zone.
-  const gScale = (maskable ? 0.52 : 0.64) * size / 100;
+  // Glyph occupies 70% of the mark; 56% inside the maskable safe zone. Bigger
+  // and bolder than the first pass: at 48px in a launcher the old 64%/thin
+  // stroke read as a smudge, and all 29 looked like one another.
+  const gScale = (maskable ? 0.56 : 0.70) * size / 100;
   const gOff = (size - 100 * gScale) / 2;
   const shape = maskable ? `<rect width="${size}" height="${size}"/>` : markShapePath(b.logo.mark, size);
   return `
   <defs>
-    <linearGradient id="${id}-g" x1="0" y1="0" x2="1" y2="1">
+    <linearGradient id="${id}-g" x1="0" y1="0" x2="0.9" y2="1">
       <stop offset="0" stop-color="${accent2}"/>
-      <stop offset="0.55" stop-color="${primary}"/>
+      <stop offset="0.42" stop-color="${primary}"/>
       <stop offset="1" stop-color="${primaryDark}"/>
     </linearGradient>
-    <radialGradient id="${id}-hl" cx="0.3" cy="0.2" r="0.8">
-      <stop offset="0" stop-color="#fff" stop-opacity="0.28"/>
+    <radialGradient id="${id}-hl" cx="0.28" cy="0.16" r="0.75">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.34"/>
       <stop offset="1" stop-color="#fff" stop-opacity="0"/>
     </radialGradient>
+    <linearGradient id="${id}-sheen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.16"/>
+      <stop offset="0.5" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
     <clipPath id="${id}-c">${shape}</clipPath>
   </defs>
   <g clip-path="url(#${id}-c)">
     <rect width="${size}" height="${size}" fill="url(#${id}-g)"/>
     <rect width="${size}" height="${size}" fill="url(#${id}-hl)"/>
-    <rect x="${size * 0.06}" y="${size * 0.06}" width="${size * 0.88}" height="${size * 0.88}" rx="${size * 0.16}" fill="none" stroke="${bg}" stroke-opacity="0.18" stroke-width="${Math.max(1, size * 0.012)}"/>
+    <rect width="${size}" height="${size}" fill="url(#${id}-sheen)"/>
   </g>
   <g transform="translate(${gOff.toFixed(2)} ${gOff.toFixed(2)}) scale(${gScale.toFixed(4)})" color="${textOnPrimary}">
     ${glyph}

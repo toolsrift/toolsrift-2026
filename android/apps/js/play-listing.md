@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift JavaScript Tools
+# Play Console listing — JS Formatter & Minifier
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.js` |
-| App name (≤30) | ToolsRift JavaScript Tools |
+| App name (≤30) | JS Formatter & Minifier |
 | Launcher name | JS Tools |
 | Category | TOOLS |
 | Website | https://js.toolsrift.com |
@@ -19,7 +19,7 @@ JavaScript formatter, minifier, validator & obfuscator. 24 tools, offline.
 
 ## Full description (≤4000 chars)
 
-ToolsRift JavaScript Tools puts 24 free javascript tools in your pocket — tame your scripts.
+JS Formatter & Minifier puts 24 free javascript tools in your pocket — tame your scripts.
 
 Beautify, minify, validate and obfuscate JavaScript — plus converters, regex helpers and snippet generators.
 

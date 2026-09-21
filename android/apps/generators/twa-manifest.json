@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.generators",
   "host": "generators.toolsrift.com",
-  "name": "ToolsRift Generators",
+  "name": "Password & QR Code Maker",
   "launcherName": "Generators",
   "display": "standalone",
   "orientation": "portrait",

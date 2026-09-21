@@ -30,7 +30,7 @@
   <circle cx="60.00" cy="60.00" r="17.50" fill="#051214"/>
   <circle cx="60.00" cy="60.00" r="15.00" fill="url(#l-cg)"/>
   <circle cx="60.00" cy="60.00" r="15.00" fill="url(#l-hl)"/>
-  <g transform="translate(50.25 50.25) scale(0.1950)" color="#ffffff"><rect x="16" y="34" width="68" height="46" rx="8" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M36 34v-8a6 6 0 0 1 6-6h16a6 6 0 0 1 6 6v8M16 54h68" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <g transform="translate(50.25 50.25) scale(0.1950)" color="#ffffff"><rect x="16" y="34" width="68" height="46" rx="8" fill="none" stroke="currentColor" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/><path d="M36 34v-8a6 6 0 0 1 6-6h16a6 6 0 0 1 6 6v8M16 54h68" fill="none" stroke="currentColor" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/></g>
   </g>
   <text x="88" y="46" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="800" font-size="30" letter-spacing="-0.6" fill="#F8FAFC">ToolsRift</text>
   <text x="275.20000000000005" y="46" font-family="Sora, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="800" font-size="30" letter-spacing="-0.6" fill="#059669">Business</text>

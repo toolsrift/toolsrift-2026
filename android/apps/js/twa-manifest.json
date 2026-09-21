@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.js",
   "host": "js.toolsrift.com",
-  "name": "ToolsRift JavaScript Tools",
+  "name": "JS Formatter & Minifier",
   "launcherName": "JS Tools",
   "display": "standalone",
   "orientation": "portrait",

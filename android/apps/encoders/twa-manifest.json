@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.encoders",
   "host": "encoders.toolsrift.com",
-  "name": "ToolsRift Encoders",
+  "name": "Base64 Encoder & Decoder",
   "launcherName": "Encoders",
   "display": "standalone",
   "orientation": "portrait",

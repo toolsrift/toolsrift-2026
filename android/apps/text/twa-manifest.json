@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.text.twa",
   "host": "text.toolsrift.com",
-  "name": "ToolsRift Text Tools",
+  "name": "Word Counter & Text Tools",
   "launcherName": "Text Tools",
   "display": "standalone",
   "orientation": "portrait",

@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift Content Generators
+# Play Console listing — Privacy Policy Generator
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.content` |
-| App name (≤30) | ToolsRift Content Generators |
+| App name (≤30) | Privacy Policy Generator |
 | Launcher name | Content Gen |
 | Category | BUSINESS |
 | Website | https://content.toolsrift.com |
@@ -19,7 +19,7 @@ Privacy policy, terms, SVG art, ad copy & bio generators. 48 content tools.
 
 ## Full description (≤4000 chars)
 
-ToolsRift Content Generators puts 48 free content generators in your pocket — boilerplate, beautifully.
+Privacy Policy Generator puts 48 free content generators in your pocket — boilerplate, beautifully.
 
 Privacy policies, terms of service, SVG patterns, ad copy, bios and outlines — generated, editable, yours.
 

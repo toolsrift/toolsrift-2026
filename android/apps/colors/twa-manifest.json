@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.colors",
   "host": "colors.toolsrift.com",
-  "name": "ToolsRift Color Tools",
+  "name": "Color Picker & Converter",
   "launcherName": "Color Tools",
   "display": "standalone",
   "orientation": "portrait",

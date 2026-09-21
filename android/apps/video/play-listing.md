@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift Video Tools
+# Play Console listing — Video Trimmer & Converter
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.video` |
-| App name (≤30) | ToolsRift Video Tools |
+| App name (≤30) | Video Trimmer & Converter |
 | Launcher name | Video |
 | Category | VIDEO_PLAYERS |
 | Website | https://video.toolsrift.com |
@@ -19,7 +19,7 @@ Trim, compress, convert video & make GIFs on-device. 25 tools, no uploads.
 
 ## Full description (≤4000 chars)
 
-ToolsRift Video Tools puts 25 free video tools in your pocket — cut. convert. never upload.
+Video Trimmer & Converter puts 25 free video tools in your pocket — cut. convert. never upload.
 
 Trim, compress, convert, make GIFs and record your screen — processed on your device, so your footage stays yours.
 

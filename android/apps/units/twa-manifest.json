@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.units",
   "host": "units.toolsrift.com",
-  "name": "ToolsRift Unit Converter",
+  "name": "Unit Converter: All Units",
   "launcherName": "Units",
   "display": "standalone",
   "orientation": "portrait",

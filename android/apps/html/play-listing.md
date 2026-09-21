@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift HTML Tools
+# Play Console listing — HTML Formatter & Viewer
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.html` |
-| App name (≤30) | ToolsRift HTML Tools |
+| App name (≤30) | HTML Formatter & Viewer |
 | Launcher name | HTML Tools |
 | Category | TOOLS |
 | Website | https://html.toolsrift.com |
@@ -19,7 +19,7 @@ HTML formatter, minifier, validator, encoder & generators. 43 tools.
 
 ## Full description (≤4000 chars)
 
-ToolsRift HTML Tools puts 43 free html tools in your pocket — markup, mastered.
+HTML Formatter & Viewer puts 43 free html tools in your pocket — markup, mastered.
 
 Format, minify, validate, encode and generate HTML — tables, meta tags, forms and more.
 

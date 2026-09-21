@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift CSS Generators
+# Play Console listing — CSS Gradient & Shadow Maker
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.css` |
-| App name (≤30) | ToolsRift CSS Generators |
+| App name (≤30) | CSS Gradient & Shadow Maker |
 | Launcher name | CSS Gen |
 | Category | TOOLS |
 | Website | https://css.toolsrift.com |
@@ -19,7 +19,7 @@ CSS gradient, shadow, border-radius, animation & grid generators. 38 tools.
 
 ## Full description (≤4000 chars)
 
-ToolsRift CSS Generators puts 38 free css generators in your pocket — style, generated.
+CSS Gradient & Shadow Maker puts 38 free css generators in your pocket — style, generated.
 
 Gradients, shadows, radii, animations, flexbox and grid — tweak the sliders, watch the preview, paste the code.
 

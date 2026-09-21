@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift Hash & Crypto
+# Play Console listing — MD5 & SHA256 Hash Generator
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.hash` |
-| App name (≤30) | ToolsRift Hash & Crypto |
+| App name (≤30) | MD5 & SHA256 Hash Generator |
 | Launcher name | Hash Tools |
 | Category | TOOLS |
 | Website | https://hash.toolsrift.com |
@@ -19,7 +19,7 @@ MD5, SHA-256, SHA-512, HMAC, bcrypt & UUID generators. 31 tools, offline.
 
 ## Full description (≤4000 chars)
 
-ToolsRift Hash & Crypto puts 31 free hash & crypto tools in your pocket — cryptographically secure.
+MD5 & SHA256 Hash Generator puts 31 free hash & crypto tools in your pocket — cryptographically secure.
 
 MD5, SHA-1, SHA-256, SHA-512, HMAC, bcrypt, checksums and UUIDs — computed locally with the Web Crypto API.
 

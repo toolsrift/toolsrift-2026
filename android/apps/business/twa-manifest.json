@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.business",
   "host": "business.toolsrift.com",
-  "name": "ToolsRift Business Tools",
+  "name": "Invoice & Resume Generator",
   "launcherName": "Business",
   "display": "standalone",
   "orientation": "portrait",

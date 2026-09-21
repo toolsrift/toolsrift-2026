@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.hash",
   "host": "hash.toolsrift.com",
-  "name": "ToolsRift Hash & Crypto",
+  "name": "MD5 & SHA256 Hash Generator",
   "launcherName": "Hash Tools",
   "display": "standalone",
   "orientation": "portrait",

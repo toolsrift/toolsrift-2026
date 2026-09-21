@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift Study Tools
+# Play Console listing — Flashcards & Quiz Maker
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.study` |
-| App name (≤30) | ToolsRift Study Tools |
+| App name (≤30) | Flashcards & Quiz Maker |
 | Launcher name | Study |
 | Category | EDUCATION |
 | Website | https://study.toolsrift.com |
@@ -19,7 +19,7 @@ Flashcards, quizzes, citations, periodic table & study timers. 30 tools.
 
 ## Full description (≤4000 chars)
 
-ToolsRift Study Tools puts 30 free study & education tools in your pocket — learn faster, free.
+Flashcards & Quiz Maker puts 30 free study & education tools in your pocket — learn faster, free.
 
 Flashcards, quizzes, citation generators, periodic table, Pomodoro timers and revision planners — built for students.
 

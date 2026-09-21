@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.image",
   "host": "image.toolsrift.com",
-  "name": "ToolsRift Image Tools",
+  "name": "Image Resizer & Compressor",
   "launcherName": "Image Tools",
   "display": "standalone",
   "orientation": "portrait",
