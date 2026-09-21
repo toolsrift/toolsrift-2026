@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift Office Tools
+# Play Console listing — QR Code Generator & vCard
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.office` |
-| App name (≤30) | ToolsRift Office Tools |
+| App name (≤30) | QR Code Generator & vCard |
 | Launcher name | Office |
 | Category | PRODUCTIVITY |
 | Website | https://office.toolsrift.com |
@@ -19,7 +19,7 @@ vCard, calendar invite, QR, notes, labels & signature tools. 25 tools.
 
 ## Full description (≤4000 chars)
 
-ToolsRift Office Tools puts 25 free office & productivity in your pocket — get it done, offline.
+QR Code Generator & vCard puts 25 free office & productivity in your pocket — get it done, offline.
 
 vCards, calendar invites, QR codes, sticky notes, labels, signatures and checklists — the small office jobs, done fast.
 

@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift Specialty Converters
+# Play Console listing — Electrical Unit Converter
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.converters` |
-| App name (≤30) | ToolsRift Specialty Converters |
+| App name (≤30) | Electrical Unit Converter |
 | Launcher name | Converters |
 | Category | TOOLS |
 | Website | https://converters.toolsrift.com |
@@ -19,7 +19,7 @@ Electrical, clothing size, paper size & physics converters. 31 tools.
 
 ## Full description (≤4000 chars)
 
-ToolsRift Specialty Converters puts 31 free special unit converters in your pocket — niche conversions, covered.
+Electrical Unit Converter puts 31 free special unit converters in your pocket — niche conversions, covered.
 
 Electrical units, clothing and shoe sizes, paper sizes, fuel economy, physical constants and more specialty converters.
 

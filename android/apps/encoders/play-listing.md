@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift Encoders
+# Play Console listing — Base64 Encoder & Decoder
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.encoders` |
-| App name (≤30) | ToolsRift Encoders |
+| App name (≤30) | Base64 Encoder & Decoder |
 | Launcher name | Encoders |
 | Category | TOOLS |
 | Website | https://encoders.toolsrift.com |
@@ -19,7 +19,7 @@ Base64, URL, HTML, JWT & hex encoders and decoders. 40+ tools, offline.
 
 ## Full description (≤4000 chars)
 
-ToolsRift Encoders puts 41 free encoders & decoders in your pocket — translate any format.
+Base64 Encoder & Decoder puts 41 free encoders & decoders in your pocket — translate any format.
 
 Base64, URL, HTML entities, JWT, hex, punycode and 35 more encoders and decoders — instant, offline, exact.
 

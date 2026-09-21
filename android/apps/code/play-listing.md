@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift JSON Tools
+# Play Console listing — JSON Formatter & Validator
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.json` |
-| App name (≤30) | ToolsRift JSON Tools |
+| App name (≤30) | JSON Formatter & Validator |
 | Launcher name | JSON Tools |
 | Category | TOOLS |
 | Website | https://json.toolsrift.com |
@@ -19,7 +19,7 @@ JSON formatter, validator, minifier, diff & converters. 30 tools, offline.
 
 ## Full description (≤4000 chars)
 
-ToolsRift JSON Tools puts 30 free json tools in your pocket — structured data, simplified.
+JSON Formatter & Validator puts 30 free json tools in your pocket — structured data, simplified.
 
 Formatter, validator, diff, JSONPath and converters to CSV, YAML and XML — built for developers who live in curly braces.
 

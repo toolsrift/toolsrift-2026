@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift Fancy Text
+# Play Console listing — Fancy Text & Font Generator
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.fancy` |
-| App name (≤30) | ToolsRift Fancy Text |
+| App name (≤30) | Fancy Text & Font Generator |
 | Launcher name | Fancy Text |
 | Category | ART_AND_DESIGN |
 | Website | https://fancy.toolsrift.com |
@@ -19,7 +19,7 @@ Fancy fonts for bios & posts: bold, cursive, gothic, bubble & 30 Unicode styles.
 
 ## Full description (≤4000 chars)
 
-ToolsRift Fancy Text puts 38 free fancy text generators in your pocket — style your words.
+Fancy Text & Font Generator puts 38 free fancy text generators in your pocket — style your words.
 
 Bold, italic, cursive, gothic, bubble and 30+ Unicode text styles for Instagram, TikTok, Twitter and Discord bios.
 

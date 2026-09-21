@@ -7,7 +7,10 @@
 // Consumed by scripts/generate-brand-assets.js. Keys match `logo.glyph` in
 // lib/sites/brands.js.
 
-const S = 'fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"';
+// Stroke weight is deliberately heavy: an app icon is read at 48px on a phone,
+// where a hairline glyph turns to mush. 11/100 keeps the shape legible there
+// and still looks deliberate at 512px.
+const S = 'fill="none" stroke="currentColor" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"';
 
 const GLYPHS = {
   // "Aa" — manuscript
@@ -89,7 +92,7 @@ const GLYPHS = {
   office: `<rect x="16" y="24" width="68" height="52" rx="8" ${S}/><path d="M16 42h68M30 56h26" ${S}/>`,
 
   // bars
-  data: `<path d="M22 78V54M42 78V38M62 78V46M82 78V24" stroke="currentColor" stroke-width="12" stroke-linecap="round" fill="none"/>`,
+  data: `<path d="M22 78V54M42 78V38M62 78V46M82 78V24" stroke="currentColor" stroke-width="14" stroke-linecap="round" fill="none"/>`,
 
   // graduation cap
   study: `<path d="M50 24L14 42l36 18 36-18z" ${S}/><path d="M28 50v16c0 6 10 12 22 12s22-6 22-12V50M86 42v22" ${S}/>`,

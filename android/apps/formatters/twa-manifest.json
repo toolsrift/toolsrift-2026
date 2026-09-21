@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.formatters",
   "host": "formatters.toolsrift.com",
-  "name": "ToolsRift Code Formatters",
+  "name": "Code Formatter & Beautifier",
   "launcherName": "Formatters",
   "display": "standalone",
   "orientation": "portrait",

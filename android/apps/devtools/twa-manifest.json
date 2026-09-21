@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.devtools",
   "host": "devtools.toolsrift.com",
-  "name": "ToolsRift Developer Tools",
+  "name": "Regex Tester & Dev Tools",
   "launcherName": "DevTools",
   "display": "standalone",
   "orientation": "portrait",

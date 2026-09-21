@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift Image Tools
+# Play Console listing — Image Resizer & Compressor
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.image` |
-| App name (≤30) | ToolsRift Image Tools |
+| App name (≤30) | Image Resizer & Compressor |
 | Launcher name | Image Tools |
 | Category | PHOTOGRAPHY |
 | Website | https://image.toolsrift.com |
@@ -19,7 +19,7 @@ Resize, compress, crop & convert images offline. 60+ tools, no uploads.
 
 ## Full description (≤4000 chars)
 
-ToolsRift Image Tools puts 63 free image tools in your pocket — pixel-perfect, instantly.
+Image Resizer & Compressor puts 63 free image tools in your pocket — pixel-perfect, instantly.
 
 Resize, compress, crop, convert and filter photos right in your browser. Your images never leave your device.
 

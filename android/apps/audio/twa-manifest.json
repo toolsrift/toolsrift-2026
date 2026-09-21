@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.audio",
   "host": "audio.toolsrift.com",
-  "name": "ToolsRift Audio Tools",
+  "name": "Audio Trimmer & Converter",
   "launcherName": "Audio",
   "display": "standalone",
   "orientation": "portrait",

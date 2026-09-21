@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.encoding",
   "host": "encoding.toolsrift.com",
-  "name": "ToolsRift Text Encoding",
+  "name": "Morse Code & Binary Converter",
   "launcherName": "Encoding",
   "display": "standalone",
   "orientation": "portrait",

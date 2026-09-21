@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.random",
   "host": "random.toolsrift.com",
-  "name": "ToolsRift Random & Games",
+  "name": "Spinner Wheel & Randomizer",
   "launcherName": "Random",
   "display": "standalone",
   "orientation": "portrait",

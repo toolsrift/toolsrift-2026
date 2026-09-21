@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.json",
   "host": "json.toolsrift.com",
-  "name": "ToolsRift JSON Tools",
+  "name": "JSON Formatter & Validator",
   "launcherName": "JSON Tools",
   "display": "standalone",
   "orientation": "portrait",

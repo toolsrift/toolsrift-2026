@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.video",
   "host": "video.toolsrift.com",
-  "name": "ToolsRift Video Tools",
+  "name": "Video Trimmer & Converter",
   "launcherName": "Video",
   "display": "standalone",
   "orientation": "portrait",

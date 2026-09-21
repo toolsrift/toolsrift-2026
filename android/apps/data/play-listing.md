@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift Charts & Data
+# Play Console listing — Chart Maker: Bar, Line, Pie
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.data` |
-| App name (≤30) | ToolsRift Charts & Data |
+| App name (≤30) | Chart Maker: Bar, Line, Pie |
 | Launcher name | Charts |
 | Category | PRODUCTIVITY |
 | Website | https://data.toolsrift.com |
@@ -19,7 +19,7 @@ Chart maker, CSV cleaner, pivot table & statistics tools. 25 tools.
 
 ## Full description (≤4000 chars)
 
-ToolsRift Charts & Data puts 25 free charts & data tools in your pocket — see your numbers.
+Chart Maker: Bar, Line, Pie puts 25 free charts & data tools in your pocket — see your numbers.
 
 Bar, line, pie and scatter chart makers, CSV cleaning, pivot tables and quick statistics — your data never leaves the tab.
 

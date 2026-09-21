@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift Math Calculators
+# Play Console listing — Math & Geometry Calculator
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.math` |
-| App name (≤30) | ToolsRift Math Calculators |
+| App name (≤30) | Math & Geometry Calculator |
 | Launcher name | Math Calc |
 | Category | EDUCATION |
 | Website | https://math.toolsrift.com |
@@ -19,7 +19,7 @@ Geometry, algebra, trig, matrix & statistics calculators. 56 solvers.
 
 ## Full description (≤4000 chars)
 
-ToolsRift Math Calculators puts 56 free math calculators in your pocket — solve, instantly.
+Math & Geometry Calculator puts 56 free math calculators in your pocket — solve, instantly.
 
 Geometry, algebra, trigonometry, matrices, statistics and number theory — step-by-step solvers for students and engineers.
 

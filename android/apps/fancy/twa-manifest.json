@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.fancy",
   "host": "fancy.toolsrift.com",
-  "name": "ToolsRift Fancy Text",
+  "name": "Fancy Text & Font Generator",
   "launcherName": "Fancy Text",
   "display": "standalone",
   "orientation": "portrait",

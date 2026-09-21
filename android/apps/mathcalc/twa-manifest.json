@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.math",
   "host": "math.toolsrift.com",
-  "name": "ToolsRift Math Calculators",
+  "name": "Math & Geometry Calculator",
   "launcherName": "Math Calc",
   "display": "standalone",
   "orientation": "portrait",

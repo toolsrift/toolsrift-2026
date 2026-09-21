@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift Generators
+# Play Console listing — Password & QR Code Maker
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.generators` |
-| App name (≤30) | ToolsRift Generators |
+| App name (≤30) | Password & QR Code Maker |
 | Launcher name | Generators |
 | Category | TOOLS |
 | Website | https://generators.toolsrift.com |
@@ -19,7 +19,7 @@ Password, UUID, QR code, barcode & fake data generators. 43 tools, offline.
 
 ## Full description (≤4000 chars)
 
-ToolsRift Generators puts 43 free security & id generators in your pocket — secrets, generated safely.
+Password & QR Code Maker puts 43 free security & id generators in your pocket — secrets, generated safely.
 
 Passwords, passphrases, UUIDs, API keys, QR codes, barcodes and test data — generated locally with real entropy.
 

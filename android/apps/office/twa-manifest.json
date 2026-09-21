@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.office",
   "host": "office.toolsrift.com",
-  "name": "ToolsRift Office Tools",
+  "name": "QR Code Generator & vCard",
   "launcherName": "Office",
   "display": "standalone",
   "orientation": "portrait",

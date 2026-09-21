@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift Text Encoding
+# Play Console listing — Morse Code & Binary Converter
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.encoding` |
-| App name (≤30) | ToolsRift Text Encoding |
+| App name (≤30) | Morse Code & Binary Converter |
 | Launcher name | Encoding |
 | Category | EDUCATION |
 | Website | https://encoding.toolsrift.com |
@@ -19,7 +19,7 @@ Morse code, binary, NATO alphabet, Caesar & ROT13 translators. 28 tools.
 
 ## Full description (≤4000 chars)
 
-ToolsRift Text Encoding puts 28 free text encoding tools in your pocket — encode anything.
+Morse Code & Binary Converter puts 28 free text encoding tools in your pocket — encode anything.
 
 Morse, binary, octal, NATO alphabet, Caesar, ROT13, Vigenère and more — for puzzles, classrooms and CTFs.
 

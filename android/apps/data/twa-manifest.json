@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.data",
   "host": "data.toolsrift.com",
-  "name": "ToolsRift Charts & Data",
+  "name": "Chart Maker: Bar, Line, Pie",
   "launcherName": "Charts",
   "display": "standalone",
   "orientation": "portrait",

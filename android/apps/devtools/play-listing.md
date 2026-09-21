@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift Developer Tools
+# Play Console listing — Regex Tester & Dev Tools
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.devtools` |
-| App name (≤30) | ToolsRift Developer Tools |
+| App name (≤30) | Regex Tester & Dev Tools |
 | Launcher name | DevTools |
 | Category | TOOLS |
 | Website | https://devtools.toolsrift.com |
@@ -19,7 +19,7 @@ Regex tester, JSON diff, JWT debugger, cron builder & 50+ dev tools. Offline.
 
 ## Full description (≤4000 chars)
 
-ToolsRift Developer Tools puts 55 free developer tools in your pocket — your daily dev arsenal.
+Regex Tester & Dev Tools puts 55 free developer tools in your pocket — your daily dev arsenal.
 
 Regex tester, JSON diff, JWT debugger, cron builder, chmod calculator, CIDR, timestamps and 50 more — all offline.
 

@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.finance",
   "host": "finance.toolsrift.com",
-  "name": "ToolsRift Finance & Health",
+  "name": "EMI & Finance Calculator",
   "launcherName": "Finance",
   "display": "standalone",
   "orientation": "portrait",

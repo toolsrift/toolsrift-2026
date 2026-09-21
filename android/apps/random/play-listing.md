@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift Random & Games
+# Play Console listing — Spinner Wheel & Randomizer
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.random` |
-| App name (≤30) | ToolsRift Random & Games |
+| App name (≤30) | Spinner Wheel & Randomizer |
 | Launcher name | Random |
 | Category | ENTERTAINMENT |
 | Website | https://random.toolsrift.com |
@@ -19,7 +19,7 @@ Spinner wheel, dice, coin flip, name picker & party games. 40 randomizers.
 
 ## Full description (≤4000 chars)
 
-ToolsRift Random & Games puts 40 free randomizers & games in your pocket — let chance decide.
+Spinner Wheel & Randomizer puts 40 free randomizers & games in your pocket — let chance decide.
 
 Spinner wheels, dice, coin flips, name pickers, team generators, magic 8 ball and 30 more randomizers and party games.
 

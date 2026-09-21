@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift Unit Converter
+# Play Console listing — Unit Converter: All Units
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.units` |
-| App name (≤30) | ToolsRift Unit Converter |
+| App name (≤30) | Unit Converter: All Units |
 | Launcher name | Units |
 | Category | TOOLS |
 | Website | https://units.toolsrift.com |
@@ -19,7 +19,7 @@ Length, weight, temperature, speed, area & volume converter. 37 tools.
 
 ## Full description (≤4000 chars)
 
-ToolsRift Unit Converter puts 37 free unit converters in your pocket — any unit, any system.
+Unit Converter: All Units puts 37 free unit converters in your pocket — any unit, any system.
 
 Length, weight, temperature, speed, area, volume, time, data and pressure — precise conversions with live results.
 

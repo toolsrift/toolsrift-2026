@@ -1,9 +1,9 @@
-# Play Console listing — ToolsRift PDF Tools
+# Play Console listing — PDF Tools: Merge & Split
 
 | Field | Value |
 |---|---|
 | Package id | `com.toolsrift.pdf` |
-| App name (≤30) | ToolsRift PDF Tools |
+| App name (≤30) | PDF Tools: Merge & Split |
 | Launcher name | PDF Tools |
 | Category | PRODUCTIVITY |
 | Website | https://pdf.toolsrift.com |
@@ -19,7 +19,7 @@ Merge, split, compress, sign & convert PDFs offline. 40 tools, no uploads.
 
 ## Full description (≤4000 chars)
 
-ToolsRift PDF Tools puts 40 free pdf tools in your pocket — documents, done in-browser.
+PDF Tools: Merge & Split puts 40 free pdf tools in your pocket — documents, done in-browser.
 
 Every PDF tool runs locally in your browser. Contracts, statements and IDs stay on your machine — always.
 

@@ -1,7 +1,7 @@
 {
   "packageId": "com.toolsrift.devgen",
   "host": "devgen.toolsrift.com",
-  "name": "ToolsRift Dev Config Gen",
+  "name": "Gitignore & Dockerfile Maker",
   "launcherName": "DevGen",
   "display": "standalone",
   "orientation": "portrait",
