@@ -694,7 +694,7 @@ function FaviconGenerator() {
   const [file, setFile] = useState(null); const [out, setOut] = useState(null);
   const process = useCanvasProcess();
   const run = async () => setOut(await process(file, (img, cvs, ctx) => { cvs.width=32; cvs.height=32; ctx.drawImage(img,0,0,32,32); }));
-  return <Lab file={file} setFile={setFile} onProcess={run} output={out}><Label>Resizes to 32x32 ICO ready format</Label></Lab>;
+  return <Lab file={file} setFile={setFile} onProcess={run} output={out}><Label>Exports a 32×32 PNG — what modern browsers use for a favicon</Label></Lab>;
 }
 
 function OgImagePreview() {
