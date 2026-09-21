@@ -866,6 +866,17 @@ Skipping step 1 means new tools get no URL/page. Skipping step 2 means the tool'
   - **IMPORTANT**: `toolsrift.com` is a **Domain property** in Search Console (DNS-verified), so the Search Console API site identifier is `sc-domain:toolsrift.com` — NOT `https://toolsrift.com/`. Using the URL-prefix form returns a misleading "insufficient permission" error even when the service account has Full access. Verify via `GET https://searchconsole.googleapis.com/webmasters/v3/sites` if this ever needs re-diagnosing.
 - **Recurring safety net**: Vercel Cron hits `/api/cron/submit-search-engines` daily at 03:00 UTC (config in `vercel.json`), resubmitting the live sitemap to IndexNow and (if `GOOGLE_SERVICE_ACCOUNT_KEY` is set) Google, so nothing added between manual runs is missed. Protected by a `CRON_SECRET` env var if set in Vercel (Vercel sends it automatically as a Bearer token).
 
+### Page depth — `lib/toolContent.js` (added 2026-09)
+
+The `coreTools.js` allowlist stopped the bleeding but left the survivors thin: an
+audit on 2026-09-21 found the 252 indexable tool pages carry a median of 131
+characters of how-to plus three short FAQs — about 100 words unique to the page.
+`lib/toolContent.js` holds hand-written long-form content (intro, sections,
+steps, notes, extra FAQ) rendered server-side by `pages/[slug].js`; a tool with
+an entry goes from ~100 to ~700 words of its own text. **Never template it** —
+prose that is the same paragraph with the nouns swapped is exactly what Google
+penalised. `npm run content:report` prints coverage and the thinnest pages.
+
 **Rules:**
 - Tool ids must be kebab-case `[a-z0-9-]+` (they become URLs).
 - Every tool object needs `id`, `name`, and `desc` (desc is used for meta description).

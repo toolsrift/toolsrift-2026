@@ -6,6 +6,7 @@ import TOOL_SEO from '../lib/toolSeo'
 import { publishToolHint } from '../lib/appRoute'
 import { SITE, HUB_BASE } from '../lib/sites'
 import CORE_TOOLS from '../lib/coreTools'
+import { TOOL_CONTENT } from '../lib/toolContent'
 import CATEGORY_COMPONENTS from '../lib/sites/categoryComponents'
 import SiteFooter from '../components/SiteFooter'
 
@@ -68,7 +69,10 @@ export default function StandaloneToolPage({ tool, related, seo, categoryName })
   if (typeof window !== 'undefined') publishToolHint(`/${tool.id}`, tool.id)
   useEffect(() => { publishToolHint(`/${tool.id}`, tool.id) }, [tool.id])
 
-  const faqs = (seo && seo.faq && seo.faq.length) ? seo.faq : [
+  // Long-form content for this tool, when it has been written (lib/toolContent.js).
+  const depth = TOOL_CONTENT[tool.id] || null
+
+  const baseFaqs = (seo && seo.faq && seo.faq.length) ? seo.faq : [
     [`Is ${tool.name} free to use?`,
      `Yes. ${tool.name} on ${SITE.siteName} is completely free with no signup, no installation and no usage limits.`],
     [`Is my data safe when using ${tool.name}?`,
@@ -76,6 +80,8 @@ export default function StandaloneToolPage({ tool, related, seo, categoryName })
     [`Does ${tool.name} work on mobile?`,
      `Yes. ${tool.name} works on any modern device — Android, iPhone, tablet or desktop — directly in your browser, and in the ${SITE.siteName} Android app.`],
   ]
+  // The tool's own questions go after the generic ones, and feed the FAQ schema too.
+  const faqs = depth && depth.faq ? [...baseFaqs, ...depth.faq] : baseFaqs
 
   const head = b.fonts.head
   const body = b.fonts.body
@@ -135,10 +141,21 @@ export default function StandaloneToolPage({ tool, related, seo, categoryName })
         fontFamily: body, padding: '8px 24px 40px', position: 'relative', zIndex: 1,
       }}>
         <div style={{ maxWidth: 920, margin: '0 auto' }}>
+          {/* Long-form, hand-written content (lib/toolContent.js) when this tool
+              has it: an intro, real explanation, steps and notes. Tools without
+              an entry keep the short how-to below exactly as before. */}
+          {depth && depth.intro && (
+            <p style={{ fontSize: 16, lineHeight: 1.85, color: '#CBD5E1', margin: '32px 0 0' }}>{depth.intro}</p>
+          )}
+
           <h2 style={{ fontSize: 20, fontWeight: 700, fontFamily: head, margin: '32px 0 12px' }}>
             How to use {tool.name}
           </h2>
-          {seo && seo.howTo ? (
+          {depth && depth.steps ? (
+            <ol style={{ fontSize: 15, lineHeight: 1.9, color: '#94A3B8', margin: 0, paddingLeft: 22 }}>
+              {depth.steps.map((st, i) => <li key={i}>{st}</li>)}
+            </ol>
+          ) : seo && seo.howTo ? (
             <p style={{ fontSize: 15, lineHeight: 1.85, color: '#94A3B8', margin: 0 }}>{seo.howTo}</p>
           ) : (
             <ol style={{ fontSize: 15, lineHeight: 1.9, color: '#94A3B8', margin: 0, paddingLeft: 22 }}>
@@ -147,6 +164,19 @@ export default function StandaloneToolPage({ tool, related, seo, categoryName })
               <li>Get your result immediately and copy or download it with one click.</li>
             </ol>
           )}
+
+          {depth && depth.notes && (
+            <ul style={{ fontSize: 14.5, lineHeight: 1.8, color: '#94A3B8', margin: '14px 0 0', paddingLeft: 22 }}>
+              {depth.notes.map((n, i) => <li key={i}>{n}</li>)}
+            </ul>
+          )}
+
+          {depth && (depth.sections || []).map((sec, i) => (
+            <div key={i}>
+              <h2 style={{ fontSize: 20, fontWeight: 700, fontFamily: head, margin: '32px 0 12px' }}>{sec.h}</h2>
+              <p style={{ fontSize: 15, lineHeight: 1.85, color: '#94A3B8', margin: 0 }}>{sec.p}</p>
+            </div>
+          ))}
 
           <h2 style={{ fontSize: 20, fontWeight: 700, fontFamily: head, margin: '32px 0 12px' }}>
             Frequently asked questions
