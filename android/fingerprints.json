@@ -1,5 +1,5 @@
 {
-  "//": "SHA-256 certificate fingerprints served in every site's /.well-known/assetlinks.json (pages/api/site/assetlinks.js). 'all' = the shared upload key the android-build workflow signs every app with; '<site id>' = extra keys for that app only (add its Play App Signing key here after enrolling). Fingerprints are public \u2014 the keystore itself is not.",
+  "//": "SHA-256 certificate fingerprints served in every site's /.well-known/assetlinks.json (pages/api/site/assetlinks.js). 'all' = the shared upload key the android-build workflow signs every app with; '<site id>' = extra keys for that app only (add BOTH the in-use Play App Signing key and the one in the Digital Asset Links snippet here after enrolling \u2014 Play is rolling out quantum-ready signing keys, so a store build may be signed with either). Fingerprints are public \u2014 the keystore itself is not.",
   "all": [
     "8B:72:5D:AD:BB:59:AD:AF:C7:4E:9A:AA:D1:81:55:F3:6E:2B:3A:BA:09:E1:C1:81:E0:36:0F:3F:45:8B:F9:F8"
   ],
@@ -16,5 +16,25 @@
   "code": [
     "81:73:45:0E:14:37:50:4A:31:68:37:F1:3E:B1:BA:82:82:E6:6E:A6:0D:DC:EB:20:9E:61:A7:97:0F:FF:85:40",
     "3E:0D:20:06:3F:B1:F6:9D:7B:AF:49:04:E8:0A:63:E1:FF:D9:A6:EB:E7:27:6F:86:9A:F7:7A:26:F1:21:92:7D"
+  ],
+  "encoders": [
+    "5A:29:92:D9:0B:88:0B:01:39:4B:F7:B2:4F:93:35:E5:69:13:E5:15:51:D5:0D:80:22:AE:66:AE:92:26:46:EA",
+    "B6:9A:35:89:7A:0A:2A:D1:60:A1:A7:FF:1E:7D:CD:5A:2C:C4:06:4A:D2:4F:BE:33:E9:A0:3C:11:B1:51:20:46"
+  ],
+  "colors": [
+    "14:F8:C0:B0:6B:07:16:56:8B:2E:35:54:73:26:35:D0:E2:FE:C3:38:9D:0A:26:E9:F3:66:73:12:0F:53:DA:58",
+    "26:8F:7A:DF:D0:44:B6:A0:35:5E:C9:3E:D6:60:53:8F:D3:19:59:55:FC:D1:08:31:EC:50:3B:F4:E6:65:24:E0"
+  ],
+  "css": [
+    "7C:4B:F3:14:FC:29:D4:24:2F:C7:92:47:67:F7:C6:F5:D0:7F:D8:71:19:C5:8F:3F:61:1F:C6:61:5F:E2:F3:83",
+    "C7:CA:10:C8:EE:66:7B:C1:91:AD:55:C2:9D:81:0F:6D:3D:E3:3D:B8:01:AA:14:13:A8:87:8B:85:56:EB:35:C7"
+  ],
+  "html": [
+    "D8:EF:F0:41:04:6B:D0:01:CA:7D:2D:E0:8E:C7:2C:E3:CC:81:0E:7C:BE:23:B9:B9:EA:4B:AE:DD:A7:14:D1:D3",
+    "20:BC:EA:64:2A:92:64:D7:79:CB:4E:4A:65:A5:EE:1A:E9:B7:AB:B6:D7:F4:4D:EE:EC:68:D2:D6:05:A9:42:9C"
+  ],
+  "js": [
+    "DE:1A:8C:5B:55:A5:F3:79:8B:F9:D6:57:9F:E5:23:73:65:BC:21:C9:45:CB:70:62:12:DD:6E:D0:19:82:03:CE",
+    "37:98:21:5D:EE:99:CF:5C:B9:28:6D:8E:85:65:38:CF:26:35:C5:C1:60:4F:C8:30:21:F8:D5:7B:1C:E4:CA:B6"
   ]
 }
