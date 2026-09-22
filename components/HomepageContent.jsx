@@ -3,6 +3,7 @@ import SiteFooter from './SiteFooter'
 import { TOOLS_PLUS, TOOLS_LABEL, TOTAL_CATEGORIES } from '../lib/siteStats'
 import TOOL_REGISTRY from '../lib/toolRegistry'
 import CORE_TOOLS from '../lib/coreTools'
+import { isCanonicalCat } from '../lib/canonicalCat'
 import { BRANDS } from '../lib/sites/brands'
 
 const C = {
@@ -53,8 +54,15 @@ function NetworkDirectory() {
     .map(b => {
       // Three brands key the registry on slug rather than id (image/images,
       // code/json, gen-content/generators2), so try both or they vanish here.
-      const cat = TOOL_REGISTRY[b.id] || TOOL_REGISTRY[b.slug]
-      const tools = ((cat && cat.tools) || []).filter(t => CORE_TOOLS.has(t.id))
+      const key = TOOL_REGISTRY[b.id] ? b.id : (TOOL_REGISTRY[b.slug] ? b.slug : null)
+      const cat = key ? TOOL_REGISTRY[key] : null
+      // Link each tool from its canonical category only (lib/canonicalCat.js).
+      // Eleven ids live in two categories; linking both twins from the homepage
+      // would advertise a URL the sitemap deliberately omits — the same
+      // self-inflicted duplicate signal generate-sitemap.js warns about, and a
+      // homepage link is a far stronger crawl hint than a sitemap entry.
+      const tools = ((cat && cat.tools) || [])
+        .filter(t => CORE_TOOLS.has(t.id) && isCanonicalCat(t.id, key))
       return { brand: b, catName: (cat && cat.name) || b.siteName, tools }
     })
     .filter(s => s.tools.length);
