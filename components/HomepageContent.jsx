@@ -1,6 +1,9 @@
 import Head from 'next/head'
 import SiteFooter from './SiteFooter'
 import { TOOLS_PLUS, TOOLS_LABEL, TOTAL_CATEGORIES } from '../lib/siteStats'
+import TOOL_REGISTRY from '../lib/toolRegistry'
+import CORE_TOOLS from '../lib/coreTools'
+import { BRANDS } from '../lib/sites/brands'
 
 const C = {
   bg: '#06090F',
@@ -31,6 +34,70 @@ const FAQS = [
   ['How often are new tools added?', 'New tools are added every week. The roadmap is largely driven by user requests, so the fastest way to influence what we build next is to email us what you wish existed: contact@toolsrift.com'],
   ['Where is ToolsRift based?', 'ToolsRift is built and operated from Hyderabad, India. We are a small team serving users worldwide. The platform is hosted on Vercel\'s global CDN for fast loading from anywhere.'],
 ]
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Crawlable directory of the whole network.
+ *
+ * This is the hub's ONLY server-rendered link path to the 29 category sites.
+ * The interactive homepage (components/toolsrift-main) is loaded with
+ * ssr:false, so none of its category tiles exist in the HTML Googlebot
+ * receives — which left every subdomain reachable only from sitemap.xml, the
+ * lowest-priority crawl class there is. That is the same orphaning the
+ * Aug-2026 audit identified, recreated at subdomain level by the migration.
+ *
+ * Plain <a href> to every live category site and every indexable tool on it.
+ * Keep it server-rendered; do not move it inside a dynamic import.
+ * ───────────────────────────────────────────────────────────────────────── */
+function NetworkDirectory() {
+  const sites = BRANDS.filter(b => b.live)
+    .map(b => {
+      // Three brands key the registry on slug rather than id (image/images,
+      // code/json, gen-content/generators2), so try both or they vanish here.
+      const cat = TOOL_REGISTRY[b.id] || TOOL_REGISTRY[b.slug]
+      const tools = ((cat && cat.tools) || []).filter(t => CORE_TOOLS.has(t.id))
+      return { brand: b, catName: (cat && cat.name) || b.siteName, tools }
+    })
+    .filter(s => s.tools.length);
+
+  return (
+    <section style={{ padding: '0 24px 72px', maxWidth: 1100, margin: '0 auto' }}>
+      <h2 style={{
+        fontSize: 'clamp(22px,3vw,30px)', fontWeight: 800, color: C.text,
+        fontFamily: "'Sora', sans-serif", marginBottom: 10, letterSpacing: '-0.02em',
+      }}>
+        Browse every tool
+      </h2>
+      <p style={{ fontSize: 15, color: C.muted, lineHeight: 1.8, marginBottom: 28, maxWidth: 680 }}>
+        Each category is its own site, with its own tools. Every link below goes
+        straight to the tool.
+      </p>
+
+      <div style={{ display: 'grid', gap: 26, gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))' }}>
+        {sites.map(({ brand, catName, tools }) => (
+          <div key={brand.id}>
+            <h3 style={{ fontSize: 15, fontWeight: 700, marginBottom: 10, fontFamily: "'Sora', sans-serif" }}>
+              <a href={`https://${brand.domain}/`} style={{ color: C.text, textDecoration: 'none' }}>
+                {catName}
+              </a>
+            </h3>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 5 }}>
+              {tools.map(t => (
+                <li key={t.id}>
+                  <a
+                    href={`https://${brand.domain}/${t.id}`}
+                    style={{ fontSize: 13.5, color: C.muted, textDecoration: 'none', lineHeight: 1.55 }}
+                  >
+                    {t.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
 
 export default function HomepageContent() {
   return (
@@ -184,6 +251,8 @@ export default function HomepageContent() {
         </div>
 
       </section>
+
+      <NetworkDirectory />
 
       {/* Single site footer at the very bottom of the homepage (server-rendered). */}
       <SiteFooter />
