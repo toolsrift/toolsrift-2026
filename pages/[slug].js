@@ -4,7 +4,8 @@ import { useEffect } from 'react'
 import TOOL_REGISTRY from '../lib/toolRegistry'
 import TOOL_SEO from '../lib/toolSeo'
 import { publishToolHint } from '../lib/appRoute'
-import { SITE, HUB_BASE } from '../lib/sites'
+import { SITE, HUB_BASE, toolPath } from '../lib/sites'
+import CANONICAL_CAT from '../lib/canonicalCat'
 import CORE_TOOLS from '../lib/coreTools'
 import { TOOL_CONTENT } from '../lib/toolContent'
 import CATEGORY_COMPONENTS from '../lib/sites/categoryComponents'
@@ -54,6 +55,14 @@ export default function StandaloneToolPage({ tool, related, seo, categoryName })
   const b = SITE.brand
   const P = b.palette
   const url = `${SITE.baseUrl}/${tool.id}`
+  // Eleven tool ids are listed in two categories and so render on two sites,
+  // each of which used to canonical to itself — cross-host duplicate content.
+  // Point every duplicate signal at the canonical category's URL, the same way
+  // pages/[slug]/[tool].js does on the hub (lib/canonicalCat.js).
+  const canonicalPath = toolPath(CANONICAL_CAT[tool.id] || SITE.slug, tool.id)
+  const canonicalUrl = canonicalPath.startsWith('http')
+    ? canonicalPath
+    : `${SITE.baseUrl}${canonicalPath}`
 
   // Per-tool title from the component's TOOL_META (lifted into lib/toolSeo.js
   // at build time), re-branded for this site; generic template otherwise.
@@ -92,12 +101,12 @@ export default function StandaloneToolPage({ tool, related, seo, categoryName })
         <title>{title}</title>
         <meta name="description" content={description} />
         {seo && seo.keywords && <meta name="keywords" content={seo.keywords} />}
-        <link rel="canonical" href={url} />
+        <link rel="canonical" href={canonicalUrl} />
         {/* Same indexation allowlist as the hub — see lib/coreTools.js. */}
         {!CORE_TOOLS.has(tool.id) && <meta name="robots" content="noindex, follow" />}
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
-        <meta property="og:url" content={url} />
+        <meta property="og:url" content={canonicalUrl} />
         <meta property="og:site_name" content={SITE.siteName} />
         <meta name="twitter:card" content="summary_large_image" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
@@ -113,7 +122,7 @@ export default function StandaloneToolPage({ tool, related, seo, categoryName })
           '@type': 'SoftwareApplication',
           name: tool.name,
           description,
-          url,
+          url: canonicalUrl,
           applicationCategory: 'UtilityApplication',
           operatingSystem: 'Any',
           browserRequirements: 'Requires JavaScript',
