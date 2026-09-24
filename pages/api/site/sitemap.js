@@ -32,6 +32,14 @@ export function buildSitemapXml(today = new Date().toISOString().slice(0, 10)) {
 export default function handler(req, res) {
   if (!SITE.isStandalone) return res.status(404).end()
   res.setHeader('Content-Type', 'application/xml; charset=utf-8')
-  res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400')
+  // Short CDN TTL on purpose. This sitemap is regenerated from the registry on
+  // every request, so it changes with every deploy that adds or drops a tool —
+  // a 24h s-maxage pinned a stale copy at the edge for a full day afterwards.
+  // It also meant a single bad response (a cold function during a rolling
+  // redeploy, say) stayed cached at whichever PoP served it for 24h, which is
+  // the leading explanation for pdf/json/colors/content reading fine from a
+  // browser while Search Console kept reporting "Sitemap could not be read".
+  // stale-while-revalidate keeps the route cheap without pinning failures.
+  res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400')
   res.status(200).send(buildSitemapXml())
 }
