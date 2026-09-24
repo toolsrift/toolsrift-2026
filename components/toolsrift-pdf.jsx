@@ -309,10 +309,8 @@ const TOOLS = [
   { id:"jpg-to-pdf", cat:"convert", name:"JPG to PDF Converter", desc:"Convert JPG images to PDF format with custom page size and orientation options", icon:"✨", free:true },
   { id:"png-to-pdf", cat:"convert", name:"PNG to PDF Converter", desc:"Convert PNG images to PDF while preserving transparency and image quality", icon:"🌄", free:true },
   { id:"pdf-to-text", cat:"convert", name:"PDF to Text Converter", desc:"Extract and save all text content from PDF as plain text TXT file", icon:"📄", free:true },
-  { id:"word-to-pdf", cat:"convert", name:"Word to PDF Converter", desc:"Convert Word documents to PDF format with formatting preservation", icon:"✨", free:true },
   
   // Security
-  { id:"pdf-password-protect", cat:"security", name:"PDF Password Protector", desc:"Secure your PDF files with password encryption to prevent unauthorized access", icon:"🔑", free:true },
   { id:"pdf-unlock", cat:"security", name:"PDF Password Remover", desc:"Remove password protection from PDF files when you have the correct password", icon:"🔑", free:true },
   { id:"pdf-watermark", cat:"security", name:"PDF Watermark Tool", desc:"Add custom text watermarks to all pages of your PDF for copyright protection", icon:"📄", free:true },
   { id:"pdf-redact", cat:"security", name:"PDF Redaction Tool", desc:"Black out and permanently remove sensitive information from PDF documents", icon:"▬", free:true },
@@ -326,7 +324,6 @@ const TOOLS = [
   { id:"pdf-page-numbering", cat:"tools", name:"PDF Page Numbering", desc:"Add customizable page numbers to PDF pages with position and format control", icon:"✨", free:true },
   { id:"pdf-margin-adder", cat:"tools", name:"PDF Margin Tool", desc:"Add or adjust margins around PDF pages for printing or binding preparation", icon:"📄", free:true },
   { id:"pdf-cropper", cat:"tools", name:"PDF Cropper", desc:"Crop PDF pages to remove unwanted borders and whitespace around content", icon:"📄", free:true },
-  { id:"pdf-bookmarks", cat:"tools", name:"PDF Bookmark Manager", desc:"View, add, edit, and organize PDF bookmarks and table of contents", icon:"📄", free:true },
   { id:"pdf-form-filler", cat:"tools", name:"PDF Form Filler", desc:"Fill in interactive PDF forms with text fields, checkboxes and dropdowns", icon:"📄", free:true },
 
   // Data & AI
@@ -377,8 +374,6 @@ const HOWTO = {
 "jpg-to-pdf":"Upload one or more JPG images, choose a page size and orientation, and the tool wraps them into a PDF.",
 "png-to-pdf":"Upload one or more PNG images, and the tool wraps them into a PDF, preserving transparency and image quality.",
 "pdf-to-text":"Upload a PDF, and the tool extracts all its text content and gives you a downloadable plain .txt file.",
-"word-to-pdf":"Upload a Word document, and the tool converts it into a PDF while preserving the original formatting.",
-"pdf-password-protect":"Upload a PDF and set a password, and the tool encrypts it so it can only be opened with that password.",
 "pdf-unlock":"Upload a password-protected PDF and enter the correct password, and the tool removes the protection and gives you an unlocked copy.",
 "pdf-watermark":"Upload a PDF, type your watermark text, and set its position and opacity, and the tool stamps it onto every page.",
 "pdf-redact":"Upload a PDF, draw boxes over the sensitive content, and the tool permanently blacks it out and removes it from the file.",
@@ -388,7 +383,6 @@ const HOWTO = {
 "pdf-page-numbering":"Upload a PDF, choose the position and number format, and the tool adds page numbers to every page.",
 "pdf-margin-adder":"Upload a PDF and set your margin size, and the tool adds that margin around every page for printing or binding.",
 "pdf-cropper":"Upload a PDF and drag the crop box to the area you want, and the tool trims the borders and whitespace from every page.",
-"pdf-bookmarks":"Upload a PDF, and the tool shows its existing bookmarks/table of contents, letting you add, edit, and reorder them.",
 "pdf-form-filler":"Upload a PDF with fillable fields, and the tool lets you type into text fields, tick checkboxes, and pick from dropdowns directly.",
 "pdf-to-markdown":"Upload a PDF, and the tool converts its content into clean Markdown, ready for notes, static sites, or feeding to an LLM.",
 "pdf-to-json":"Upload a PDF, and the tool extracts the text as structured JSON, including each item's page, position, and font data.",
@@ -544,24 +538,6 @@ const TOOL_META = mergeHowTo({
       ["Can I convert scanned PDFs?", "Scanned PDFs are images and don't contain text data. You would need OCR (optical character recognition) to extract text from scanned documents."]
     ]
   },
-  "word-to-pdf": {
-    title: "Free Word to PDF Converter — Convert DOCX to PDF Online | ToolsRift",
-    desc: "Convert Word documents to PDF format with formatting preservation. Upload DOCX files and download as professional PDFs.",
-    faq: [
-      ["What Word formats are supported?", "This tool supports modern DOCX format. For older DOC files, save them as DOCX in Word first, then convert."],
-      ["Is formatting preserved?", "Basic formatting like fonts, styles, and paragraphs is preserved. Complex features like macros and advanced tables may not convert perfectly."],
-      ["Why isn't Word-to-PDF available in the browser?", "Converting Word documents to PDF needs full document-rendering libraries that can't run entirely client-side yet. As a free workaround, open the document in your word processor and use Print → Save as PDF."]
-    ]
-  },
-  "pdf-password-protect": {
-    title: "Free PDF Password Protect Tool — Encrypt PDF Online | ToolsRift",
-    desc: "Add password protection to PDF files. Secure documents with user passwords to prevent unauthorized access and viewing.",
-    faq: [
-      ["What type of encryption is used?", "The tool uses AES-256 encryption, which is the industry standard for PDF security and very secure."],
-      ["Can I set different passwords for viewing and editing?", "Yes, you can set a user password (required to open) and an owner password (required to edit or print)."],
-      ["Can password protection be removed?", "Yes, but only if you know the password. Use the PDF Unlock tool with the correct password to remove protection."]
-    ]
-  },
   "pdf-unlock": {
     title: "Free PDF Password Remover — Unlock Protected PDFs Online | ToolsRift",
     desc: "Remove password protection and editing restrictions from PDF files you own. Runs entirely in your browser — the file is never uploaded.",
@@ -645,15 +621,6 @@ const TOOL_META = mergeHowTo({
       ["How do I specify the crop area?", "You can visually select the crop area by dragging a rectangle, or enter specific coordinates and dimensions."],
       ["Will cropping affect all pages?", "You can crop all pages with the same dimensions or crop each page individually with custom settings."],
       ["Can I undo cropping?", "The tool creates a new cropped PDF. Your original file is never modified, so you can always go back to it."]
-    ]
-  },
-  "pdf-bookmarks": {
-    title: "Free PDF Bookmark Manager — Add & Edit PDF Bookmarks | ToolsRift",
-    desc: "View, add, edit, and organize PDF bookmarks and table of contents. Create hierarchical navigation for long documents.",
-    faq: [
-      ["What are PDF bookmarks?", "Bookmarks are a navigational table of contents in the PDF sidebar. They let readers quickly jump to specific sections."],
-      ["Can I create nested bookmarks?", "Yes, create hierarchical bookmark structures with parent and child entries to organize complex documents."],
-      ["Why isn't bookmark editing available yet?", "Editing a PDF's outline/bookmark structure isn't supported by the in-browser PDF engine yet. It's free like every other tool — we're just still building it."]
     ]
   },
   "pdf-form-filler": {
@@ -1918,57 +1885,6 @@ function PdfToText() {
   );
 }
 
-// Word to PDF Component (not available client-side yet)
-function WordToPdf() {
-  return (
-    <div style={{ padding:48, textAlign:'center', background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:16 }}>
-      <div style={{ fontSize:40, marginBottom:12 }}>ℹ️</div>
-      <div style={{ color:C.text, fontWeight:700, fontSize:17, marginBottom:8 }}>Not available in your browser yet</div>
-      <div style={{ color:C.muted, fontSize:14, marginBottom:4, lineHeight:1.6 }}>Word-to-PDF conversion needs full document rendering that can't run entirely in your browser yet — and your files are never uploaded to any server. Tip: open the document in your word processor and choose Print → Save as PDF.</div>
-    </div>
-  );
-}
-
-// PDF Password Protect Component
-function PdfPasswordProtect() {
-  const [file, setFile] = useState(null);
-  const [password, setPassword] = useState('');
-  const [notice, setNotice] = useState(false);
-
-  const handleFile = (e) => {
-    setFile(e.target.files[0]);
-    setNotice(false);
-  };
-
-  const protectPdf = () => {
-    if (!file || !password) return;
-    setNotice(true);
-  };
-
-  return (
-    <VStack>
-      <div>
-        <Label>Upload PDF File</Label>
-        <input type="file" accept=".pdf" onChange={handleFile} style={{ display:"block", color:C.text, fontSize:13 }} />
-      </div>
-      <div>
-        <Label>Password</Label>
-        <Input value={password} onChange={setPassword} placeholder="Enter secure password" style={{ fontFamily:"'JetBrains Mono',monospace" }} />
-      </div>
-      <Btn onClick={protectPdf} disabled={!file || !password}>Add Password Protection</Btn>
-      {notice && (
-        <div style={{ padding:14, background:"rgba(245,158,11,0.1)", border:`1px solid rgba(245,158,11,0.3)`, borderRadius:8, fontSize:13, color:C.text, lineHeight:1.6 }}>
-          <strong>In-browser PDF encryption isn't available yet.</strong><br />
-          The in-browser PDF engine we use can read encrypted PDFs but cannot write them — adding a password means rebuilding the document's security handler, which pdf-lib does not support. Your file stayed entirely on your device and was not uploaded. In the meantime, most desktop PDF readers and word processors can set a password when exporting.
-        </div>
-      )}
-      <div style={{ padding:12, background:"rgba(59,130,246,0.08)", border:`1px solid rgba(59,130,246,0.2)`, borderRadius:8, fontSize:12, color:C.text }}>
-        🔒 100% local — files are processed in your browser and never uploaded.
-      </div>
-    </VStack>
-  );
-}
-
 // PDF Unlock Component
 // pdf.js decrypts the document (with the password, if one is set), then each page is
 // rasterised and rebuilt into a fresh, unencrypted PDF. This is why the output is
@@ -2792,17 +2708,6 @@ function PdfCropper() {
         <div style={{ padding:12, background:"rgba(239,68,68,0.1)", border:`1px solid rgba(239,68,68,0.3)`, borderRadius:8, fontSize:12, color:C.text }}>{error}</div>
       )}
     </VStack>
-  );
-}
-
-// PDF Bookmarks Component (not available client-side yet)
-function PdfBookmarks() {
-  return (
-    <div style={{ padding:48, textAlign:'center', background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:16 }}>
-      <div style={{ fontSize:40, marginBottom:12 }}>ℹ️</div>
-      <div style={{ color:C.text, fontWeight:700, fontSize:17, marginBottom:8 }}>Not available in your browser yet</div>
-      <div style={{ color:C.muted, fontSize:14, marginBottom:4, lineHeight:1.6 }}>Editing a PDF's bookmark/outline structure isn't supported by the in-browser PDF engine yet. Your files are never uploaded. We're working on adding this — check back soon.</div>
-    </div>
   );
 }
 
@@ -3971,8 +3876,6 @@ const TOOL_COMPONENTS = {
   "jpg-to-pdf": JpgToPdf,
   "png-to-pdf": PngToPdf,
   "pdf-to-text": PdfToText,
-  "word-to-pdf": WordToPdf,
-  "pdf-password-protect": PdfPasswordProtect,
   "pdf-unlock": PdfUnlock,
   "pdf-watermark": PdfWatermark,
   "pdf-redact": PdfRedact,
@@ -3982,7 +3885,6 @@ const TOOL_COMPONENTS = {
   "pdf-page-numbering": PdfPageNumbering,
   "pdf-margin-adder": PdfMarginAdder,
   "pdf-cropper": PdfCropper,
-  "pdf-bookmarks": PdfBookmarks,
   "pdf-form-filler": PdfFormFiller,
   "pdf-to-markdown": PdfToMarkdown,
   "pdf-to-json": PdfToJson,
