@@ -125,15 +125,57 @@ curl -s https://pdf.toolsrift.com/.well-known/assetlinks.json
 
 Google's checker: `https://digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https://pdf.toolsrift.com&relation=delegate_permission/common.handle_all_urls`
 
-## Existing text app
+## The text app: package id and certificate of unverified origin
 
-`com.toolsrift.text.twa` (the app already published against `text.toolsrift.com`)
-keeps its package id. Play only accepts updates signed with the key it already
-knows: either rebuild it with that original keystore (`KEYSTORE_PATH=…
-npm run android:build -- text`) or, if the app is enrolled in Play App Signing,
-request an upload-key reset in the Console to the shared key. Put its current
-certificate SHA-256 in `android/fingerprints.json` under `"text"` so the
-published build keeps verifying.
+This section used to state that `com.toolsrift.text.twa` was "already published
+against `text.toolsrift.com`". **That could not be verified, and the evidence is
+against it.** Treat the claim as unproven.
+
+What is actually known, as of 2026-09-25:
+
+- **No such app exists on any reachable Play Console account.** The ToolsRift.com
+  developer account (personal, ID 6750908984851878480) holds exactly 15 apps, all
+  in closed testing with 0 installs, and the account has never had an app in
+  production. Searching its app list for "text", "toolsrift" and "twa" returns
+  nothing, and no other Google account signed in alongside it has a developer
+  account at all.
+- **The certificate predates the repo's own history.** `AB:54:5C:86:…` arrived in
+  the initial bulk project import (`e60c7ce`, 2026-07-02, "Add files via upload");
+  `d3d0c47` fifteen minutes later only converted the assetlinks from a JS route to
+  static JSON. There is no commit in which it was generated or recorded from a
+  Play Console listing.
+- **`text` is the one brand carrying Bubblewrap's default `.twa` suffix.** The
+  other 28 use a bare `com.toolsrift.<id>`. That looks like a leftover default
+  rather than a deliberate choice — but see below before "fixing" it.
+
+### Why the package id is left alone
+
+If an app with this id *does* exist on an account nobody here can sign into, a
+rename would orphan the live listing: Play never accepts a renamed package, and
+only accepts updates signed with the key it already knows. That downside is
+permanent; the upside of a tidier id is cosmetic. So it stays until someone
+proves the app does not exist — the check is the public listing at
+`play.google.com/store/apps/details?id=com.toolsrift.text.twa`, whose developer
+name would name the owning account.
+
+If it is confirmed absent, rename it to `com.toolsrift.text` in
+`lib/sites/brands.js`, run `npm run android:generate`, and drop the certificate
+below. Do that BEFORE the app is created in Play — afterwards the id is fixed
+forever.
+
+### Why the certificate stays in fingerprints.json
+
+`android/fingerprints.json` carries `AB:54:5C:86:…` under `"text"`, so
+`text.toolsrift.com/.well-known/assetlinks.json` serves it alongside the shared
+upload key. The hub has declared that same certificate at
+`toolsrift.com/.well-known/assetlinks.json` since July, so listing it on the
+subdomain extends an existing trust declaration rather than creating a new one —
+and if the app is real, removing it would break the app. It is not evidence the
+app exists.
+
+When a text app is genuinely created, it will be signed with the shared upload
+key (already under `"all"`) plus a Play App Signing certificate Google issues at
+that point. Add that one here; this entry can then go.
 
 ## Why not Capacitor / React Native?
 

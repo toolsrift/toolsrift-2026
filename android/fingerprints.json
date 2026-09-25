@@ -3,6 +3,7 @@
   "all": [
     "8B:72:5D:AD:BB:59:AD:AF:C7:4E:9A:AA:D1:81:55:F3:6E:2B:3A:BA:09:E1:C1:81:E0:36:0F:3F:45:8B:F9:F8"
   ],
+  "//text": "UNVERIFIED ORIGIN. No app with the id com.toolsrift.text.twa exists on any reachable Play Console account (checked 2026-09-25: the ToolsRift.com account holds 15 apps, all closed testing, none named text). This certificate came in with the initial project import on 2026-07-02, not from a Console listing. It is kept because toolsrift.com has declared the same certificate since July, so listing it here extends an existing trust declaration rather than creating a new one -- and if the app does exist on an account nobody can sign into, removing it would break it. See android/README.md, 'The text app: package id and certificate of unverified origin'.",
   "text": [
     "AB:54:5C:86:59:BC:74:D1:A8:5B:78:A4:1D:43:8A:AD:87:D9:B1:71:7C:AB:5D:FC:14:8E:54:00:44:BB:CB:07"
   ],
