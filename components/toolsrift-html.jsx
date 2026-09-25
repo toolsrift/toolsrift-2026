@@ -1020,7 +1020,12 @@ function HtmlToText() {
     if (!input.trim()) return;
     const div = document.createElement('div');
     div.innerHTML = input;
-    
+
+    // textContent returns the text inside <script> and <style> too, so a page
+    // with a stylesheet would dump its CSS into the "plain text". Drop those
+    // elements before reading.
+    div.querySelectorAll('script, style').forEach(el => el.remove());
+
     // Get text content
     let text = div.textContent || div.innerText || '';
     
@@ -1059,7 +1064,14 @@ function HtmlToMarkdown() {
   const convertToMarkdown = () => {
     if (!input.trim()) return;
     let md = input;
-    
+
+    // Drop script and style bodies before anything else. The final
+    // `replace(/<[^>]+>/g, '')` below removes tags but not the text between
+    // them, so without this a page's JavaScript and CSS end up as markdown.
+    md = md.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
+    md = md.replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '');
+    md = md.replace(/<!--[\s\S]*?-->/g, '');
+
     // Headers
     md = md.replace(/<h1[^>]*>(.*?)<\/h1>/gi, '# $1\n\n');
     md = md.replace(/<h2[^>]*>(.*?)<\/h2>/gi, '## $1\n\n');

@@ -1387,7 +1387,15 @@ function TextRandomizer() {
   const [text, setText] = useState("");
   const [mode, setMode] = useState("lines");
   const [output, setOutput] = useState("");
-  const shuffle = arr => [...arr].sort(()=>Math.random()-0.5);
+  // Fisher-Yates, for the same reason TextSorter's random mode uses it:
+  // sort(() => Math.random() - 0.5) is not a uniform shuffle and leaves items
+  // close to where they started — plainly wrong in a tool whose only job is
+  // to randomise the order.
+  const shuffle = arr => {
+    const a = [...arr];
+    for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+    return a;
+  };
   const run = () => {
     if (mode==="lines") setOutput(shuffle(text.split("\n")).join("\n"));
     else if (mode==="words") setOutput(shuffle(text.split(" ")).join(" "));
