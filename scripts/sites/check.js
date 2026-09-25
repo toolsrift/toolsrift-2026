@@ -49,7 +49,9 @@ for (const b of BRANDS) {
   try {
     const fp = JSON.parse(fs.readFileSync(fpPath, 'utf8'));
     for (const [k, v] of Object.entries(fp)) {
-      if (k === '//') continue;
+      // Any "//"-prefixed key is a comment, not a site: "//" for the file-level
+      // note, "//<site id>" to explain one entry (see "//text").
+      if (k.startsWith('//')) continue;
       if (k !== 'all' && !BRANDS.some(b => b.id === k)) errors.push(`android/fingerprints.json: "${k}" is not "all" or a site id`);
       if (!Array.isArray(v)) { errors.push(`android/fingerprints.json: "${k}" must be an array`); continue; }
       for (const f of v) if (!FP_RE.test(String(f).toUpperCase())) errors.push(`android/fingerprints.json: "${k}" has a malformed SHA-256 fingerprint "${f}"`);
