@@ -50,6 +50,22 @@ This helps Google understand the site is real, structured and trustworthy.
 
 ---
 
+## ✅ Status (2026-09-28) — Auto ads code is live in the codebase
+
+- Publisher ID: `ca-pub-4864313539537760`
+- `public/ads.txt` is in place, and it ships in every network-site build too.
+- `pages/_document.js` loads the AdSense script on every page of the hub and all 29 subdomains.
+- There are no manual `<ins>` units. Placement is left to **Auto ads**.
+
+**Still to do in the AdSense dashboard (the code cannot do these):**
+1. Ads → By site → `toolsrift.com` → turn **Auto ads** on. Subdomains inherit it, or you can override per subdomain via "URL groups".
+2. Privacy & messaging → create the **European regulations (GDPR)** message. AdSense requires a Google-certified CMP to serve ads to EEA/UK/Swiss visitors.
+3. Play Console → each app → App content → **Ads** → declare "Yes, my app contains ads". The TWAs show the website, so its ads appear in the apps.
+
+The rest of this file is the original guide, kept for reference.
+
+---
+
 ## 🔜 Phase B — After you receive your AdSense publisher ID
 
 You'll get an ID like `ca-pub-1234567890123456`. Here's exactly what to do:

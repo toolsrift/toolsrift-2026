@@ -8,6 +8,7 @@ import { SITE, HUB_BASE } from '../lib/sites'
 const B = SITE.brand
 const OG_IMAGE = B ? `${SITE.baseUrl}${SITE.ogImage}` : 'https://toolsrift.com/og-image.png'
 const OG_ALT = B ? `${SITE.siteName} — ${B.tagline}` : 'ToolsRift — 1,136+ Free Online Tools'
+const ADSENSE_CLIENT = 'ca-pub-4864313539537760'
 
 export default function MyDocument({ manifest }) {
   return (
@@ -17,9 +18,18 @@ export default function MyDocument({ manifest }) {
         <link rel="manifest" href={B ? '/manifest.json' : manifest} />
 
         {/* ============================================
-            Google AdSense — site ownership verification
+            Google AdSense — verification + Auto ads
+            One script serves every site in the network: the toolsrift.com
+            approval covers its subdomains, and public/ads.txt ships in every
+            build. Placement is left to Auto ads (switched on per site in the
+            AdSense dashboard), so there are no hardcoded ad units here.
             ============================================ */}
-        <meta name="google-adsense-account" content="ca-pub-4864313539537760" />
+        <meta name="google-adsense-account" content={ADSENSE_CLIENT} />
+        <script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+          crossOrigin="anonymous"
+        />
 
         {/* ============================================
             FAVICONS — Full set for all browsers

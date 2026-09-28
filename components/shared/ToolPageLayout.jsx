@@ -107,6 +107,8 @@ export function fastHashNav(e, pageRoute, id) {
 
 // ── Ad slot placeholder (kept as a no-op stub for forward compatibility) ────
 // Renders nothing. The previous visual placeholder was removed at user request.
+// Ads are served by AdSense Auto ads (script in pages/_document.js), which
+// places units itself; manual units would need slot ids from the dashboard.
 function AdSlot() { return null; }
 
 // ── Breadcrumb ──────────────────────────────────────────────────────────────
