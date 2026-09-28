@@ -197,7 +197,10 @@ app: sets the store listing text from `android/apps/<id>/play-listing.md`,
 uploads icon / feature graphic / phone + 7" + 10" screenshots, uploads the
 bundle and creates a completed release on every track — committed with
 `changesNotSentForReview`, so nothing goes to Google until you click
-**Send changes for review**. Apps that don't exist in the Console yet are
+**Send changes for review**. Exception: when an app's changes "are sent for
+review automatically" in the Console, Play refuses that flag, and the
+workflow's fallback commit **does** submit them for review; the log and the
+run summary mark those apps "sent for review automatically". Apps that don't exist in the Console yet are
 reported and skipped. Local: `PLAY_SERVICE_ACCOUNT_FILE=key.json npm run android:publish -- --sites pdf --dry-run`.
 
 Needs the `PLAY_SERVICE_ACCOUNT_JSON` secret: a Google Cloud service account

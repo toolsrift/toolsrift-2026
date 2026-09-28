@@ -14,7 +14,10 @@
 //   3. the .aab from the android-build artifact (--bundles DIR, default dist),
 //      released to every track in --tracks with --notes as release notes
 //   4. commit with changesNotSentForReview, so nothing is submitted for review
-//      until someone clicks "Send changes for review" in the Console.
+//      until someone clicks "Send changes for review" in the Console. Play
+//      refuses that flag for an app whose changes "are sent for review
+//      automatically"; the plain-commit fallback then submits them, and the
+//      log and report say so for that app.
 //
 // Flags: --skip-listing  --skip-images  --skip-bundle  --dry-run
 //        --draft   never-published apps (Play only accepts draft releases there;
@@ -229,18 +232,21 @@ async function publishApp(b, report, { draft = false } = {}) {
     notes.push(`bundle ${versionCode} → ${OPTS.tracks.join(', ')}${draft ? ' (draft — roll out in the Console)' : ''}`);
   }
 
-  // Commit without sending for review; Play refuses that flag in some states,
-  // so fall back to a plain commit (still nothing is submitted for review on
-  // an unpublished app — that needs the Console's "Send changes for review").
+  // Commit without sending for review. Play refuses that flag when the app's
+  // changes "are sent for review automatically" (managed publishing off), and
+  // then the plain-commit fallback DOES submit them for review. Returns
+  // whether the changes were held back, so the log says which happened.
   const commit = async () => {
-    try { await api('POST', `${E}:commit?changesNotSentForReview=true`); }
+    try { await api('POST', `${E}:commit?changesNotSentForReview=true`); return true; }
     catch (e) {
       if (e.status !== 400) throw e;
-      log(`commit (not sent for review) refused: ${errText(e)} — retrying plain commit`);
+      log(`commit (not sent for review) refused: ${errText(e)} — retrying plain commit, which sends the changes for review`);
       await api('POST', `${E}:commit`);
+      return false;
     }
   };
-  try { await commit(); }
+  let heldBack;
+  try { heldBack = await commit(); }
   catch (e) {
     if (!draft && /draft app|status draft/i.test(errText(e))) {
       // Nothing from this edit was kept (edits are atomic) — redo it with draft releases.
@@ -249,7 +255,12 @@ async function publishApp(b, report, { draft = false } = {}) {
     }
     throw e;
   }
-  log('✓ committed (not sent for review — click "Send changes for review" in the Console)');
+  if (heldBack) {
+    log('✓ committed (not sent for review — click "Send changes for review" in the Console)');
+  } else {
+    log('✓ committed and SENT FOR REVIEW (Play sends this app\'s changes for review automatically)');
+    notes.push('sent for review automatically');
+  }
   if (noBundle) notes.push('⚠ no .aab in artifact — no release created');
   report.push({ id, pkg, status: 'ok', note: notes.join(' · ') });
 }
@@ -270,6 +281,6 @@ async function publishApp(b, report, { draft = false } = {}) {
 
   const md = ['| app | package | result | notes |', '|---|---|---|---|', ...report.map(r => `| ${r.id} | \`${r.pkg}\` | ${r.status} | ${r.note || ''} |`)].join('\n');
   console.log(`\n${md}`);
-  if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `## Google Play publish — ${OPTS.dryRun ? 'dry run' : OPTS.tracks.join(', ')}\n\n${md}\n\nNothing is sent for review by this workflow: open each app's **Publishing overview** in Play Console and click **Send changes for review**. Testers and the "Set up your app" questionnaires are Console-only.\n`);
+  if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `## Google Play publish — ${OPTS.dryRun ? 'dry run' : OPTS.tracks.join(', ')}\n\n${md}\n\n${report.some(r => /sent for review automatically/.test(r.note || '')) ? 'Apps noted "sent for review automatically" were submitted to Google by this run: Play refused to hold their changes back. ' : ''}For any other app, open its **Publishing overview** in Play Console and click **Send changes for review**. Testers and the "Set up your app" questionnaires are Console-only.\n`);
   process.exit(failed ? 1 : 0);
 })().catch(e => { console.error(errText(e)); process.exit(1); });
