@@ -1,0 +1,26 @@
+# Fetches robots.txt, sitemap.xml and every sitemap URL from each live network
+# site as Googlebot (scripts/sites/check-live.js). Run it when Search Console
+# reports a sitemap it "could not read": it shows what the live edge serves.
+name: sites-live-check
+
+on:
+  workflow_dispatch:
+    inputs:
+      sites:
+        description: 'Site ids (space-separated), or empty for every live site + the hub'
+        type: string
+        default: ''
+  # Also runs when the checker itself changes, so a change is verified live.
+  push:
+    paths:
+      - scripts/sites/check-live.js
+      - .github/workflows/sites-live-check.yml
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: node scripts/sites/check-live.js ${{ inputs.sites }}

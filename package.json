@@ -14,6 +14,7 @@
     "start:site": "node scripts/sites/run.js start",
     "sites:list": "node scripts/sites/list.js",
     "sites:check": "node scripts/sites/check.js",
+    "sites:live": "node scripts/sites/check-live.js",
     "brands:assets": "node scripts/generate-brand-assets.js",
     "android:generate": "node scripts/android/generate.js",
     "android:keystore": "bash scripts/android/keystore.sh",
