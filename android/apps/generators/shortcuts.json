@@ -1,18 +1,18 @@
 [
   {
     "name": "Strong Password Generator",
-    "url": "/strong-password-gen"
+    "url": "/generators/strong-password-gen"
   },
   {
     "name": "Passphrase Generator",
-    "url": "/passphrase-gen"
+    "url": "/generators/passphrase-gen"
   },
   {
     "name": "PIN Generator",
-    "url": "/pin-gen"
+    "url": "/generators/pin-gen"
   },
   {
     "name": "API Key Generator",
-    "url": "/api-key-gen"
+    "url": "/generators/api-key-gen"
   }
 ]

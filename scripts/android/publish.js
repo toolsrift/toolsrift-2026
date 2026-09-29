@@ -31,7 +31,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const { BRANDS } = require('../../lib/sites/brands');
+const { androidApps, findApp, appIcons } = require('../../lib/sites/brands');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 const API = 'https://androidpublisher.googleapis.com';
@@ -124,7 +124,7 @@ function parseListing(id) {
 function findImages(id) {
   const dir = path.join(OPTS.assets, id);
   const pick = (candidates) => candidates.find(f => f && fs.existsSync(f)) || null;
-  const icon = pick([path.join(dir, 'icon-512.png'), path.join(ROOT, 'public', 'brands', id, 'icon-512.png')]);
+  const icon = pick([path.join(dir, 'icon-512.png'), path.join(ROOT, appIcons(findApp(id) || { id }).icon512)]);
   const feature = pick([path.join(dir, 'feature-graphic.png'), path.join(ROOT, 'android', 'apps', id, 'feature-graphic.png')]);
   const shots = fs.existsSync(dir)
     ? fs.readdirSync(dir).filter(f => /^\d{2}-.+\.png$/i.test(f)).sort().slice(0, 8).map(f => path.join(dir, f))
@@ -267,9 +267,10 @@ async function publishApp(b, report, { draft = false } = {}) {
 
 // ── main ───────────────────────────────────────────────────────────────────
 (async () => {
-  const wanted = OPTS.all ? BRANDS : BRANDS.filter(b => OPTS.sites.includes(b.id) || OPTS.sites.includes(b.slug));
-  const unknown = OPTS.sites.filter(s => !BRANDS.some(b => b.id === s || b.slug === s));
-  if (unknown.length) { console.error(`unknown site(s): ${unknown.join(', ')}`); process.exit(2); }
+  const APPS = androidApps();
+  const wanted = OPTS.all ? APPS : APPS.filter(b => OPTS.sites.includes(b.id) || OPTS.sites.includes(b.slug));
+  const unknown = OPTS.sites.filter(s => !APPS.some(b => b.id === s || b.slug === s));
+  if (unknown.length) { console.error(`unknown app(s): ${unknown.join(', ')} (apps: ${APPS.map(a => a.id).join(', ')})`); process.exit(2); }
   if (!OPTS.dryRun) await accessToken(); // fail fast on bad credentials
 
   const report = [];

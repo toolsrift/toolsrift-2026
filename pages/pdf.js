@@ -1,24 +1,12 @@
-import Head from 'next/head'
-import dynamic from 'next/dynamic';
-import CategoryLoading from '../components/CategoryLoading'
-import CategoryContent from '../components/CategoryContent'
-import categoryContent from '../lib/categoryContent'
-const ToolsRiftPDF = dynamic(() => import('../components/toolsrift-pdf'), { ssr: false, loading: CategoryLoading });
+import SectionHome from '../components/site/SectionHome'
+
+// toolsrift.com/pdf — a branded category section (lib/sites/brands.js).
 export default function PDFPage() {
   return (
-    <>
-      <Head>
-        <title>Free PDF Tools — Merge, Split, Compress &amp; Convert PDFs | ToolsRift</title>
-        <meta name="description" content="32+ free online PDF tools. Merge, split, compress, redact and fill PDF forms, plus PDF to Markdown, JSON and CSV. 100% browser-based, no file uploads." />
-        <meta property="og:title" content="Free PDF Tools — Merge, Split, Compress &amp; Convert PDFs | ToolsRift" />
-        <meta property="og:description" content="32+ free online PDF tools. Merge, split, compress, redact and fill PDF forms, plus PDF to Markdown, JSON and CSV. 100% browser-based, no file uploads." />
-        <meta property="og:url" content="https://toolsrift.com/pdf" />
-        <meta property="og:site_name" content="ToolsRift" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <link rel="canonical" href="https://toolsrift.com/pdf" />
-      </Head>
-      <ToolsRiftPDF />
-      <CategoryContent data={categoryContent.pdf} />
-    </>
-  );
+    <SectionHome
+      slug="pdf"
+      title="Free PDF Tools — Merge, Split, Compress & Convert PDFs | ToolsRift"
+      description="32+ free online PDF tools. Merge, split, compress, redact and fill PDF forms, plus PDF to Markdown, JSON and CSV. 100% browser-based, no file uploads."
+    />
+  )
 }

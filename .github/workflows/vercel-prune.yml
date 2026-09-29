@@ -11,7 +11,7 @@ on:
         description: 'Rollback deployments to keep per project (besides the live one)'
         default: '1'
       projects:
-        description: 'Project names, space-separated (blank = hub + all 29 sites)'
+        description: 'Project names, space-separated (blank = hub + any leftover toolsrift-<id>)'
         default: ''
       dry_run:
         description: 'Only report what would be deleted'

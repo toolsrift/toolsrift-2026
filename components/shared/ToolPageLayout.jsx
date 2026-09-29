@@ -15,7 +15,6 @@ import { SITE } from '../../lib/sites';
 
 // ── JSON-LD schema injection ────────────────────────────────────────────────
 export function ToolSchemas({ theme, tool }) {
-  // Site-aware: on a standalone network site this is that site's own domain.
   const baseUrl   = SITE.baseUrl;
   // The clean, canonical URL — this used to be `${pageRoute}#/tool/${id}`, which
   // Google reads as the CATEGORY page, so every tool in a category declared
@@ -44,16 +43,11 @@ export function ToolSchemas({ theme, tool }) {
   const crumbs = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    itemListElement: theme.isSiteRoot
-      ? [
-          { '@type': 'ListItem', position: 1, name: SITE.siteName, item: baseUrl },
-          { '@type': 'ListItem', position: 2, name: tool.name },
-        ]
-      : [
-          { '@type': 'ListItem', position: 1, name: 'ToolsRift',  item: baseUrl },
-          { '@type': 'ListItem', position: 2, name: theme.name,   item: `${baseUrl}${theme.pageRoute}` },
-          { '@type': 'ListItem', position: 3, name: tool.name },
-        ],
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'ToolsRift',  item: baseUrl },
+      { '@type': 'ListItem', position: 2, name: theme.name,   item: `${baseUrl}${theme.pageRoute}` },
+      { '@type': 'ListItem', position: 3, name: tool.name },
+    ],
   };
 
   const faqPage = tool.faq?.length ? {
@@ -113,15 +107,12 @@ function AdSlot() { return null; }
 
 // ── Breadcrumb ──────────────────────────────────────────────────────────────
 function Breadcrumb({ theme, toolName }) {
-  // Standalone site: Home › Tool (the category IS the site).
-  // Hub:             ToolsRift › Category › Tool.
-  const crumbs = theme.isSiteRoot
-    ? [{ label: theme.name, href: '/' }, { label: toolName }]
-    : [
-        { label: 'ToolsRift', href: '/' },
-        { label: theme.name,  href: theme.pageRoute },
-        { label: toolName },
-      ];
+  // ToolsRift › Category › Tool.
+  const crumbs = [
+    { label: 'ToolsRift', href: '/' },
+    { label: theme.name,  href: theme.pageRoute },
+    { label: toolName },
+  ];
   return (
     <nav aria-label="Breadcrumb" style={{
       display: 'flex', alignItems: 'center', flexWrap: 'wrap',

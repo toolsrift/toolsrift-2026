@@ -1,10 +1,10 @@
-// ── BrandLogo — the network lockup, rendered inline ─────────────────────────
+// ── BrandLogo — the category lockup, rendered inline ────────────────────────
 // Same drawing as public/brands/<id>/logo.svg (lib/sites/logo.js) but inline so
 // the wordmark uses the real page font and the rift can glow on hover.
-// On the hub it draws the same badge in ToolsRift blue with no category chip.
+// Without a `brand` (outside a category section) it draws the same badge in
+// ToolsRift blue with no category chip.
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { SITE } from '../../lib/sites';
 import { networkMarkSvg, HUB_BRAND } from '../../lib/sites/logo';
 
 const CSS = `
@@ -20,10 +20,10 @@ const CSS = `
 .tr-logo-word.hub i{background-image:linear-gradient(90deg,#38BDF8,#3B82F6);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:#3B82F6}
 `;
 
-export default function BrandLogo({ size = 32, wordmark = true, href = '/', style, ...rest }) {
+export default function BrandLogo({ brand = null, size = 32, wordmark = true, href = '/', style, ...rest }) {
   const reduce = useReducedMotion();
-  const hub = !SITE.brand;
-  const b = SITE.brand || HUB_BRAND;
+  const hub = !brand;
+  const b = brand || HUB_BRAND;
   const markHtml = networkMarkSvg(b, size, { id: `hl${size}`, chip: !hub });
   const [w1, w2] = b.wordmark;
 
@@ -31,7 +31,7 @@ export default function BrandLogo({ size = 32, wordmark = true, href = '/', styl
     <motion.a
       href={href}
       className="tr-logo"
-      aria-label={hub ? 'ToolsRift home' : SITE.siteName}
+      aria-label={hub ? 'ToolsRift home' : `${b.siteName} home`}
       whileHover={reduce ? undefined : { scale: 1.02 }}
       whileTap={reduce ? undefined : { scale: 0.98 }}
       style={{ '--tr-logo-glow': `${b.palette.primary}88`, '--tr-logo-accent': b.palette.primary, ...style }}

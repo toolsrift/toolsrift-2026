@@ -1,6 +1,6 @@
 {
   "packageId": "com.toolsrift.generators",
-  "host": "generators.toolsrift.com",
+  "host": "toolsrift.com",
   "name": "Password & QR Code Maker",
   "launcherName": "Generators",
   "display": "standalone",
@@ -13,7 +13,7 @@
   "navigationDividerColorDark": "#141A10",
   "backgroundColor": "#070A05",
   "enableNotifications": false,
-  "startUrl": "/?source=twa",
+  "startUrl": "/generators/?source=twa",
   "iconUrl": "https://toolsrift.com/brands/generators/icon-512.png",
   "maskableIconUrl": "https://toolsrift.com/brands/generators/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
@@ -27,30 +27,30 @@
     {
       "name": "Strong Password Generator",
       "shortName": "Strong Pass…",
-      "url": "/strong-password-gen?source=shortcut",
+      "url": "/generators/strong-password-gen?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/generators/icon-192.png"
     },
     {
       "name": "Passphrase Generator",
       "shortName": "Passphrase …",
-      "url": "/passphrase-gen?source=shortcut",
+      "url": "/generators/passphrase-gen?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/generators/icon-192.png"
     },
     {
       "name": "PIN Generator",
       "shortName": "PIN Generat…",
-      "url": "/pin-gen?source=shortcut",
+      "url": "/generators/pin-gen?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/generators/icon-192.png"
     },
     {
       "name": "API Key Generator",
       "shortName": "API Key Gen…",
-      "url": "/api-key-gen?source=shortcut",
+      "url": "/generators/api-key-gen?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/generators/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://generators.toolsrift.com/manifest.json",
+  "webManifestUrl": "https://toolsrift.com/generators/manifest.webmanifest",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -59,7 +59,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://generators.toolsrift.com/",
+  "fullScopeUrl": "https://toolsrift.com/generators/",
   "minSdkVersion": 21,
   "orientationLock": false,
   "additionalTrustedOrigins": [],

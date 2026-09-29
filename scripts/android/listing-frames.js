@@ -4,8 +4,8 @@
  * screenshots.js into Play Store marketing frames, and render a feature
  * graphic with a phone mockup.
  *
- *   node scripts/android/listing-frames.js            # every site with captures
- *   node scripts/android/listing-frames.js pdf image  # some site ids
+ *   node scripts/android/listing-frames.js            # every app with captures
+ *   node scripts/android/listing-frames.js hub pdf    # some app ids
  *
  * Reads  android/build/listing/<id>/NN-<page>.png   (1080×1920 raw captures)
  * Writes android/build/listing/<id>/store/NN-<page>.png   (1080×1920 frames)
@@ -18,7 +18,7 @@
  */
 const fs = require('fs');
 const path = require('path');
-const { BRANDS, findBrand } = require('../../lib/sites/brands');
+const { androidApps, findApp, appIcons } = require('../../lib/sites/brands');
 
 const ROOT = path.join(__dirname, '..', '..');
 const LISTING = path.join(ROOT, 'android', 'build', 'listing');
@@ -74,7 +74,7 @@ function frameHtml(b, capture, copy, index) {
   </style></head><body>
   <div class="bg"></div><div class="grid"></div>
   <div class="top">
-    <div class="brand"><img src="${dataUri(path.join(ROOT, 'public', 'brands', b.id, 'icon-192.png'))}"><span>${esc(b.wordmark[0])} <b>${esc(b.wordmark[1])}</b></span></div>
+    <div class="brand"><img src="${dataUri(path.join(ROOT, appIcons(b).icon192))}"><span>${esc(b.wordmark[0])} <b>${esc(b.wordmark[1])}</b></span></div>
     <div class="kicker">${esc(copy.kicker)}</div>
     <h1>${esc(copy.headline)}</h1>
     ${copy.sub ? `<p>${esc(copy.sub)}</p>` : ''}
@@ -100,8 +100,8 @@ function featureHtml(b, capture, toolCount) {
   .screen{width:100%;height:100%;border-radius:32px;overflow:hidden;background:${bg}}.screen img{display:block;width:100%}
   .bar{position:absolute;left:0;right:0;bottom:0;height:8px;background:${primary}}
   </style></head><body><div class="bg"></div><div class="grid"></div>
-  <div class="txt"><div class="brand"><img src="${dataUri(path.join(ROOT, 'public', 'brands', b.id, 'icon-192.png'))}"><span>${esc(b.wordmark[0])} <b>${esc(b.wordmark[1])}</b></span></div>
-  <h1>${esc(b.concept.headline)}</h1><p>${esc(`${toolCount} ${b.wordmark[1].toLowerCase()} tools · 100% on your device · no sign-up`)}</p>
+  <div class="txt"><div class="brand"><img src="${dataUri(path.join(ROOT, appIcons(b).icon192))}"><span>${esc(b.wordmark[0])} <b>${esc(b.wordmark[1])}</b></span></div>
+  <h1>${esc(b.concept.headline)}</h1><p>${esc(`${toolCount} ${b.toolNoun || b.wordmark[1].toLowerCase()} tools · 100% on your device · no sign-up`)}</p>
   <div class="chips"><span>NO SIGN-UP</span><span>NO UPLOADS</span><span>WORKS OFFLINE</span></div></div>
   <div class="phone"><div class="screen"><img src="${dataUri(capture)}"></div></div><div class="bar"></div></body></html>`;
 }
@@ -109,8 +109,8 @@ function featureHtml(b, capture, toolCount) {
 async function main() {
   const { chromium } = require('playwright');
   const reg = registry();
-  const ids = process.argv.slice(2).map(findBrand).filter(Boolean).map(b => b.id);
-  const brands = (ids.length ? BRANDS.filter(b => ids.includes(b.id)) : BRANDS)
+  const ids = process.argv.slice(2).map(findApp).filter(Boolean).map(b => b.id);
+  const brands = (ids.length ? androidApps().filter(b => ids.includes(b.id)) : androidApps())
     .filter(b => fs.existsSync(path.join(LISTING, b.id)));
   const browser = await chromium.launch({ executablePath: process.env.PW_EXECUTABLE_PATH || undefined, args: ['--no-sandbox', '--disable-gpu'] });
   let n = 0;
@@ -118,7 +118,8 @@ async function main() {
     const dir = path.join(LISTING, b.id);
     const out = path.join(dir, 'store');
     fs.mkdirSync(out, { recursive: true });
-    const tools = (reg[b.slug] || { tools: [] }).tools;
+    // The main app spans every category.
+    const tools = b.slug ? (reg[b.slug] || { tools: [] }).tools : Object.values(reg).flatMap(c => c.tools);
     const captures = fs.readdirSync(dir).filter(f => /^\d\d-.*\.png$/.test(f)).sort();
     if (!captures.length) { console.log(`── ${b.id}: no captures`); continue; }
     console.log(`══ ${b.id}`);

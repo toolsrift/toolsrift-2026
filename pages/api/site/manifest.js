@@ -1,31 +1,31 @@
-// Web App Manifest for a standalone network site (also what the Android TWA
-// wraps — see android/README.md). Reached via the middleware rewrite of
-// /manifest.json. The hub keeps its committed public/manifest*.json files, but
-// serves any brand's manifest at /api/site/manifest?site=<id> so the Android
-// build (scripts/android/build.sh) can fetch it before that site is live.
-import { SITE, findBrand } from '../../../lib/sites'
+// Web App Manifest of a category section — /<slug>/manifest.webmanifest
+// (middleware rewrite to /api/site/manifest?site=<slug>). Scoped to /<slug>/,
+// so installing "ToolsRift PDF" from toolsrift.com/pdf gives an app that opens
+// the PDF section; it is also what that category's Android app (TWA) wraps —
+// see android/README.md. The site-wide manifest stays public/manifest.json.
+import { findBrand } from '../../../lib/sites'
 import TOOL_REGISTRY from '../../../lib/toolRegistry'
 
-export function buildManifest(brand = SITE.brand) {
-  const b = brand
+export function buildManifest(b) {
   const cat = TOOL_REGISTRY[b.slug]
   const tools = cat ? cat.tools : []
+  const base = `${b.path}/`
   const icon192 = `/brands/${b.id}/icon-192.png`
   return {
-    id: '/',
+    id: base,
     name: b.android.appName,
     short_name: b.android.shortName,
     description: b.android.shortDesc,
     lang: 'en',
-    start_url: '/?source=pwa',
-    scope: '/',
+    start_url: `${base}?source=pwa`,
+    scope: base,
     display: 'standalone',
     display_override: ['window-controls-overlay', 'standalone'],
     orientation: 'portrait',
     background_color: b.palette.bg,
     theme_color: b.palette.bg,
     categories: ['utilities', 'productivity'],
-    // The site's own Android app (Trusted Web Activity, android/README.md).
+    // The category's Android app (Trusted Web Activity, android/README.md).
     // prefer_related_applications stays false until the app is published on
     // Play (brands.js android.published), so Chrome offers the PWA meanwhile.
     related_applications: [{
@@ -45,15 +45,14 @@ export function buildManifest(brand = SITE.brand) {
       name: t.name,
       short_name: t.name.length > 12 ? t.name.slice(0, 11) + '…' : t.name,
       description: t.desc,
-      url: `/${t.id}?source=shortcut`,
+      url: `${base}${t.id}?source=shortcut`,
       icons: [{ src: icon192, sizes: '192x192', type: 'image/png' }],
     })),
   }
 }
 
 export default function handler(req, res) {
-  let brand = SITE.isStandalone ? SITE.brand : null
-  if (!brand && req.query && typeof req.query.site === 'string') brand = findBrand(req.query.site) || null
+  const brand = req.query && typeof req.query.site === 'string' ? findBrand(req.query.site) : null
   if (!brand) return res.status(404).end()
   res.setHeader('Content-Type', 'application/manifest+json; charset=utf-8')
   res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400')

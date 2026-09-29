@@ -852,11 +852,11 @@ Every tool now has its own indexable URL: `/{category}/{tool-id}` (e.g. `/text/w
 **MANDATORY workflow when adding/removing tools OR editing TOOL_META in any category component:**
 1. `python3 scripts/extract-tools.py`   (regenerates lib/toolRegistry.js — tool id/name/desc)
 2. `node scripts/extract-seo.js`        (regenerates lib/toolSeo.js — per-tool title/desc/keywords/faq/howTo for SERVER-rendered SEO)
-3. `node scripts/generate-sitemap.js`   (regenerates public/sitemap.xml — a sitemap index — and public/sitemap-hub.xml)
+3. `node scripts/generate-sitemap.js`   (regenerates public/sitemap.xml — the one sitemap of the site)
 4. Commit all three generated files together with the component change.
 5. After deploy, run `npm run submit:indexnow` (or `node scripts/submit-indexnow.js`) to push the new URLs to Bing/Yandex/Seznam/Naver/Yep via the IndexNow protocol, and `node scripts/submit-google-sitemap.js` to ask Google to recrawl the sitemap. A daily Vercel Cron (`/api/cron/submit-search-engines`, see `vercel.json`) resubmits the whole sitemap to both as a safety net, so this step is not strictly required but speeds up discovery for brand-new tools.
 
-Skipping step 1 means new tools get no URL/page. Skipping step 2 means the tool's page falls back to a GENERIC server title/description/FAQ (the rich TOOL_META only applies client-side, which Google weights far less). Skipping step 3 means search engines are never told about them. NOTE: when adding a NEW CATEGORY, also add its `slug -> component` entry to the hardcoded `MAP` in BOTH `scripts/extract-tools.py` and `scripts/extract-seo.js`, and register it in `pages/[slug]/[tool].js` COMPONENTS and `lib/sites/categoryComponents.js`.
+Skipping step 1 means new tools get no URL/page. Skipping step 2 means the tool's page falls back to a GENERIC server title/description/FAQ (the rich TOOL_META only applies client-side, which Google weights far less). Skipping step 3 means search engines are never told about them. NOTE: when adding a NEW CATEGORY, also add its `slug -> component` entry to the hardcoded `MAP` in BOTH `scripts/extract-tools.py` and `scripts/extract-seo.js`, register it in `lib/sites/categoryComponents.js`, and add its brand + `pages/<slug>.js` (docs/NETWORK-SITES.md §6).
 
 ### Search Engine Indexing Automation (added 2026-07)
 
@@ -872,7 +872,7 @@ The `coreTools.js` allowlist stopped the bleeding but left the survivors thin: a
 audit on 2026-09-21 found the 252 indexable tool pages carry a median of 131
 characters of how-to plus three short FAQs — about 100 words unique to the page.
 `lib/toolContent.js` holds hand-written long-form content (intro, sections,
-steps, notes, extra FAQ) rendered server-side by `pages/[slug].js`; a tool with
+steps, notes, extra FAQ) rendered server-side by `pages/[slug]/[tool].js`; a tool with
 an entry goes from ~100 to ~700 words of its own text. **Never template it** —
 prose that is the same paragraph with the nouns swapped is exactly what Google
 penalised. `npm run content:report` prints coverage and the thinnest pages.
@@ -884,65 +884,72 @@ penalised. `npm run content:report` prints coverage and the thinnest pages.
 
 ---
 
-## TOOLSRIFT NETWORK — 29 STANDALONE CATEGORY SITES + ANDROID APPS (added Sept 2026)
+## CATEGORY SECTIONS — 29 BRANDED "SITES" UNDER toolsrift.com + ANDROID APPS (Sept 2026)
 
-Every category is also its own website (`pdf.toolsrift.com`, `image.toolsrift.com`, …)
-with its own logo, palette, typography, design concept, sitemap, PWA manifest and
-Android app. Domains are subdomains of toolsrift.com (Vercel DNS wildcard), attached
-per Vercel project `toolsrift-<id>`. **One codebase, thirty build targets** — full guide: `docs/NETWORK-SITES.md`,
-apps: `android/README.md`.
+Every category is a branded section of **toolsrift.com**: `toolsrift.com/pdf`,
+`/images`, `/json`, … each with its own logo lockup, palette, typography, texture,
+concept copy and web manifest. **One domain, one Vercel project, one sitemap.**
+Full guide: `docs/NETWORK-SITES.md`; apps: `android/README.md`.
 
-- `NEXT_PUBLIC_SITE_ID` (build-time) selects the site: unset/`hub` = toolsrift.com as
-  before; `pdf`, `image`, `json`, … = that category at the root of its own subdomain
-  (on Vercel also derived from the project name `toolsrift-<id>`, see next.config.js).
-- `lib/sites/brands.js` — the 29 brands (domain, palette, fonts, shape, pattern,
-  concept copy, logo spec, Android package id + Play listing). `lib/sites/index.js`
-  resolves the active `SITE`; `categoryHome()` / `toolPath()` give network-aware URLs.
-- **Logo lockup** (`lib/sites/logo.js`): the main ToolsRift badge recoloured in the
-  brand's palette + the category glyph in a corner chip + "ToolsRift <Category>".
-  Rendered inline in the header by `components/site/BrandLogo.jsx` and written to
-  `public/brands/<id>/logo.svg` by the asset script. App icons / OG images keep the
-  gradient tile mark (they are already published on Google Play).
-- **Motion** lives in `components/shared/motion.jsx` (framer-motion primitives:
-  FadeUp, WordReveal, Stagger, CountUp, …) and `styles/globals.css` keyframes; every
-  animation honours `prefers-reduced-motion`. The category header's "N tools" chip
-  opens the all-tools panel (phone sheet / desktop dropdown) — `CategoryLayout.jsx`.
-- Shared layouts are site-aware through `COLORS`/`RADIUS` (`lib/designTokens.js`),
-  `theme.isSiteRoot` / `theme.brand` (`lib/categoryThemes.js`), `<BrandBackdrop />`,
-  `SiteFooter`, `_document.js`. Category components are untouched.
-- Routes on a standalone site: `/` (StandaloneHome), `/<tool-id>` (`pages/[slug].js`),
-  shared legal pages; `middleware.js` 301s `/pdf/x → /x` and other categories to
-  their own live site (else the hub); `pages/api/site/*` generate robots.txt,
-  sitemap.xml, manifest.json, assetlinks.json.
-- **The hub 301s every live category to its site** (`/pdf` → `pdf.toolsrift.com/`,
-  `/pdf/<tool>` → `/<tool>`): one canonical copy of each tool. The hub's
-  `public/sitemap.xml` is a sitemap INDEX (`sitemap-hub.xml` + every live site's
-  sitemap) — regenerate with `node scripts/generate-sitemap.js` after flipping
-  `live`. Standalone tool pages follow the same `lib/coreTools.js` allowlist as
-  the hub (non-core → `noindex`, out of the sitemap).
-- Commands: `npm run sites:list`, `npm run sites:check`, `npm run dev:site -- pdf`,
-  `npm run build:site -- pdf`, `npm run brands:assets` (regenerates
-  `public/brands/<id>/` logos/icons/OG via headless Chromium; `LOGO_ONLY=1` rewrites
-  just the header/footer lockup and leaves the Play Store icons alone), `npm run android:generate`
-  (regenerates `android/apps/<id>/`), `npm run vercel:bootstrap -- <id>|--all`.
-- **Android apps** are built in CI: the `android-build` workflow (Actions → Run
-  workflow) runs Bubblewrap for all 29 (or given) sites, signs them with the
-  shared upload key (secrets `ANDROID_KEYSTORE_BASE64` + `ANDROID_KEYSTORE_PASSWORD`,
-  else the `android-upload-keystore` artifact) and uploads `.aab`/`.apk` artifacts.
-  The key's SHA-256 goes in `android/fingerprints.json` ("all"; per-site keys such
-  as the Play App Signing key under the site id) — served by every site at
-  `/.well-known/assetlinks.json`. Never commit a keystore (`android/keys/` is ignored).
-  The `android-publish` workflow (`scripts/android/publish.js`, Play Developer API via
-  the `PLAY_SERVICE_ACCOUNT_JSON` secret) pushes listing text, graphics and bundles to
-  internal + closed testing for every app that already exists in Play Console, without
-  sending for review. Creating the app, the set-up questionnaires, testers and
-  "Send changes for review" stay manual.
-- **Deploys**: Vercel does NOT deploy `main` on push (Hobby quota — see
-  `docs/NETWORK-SITES.md`). The `vercel-deploy-unlinked` workflow deploys every
-  project that is behind main daily at 17:00 UTC; run it by hand for an urgent
-  change. `vercel-prune` deletes superseded deployments nightly (10 GB storage cap).
-- **When editing `brands.js`**: run `brands:assets`, `android:generate`, `sites:check`
-  and commit the generated files. **When adding a category**: also add a brand, a
-  glyph in `scripts/brand-glyphs.js`, and register it in `lib/sites/categoryComponents.js`.
-- `pages/[category]/[tool].js` was renamed to `pages/[slug]/[tool].js` (Next.js
-  requires one name for the first dynamic segment); behaviour is unchanged.
+- **History / never undo:** from 2026-09-18 to 2026-09-29 each category was its
+  own subdomain (`pdf.toolsrift.com`, separate Vercel project). It was moved
+  back to subfolders so all authority accrues to one domain. Each brand keeps
+  its `legacyDomain`; `middleware.js` 301s every URL on it to the same page
+  under toolsrift.com (`lib/sites/index.js → legacyPath`) and serves
+  `/.well-known/assetlinks.json` un-redirected. Keep those redirects forever.
+- `lib/sites/brands.js` — the 29 brands (path, legacyDomain, palette, fonts,
+  shape, pattern, concept, logo spec, Android identity), `ANDROID_APPS` and
+  `HUB_APP`. `lib/sites/index.js` — `section()`, `categoryHome()` (`/pdf`),
+  `toolPath()` (`/pdf/merge-pdf`), `legacyPath()`, `LEGACY_BRAND`.
+- **How a page gets its brand:** `pages/<slug>.js` renders
+  `components/site/SectionHome.jsx`; tool pages are `pages/[slug]/[tool].js`.
+  Both render `components/site/SectionHead.jsx`, which puts `sectionCss(brand)`
+  (`lib/designTokens.js`) in `<head>`: `COLORS`/`RADIUS` are CSS variables
+  (`var(--tr-bg, #06090F)` …) with the original values as fallbacks, and theme
+  fonts are `var(--tr-font-head, …)` (`lib/categoryThemes.js`). So never do
+  string/hex-alpha arithmetic on `COLORS.bg/surface*/navBg*/primary` or on
+  `RADIUS` values, and never animate them with framer-motion. `theme.brand`,
+  `<BrandLogo brand>`, `<BrandBackdrop brand>`, `<SiteFooter brand>` take the
+  brand as a prop. Keyed head defaults (manifest, theme-color, OG image) live
+  in `pages/_app.js` so a section can override them. Category components are
+  untouched.
+- **Legacy builds:** a build with `NEXT_PUBLIC_SITE_ID=<id>` (or on a Vercel
+  project named `toolsrift-<id>`, see next.config.js) is one of the old
+  per-category projects and redirects EVERY request to the hub. They are
+  removed with the `vercel-consolidate` workflow (docs/NETWORK-SITES.md §4).
+- **Logo lockup** (`lib/sites/logo.js`): the main ToolsRift badge recoloured in
+  the brand's palette + the category glyph + "ToolsRift <Category>", inline in
+  the header (`components/site/BrandLogo.jsx`) and in `public/brands/<id>/logo.svg`.
+- **Motion** lives in `components/shared/motion.jsx` and `styles/globals.css`;
+  every animation honours `prefers-reduced-motion`. The category header's
+  "N tools" chip opens the all-tools panel — `CategoryLayout.jsx`.
+- Commands: `npm run sites:list`, `npm run sites:check`, `npm run sites:smoke --
+  <url>` (local build: sections, manifest, assetlinks, sitemap, subdomain 301s),
+  `npm run sites:live` (production), `npm run brands:assets` (`LOGO_ONLY=1` =
+  header lockup only; `SHARE_ONLY=1` = OG images + feature graphics only — the
+  app icons are already on Google Play, don't regenerate them casually),
+  `npm run android:generate`, `npm run vercel:consolidate`.
+- CI: `.github/workflows/build.yml` builds the site and runs `sites:smoke` on
+  every PR (plus a legacy `NEXT_PUBLIC_SITE_ID=pdf` build that must redirect).
+- **Android apps:** ONE main app (`com.toolsrift.main`, opens `/`) + the
+  categories in `ANDROID_APPS` (pdf, image, fancy, generators — each opens
+  `/<slug>/`). Kept short on purpose: Google Play's spam policy bars many
+  near-identical wrapper apps per account. All are TWAs on host
+  `toolsrift.com`; `https://toolsrift.com/.well-known/assetlinks.json`
+  (`pages/api/site/assetlinks.js`) declares every package with
+  `android/fingerprints.json` ("all" = shared upload key; "<id>"/"hub" = Play
+  App Signing keys). Built by the `android-build` workflow (Bubblewrap, secrets
+  `ANDROID_KEYSTORE_BASE64` + `ANDROID_KEYSTORE_PASSWORD`), published to
+  internal + closed testing by `android-publish` (`PLAY_SERVICE_ACCOUNT_JSON`)
+  without sending for review. Never commit a keystore (`android/keys/` is
+  ignored). Apps monetise through the site's AdSense (a TWA is Chrome); AdMob
+  does not apply to TWAs.
+- **Deploys**: Vercel does NOT deploy `main` on push (Hobby quota). The
+  `vercel-deploy-unlinked` workflow deploys the hub (and any leftover
+  `toolsrift-<id>` project) when behind main, daily at 17:00 UTC; run it by
+  hand for an urgent change. `vercel-prune` deletes superseded deployments
+  nightly (10 GB storage cap).
+- **When editing `brands.js`**: colours/fonts/copy need no regeneration; logo
+  → `LOGO_ONLY=1 npm run brands:assets`; anything an app shows →
+  `npm run android:generate`; then `npm run sites:check` and commit the
+  generated files. **When adding a category**: docs/NETWORK-SITES.md §6.

@@ -15,7 +15,6 @@ import SiteFooter from '../SiteFooter';
 import { groupTools } from './ToolNavSidebar';
 import { resolveIcon } from '../../lib/toolIcons';
 import { isArticleOwnedByPage } from '../../lib/appRoute';
-import { SITE, HUB_BASE } from '../../lib/sites';
 import BrandBackdrop from '../site/BrandBackdrop';
 import BrandLogo from '../site/BrandLogo';
 import PrivacyFigure from './PrivacyFigure';
@@ -37,7 +36,7 @@ const PANEL_CSS = `
 @media ${MQ.md}{.tr-toolspanel-body{grid-template-columns:repeat(2,1fr)}}
 @media ${MQ.lg}{
   .tr-megatrigger{display:inline-flex}
-  .tr-toolspanel{position:absolute;top:100%;left:auto;right:clamp(16px,4vw,28px);bottom:auto;margin-top:8px;width:min(860px,92vw);max-height:72vh;border-radius:${RADIUS.lg}px;border:1px solid rgba(255,255,255,0.08);box-shadow:0 24px 60px rgba(0,0,0,0.5)}
+  .tr-toolspanel{position:absolute;top:100%;left:auto;right:clamp(16px,4vw,28px);bottom:auto;margin-top:8px;width:min(860px,92vw);max-height:72vh;border-radius:${RADIUS.lg};border:1px solid rgba(255,255,255,0.08);box-shadow:0 24px 60px rgba(0,0,0,0.5)}
   .tr-toolspanel-body{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));padding:8px 20px 20px}
   .tr-toolspanel-close{display:none}
 }
@@ -214,9 +213,10 @@ function CategoryHeader({ theme, tools, subcats }) {
       <style>{PANEL_CSS}</style>
       <style>{`@media ${MQ.sm}{.tr-hide-on-mobile{display:inline!important}}`}</style>
 
-      {theme.isSiteRoot ? (
-        // Standalone network site: the ToolsRift badge in the site's colour + "ToolsRift <Category>".
-        <BrandLogo size={32} />
+      {theme.brand ? (
+        // Category section: the ToolsRift badge in the section's colour + "ToolsRift <Category>",
+        // linking to the section home (/pdf); "All categories" on the right goes to the hub home.
+        <BrandLogo brand={theme.brand} href={theme.pageRoute} size={32} />
       ) : (
         <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
           <img src="/logo.svg" alt="ToolsRift" style={{ height: 28, display: 'block' }} />
@@ -253,15 +253,14 @@ function CategoryHeader({ theme, tools, subcats }) {
           </button>
         )}
         <a
-          href={theme.isSiteRoot ? `${HUB_BASE}/` : '/'}
+          href="/"
           className="tr-hide-on-mobile"
-          rel={theme.isSiteRoot ? 'noopener' : undefined}
           style={{
             fontSize: 13, color: COLORS.muted, textDecoration: 'none', fontWeight: 500,
             display: 'none',
           }}
         >
-          {theme.isSiteRoot ? 'ToolsRift network' : 'All categories'}
+          All categories
         </a>
         <motion.button
           onClick={hasTools ? toggle : undefined}
@@ -329,7 +328,7 @@ const BANNER_CSS = `
 
 function CategoryBanner({ theme }) {
   const accent = theme.accent2 || theme.colorDark || theme.color;
-  // A standalone network site leads with its own design-concept headline
+  // A category section leads with its own design-concept headline
   // (lib/sites/brands.js → concept.headline / concept.sub).
   const concept = theme.brand && theme.brand.concept;
   const headline = (concept && concept.headline) || 'Your data never leaves this tab.';
@@ -457,7 +456,7 @@ function CategoryBanner({ theme }) {
 
           {/* Privacy figure — device + cloud + severed upload line, theme-tinted, scales to any width */}
           <FadeUp delay={0.25} className="trb-fig" aria-hidden="true">
-            <PrivacyFigure color={theme.color} accent={accent} bg={COLORS.bg} icon={theme.icon} label={theme.name} />
+            <PrivacyFigure color={theme.color} accent={accent} bg={theme.bgBase} icon={theme.icon} label={theme.name} />
           </FadeUp>
         </div>
 
@@ -558,7 +557,7 @@ export default function CategoryLayout({ theme, currentTool, tools, subcats, chi
 
   return (
     <div style={{ minHeight: '100vh', background: COLORS.bg, display: 'flex', flexDirection: 'column', position: 'relative' }}>
-      <BrandBackdrop />
+      <BrandBackdrop brand={theme.brand} />
       <CategoryHeader theme={theme} tools={tools} subcats={subcats} />
 
       {/* `banner` lets a specific category (e.g. PDF) swap in a bespoke hero in
@@ -596,7 +595,7 @@ export default function CategoryLayout({ theme, currentTool, tools, subcats, chi
           would show two. On category LANDING pages the footer comes from the end
           of the server-side SEO block (CategoryContent) so it is never stranded
           above that content. */}
-      {currentTool && !pageOwnsArticle && <SiteFooter accent={theme.color} fonts={theme.fonts} />}
+      {currentTool && !pageOwnsArticle && <SiteFooter accent={theme.color} fonts={theme.fonts} brand={theme.brand} />}
     </div>
   );
 }

@@ -1,18 +1,18 @@
 [
   {
     "name": "Bold Text Generator",
-    "url": "/bold-text-generator"
+    "url": "/fancy/bold-text-generator"
   },
   {
     "name": "Italic Text Generator",
-    "url": "/italic-text-generator"
+    "url": "/fancy/italic-text-generator"
   },
   {
     "name": "Bold Italic Generator",
-    "url": "/bold-italic-generator"
+    "url": "/fancy/bold-italic-generator"
   },
   {
     "name": "Underline Text",
-    "url": "/underline-text"
+    "url": "/fancy/underline-text"
   }
 ]

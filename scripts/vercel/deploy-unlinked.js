@@ -3,12 +3,14 @@
  * scripts/vercel/deploy-unlinked.js — production deployments Vercel's git
  * integration does not make for us:
  *
- *   --catch-up   every toolsrift-* project AND the hub whose latest production
- *                deployment is not at the current main commit. This is the
- *                network's production deploy: git-triggered deployments are
- *                off for main (vercel.json), so nothing deploys except through
- *                this script — daily at 17:00 UTC or on demand. Hobby quota:
- *                100 deployments per rolling 24 h, so at most 30 a day here.
+ *   --catch-up   the hub AND every leftover toolsrift-<id> project whose latest
+ *                production deployment is not at the current main commit. This
+ *                is the production deploy: git-triggered deployments are off
+ *                for main (vercel.json), so nothing deploys except through this
+ *                script — daily at 17:00 UTC or on demand. The toolsrift-<id>
+ *                projects are the old per-category sites; until
+ *                scripts/vercel/consolidate.js deletes them, their builds are
+ *                pure redirectors (middleware.js) and must stay current.
  *   <site ids>   just those projects (any of them, linked or not).
  *   default      the projects without a git link.
  *

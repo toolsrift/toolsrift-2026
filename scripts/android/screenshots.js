@@ -1,23 +1,24 @@
 #!/usr/bin/env node
 /**
  * scripts/android/screenshots.js — Play Store phone screenshots for every
- * network site's app, taken from the live sites with Playwright.
+ * Android app (lib/sites/brands.js → androidApps), taken from the live site
+ * with Playwright: the app's start page (/ or /<slug>) and its shortcuts.
  *
- *   node scripts/android/screenshots.js              # all 29 sites
- *   node scripts/android/screenshots.js pdf image    # some site ids
+ *   node scripts/android/screenshots.js              # every app
+ *   node scripts/android/screenshots.js hub pdf      # some app ids
  *
  * Output: android/build/listing/<id>/01-home.png, 02-<tool>.png … (1080×1920,
  * portrait 9:16 — what Play Console asks for). Runs in CI via
  * .github/workflows/android-listing.yml, which uploads them as artifacts.
  *
- * Env: BASE_URL_<ID> (e.g. BASE_URL_PDF=http://localhost:3000) to shoot a
- * local build instead of https://<domain>; PW_EXECUTABLE_PATH to use a
+ * Env: BASE_URL (e.g. http://localhost:3000) to shoot a local build instead
+ * of https://toolsrift.com; PW_EXECUTABLE_PATH to use a
  * specific Chromium; SHOTS (default 5) screenshots per app.
  * Needs `npm i playwright` (+ `npx playwright install chromium`).
  */
 const fs = require('fs');
 const path = require('path');
-const { BRANDS, findBrand } = require('../../lib/sites/brands');
+const { androidApps, findApp } = require('../../lib/sites/brands');
 
 const ROOT = path.join(__dirname, '..', '..');
 const OUT = path.join(ROOT, 'android', 'build', 'listing');
@@ -26,19 +27,19 @@ const UA = 'Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, 
 
 async function main() {
   const { chromium } = require('playwright');
-  const ids = process.argv.slice(2).map(findBrand).filter(Boolean).map(b => b.id);
-  const brands = ids.length ? BRANDS.filter(b => ids.includes(b.id)) : BRANDS;
+  const ids = process.argv.slice(2).map(findApp).filter(Boolean).map(b => b.id);
+  const brands = ids.length ? androidApps().filter(b => ids.includes(b.id)) : androidApps();
+  const base = (process.env.BASE_URL || 'https://toolsrift.com').replace(/\/$/, '');
   const browser = await chromium.launch({
     executablePath: process.env.PW_EXECUTABLE_PATH || undefined,
     args: ['--no-sandbox', '--disable-gpu'],
   });
   let failed = 0;
   for (const b of brands) {
-    const base = process.env[`BASE_URL_${b.id.toUpperCase().replace(/-/g, '_')}`] || `https://${b.domain}`;
     const dir = path.join(OUT, b.id);
     fs.mkdirSync(dir, { recursive: true });
     const shortcuts = JSON.parse(fs.readFileSync(path.join(ROOT, 'android', 'apps', b.id, 'shortcuts.json'), 'utf8'));
-    const pages = [{ name: 'home', url: '/' }, ...shortcuts.map(s => ({ name: s.url.replace(/^\//, ''), url: s.url }))].slice(0, SHOTS);
+    const pages = [{ name: 'home', url: b.path }, ...shortcuts.map(s => ({ name: s.url.split('/').pop(), url: s.url }))].slice(0, SHOTS);
     const ctx = await browser.newContext({
       viewport: { width: 540, height: 960 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true,
       userAgent: UA, colorScheme: 'dark', locale: 'en-US',
@@ -48,7 +49,7 @@ async function main() {
     await ctx.addInitScript(() => { try { localStorage.setItem('tr_cookie_consent', 'accepted'); } catch (_) {} });
     const page = await ctx.newPage();
     let n = 0;
-    console.log(`══ ${b.id}  ${base}`);
+    console.log(`══ ${b.id}  ${base}${b.path}`);
     for (const p of pages) {
       n++;
       const file = path.join(dir, `${String(n).padStart(2, '0')}-${p.name}.png`);

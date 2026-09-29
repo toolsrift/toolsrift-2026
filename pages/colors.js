@@ -1,18 +1,12 @@
-import Head from 'next/head'
-import dynamic from 'next/dynamic'
-import CategoryLoading from '../components/CategoryLoading'
-import CategoryContent from '../components/CategoryContent'
-import categoryContent from '../lib/categoryContent'
-const ToolsRiftColors = dynamic(() => import('../components/toolsrift-colors'), { ssr: false, loading: CategoryLoading })
+import SectionHome from '../components/site/SectionHome'
+
+// toolsrift.com/colors — a branded category section (lib/sites/brands.js).
 export default function Colors() {
-  return (<><Head>
-        <title>Free Color Tools — Picker, Converter, Palette Generator | ToolsRift</title>
-        <meta name="description" content="20+ free color tools. HEX to RGB, HSL, CMYK converter. Color palette generator, gradient maker, contrast checker and accessibility tools." />
-        <meta property="og:title" content="Free Color Tools — Picker, Converter, Palette Generator | ToolsRift" />
-        <meta property="og:description" content="20+ free color tools. HEX to RGB, HSL, CMYK converter. Color palette generator, gradient maker, contrast checker and accessibility tools." />
-        <meta property="og:url" content="https://toolsrift.com/colors" />
-        <meta property="og:site_name" content="ToolsRift" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <link rel="canonical" href="https://toolsrift.com/colors" />
-      </Head><ToolsRiftColors /><CategoryContent data={categoryContent.colors} /></>)
+  return (
+    <SectionHome
+      slug="colors"
+      title="Free Color Tools — Picker, Converter, Palette Generator | ToolsRift"
+      description="20+ free color tools. HEX to RGB, HSL, CMYK converter. Color palette generator, gradient maker, contrast checker and accessibility tools."
+    />
+  )
 }

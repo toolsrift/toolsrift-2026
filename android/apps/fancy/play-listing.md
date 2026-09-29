@@ -6,8 +6,8 @@
 | App name (≤30) | Fancy Text & Font Generator |
 | Launcher name | Fancy Text |
 | Category | ART_AND_DESIGN |
-| Website | https://fancy.toolsrift.com |
-| Privacy policy | https://fancy.toolsrift.com/privacy-policy |
+| Website | https://toolsrift.com/fancy |
+| Privacy policy | https://toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/fancy/icon-512.png` |
 | Feature graphic (1024×500) | `android/apps/fancy/feature-graphic.png` |
@@ -46,9 +46,9 @@ WHY TOOLSRIFT FANCY
 ✓ No sign-up, no email, no tracking of your content
 ✓ Instant results — no waiting for a server
 ✓ Clean, ad-supported, no paywalls
-✓ Part of the ToolsRift network of 29 specialist tool sites
+✓ From ToolsRift — 29 tool collections, one site
 
-ToolsRift Fancy is the fancy edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around fancy.toolsrift.com, so every improvement to the website ships to the app automatically.
+ToolsRift Fancy is the fancy edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsrift.com/fancy, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags

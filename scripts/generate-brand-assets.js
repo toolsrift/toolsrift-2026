@@ -2,7 +2,7 @@
 /**
  * generate-brand-assets.js
  * ----------------------------------------------------------------------------
- * Generates the visual identity of every ToolsRift network site from
+ * Generates the visual identity of every ToolsRift category section from
  * lib/sites/brands.js + scripts/brand-glyphs.js into public/brands/<id>/:
  *
  *   logo.svg               mark + wordmark  (header, footer)
@@ -14,19 +14,23 @@
  *
  * PNGs are rasterised with headless Chromium (no npm deps): the Playwright
  * browser pre-installed at $PLAYWRIGHT_BROWSERS_PATH, or any `chromium` /
- * (also writes the Play feature graphic to android/apps/<id>/feature-graphic.png)
- * `google-chrome` on PATH. Without a browser the SVGs are still written and
+ * `google-chrome` on PATH. (Also writes the Play feature graphic to
+ * android/apps/<id>/feature-graphic.png for the brands that have an Android
+ * app — ANDROID_APPS.) Without a browser the SVGs are still written and
  * the PNG step is skipped with a warning.
  *
  * Usage:  node scripts/generate-brand-assets.js            # all brands
  *         node scripts/generate-brand-assets.js pdf image  # some brands
  *         SKIP_PNG=1 node scripts/generate-brand-assets.js # SVG only
+ *         LOGO_ONLY=1 …   only the header/footer lockup (logo.svg)
+ *         SHARE_ONLY=1 …  only the OG image + feature graphic, NOT the icons
+ *                         (the icons are already on Google Play)
  */
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const { execFileSync } = require('child_process');
-const { BRANDS } = require('../lib/sites/brands');
+const { BRANDS, ANDROID_APPS } = require('../lib/sites/brands');
 const GLYPHS = require('./brand-glyphs');
 const { networkLogoSvg } = require('../lib/sites/logo');
 
@@ -161,11 +165,11 @@ function ogSvg(b, toolCount) {
   <rect width="1200" height="630" fill="url(#glow2)"/>
   <g transform="translate(96 96)">${markSvg(b, 120, { id: 'og' })}</g>
   <text x="240" y="152" font-family="${fontHead}" font-weight="800" font-size="52" letter-spacing="-1.2" fill="#F8FAFC">${esc(w1)}<tspan fill="${primary}"> ${esc(w2)}</tspan></text>
-  <text x="240" y="196" font-family="${fontHead}" font-weight="500" font-size="22" fill="#94A3B8">${esc(b.domain)}</text>
-  <text x="96" y="352" font-family="${fontHead}" font-weight="800" font-size="60" letter-spacing="-1.5" fill="#F8FAFC">${esc(headline)}</text>
+  <text x="240" y="196" font-family="${fontHead}" font-weight="500" font-size="22" fill="#94A3B8">${esc(`toolsrift.com${b.path}`)}</text>
+  <text x="96" y="352" font-family="${fontHead}" font-weight="800" font-size="${Math.min(60, Math.floor(1040 / (headline.length * 0.58)))}" letter-spacing="-1.5" fill="#F8FAFC">${esc(headline)}</text>
   <text x="96" y="410" font-family="${fontHead}" font-weight="500" font-size="26" fill="#CBD5E1">${esc(`${toolCount} free ${w2.toLowerCase()} tools · 100% in your browser · no sign-up`)}</text>
   <g transform="translate(96 476)">
-    ${['Free forever', 'No uploads', 'Works offline', 'Android app'].map((t, i) => {
+    ${['Free forever', 'No uploads', 'Works offline', ANDROID_APPS.includes(b.id) ? 'Android app' : 'No sign-up'].map((t, i) => {
       const x = i * 210;
       return `<rect x="${x}" y="0" width="190" height="52" rx="26" fill="${primary}" fill-opacity="0.14" stroke="${primary}" stroke-opacity="0.45"/><text x="${x + 95}" y="34" text-anchor="middle" font-family="${fontHead}" font-weight="700" font-size="20" fill="${accent2}">${esc(t)}</text>`;
     }).join('')}
@@ -216,7 +220,7 @@ function featureSvg(b, toolCount) {
       return `<rect x="${x}" y="0" width="172" height="46" rx="23" fill="${primary}" fill-opacity="0.14" stroke="${primary}" stroke-opacity="0.45"/><text x="${x + 86}" y="30" text-anchor="middle" font-family="${fontHead}" font-weight="700" font-size="17" fill="${accent2}">${esc(t)}</text>`;
     }).join('')}
   </g>
-  <text x="72" y="446" font-family="${fontHead}" font-weight="500" font-size="19" fill="#94A3B8">${esc(b.domain)}</text>
+  <text x="72" y="446" font-family="${fontHead}" font-weight="500" font-size="19" fill="#94A3B8">${esc(`toolsrift.com${b.path}`)}</text>
   <rect x="0" y="492" width="1024" height="8" fill="${primary}"/>
 </svg>
 `;
@@ -262,8 +266,11 @@ function main() {
 
     // LOGO_ONLY=1 rewrites just the header/footer lockup (public/brands/<id>/logo.svg)
     // and leaves the icons / OG / feature graphics — the Play Store assets — untouched.
+    const SHARE = !!process.env.SHARE_ONLY;
     const files = process.env.LOGO_ONLY
       ? { 'logo.svg': logoSvg(b) }
+      : SHARE
+      ? { 'og.svg': ogSvg(b, count) }
       : {
           'logo.svg': logoSvg(b),
           'icon.svg': iconSvg(b, 512),
@@ -273,15 +280,19 @@ function main() {
     for (const [name, content] of Object.entries(files)) fs.writeFileSync(path.join(dir, name), content);
 
     if (chrome && !process.env.LOGO_ONLY) {
-      rasterise(chrome, path.join(dir, 'icon.svg'), path.join(dir, 'icon-192.png'), 192, 192);
-      rasterise(chrome, path.join(dir, 'icon.svg'), path.join(dir, 'icon-512.png'), 512, 512);
-      rasterise(chrome, path.join(dir, 'icon-maskable.svg'), path.join(dir, 'icon-maskable-512.png'), 512, 512);
+      if (!SHARE) {
+        rasterise(chrome, path.join(dir, 'icon.svg'), path.join(dir, 'icon-192.png'), 192, 192);
+        rasterise(chrome, path.join(dir, 'icon.svg'), path.join(dir, 'icon-512.png'), 512, 512);
+        rasterise(chrome, path.join(dir, 'icon-maskable.svg'), path.join(dir, 'icon-maskable-512.png'), 512, 512);
+      }
       rasterise(chrome, path.join(dir, 'og.svg'), path.join(dir, 'og.png'), 1200, 630);
       // Play Store feature graphic → android/apps/<id>/ (listing asset, not served).
-      const appDir = path.join(ROOT, 'android', 'apps', b.id);
-      fs.mkdirSync(appDir, { recursive: true });
-      fs.writeFileSync(path.join(appDir, 'feature-graphic.svg'), featureSvg(b, count));
-      rasterise(chrome, path.join(appDir, 'feature-graphic.svg'), path.join(appDir, 'feature-graphic.png'), 1024, 500);
+      if (ANDROID_APPS.includes(b.id)) {
+        const appDir = path.join(ROOT, 'android', 'apps', b.id);
+        fs.mkdirSync(appDir, { recursive: true });
+        fs.writeFileSync(path.join(appDir, 'feature-graphic.svg'), featureSvg(b, count));
+        rasterise(chrome, path.join(appDir, 'feature-graphic.svg'), path.join(appDir, 'feature-graphic.png'), 1024, 500);
+      }
     }
     console.log(`✓ ${b.id.padEnd(12)} → public/brands/${b.id}/  (${count} tools, ${chrome ? 'svg+png' : 'svg only'})`);
   }

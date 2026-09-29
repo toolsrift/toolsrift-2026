@@ -2,26 +2,29 @@
 /**
  * scripts/android/generate.js
  * ----------------------------------------------------------------------------
- * Generates the Android app project inputs for every ToolsRift network site:
+ * Generates the Android app project inputs for every ToolsRift app — the main
+ * app (all tools, https://toolsrift.com/) plus the category apps listed in
+ * ANDROID_APPS (lib/sites/brands.js), each opening https://toolsrift.com/<slug>/:
  *
  *   android/apps/<id>/twa-manifest.json   Bubblewrap (Trusted Web Activity) config
  *   android/apps/<id>/play-listing.md     Play Console listing copy (title,
  *                                         short/full description, category,
  *                                         privacy policy URL, keywords)
  *   android/apps/<id>/shortcuts.json      launcher shortcuts (top tools)
- *   android/apps.json                     index of all apps (package ids, domains)
+ *   android/apps.json                     index of all apps (package ids, start URLs)
  *
- * The apps are Trusted Web Activities: a thin native wrapper that opens the
- * site full-screen in Chrome, verified through /.well-known/assetlinks.json
- * (served per site by pages/api/site/assetlinks.js). One codebase → 29 Play
- * Store apps, each updated simply by deploying the website.
+ * The apps are Trusted Web Activities: a thin native wrapper that opens
+ * toolsrift.com full-screen in Chrome, verified through
+ * https://toolsrift.com/.well-known/assetlinks.json (pages/api/site/assetlinks.js).
+ * Each app is updated simply by deploying the website. Folders of apps no
+ * longer in the list are removed.
  *
  * Usage:  node scripts/android/generate.js
  * Then:   see android/README.md for `bubblewrap build` and signing.
  */
 const fs = require('fs');
 const path = require('path');
-const { BRANDS } = require('../../lib/sites/brands');
+const { BRANDS, HUB_APP, androidApps, appIcons } = require('../../lib/sites/brands');
 
 const ROOT = path.join(__dirname, '..', '..');
 const OUT = path.join(ROOT, 'android', 'apps');
@@ -31,16 +34,20 @@ function registry() {
   return JSON.parse(src.slice(src.indexOf('{'), src.lastIndexOf('};') + 1));
 }
 
-// Build-time assets are fetched from the hub, which serves every brand's
-// public/brands/<id>/ files: the app can be built before its site is live.
-// The app itself is bound to the site's own host (host / fullScopeUrl).
-const ASSET_HOST = 'https://toolsrift.com';
+// Every app is bound to toolsrift.com; the start URL and scope pick the section.
+const HOST = 'toolsrift.com';
+const ORIGIN = `https://${HOST}`;
+const isHub = (b) => b.id === HUB_APP.id;
+// "/" for the main app, "/pdf/" for the PDF app.
+const scopePath = (b) => (isHub(b) ? '/' : `${b.path}/`);
+const iconUrl = (file) => `${ORIGIN}/${file.replace(/^public\//, '')}`;
 
 function twaManifest(b, tools) {
-  const host = b.domain;
+  const scope = scopePath(b);
+  const icons = appIcons(b);
   return {
     packageId: b.android.packageId,
-    host,
+    host: HOST,
     name: b.android.appName,
     launcherName: b.android.shortName,
     display: 'standalone',
@@ -53,9 +60,9 @@ function twaManifest(b, tools) {
     navigationDividerColorDark: b.palette.surface2,
     backgroundColor: b.palette.bg,
     enableNotifications: false,
-    startUrl: '/?source=twa',
-    iconUrl: `${ASSET_HOST}/brands/${b.id}/icon-512.png`,
-    maskableIconUrl: `${ASSET_HOST}/brands/${b.id}/icon-maskable-512.png`,
+    startUrl: `${scope}?source=twa`,
+    iconUrl: iconUrl(icons.icon512),
+    maskableIconUrl: iconUrl(icons.maskable512),
     splashScreenFadeOutDuration: 300,
     // One shared upload key for every app — scripts/android/keystore.sh
     // (locally) or the android-build workflow (CI). Play App Signing holds the
@@ -67,20 +74,19 @@ function twaManifest(b, tools) {
     shortcuts: tools.slice(0, 4).map(t => ({
       name: t.name,
       shortName: t.name.length > 12 ? t.name.slice(0, 11) + '…' : t.name,
-      url: `/${t.id}?source=shortcut`,
-      chosenIconUrl: `${ASSET_HOST}/brands/${b.id}/icon-192.png`,
+      url: `${t.path}?source=shortcut`,
+      chosenIconUrl: iconUrl(icons.icon192),
     })),
     generatorApp: 'bubblewrap-cli',
-    // build.sh swaps this for the hub's /api/site/manifest?site=<id> copy while
-    // the site itself is not yet serving it.
-    webManifestUrl: `https://${host}/manifest.json`,
+    // The section's own manifest (scope /<slug>/); the main app uses the site's.
+    webManifestUrl: isHub(b) ? `${ORIGIN}/manifest.json` : `${ORIGIN}${b.path}/manifest.webmanifest`,
     fallbackType: 'customtabs',
     features: {},
     alphaDependencies: { enabled: false },
     enableSiteSettingsShortcut: true,
     isChromeOSOnly: false,
     isMetaQuest: false,
-    fullScopeUrl: `https://${host}/`,
+    fullScopeUrl: `${ORIGIN}${scope}`,
     minSdkVersion: 21,
     orientationLock: false,
     additionalTrustedOrigins: [],
@@ -90,7 +96,8 @@ function twaManifest(b, tools) {
 }
 
 function playListing(b, tools, categoryName) {
-  const word = b.wordmark[1];
+  const word = isHub(b) ? 'complete' : b.wordmark[1];
+  const site = `${ORIGIN}${isHub(b) ? '' : b.path}`;
   const top = tools.slice(0, 12).map(t => `• ${t.name} — ${t.desc}`).join('\n');
   const full = `${b.android.appName} puts ${tools.length} free ${categoryName.toLowerCase()} in your pocket — ${b.tagline.toLowerCase()}
 
@@ -108,9 +115,9 @@ WHY ${b.siteName.toUpperCase()}
 ✓ No sign-up, no email, no tracking of your content
 ✓ Instant results — no waiting for a server
 ✓ Clean, ad-supported, no paywalls
-✓ Part of the ToolsRift network of ${BRANDS.length} specialist tool sites
+✓ ${isHub(b) ? `All ${BRANDS.length} tool collections of ToolsRift in one app` : `From ToolsRift — ${BRANDS.length} tool collections, one site`}
 
-${b.siteName} is the ${word.toLowerCase()} edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around ${b.domain}, so every improvement to the website ships to the app automatically.
+${b.siteName} is the ${word.toLowerCase()} edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around ${site.replace('https://', '')}, so every improvement to the website ships to the app automatically.
 `;
   return `# Play Console listing — ${b.android.appName}
 
@@ -120,10 +127,10 @@ ${b.siteName} is the ${word.toLowerCase()} edition of ToolsRift (toolsrift.com),
 | App name (≤30) | ${b.android.appName} |
 | Launcher name | ${b.android.shortName} |
 | Category | ${b.android.playCategory} |
-| Website | https://${b.domain} |
-| Privacy policy | https://${b.domain}/privacy-policy |
+| Website | ${site} |
+| Privacy policy | ${ORIGIN}/privacy-policy |
 | Support email | contact@toolsrift.com |
-| Icon (512×512) | \`public/brands/${b.id}/icon-512.png\` |
+| Icon (512×512) | \`${appIcons(b).icon512}\` |
 | Feature graphic (1024×500) | \`android/apps/${b.id}/feature-graphic.png\` |
 | Theme colour | ${b.palette.primary} |
 
@@ -158,24 +165,44 @@ Taken by the \`android-listing\` workflow (artifact \`play-listing-assets\`, fol
 `;
 }
 
+// The tools an app opens on: the category's, or for the main app every tool,
+// led by the first tool of a few popular categories (its shortcuts).
+function appTools(b, reg) {
+  const withPath = (slug) => (reg[slug] ? reg[slug].tools : []).map(t => ({ ...t, path: `/${slug}/${t.id}` }));
+  if (!isHub(b)) {
+    const cat = reg[b.slug] || { name: b.siteName, tools: [] };
+    return { name: cat.name, tools: withPath(b.slug) };
+  }
+  const lead = ['pdf', 'images', 'text', 'financecalc'].map(slug => withPath(slug)[0]).filter(Boolean);
+  const rest = Object.keys(reg).flatMap(withPath).filter(t => !lead.some(l => l.path === t.path));
+  return { name: 'Online Tools', tools: [...lead, ...rest] };
+}
+
 function main() {
   const reg = registry();
   fs.mkdirSync(OUT, { recursive: true });
+  const apps = androidApps();
   const index = [];
-  for (const b of BRANDS) {
-    const cat = reg[b.slug] || { name: b.siteName, tools: [] };
+  for (const b of apps) {
+    const { name, tools } = appTools(b, reg);
     const dir = path.join(OUT, b.id);
     fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(path.join(dir, 'twa-manifest.json'), JSON.stringify(twaManifest(b, cat.tools), null, 2) + '\n');
-    fs.writeFileSync(path.join(dir, 'play-listing.md'), playListing(b, cat.tools, cat.name));
-    fs.writeFileSync(path.join(dir, 'shortcuts.json'), JSON.stringify(cat.tools.slice(0, 4).map(t => ({ name: t.name, url: `/${t.id}` })), null, 2) + '\n');
+    fs.writeFileSync(path.join(dir, 'twa-manifest.json'), JSON.stringify(twaManifest(b, tools), null, 2) + '\n');
+    fs.writeFileSync(path.join(dir, 'play-listing.md'), playListing(b, tools, name));
+    fs.writeFileSync(path.join(dir, 'shortcuts.json'), JSON.stringify(tools.slice(0, 4).map(t => ({ name: t.name, url: t.path })), null, 2) + '\n');
     index.push({
-      id: b.id, slug: b.slug, domain: b.domain, siteName: b.siteName,
+      id: b.id, slug: b.slug, startUrl: `${ORIGIN}${scopePath(b)}`, siteName: b.siteName,
       packageId: b.android.packageId, appName: b.android.appName, shortName: b.android.shortName,
-      playCategory: b.android.playCategory, tools: cat.tools.length,
-      live: !!b.live,
+      playCategory: b.android.playCategory, tools: tools.length,
     });
-    console.log(`✓ ${b.id.padEnd(12)} ${b.android.packageId.padEnd(30)} ${cat.tools.length} tools`);
+    console.log(`✓ ${b.id.padEnd(12)} ${b.android.packageId.padEnd(30)} ${String(tools.length).padStart(4)} tools  ${ORIGIN}${scopePath(b)}`);
+  }
+  // Apps dropped from ANDROID_APPS: remove their generated folders.
+  for (const d of fs.readdirSync(OUT)) {
+    if (!apps.some(a => a.id === d)) {
+      fs.rmSync(path.join(OUT, d), { recursive: true, force: true });
+      console.log(`– ${d.padEnd(12)} removed (not in ANDROID_APPS)`);
+    }
   }
   fs.writeFileSync(path.join(ROOT, 'android', 'apps.json'), JSON.stringify(index, null, 2) + '\n');
   console.log(`\n${index.length} apps → android/apps/  (index: android/apps.json)`);

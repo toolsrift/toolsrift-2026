@@ -1,6 +1,6 @@
 {
   "packageId": "com.toolsrift.fancy",
-  "host": "fancy.toolsrift.com",
+  "host": "toolsrift.com",
   "name": "Fancy Text & Font Generator",
   "launcherName": "Fancy Text",
   "display": "standalone",
@@ -13,7 +13,7 @@
   "navigationDividerColorDark": "#1E1226",
   "backgroundColor": "#0D0612",
   "enableNotifications": false,
-  "startUrl": "/?source=twa",
+  "startUrl": "/fancy/?source=twa",
   "iconUrl": "https://toolsrift.com/brands/fancy/icon-512.png",
   "maskableIconUrl": "https://toolsrift.com/brands/fancy/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
@@ -27,30 +27,30 @@
     {
       "name": "Bold Text Generator",
       "shortName": "Bold Text G…",
-      "url": "/bold-text-generator?source=shortcut",
+      "url": "/fancy/bold-text-generator?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/fancy/icon-192.png"
     },
     {
       "name": "Italic Text Generator",
       "shortName": "Italic Text…",
-      "url": "/italic-text-generator?source=shortcut",
+      "url": "/fancy/italic-text-generator?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/fancy/icon-192.png"
     },
     {
       "name": "Bold Italic Generator",
       "shortName": "Bold Italic…",
-      "url": "/bold-italic-generator?source=shortcut",
+      "url": "/fancy/bold-italic-generator?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/fancy/icon-192.png"
     },
     {
       "name": "Underline Text",
       "shortName": "Underline T…",
-      "url": "/underline-text?source=shortcut",
+      "url": "/fancy/underline-text?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/fancy/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://fancy.toolsrift.com/manifest.json",
+  "webManifestUrl": "https://toolsrift.com/fancy/manifest.webmanifest",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -59,7 +59,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://fancy.toolsrift.com/",
+  "fullScopeUrl": "https://toolsrift.com/fancy/",
   "minSdkVersion": 21,
   "orientationLock": false,
   "additionalTrustedOrigins": [],

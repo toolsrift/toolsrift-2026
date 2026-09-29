@@ -1,0 +1,18 @@
+[
+  {
+    "name": "PDF Viewer",
+    "url": "/pdf/pdf-viewer"
+  },
+  {
+    "name": "Image Resizer",
+    "url": "/images/image-resizer"
+  },
+  {
+    "name": "Word Counter Pro",
+    "url": "/text/word-counter-pro"
+  },
+  {
+    "name": "Investment Return Calculator",
+    "url": "/financecalc/investment-return-calc"
+  }
+]

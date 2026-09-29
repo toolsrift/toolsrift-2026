@@ -1,9 +1,10 @@
-# THE production deploy of the whole network: once a day (and on demand) it
-# deploys every project — the hub and all 29 sites — whose production
-# deployment is not at main. Git-triggered deployments are OFF for main
+# THE production deploy: once a day (and on demand) it deploys the hub — and
+# any leftover per-category project (toolsrift-<id>, now a pure redirector
+# until vercel-consolidate deletes it) — whose production deployment is not
+# at main. Git-triggered deployments are OFF for main
 # (vercel.json → git.deploymentEnabled), because on the Hobby plan every push
 # used to fire 25 builds at once and the 100-deployments-per-day quota was
-# gone by noon. Now a day costs at most 30 deployments however many PRs merge.
+# gone by noon.
 # Needs the VERCEL_TOKEN secret. Run it by hand after an urgent merge:
 # Actions → vercel-deploy-unlinked → Run workflow → "--catch-up".
 name: vercel-deploy-unlinked

@@ -1,12 +1,11 @@
-// ── BrandBackdrop — the texture that makes each network site recognisable ────
+// ── BrandBackdrop — the texture that makes each category section recognisable ─
 // Pure CSS/SVG-data-URI patterns, fixed behind the page, pointer-events none.
-// The pattern id comes from lib/sites/brands.js (`pattern`). Renders nothing on
-// the hub or for `pattern: 'none'`.
+// The pattern id comes from lib/sites/brands.js (`pattern`). Renders nothing
+// without a `brand` prop or for `pattern: 'none'`.
 //
 // Patterns are deliberately quiet (2–6% white or a low-alpha tint of the brand
 // primary) — they should read as paper stock, not wallpaper.
 
-import { SITE } from '../../lib/sites';
 
 function rgba(hex, a) {
   const h = hex.replace('#', '');
@@ -120,8 +119,8 @@ function patternStyle(pattern, primary, accent2) {
   }
 }
 
-export default function BrandBackdrop() {
-  const b = SITE.brand;
+export default function BrandBackdrop({ brand }) {
+  const b = brand;
   if (!b || !b.pattern || b.pattern === 'none') return null;
   const style = patternStyle(b.pattern, b.palette.primary, b.palette.accent2);
   if (!style) return null;

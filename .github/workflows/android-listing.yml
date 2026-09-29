@@ -1,5 +1,5 @@
-# Google Play listing assets for every network site's app: phone captures of
-# the LIVE sites (Playwright) turned into store frames — phone mockup, brand
+# Google Play listing assets for every Android app (android/apps.json): phone
+# captures of the LIVE site (Playwright) turned into store frames — phone mockup, brand
 # background, headline — plus a feature graphic with the same mockup, the
 # icon and the listing copy (android/apps/<id>/). Raw captures stay in raw/.
 # Run from the Actions tab; download the "play-listing-assets" artifact.
@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       sites:
-        description: 'Site ids (space-separated) or "--all"'
+        description: 'App ids (space-separated: hub pdf image fancy generators) or "--all"'
         type: string
         default: '--all'
 
@@ -28,10 +28,10 @@ jobs:
         run: |
           npm i --no-save playwright@1.63.0
           npx playwright install --with-deps chromium
-      - name: Screenshots from the live sites
+      - name: Screenshots from the live site
         run: |
           ids="${{ inputs.sites }}"; [ "$ids" = "--all" ] && ids=""
-          node scripts/android/screenshots.js $ids || echo "::warning::some screenshots failed (site not live yet?) — see the log"
+          node scripts/android/screenshots.js $ids || echo "::warning::some screenshots failed — see the log"
       - name: Store frames (phone mockup + headline) and feature graphics
         run: |
           ids="${{ inputs.sites }}"; [ "$ids" = "--all" ] && ids=""
@@ -44,7 +44,8 @@ jobs:
             mv "$d"/[0-9][0-9]-*.png "$d/raw/" 2>/dev/null || true
             if [ -d "$d/store" ]; then mv "$d"/store/* "$d/" && rmdir "$d/store"; else cp "android/apps/$id/feature-graphic.png" "$d" 2>/dev/null || true; fi
             cp "android/apps/$id/play-listing.md" "$d" 2>/dev/null || true
-            cp "public/brands/$id/icon-512.png" "$d/icon-512.png" 2>/dev/null || true
+            icon="public/brands/$id/icon-512.png"; [ "$id" = "hub" ] && icon="public/icon-512.png"
+            cp "$icon" "$d/icon-512.png" 2>/dev/null || true
           done
           ls -R android/build/listing | head -80
       - uses: actions/upload-artifact@v4

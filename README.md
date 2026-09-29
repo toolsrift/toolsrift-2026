@@ -16,20 +16,20 @@ npm run dev
 http://localhost:3000
 ```
 
-## 🌐 ToolsRift Network — 29 standalone sites + Android apps
+## 🌐 29 branded category sections + Android apps
 
-Every category can be built as its own website (`pdf.toolsrift.com`, `image.toolsrift.com`, …)
-with its own logo, palette, fonts, design concept, sitemap, PWA manifest and Android app —
-from this same codebase, selected at build time with `NEXT_PUBLIC_SITE_ID` (or the Vercel
-project name `toolsrift-<id>`).
+Every category is its own branded section of toolsrift.com (`/pdf`, `/images`, `/json`, …)
+with its own logo, palette, fonts, design concept and web manifest — one domain, one
+Vercel project, one sitemap. The former subdomains (`pdf.toolsrift.com`, …) 301 here.
 
 ```bash
-npm run sites:list            # the 29 sites
-npm run dev:site -- pdf       # run pdf.toolsrift.com locally
-npm run build:site -- image   # production build of image.toolsrift.com
+npm run sites:list                            # the 29 sections (+ which have an Android app)
+npm run sites:check                           # validate lib/sites/brands.js
+npm run sites:smoke -- http://localhost:3000  # check a running build
 ```
 
-See **docs/NETWORK-SITES.md** (sites, deployment) and **android/README.md** (Play Store apps).
+See **docs/NETWORK-SITES.md** (sections, redirects, Vercel) and **android/README.md**
+(the main app + category apps on Google Play).
 
 ## 📦 Project Structure
 

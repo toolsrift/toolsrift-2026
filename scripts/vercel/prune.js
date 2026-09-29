@@ -7,7 +7,7 @@
  *   VERCEL_TOKEN=... node scripts/vercel/prune.js --keep 2
  *   VERCEL_TOKEN=... node scripts/vercel/prune.js --projects "toolsrift toolsrift-pdf"
  *
- * Per project (the hub "toolsrift" + every toolsrift-<id>) it keeps:
+ * Per project (the hub "toolsrift" + any leftover toolsrift-<id>) it keeps:
  *   • the current production deployment (newest READY, target=production)
  *   • the next --keep newest READY production deployments (rollback, default 1)
  *   • anything still BUILDING / QUEUED / INITIALIZING

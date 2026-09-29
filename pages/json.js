@@ -1,18 +1,12 @@
-import Head from 'next/head'
-import dynamic from 'next/dynamic'
-import CategoryLoading from '../components/CategoryLoading'
-import CategoryContent from '../components/CategoryContent'
-import categoryContent from '../lib/categoryContent'
-const ToolsRiftJson = dynamic(() => import('../components/toolsrift-json'), { ssr: false, loading: CategoryLoading })
+import SectionHome from '../components/site/SectionHome'
+
+// toolsrift.com/json — a branded category section (lib/sites/brands.js).
 export default function Json() {
-  return (<><Head>
-        <title>Free JSON Tools — Format, Validate, Minify | ToolsRift</title>
-        <meta name="description" content="25+ free JSON tools. Format, validate, minify, compare and convert JSON. JSON to CSV, YAML, XML converter. JSONPath tester and more." />
-        <meta property="og:title" content="Free JSON Tools — Format, Validate, Minify | ToolsRift" />
-        <meta property="og:description" content="25+ free JSON tools. Format, validate, minify, compare and convert JSON. JSON to CSV, YAML, XML converter. JSONPath tester and more." />
-        <meta property="og:url" content="https://toolsrift.com/json" />
-        <meta property="og:site_name" content="ToolsRift" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <link rel="canonical" href="https://toolsrift.com/json" />
-      </Head><ToolsRiftJson /><CategoryContent data={categoryContent.json} /></>)
+  return (
+    <SectionHome
+      slug="json"
+      title="Free JSON Tools — Format, Validate, Minify | ToolsRift"
+      description="25+ free JSON tools. Format, validate, minify, compare and convert JSON. JSON to CSV, YAML, XML converter. JSONPath tester and more."
+    />
+  )
 }

@@ -1,6 +1,7 @@
-# Builds the Android app (Trusted Web Activity) of every ToolsRift network site
-# with Bubblewrap, signs each with the shared upload key, and publishes the
-# .aab (Play Console upload) + .apk (sideload/testing) as workflow artifacts.
+# Builds every ToolsRift Android app (Trusted Web Activity) in android/apps.json
+# — the main app + the category apps of ANDROID_APPS — with Bubblewrap, signs
+# each with the shared upload key, and publishes the .aab (Play Console
+# upload) + .apk (sideload/testing) as workflow artifacts.
 #
 # Signing key — GitHub repository secrets (Settings → Secrets and variables →
 # Actions): ANDROID_KEYSTORE_BASE64 (base64 of android/keys/upload.keystore)
@@ -9,7 +10,7 @@
 # reuse that artifact, but store it as the secrets so it can never expire.
 #
 # The key's SHA-256 fingerprint must be in android/fingerprints.json ("all") so
-# every site's /.well-known/assetlinks.json verifies its app — see android/README.md.
+# https://toolsrift.com/.well-known/assetlinks.json verifies every app — see android/README.md.
 #
 # Optional: PLAY_SERVICE_ACCOUNT_JSON secret + the play_track input uploads
 # each bundle to Google Play (the app must already exist in the Play Console).
@@ -19,7 +20,7 @@ on:
   workflow_dispatch:
     inputs:
       sites:
-        description: 'Site ids to build, space-separated, or "--all"'
+        description: 'App ids to build (hub pdf image fancy generators), space-separated, or "--all"'
         type: string
         default: '--all'
       play_track:
@@ -64,7 +65,7 @@ jobs:
             const arg = (process.env.SITES || "").trim();
             const ids = (!arg || arg === "--all") ? apps.map(a => a.id) : arg.split(/\s+/).filter(Boolean);
             const bad = ids.filter(i => !apps.some(a => a.id === i));
-            if (bad.length) { console.error("unknown site ids: " + bad.join(" ")); process.exit(1); }
+            if (bad.length) { console.error("unknown app ids: " + bad.join(" ")); process.exit(1); }
             require("fs").appendFileSync(process.env.GITHUB_OUTPUT, `matrix=${JSON.stringify(ids)}\n`);
             console.log(ids.length + " apps: " + ids.join(" "));
           '

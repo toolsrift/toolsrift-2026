@@ -18,6 +18,17 @@ export default function App({ Component, pageProps }) {
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta charSet="utf-8" />
+        {/* Site-wide defaults. Each carries a `key` so a category section page
+            (components/site/SectionHead.jsx) can replace it with its own. */}
+        <link key="manifest" rel="manifest" href="/manifest.json" />
+        <meta key="theme-color" name="theme-color" content="#06090F" />
+        <meta key="apple-mobile-web-app-title" name="apple-mobile-web-app-title" content="ToolsRift" />
+        <meta key="og:image" property="og:image" content="https://toolsrift.com/og-image.png" />
+        <meta key="og:image:width" property="og:image:width" content="1500" />
+        <meta key="og:image:height" property="og:image:height" content="782" />
+        <meta key="og:image:alt" property="og:image:alt" content="ToolsRift — 1,136+ Free Online Tools" />
+        <meta key="twitter:image" name="twitter:image" content="https://toolsrift.com/og-image.png" />
+        <meta key="twitter:image:alt" name="twitter:image:alt" content="ToolsRift — 1,136+ Free Online Tools" />
       </Head>
 
       {/* Google Analytics */}

@@ -9,24 +9,22 @@
 //   (not an error) if that env var isn't set yet. See CLAUDE.md for setup steps.
 
 import { JWT } from 'google-auth-library'
-import { SITE, HUB_DOMAIN } from '../../../lib/sites'
+import { HUB_DOMAIN } from '../../../lib/sites'
 
-// Each network site runs its own copy of this cron (one Vercel project per
-// domain), so the host is whichever site this build is.
-const HOST = SITE.domain
+// Every category lives on toolsrift.com (/pdf, /images, …), so there is one
+// host and one sitemap to submit.
+const HOST = HUB_DOMAIN
 const KEY = '509a62672848f5997b1eb6f154172d3a'
 const KEY_LOCATION = `https://${HOST}/${KEY}.txt`
 // toolsrift.com is a Domain property in Search Console (verified via DNS), so the
 // Search Console API identifies it as "sc-domain:toolsrift.com", not a URL-prefix
-// form. A Domain property covers every subdomain, so the network sites submit
-// their sitemaps to that same property (there is no "sc-domain:pdf.toolsrift.com").
+// form.
 const SITE_URL = `sc-domain:${HUB_DOMAIN}`
 const SITEMAP_URL = `https://${HOST}/sitemap.xml`
 
-// The hub's /sitemap.xml is a sitemap INDEX (scripts/generate-sitemap.js): its
-// own pages in /sitemap-hub.xml plus each live network site's sitemap. IndexNow
-// only accepts URLs on the submitting host, so expand same-host child sitemaps
-// here; each network site's own cron submits its own URLs.
+// /sitemap.xml is a plain urlset (scripts/generate-sitemap.js). Should it ever
+// become a sitemap index again, same-host child sitemaps are expanded here —
+// IndexNow only accepts URLs on the submitting host.
 async function collectUrls(sitemapUrl, depth = 0) {
   const res = await fetch(sitemapUrl)
   const xml = await res.text()

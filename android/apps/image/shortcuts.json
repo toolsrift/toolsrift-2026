@@ -1,18 +1,18 @@
 [
   {
     "name": "Image Resizer",
-    "url": "/image-resizer"
+    "url": "/images/image-resizer"
   },
   {
     "name": "Image Cropper",
-    "url": "/image-cropper"
+    "url": "/images/image-cropper"
   },
   {
     "name": "Image Compressor",
-    "url": "/image-compressor"
+    "url": "/images/image-compressor"
   },
   {
     "name": "Image Converter",
-    "url": "/image-converter"
+    "url": "/images/image-converter"
   }
 ]

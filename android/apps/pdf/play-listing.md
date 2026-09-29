@@ -6,8 +6,8 @@
 | App name (≤30) | PDF Tools: Merge & Split |
 | Launcher name | PDF Tools |
 | Category | PRODUCTIVITY |
-| Website | https://pdf.toolsrift.com |
-| Privacy policy | https://pdf.toolsrift.com/privacy-policy |
+| Website | https://toolsrift.com/pdf |
+| Privacy policy | https://toolsrift.com/privacy-policy |
 | Support email | contact@toolsrift.com |
 | Icon (512×512) | `public/brands/pdf/icon-512.png` |
 | Feature graphic (1024×500) | `android/apps/pdf/feature-graphic.png` |
@@ -19,7 +19,7 @@ Merge, split, compress, sign & convert PDFs offline. 40 tools, no uploads.
 
 ## Full description (≤4000 chars)
 
-PDF Tools: Merge & Split puts 40 free pdf tools in your pocket — documents, done in-browser.
+PDF Tools: Merge & Split puts 37 free pdf tools in your pocket — documents, done in-browser.
 
 Every PDF tool runs locally in your browser. Contracts, statements and IDs stay on your machine — always.
 
@@ -39,16 +39,16 @@ POPULAR TOOLS
 • PDF Page Deleter — Remove unwanted pages from PDF documents and save the cleaned version
 • PDF to JPG Converter — Convert PDF pages to high-quality JPG images with customizable resolution and quality
 • PDF to PNG Converter — Convert PDF pages to PNG images with transparent background support
-…and 28 more.
+…and 25 more.
 
 WHY TOOLSRIFT PDF
 ✓ 100% free, forever
 ✓ No sign-up, no email, no tracking of your content
 ✓ Instant results — no waiting for a server
 ✓ Clean, ad-supported, no paywalls
-✓ Part of the ToolsRift network of 29 specialist tool sites
+✓ From ToolsRift — 29 tool collections, one site
 
-ToolsRift PDF is the pdf edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around pdf.toolsrift.com, so every improvement to the website ships to the app automatically.
+ToolsRift PDF is the pdf edition of ToolsRift (toolsrift.com), the free online tools platform. The app is a lightweight wrapper around toolsrift.com/pdf, so every improvement to the website ships to the app automatically.
 
 
 ## Keywords / tags

@@ -1,100 +1,60 @@
 import { NextResponse } from 'next/server'
-import { SITE, STANDALONE_SHARED_PAGES, HUB_BASE, BRANDS } from './lib/sites'
+import { BRANDS, HUB_BASE, HUB_DOMAIN, LEGACY_BRAND, findBrandByLegacyHost, legacyPath } from './lib/sites'
 
-// Slugs of every category (hub routes) — used to bounce other categories'
-// URLs to the site that owns them instead of serving duplicates.
-const CATEGORY_SLUGS = new Set(BRANDS.map(b => b.slug))
-// slug → host of every category that is live on its own site (brands.js `live`).
-const LIVE_BY_SLUG = Object.fromEntries(BRANDS.filter(b => b.live).map(b => [b.slug, b.domain]))
-const HUB_ONLY_PAGES = new Set(['/tools', '/pricing', '/roadmap', '/checker'])
-const SHARED_PAGES = new Set(STANDALONE_SHARED_PAGES)
+// Section manifests: /pdf/manifest.webmanifest → the pdf brand's manifest
+// (scope /pdf/ — what the PDF Android app wraps). See pages/api/site/manifest.js.
+const MANIFEST_BY_PATH = Object.fromEntries(BRANDS.map(b => [`${b.path}/manifest.webmanifest`, b.slug]))
+const ASSETLINKS = '/.well-known/assetlinks.json'
 
-// Per-site files a standalone site generates at request time (see pages/api/site/*).
-const SITE_FILE_REWRITES = {
-  '/robots.txt': '/api/site/robots',
-  '/sitemap.xml': '/api/site/sitemap',
-  '/manifest.json': '/api/site/manifest',
-  '/manifest.webmanifest': '/api/site/manifest',
-  '/site.webmanifest': '/api/site/manifest',
-  '/.well-known/assetlinks.json': '/api/site/assetlinks',
+function redirect(pathname, search) {
+  return NextResponse.redirect(`${HUB_BASE}${pathname}${search || ''}`, 301)
 }
 
 export function middleware(request) {
-  const host = request.headers.get('host') || ''
+  const host = (request.headers.get('host') || '').toLowerCase().split(':')[0]
   const url = request.nextUrl.clone()
-  const { pathname } = url
+  const { pathname, search } = url
 
-  // www served a full 200 mirror of the site. The canonical tags pointed at the
-  // apex so nothing was double-indexed, but Googlebot still spent 492 of ~2,900
-  // crawl requests (17%) re-crawling the duplicate host — budget that belongs to
-  // the tool pages still waiting in "Discovered – currently not indexed".
-  if (host.startsWith('www.')) {
-    url.host = host.slice(4)
-    url.protocol = 'https'
-    url.port = ''
-    return NextResponse.redirect(url, 301)
+  // ── Digital Asset Links ───────────────────────────────────────────────────
+  // Served on EVERY host, never redirected: Android verifies a TWA by fetching
+  // this file from the exact origin the app was built for, and the verifier
+  // does not follow redirects. Old app builds point at pdf.toolsrift.com etc.
+  if (pathname === ASSETLINKS) {
+    url.pathname = '/api/site/assetlinks'
+    return NextResponse.rewrite(url)
   }
 
-  // ── Standalone network site (NEXT_PUBLIC_SITE_ID=pdf …) ──────────────────
-  // Inlined at build time, so each Vercel project ships only its own branch.
-  if (SITE.isStandalone) {
-    if (SITE_FILE_REWRITES[pathname]) {
-      url.pathname = SITE_FILE_REWRITES[pathname]
-      return NextResponse.rewrite(url)
-    }
-
-    // Static assets / Next internals / API: pass through.
-    if (pathname.startsWith('/_next') || pathname.startsWith('/api/') || /\.[a-z0-9]+$/i.test(pathname)) {
-      return NextResponse.next()
-    }
-
-    // /pdf and /pdf/<tool> → this site's own root URLs.
-    const own = `/${SITE.slug}`
-    if (pathname === own || pathname === `${own}/`) {
-      url.pathname = '/'
-      return NextResponse.redirect(url, 301)
-    }
-    if (pathname.startsWith(`${own}/`)) {
-      url.pathname = pathname.slice(own.length)
-      return NextResponse.redirect(url, 301)
-    }
-
-    // Another category → that category's own site when it is live (one hop,
-    // not via the hub), else the hub; hub-only pages → the hub. Never a
-    // duplicate here.
-    const first = pathname.split('/')[1] || ''
-    const sibling = first && LIVE_BY_SLUG[first]
-    if (sibling) {
-      return NextResponse.redirect(`https://${sibling}${pathname.slice(first.length + 1) || '/'}${url.search}`, 301)
-    }
-    if ((first && CATEGORY_SLUGS.has(first)) || HUB_ONLY_PAGES.has(pathname)) {
-      return NextResponse.redirect(`${HUB_BASE}${pathname}${url.search}`, 301)
-    }
-
-    // Everything else ("/", "/<tool>", shared legal pages) is served here.
-    return NextResponse.next()
+  // ── Former category subdomains → the same page under toolsrift.com/<slug> ─
+  // pdf.toolsrift.com/merge-pdf → toolsrift.com/pdf/merge-pdf, and so on
+  // (lib/sites/index.js → legacyPath). Works whichever Vercel project the
+  // subdomain is attached to: the hub (host match) or one of the old
+  // per-category projects still built from this repo (LEGACY_BRAND — those
+  // builds redirect every request, including their *.vercel.app URLs).
+  const legacy = findBrandByLegacyHost(host) || LEGACY_BRAND
+  if (legacy) {
+    return redirect(legacyPath(legacy, pathname), search)
   }
 
-  // ── Hub (toolsrift.com) ──────────────────────────────────────────────────
-  // A category that has its own live site is served ONLY there: /pdf and
-  // /pdf/<tool> 301 to pdf.toolsrift.com/ and /<tool>. The hub keeps the home,
-  // the directory pages and the legal pages; one canonical copy of every tool.
-  // (Categories whose brand is not `live` yet are still served by the hub.)
-  if (pathname.startsWith('/_next') || pathname.startsWith('/api/') || /\.[a-z0-9]+$/i.test(pathname)) {
-    return NextResponse.next()
+  // www and any other stray subdomain (old dev./calc. mirrors, the DNS
+  // wildcard) are duplicates of the apex: one 301, same path.
+  if (host !== HUB_DOMAIN && host.endsWith(`.${HUB_DOMAIN}`)) {
+    return redirect(pathname, search)
   }
-  const first = pathname.split('/')[1] || ''
-  const liveHost = first && LIVE_BY_SLUG[first]
-  if (liveHost) {
-    return NextResponse.redirect(`https://${liveHost}${pathname.slice(first.length + 1) || '/'}${url.search}`, 301)
+
+  // ── toolsrift.com ─────────────────────────────────────────────────────────
+  const manifestSlug = MANIFEST_BY_PATH[pathname]
+  if (manifestSlug) {
+    url.pathname = '/api/site/manifest'
+    url.searchParams.set('site', manifestSlug)
+    return NextResponse.rewrite(url)
   }
 
   return NextResponse.next()
 }
 
 export const config = {
-  // Everything except Next internals and API routes. Static files fall through
-  // in code above (cheaper than a giant negative lookahead, and the standalone
-  // branch needs to see robots.txt / sitemap.xml / manifest / .well-known).
+  // Everything except Next internals and API routes. Static files are matched
+  // too, so a former subdomain's /robots.txt, /sitemap.xml, /manifest.json and
+  // /brands/… requests are redirected like any other URL.
   matcher: ['/((?!_next|api/).*)'],
 }
