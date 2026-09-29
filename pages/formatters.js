@@ -1,24 +1,12 @@
-import Head from 'next/head'
-import dynamic from 'next/dynamic';
-import CategoryLoading from '../components/CategoryLoading'
-import CategoryContent from '../components/CategoryContent'
-import categoryContent from '../lib/categoryContent'
-const ToolsRiftFormatters = dynamic(() => import('../components/toolsrift-formatters'), { ssr: false, loading: CategoryLoading });
+import SectionHome from '../components/site/SectionHome'
+
+// toolsrift.com/formatters — a branded category section (lib/sites/brands.js).
 export default function FormattersPage() {
   return (
-    <>
-      <Head>
-        <title>Free Code Formatters — CSS, SQL, XML, YAML, JSON &amp; More | ToolsRift</title>
-        <meta name="description" content="25+ free code formatter tools. Format CSS, SQL, XML, YAML, Markdown and more. One-click code beautifiers for every language." />
-        <meta property="og:title" content="Free Code Formatters — CSS, SQL, XML, YAML, JSON &amp; More | ToolsRift" />
-        <meta property="og:description" content="25+ free code formatter tools. Format CSS, SQL, XML, YAML, Markdown and more. One-click code beautifiers for every language." />
-        <meta property="og:url" content="https://toolsrift.com/formatters" />
-        <meta property="og:site_name" content="ToolsRift" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <link rel="canonical" href="https://toolsrift.com/formatters" />
-      </Head>
-      <ToolsRiftFormatters />
-      <CategoryContent data={categoryContent.formatters} />
-    </>
-  );
+    <SectionHome
+      slug="formatters"
+      title="Free Code Formatters — CSS, SQL, XML, YAML, JSON & More | ToolsRift"
+      description="25+ free code formatter tools. Format CSS, SQL, XML, YAML, Markdown and more. One-click code beautifiers for every language."
+    />
+  )
 }

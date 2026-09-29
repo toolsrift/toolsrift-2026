@@ -1,18 +1,18 @@
 [
   {
     "name": "PDF Viewer",
-    "url": "/pdf-viewer"
+    "url": "/pdf/pdf-viewer"
   },
   {
     "name": "PDF Page Counter",
-    "url": "/pdf-page-count"
+    "url": "/pdf/pdf-page-count"
   },
   {
     "name": "PDF Metadata Viewer",
-    "url": "/pdf-metadata"
+    "url": "/pdf/pdf-metadata"
   },
   {
     "name": "PDF Text Extractor",
-    "url": "/pdf-text-extractor"
+    "url": "/pdf/pdf-text-extractor"
   }
 ]

@@ -1,24 +1,12 @@
-import Head from 'next/head'
-import dynamic from 'next/dynamic';
-import CategoryLoading from '../components/CategoryLoading'
-import CategoryContent from '../components/CategoryContent'
-import categoryContent from '../lib/categoryContent'
-const ToolsRiftJS = dynamic(() => import('../components/toolsrift-js'), { ssr: false, loading: CategoryLoading });
+import SectionHome from '../components/site/SectionHome'
+
+// toolsrift.com/js — a branded category section (lib/sites/brands.js).
 export default function JSPage() {
   return (
-    <>
-      <Head>
-        <title>Free JavaScript Tools — Formatter, Minifier, Validator | ToolsRift</title>
-        <meta name="description" content="10+ free JavaScript tools. Format, minify, validate and obfuscate JavaScript code. JSON to JS object converter and more." />
-        <meta property="og:title" content="Free JavaScript Tools — Formatter, Minifier, Validator | ToolsRift" />
-        <meta property="og:description" content="10+ free JavaScript tools. Format, minify, validate and obfuscate JavaScript code. JSON to JS object converter and more." />
-        <meta property="og:url" content="https://toolsrift.com/js" />
-        <meta property="og:site_name" content="ToolsRift" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <link rel="canonical" href="https://toolsrift.com/js" />
-      </Head>
-      <ToolsRiftJS />
-      <CategoryContent data={categoryContent.js} />
-    </>
-  );
+    <SectionHome
+      slug="js"
+      title="Free JavaScript Tools — Formatter, Minifier, Validator | ToolsRift"
+      description="10+ free JavaScript tools. Format, minify, validate and obfuscate JavaScript code. JSON to JS object converter and more."
+    />
+  )
 }

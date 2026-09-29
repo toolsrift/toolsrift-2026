@@ -1,18 +1,12 @@
-import Head from 'next/head'
-import dynamic from 'next/dynamic'
-import CategoryLoading from '../components/CategoryLoading'
-import CategoryContent from '../components/CategoryContent'
-import categoryContent from '../lib/categoryContent'
-const ToolsRiftHash = dynamic(() => import('../components/toolsrift-hash'), { ssr: false, loading: CategoryLoading })
+import SectionHome from '../components/site/SectionHome'
+
+// toolsrift.com/hash — a branded category section (lib/sites/brands.js).
 export default function Hash() {
-  return (<><Head>
-        <title>Free Hash Generator — MD5, SHA1, SHA256, SHA512 &amp; More | ToolsRift</title>
-        <meta name="description" content="25+ free cryptographic hash and security tools. Generate MD5, SHA-1, SHA-256, HMAC hashes. Bcrypt generator, UUID generator and more." />
-        <meta property="og:title" content="Free Hash Generator — MD5, SHA1, SHA256, SHA512 &amp; More | ToolsRift" />
-        <meta property="og:description" content="25+ free cryptographic hash and security tools. Generate MD5, SHA-1, SHA-256, HMAC hashes. Bcrypt generator, UUID generator and more." />
-        <meta property="og:url" content="https://toolsrift.com/hash" />
-        <meta property="og:site_name" content="ToolsRift" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <link rel="canonical" href="https://toolsrift.com/hash" />
-      </Head><ToolsRiftHash /><CategoryContent data={categoryContent.hash} /></>)
+  return (
+    <SectionHome
+      slug="hash"
+      title="Free Hash Generator — MD5, SHA1, SHA256, SHA512 & More | ToolsRift"
+      description="25+ free cryptographic hash and security tools. Generate MD5, SHA-1, SHA-256, HMAC hashes. Bcrypt generator, UUID generator and more."
+    />
+  )
 }

@@ -1,6 +1,6 @@
 {
   "packageId": "com.toolsrift.image",
-  "host": "image.toolsrift.com",
+  "host": "toolsrift.com",
   "name": "Image Resizer & Compressor",
   "launcherName": "Image Tools",
   "display": "standalone",
@@ -13,7 +13,7 @@
   "navigationDividerColorDark": "#1A1116",
   "backgroundColor": "#0B0709",
   "enableNotifications": false,
-  "startUrl": "/?source=twa",
+  "startUrl": "/images/?source=twa",
   "iconUrl": "https://toolsrift.com/brands/image/icon-512.png",
   "maskableIconUrl": "https://toolsrift.com/brands/image/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
@@ -27,30 +27,30 @@
     {
       "name": "Image Resizer",
       "shortName": "Image Resiz…",
-      "url": "/image-resizer?source=shortcut",
+      "url": "/images/image-resizer?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/image/icon-192.png"
     },
     {
       "name": "Image Cropper",
       "shortName": "Image Cropp…",
-      "url": "/image-cropper?source=shortcut",
+      "url": "/images/image-cropper?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/image/icon-192.png"
     },
     {
       "name": "Image Compressor",
       "shortName": "Image Compr…",
-      "url": "/image-compressor?source=shortcut",
+      "url": "/images/image-compressor?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/image/icon-192.png"
     },
     {
       "name": "Image Converter",
       "shortName": "Image Conve…",
-      "url": "/image-converter?source=shortcut",
+      "url": "/images/image-converter?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/image/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://image.toolsrift.com/manifest.json",
+  "webManifestUrl": "https://toolsrift.com/images/manifest.webmanifest",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -59,7 +59,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://image.toolsrift.com/",
+  "fullScopeUrl": "https://toolsrift.com/images/",
   "minSdkVersion": 21,
   "orientationLock": false,
   "additionalTrustedOrigins": [],

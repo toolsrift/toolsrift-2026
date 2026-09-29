@@ -1,15 +1,17 @@
 #!/usr/bin/env node
-// Consistency checks for the network registry. Run in CI and before adding a
-// site:  node scripts/sites/check.js
+// Consistency checks for the brand registry (the 29 category sections). Run in
+// CI and before adding a category:  node scripts/sites/check.js
 //
 //  • every brand id exists in lib/categoryThemes.js and its slug in the registry
-//  • every registry category has a brand (a category without a site is a bug)
-//  • domains, package ids and site names are unique
+//  • every registry category has a brand (a category without a brand is a bug)
+//  • paths, former subdomains, package ids and site names are unique;
+//    no path collides with a top-level page
+//  • ANDROID_APPS names real brands
 //  • Play Store limits: appName ≤ 30, shortName ≤ 12, shortDesc ≤ 80
 //  • glyphs exist and generated assets are present
 const fs = require('fs');
 const path = require('path');
-const { BRANDS } = require('../../lib/sites/brands');
+const { BRANDS, ANDROID_APPS, HUB_APP } = require('../../lib/sites/brands');
 const GLYPHS = require('../brand-glyphs');
 
 const ROOT = path.join(__dirname, '..', '..');
@@ -19,17 +21,19 @@ const themesSrc = fs.readFileSync(path.join(ROOT, 'lib', 'categoryThemes.js'), '
 const THEME_IDS = new Set([...themesSrc.matchAll(/\{\s*id:\s*'([a-z0-9-]+)'/g)].map(m => m[1]));
 
 const errors = [];
-const seen = { domain: new Map(), pkg: new Map(), name: new Map() };
+const seen = { path: new Map(), legacyDomain: new Map(), pkg: new Map([[HUB_APP.android.packageId, 'hub']]), name: new Map() };
+const TOP_PAGES = new Set(fs.readdirSync(path.join(ROOT, 'pages')).filter(f => /\.js$/.test(f)).map(f => `/${f.replace(/\.js$/, '')}`));
 
 for (const b of BRANDS) {
   const tag = `[${b.id}]`;
   if (!THEME_IDS.has(b.id)) errors.push(`${tag} no category with id "${b.id}" in lib/categoryThemes.js`);
   if (!REG[b.slug]) errors.push(`${tag} no registry category with slug "${b.slug}" in lib/toolRegistry.js`);
-  for (const [k, v] of [['domain', b.domain], ['pkg', b.android.packageId], ['name', b.siteName]]) {
+  for (const [k, v] of [['path', b.path], ['legacyDomain', b.legacyDomain], ['pkg', b.android.packageId], ['name', b.siteName]]) {
     if (seen[k].has(v)) errors.push(`${tag} duplicate ${k} "${v}" (also ${seen[k].get(v)})`);
     seen[k].set(v, b.id);
   }
-  if (!/^([a-z0-9-]+\.)+[a-z]+$/.test(b.domain) || /^www\./.test(b.domain)) errors.push(`${tag} domain "${b.domain}" is not a bare hostname`);
+  if (!/^([a-z0-9-]+\.)+[a-z]+$/.test(b.legacyDomain) || /^www\./.test(b.legacyDomain)) errors.push(`${tag} legacyDomain "${b.legacyDomain}" is not a bare hostname`);
+  if (!TOP_PAGES.has(b.path)) errors.push(`${tag} no section home page pages${b.path}.js`);
   if (!/^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/.test(b.android.packageId)) errors.push(`${tag} bad Android package id "${b.android.packageId}"`);
   if (b.android.appName.length > 30) errors.push(`${tag} appName > 30 chars (${b.android.appName.length})`);
   if (b.android.shortName.length > 12) errors.push(`${tag} shortName > 12 chars (${b.android.shortName.length})`);
@@ -42,7 +46,7 @@ for (const b of BRANDS) {
     if (!/^#[0-9A-Fa-f]{6}$/.test(b.palette[k])) errors.push(`${tag} palette.${k} must be a 6-digit hex`);
   }
 }
-// android/fingerprints.json — the keys every site's assetlinks.json lists.
+// android/fingerprints.json — the keys toolsrift.com/.well-known/assetlinks.json lists.
 {
   const fpPath = path.join(ROOT, 'android', 'fingerprints.json');
   const FP_RE = /^([0-9A-F]{2}:){31}[0-9A-F]{2}$/;
@@ -52,12 +56,15 @@ for (const b of BRANDS) {
       // Any "//"-prefixed key is a comment, not a site: "//" for the file-level
       // note, "//<site id>" to explain one entry (see "//text").
       if (k.startsWith('//')) continue;
-      if (k !== 'all' && !BRANDS.some(b => b.id === k)) errors.push(`android/fingerprints.json: "${k}" is not "all" or a site id`);
+      if (k !== 'all' && k !== HUB_APP.id && !BRANDS.some(b => b.id === k)) errors.push(`android/fingerprints.json: "${k}" is not "all", "hub" or a brand id`);
       if (!Array.isArray(v)) { errors.push(`android/fingerprints.json: "${k}" must be an array`); continue; }
       for (const f of v) if (!FP_RE.test(String(f).toUpperCase())) errors.push(`android/fingerprints.json: "${k}" has a malformed SHA-256 fingerprint "${f}"`);
     }
     if (!(fp.all || []).length) console.log('note: android/fingerprints.json "all" is empty — apps open with a browser bar until the upload key fingerprint is added (android/README.md)');
   } catch (e) { errors.push(`android/fingerprints.json: ${e.message}`); }
+}
+for (const id of ANDROID_APPS) {
+  if (!BRANDS.some(b => b.id === id)) errors.push(`ANDROID_APPS: "${id}" is not a brand id`);
 }
 for (const slug of Object.keys(REG)) {
   if (!BRANDS.some(b => b.slug === slug)) errors.push(`registry category "${slug}" has no brand in lib/sites/brands.js`);
@@ -67,4 +74,4 @@ if (errors.length) {
   console.error(`✗ ${errors.length} problem(s):\n  - ` + errors.join('\n  - '));
   process.exit(1);
 }
-console.log(`✓ ${BRANDS.length} brands consistent with ${Object.keys(REG).length} registry categories`);
+console.log(`✓ ${BRANDS.length} brands consistent with ${Object.keys(REG).length} registry categories; ${ANDROID_APPS.length} category apps + the main app`);

@@ -1,13 +1,14 @@
 import { FadeUp, BlurUp, Stagger, StaggerItem, CountUp, GradientBlob, ParticlesField, WordReveal, motion } from './shared/motion'
 import PrivacyFigure from './shared/PrivacyFigure'
-import { SITE } from '../lib/sites';
+import { findBrand } from '../lib/sites';
 import { SPRING } from '../lib/designTokens'
 import { SITE_FEATURES } from '../lib/siteFeatures'
 
+// Only ever rendered in the PDF section, so it wears the PDF brand's warm charcoal.
+const PDF = findBrand('pdf').palette
 const C = {
-  // Site-aware: on pdf.toolsrift.com these are the brand's warm charcoal.
-  bg: SITE.brand ? SITE.brand.palette.bg : '#06090F',
-  surface: SITE.brand ? SITE.brand.palette.surface : '#0D1117',
+  bg: PDF.bg,
+  surface: PDF.surface,
   border: 'rgba(255,255,255,0.08)',
   borderLight: 'rgba(255,255,255,0.05)',
   text: '#F1F5F9',

@@ -133,6 +133,10 @@ function VStack({ children, gap=12 }) {
   return <div style={{ display:"flex", flexDirection:"column", gap }}>{children}</div>;
 }
 
+function Note({ children }) {
+  return <div style={{ fontSize:11.5, color:C.muted, lineHeight:1.55 }}>{children}</div>;
+}
+
 function StatBox({ value, label }) {
   return (
     <div style={{ background:"rgba(255,255,255,0.03)", border:`1px solid ${C.border}`, borderRadius:8, padding:"12px 10px", textAlign:"center" }}>

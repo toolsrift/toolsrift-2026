@@ -1,20 +1,17 @@
-# Fetches robots.txt, sitemap.xml and every sitemap URL from each live network
-# site as Googlebot (scripts/sites/check-live.js). Run it when Search Console
-# reports a sitemap it "could not read": it shows what the live edge serves.
+# Checks the live site as Googlebot (scripts/sites/check-live.js): toolsrift.com
+# robots.txt + sitemap + every sitemap URL, and that every former category
+# subdomain 301s to toolsrift.com/<slug> and still serves assetlinks.json.
 name: sites-live-check
 
 on:
   workflow_dispatch:
     inputs:
       sites:
-        description: 'Site ids (space-separated), or empty for every live site + the hub'
+        description: 'Category ids (space-separated), or empty for every former subdomain + the hub'
         type: string
         default: ''
-  # Also runs when the checker itself changes, so a change is verified live.
-  push:
-    paths:
-      - scripts/sites/check-live.js
-      - .github/workflows/sites-live-check.yml
+  # Not on push: production is deployed daily by vercel-deploy-unlinked, so a
+  # push-time run would check the previous deployment. Run it after a deploy.
 
 jobs:
   check:

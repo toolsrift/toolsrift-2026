@@ -1,0 +1,46 @@
+# CI for toolsrift.com — one Next.js build, all 29 category sections.
+#
+# On every PR, push to main or a claude/** working branch, and on demand: checks the brand registry, builds
+# the site, starts it and runs scripts/sites/smoke.js — every section home
+# (/pdf, /images, …) in its brand, a tool page, the section manifest,
+# assetlinks, the sitemap, and the 301s from the former category subdomains.
+# A second build with NEXT_PUBLIC_SITE_ID=pdf checks that a leftover
+# per-category Vercel project redirects everything to the hub.
+#
+# Deploys are NOT done here — see .github/workflows/vercel-deploy-unlinked.yml.
+name: build
+
+on:
+  push:
+    branches: [main, 'claude/**']
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        site: [hub, legacy-pdf]
+    env:
+      NEXT_TELEMETRY_DISABLED: 1
+      NEXT_PUBLIC_SITE_ID: ${{ matrix.site == 'legacy-pdf' && 'pdf' || '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci
+      - run: node scripts/sites/check.js
+      - run: npx next build
+      - name: Smoke test
+        run: |
+          npx next start -p 3123 > /tmp/next.log 2>&1 &
+          for i in $(seq 1 30); do curl -fs -o /dev/null http://localhost:3123/about && break; sleep 1; done
+          if [ "${{ matrix.site }}" = "hub" ]; then
+            node scripts/sites/smoke.js http://localhost:3123
+          else
+            node scripts/sites/smoke.js http://localhost:3123 --legacy pdf
+          fi
+      - if: failure()
+        run: tail -50 /tmp/next.log || true

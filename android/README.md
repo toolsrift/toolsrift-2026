@@ -1,22 +1,76 @@
-# ToolsRift Android apps — one per network site
+# ToolsRift Android apps — the main app + a few category apps
 
-Every standalone site ships as a **Trusted Web Activity (TWA)**: a small native
-Android app that opens the site full-screen in Chrome with no browser UI. Google
-Play accepts TWAs, they get the site's PWA features (offline cache, shortcuts,
-share target), and — the important part — **updating the app means deploying
-the website**. There is no second codebase to maintain for 29 apps.
+Every app is a **Trusted Web Activity (TWA)**: a small native Android app that
+opens toolsrift.com full-screen in Chrome with no browser UI. Google Play
+accepts TWAs, they get the site's PWA features (shortcuts, install, share
+target), and — the important part — **updating an app means deploying the
+website**. There is no second codebase.
+
+| App | Package | Opens |
+|---|---|---|
+| ToolsRift (main, all 29 categories) | `com.toolsrift.main` | `https://toolsrift.com/` |
+| PDF Tools | `com.toolsrift.pdf` | `https://toolsrift.com/pdf/` |
+| Image Resizer & Compressor | `com.toolsrift.image` | `https://toolsrift.com/images/` |
+
+The list is `ANDROID_APPS` in `lib/sites/brands.js` (plus `HUB_APP` for the
+main app). **Why so few:** Google Play's spam policy ("repetitive content")
+prohibits publishing many apps that are near-identical wrappers of one website,
+and the penalty can hit the whole developer account. One strong main app plus
+the two categories with real standalone demand on phones is safe and
+concentrates installs and ratings. The PDF and Image apps already exist in Play
+Console (closed testing, no installs); the main app is new — create it in the
+Console before its first upload. The other 13 apps that were created in Play
+Console for the old subdomains are retired: delete them there (see "Retiring
+the other apps" below). To change the list, edit `ANDROID_APPS` and run
+`npm run android:generate` (it removes the folders of dropped apps).
+
+**Ads in the apps:** a TWA *is* Chrome, so the AdSense ads already on
+toolsrift.com show inside the apps as they do on the website — that is how the
+apps are monetised. AdMob does not apply: it needs native views, which a TWA
+cannot overlay. AdMob would only make sense for a WebView or native app
+(e.g. Capacitor), which is a different project.
 
 ```
 android/
-├── apps.json                 index of all 29 apps (package ids, domains, tool counts)
+├── apps.json                 index of the apps (package ids, start URLs, tool counts)
 ├── apps/<id>/
 │   ├── twa-manifest.json     Bubblewrap config — generated from lib/sites/brands.js
 │   ├── play-listing.md       Play Console copy: title, descriptions, category, data safety
-│   └── shortcuts.json        launcher shortcuts (top 4 tools)
-├── fingerprints.json         signing-key SHA-256s served in every site's assetlinks.json
+│   ├── shortcuts.json        launcher shortcuts (top 4 tools)
+│   └── feature-graphic.png   1024×500 (category apps; npm run brands:assets)
+├── fingerprints.json         signing-key SHA-256s served in toolsrift.com/.well-known/assetlinks.json
 ├── keys/                     signing keystore (git-ignored — never commit it)
 └── build/<id>/               Bubblewrap output (git-ignored): app-release-bundle.aab
 ```
+
+## Moving the existing apps from the subdomains to toolsrift.com
+
+The category apps were first built for `pdf.toolsrift.com` etc. Those hosts
+now 301 to `toolsrift.com/<slug>` (docs/NETWORK-SITES.md). What that means:
+
+- **New builds** (`npm run android:generate` → `android-build`) have
+  `host: toolsrift.com` and start at `/<slug>/`. They verify against
+  `https://toolsrift.com/.well-known/assetlinks.json`, which lists every app.
+  Same package ids, so each one is an ordinary update in Play Console.
+- **Already-installed old builds** (the closed-testing testers) still start
+  at the subdomain; the subdomain still serves assetlinks, so they launch, but
+  the redirect to toolsrift.com — an origin the old build never declared —
+  shows Chrome's address bar until the tester updates. Nothing breaks.
+- Order: deploy the site → run `android-build` → `android-publish` (or upload
+  the `.aab`s by hand) → promote in the Console.
+
+## Retiring the other apps
+
+These packages were created in Play Console for the old subdomains and are no
+longer built: `com.toolsrift.json`, `.encoders`, `.colors`, `.css`, `.html`,
+`.js`, `.formatters`, `.hash`, `.fancy`, `.encoding`, `.everyday`,
+`.generators`, `.content` (check the exact ids in the Console). They are in
+closed testing with no installs, so delete them (App → Settings → Advanced
+settings → Delete app); if the Console only offers **Unpublish**, unpublish
+instead. A deleted app's package id can never be used again — that is fine,
+none of them will be reused. Their entries in `android/fingerprints.json` and
+in assetlinks are harmless and can stay.
+
 
 Regenerate the configs whenever `brands.js` or the tool registry changes:
 
@@ -24,16 +78,16 @@ Regenerate the configs whenever `brands.js` or the tool registry changes:
 npm run android:generate
 ```
 
-## Build all 29 apps (CI — the normal way)
+## Build the apps (CI — the normal way)
 
 GitHub → **Actions → android-build → Run workflow** (`sites` = `--all` or ids
-like `pdf image json`). The workflow:
+like `hub pdf`). The workflow:
 
 1. resolves the shared **upload keystore** — from the repository secrets
    `ANDROID_KEYSTORE_BASE64` + `ANDROID_KEYSTORE_PASSWORD`; if they are not set
    it reuses the `android-upload-keystore` artifact of an earlier run, and on the
    very first run it generates a key and saves it as that artifact (90 days);
-2. builds every site in parallel with Bubblewrap (JDK 17, build-tools 36.1.0),
+2. builds every app in parallel with Bubblewrap (JDK 17, build-tools 36.1.0),
    `versionName 1.YYYYMMDD.HHMM`, `versionCode` = minutes since 2026-01-01
    (always increasing, so every run can be uploaded to Play);
 3. verifies each APK is signed with that key and uploads artifacts:
@@ -48,26 +102,28 @@ secrets above, keep a copy in a password manager, then delete the artifact.
 Without the secrets a later run past the artifact's expiry would mint a *new*
 key, and Play rejects uploads signed with a different upload key.
 
-Icons and the web manifest are fetched from the hub (`toolsrift.com` serves
-every brand's `/brands/<id>/` files and `/api/site/manifest?site=<id>`), so an
-app can be built before its subdomain is serving — but it only opens
-full-screen once the site is live and its assetlinks verify (next section).
+Icons and the web manifest are fetched from toolsrift.com (`/brands/<id>/`,
+`/<slug>/manifest.webmanifest`, falling back to `/api/site/manifest?site=<id>`
+before that route is deployed). An app only opens full-screen once its
+assetlinks entry verifies (next section).
 
 ## Make the apps verify (assetlinks)
 
-Chrome opens a TWA full-screen only if `https://<domain>/.well-known/assetlinks.json`
-lists the SHA-256 of the certificate the app is signed with. Every site serves
-that file from `pages/api/site/assetlinks.js`, which reads
+Chrome opens a TWA full-screen only if `https://toolsrift.com/.well-known/assetlinks.json`
+lists the app's package with the SHA-256 of the certificate it is signed with.
+The site serves one file for every app from `pages/api/site/assetlinks.js`
+(also on the former subdomains, un-redirected, for old builds), which reads
 [`android/fingerprints.json`](fingerprints.json):
 
 ```json
 { "all": ["AB:CD:…"],          // the shared upload key — every app
+  "hub": ["…"],                // the main app's Play App Signing key(s)
   "pdf": ["12:34:…"] }         // extra keys for one app (Play App Signing key)
 ```
 
 Put the upload key fingerprint from the workflow summary in `"all"`, commit,
-push: the next deployment of every site serves it. `ANDROID_SHA256_FINGERPRINTS`
-(comma-separated env var on a Vercel project) adds more without a commit.
+push: the next deployment serves it. `ANDROID_SHA256_FINGERPRINTS`
+(comma-separated env var on the Vercel project) adds more without a commit.
 
 ## Play Console
 
@@ -80,10 +136,11 @@ icon path (`public/brands/<id>/icon-512.png`), and the Data safety answers.
 2. **Enrol in Play App Signing** (default for new apps). Play then re-signs
    the app with *its* key: copy the "App signing key certificate" SHA-256 from
    Setup → App integrity and add it to `android/fingerprints.json` under that
-   site's id (keep the upload key in `"all"`). Without this the Play-signed
+   app's id (`hub` for the main app; keep the upload key in `"all"`). Without this the Play-signed
    build opens with a browser bar instead of full-screen.
 3. Feature graphic 1024×500: `android/apps/<id>/feature-graphic.png` (rendered
-   by `npm run brands:assets`).
+   by `SHARE_ONLY=1 npm run brands:assets`; for the main app it comes from the
+   `android-listing` workflow).
 4. Screenshots: run the **android-listing** workflow (Actions → Run workflow);
    it captures the live site's home and top tools on a phone viewport and
    turns them into store frames (phone mockup on the brand background with a
@@ -93,9 +150,9 @@ icon path (`public/brands/<id>/icon-512.png`), and the Data safety answers.
    `play-listing.md`, raw captures in `raw/`. Locally: `npm i --no-save playwright
    && npx playwright install chromium && node scripts/android/screenshots.js pdf
    && node scripts/android/listing-frames.js pdf` (→ `android/build/listing/pdf/`).
-5. When the app is live on Play, set `android.published: true` on the brand in
-   `brands.js`: the site's web manifest then prefers the Play app over the PWA
-   install prompt (`related_applications`).
+5. When a category app is live on Play, set `android.published: true` on the
+   brand in `brands.js`: the section's web manifest then prefers the Play app
+   over the PWA install prompt (`related_applications`).
 
 Once an app exists in the Console, the workflow can upload new versions for
 you: add a Play service-account JSON (Play Console → Setup → API access) as the
@@ -117,13 +174,14 @@ KEYSTORE_PASSWORD=… npm run android:build -- --all
 ## Verifying assetlinks
 
 ```bash
-curl -s https://pdf.toolsrift.com/.well-known/assetlinks.json
+curl -s https://toolsrift.com/.well-known/assetlinks.json
 # → [{ "relation": ["delegate_permission/common.handle_all_urls"],
-#      "target": { "namespace": "android_app", "package_name": "com.toolsrift.pdf",
-#                  "sha256_cert_fingerprints": ["AB:CD:…"] } }]
+#      "target": { "namespace": "android_app", "package_name": "com.toolsrift.main",
+#                  "sha256_cert_fingerprints": ["AB:CD:…"] } },
+#    { … "package_name": "com.toolsrift.pdf" … }, …]
 ```
 
-Google's checker: `https://digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https://pdf.toolsrift.com&relation=delegate_permission/common.handle_all_urls`
+Google's checker: `https://digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https://toolsrift.com&relation=delegate_permission/common.handle_all_urls`
 
 ## The text app: package id and certificate of unverified origin
 
@@ -166,10 +224,10 @@ forever.
 ### Why the certificate stays in fingerprints.json
 
 `android/fingerprints.json` carries `AB:54:5C:86:…` under `"text"`, so
-`text.toolsrift.com/.well-known/assetlinks.json` serves it alongside the shared
-upload key. The hub has declared that same certificate at
-`toolsrift.com/.well-known/assetlinks.json` since July, so listing it on the
-subdomain extends an existing trust declaration rather than creating a new one —
+`toolsrift.com/.well-known/assetlinks.json` declares it for
+`com.toolsrift.text.twa` alongside the shared upload key. toolsrift.com has
+declared that same certificate since July, so keeping it extends an existing
+trust declaration rather than creating a new one —
 and if the app is real, removing it would break the app. It is not evidence the
 app exists.
 
@@ -181,7 +239,7 @@ that point. Add that one here; this entry can then go.
 
 Every tool is a browser tool (Web Crypto, Canvas, Web Audio, pdf-lib in the
 page). A TWA runs the real site in the real Chrome engine, so nothing has to
-be ported, and 29 apps stay in lock-step with 29 sites. A native shell only
+be ported, and every app stays in lock-step with the website. A native shell only
 becomes worth it if you need native-only features (file system access beyond
 the browser sandbox, background processing, in-app purchases), none of which
 Phase 1 needs.

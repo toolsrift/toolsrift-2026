@@ -1,0 +1,37 @@
+# One-time migration back to ONE Vercel project (scripts/vercel/consolidate.js):
+# moves every former category subdomain (pdf.toolsrift.com, …) onto the hub
+# project, where middleware.js 301s it to toolsrift.com/<slug>, and optionally
+# deletes the old per-category projects. Run with no options first: it only
+# reports. Order: deploy the hub (vercel-deploy-unlinked) → run with "apply"
+# → check (sites-live-check) → run with "apply" + "delete_projects".
+# Needs the VERCEL_TOKEN secret. See docs/NETWORK-SITES.md.
+name: vercel-consolidate
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: 'Move the subdomains onto the hub project (unchecked = report only)'
+        type: boolean
+        default: false
+      delete_projects:
+        description: 'Also DELETE the old toolsrift-<id> projects (permanent)'
+        type: boolean
+        default: false
+
+jobs:
+  consolidate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_TEAM: toolsrifts-projects
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then echo "::error::VERCEL_TOKEN secret is not set"; exit 1; fi
+          ARGS=""
+          if [ "${{ inputs.apply }}" = "true" ]; then ARGS="--apply"; fi
+          if [ "${{ inputs.apply }}" = "true" ] && [ "${{ inputs.delete_projects }}" = "true" ]; then ARGS="$ARGS --delete-projects"; fi
+          node scripts/vercel/consolidate.js $ARGS

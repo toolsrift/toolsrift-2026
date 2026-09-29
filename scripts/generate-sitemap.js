@@ -1,6 +1,8 @@
 /**
  * generate-sitemap.js
- * Regenerates public/sitemap.xml from lib/toolRegistry.js.
+ * Regenerates public/sitemap.xml — the ONE sitemap of toolsrift.com — from
+ * lib/toolRegistry.js: static pages, every category section (/pdf) and every
+ * core tool page (/pdf/merge-pdf).
  * Run whenever tools are added: node scripts/generate-sitemap.js
  */
 const fs = require('fs')
@@ -19,16 +21,6 @@ const coreSrc = fs.readFileSync(path.join(__dirname, '../lib/coreTools.js'), 'ut
 const coreStart = coreSrc.indexOf('CORE_TOOL_IDS = [') + 'CORE_TOOL_IDS = '.length
 const coreEnd = coreSrc.indexOf('];', coreStart) + 1
 const CORE_TOOLS = new Set(JSON.parse(coreSrc.slice(coreStart, coreEnd).replace(/\/\/[^\n]*/g, '')))
-
-// Network sites (lib/sites/brands.js): a category whose brand is `live` is
-// served ONLY on its own subdomain (middleware.js 301s the hub's /pdf and
-// /pdf/<tool> there), so its pages leave the hub sitemap and its own
-// https://<sub>/sitemap.xml (pages/api/site/sitemap.js) joins the sitemap
-// index instead. Google accepts cross-host sitemaps in an index when every
-// host is verified under the same Search Console property — the
-// sc-domain:toolsrift.com Domain property covers all subdomains.
-const { BRANDS } = require('../lib/sites/brands')
-const LIVE_BY_SLUG = Object.fromEntries(BRANDS.filter(b => b.live).map(b => [b.slug, b.domain]))
 
 const BASE = 'https://toolsrift.com'
 const today = new Date().toISOString().slice(0, 10)
@@ -51,7 +43,7 @@ let urls = staticPages.map(([p, cf, pr]) =>
 )
 
 // A tool listed in two categories (e.g. voltage-converter in both `converters2`
-// and `units`) gets a page at BOTH URLs, but pages/[category]/[tool].js
+// and `units`) gets a page at BOTH URLs, but pages/[slug]/[tool].js
 // canonicalises them to whichever category the registry lists first. Advertising
 // the non-canonical twin in the sitemap asks Google to index a URL the page
 // itself disavows — a self-inflicted duplicate signal on a site that can least
@@ -65,9 +57,7 @@ for (const [slug, data] of Object.entries(REGISTRY)) {
 
 let skippedDupe = 0
 let skippedNonCore = 0
-let skippedLive = 0
 for (const [slug, data] of Object.entries(REGISTRY)) {
-  if (LIVE_BY_SLUG[slug]) { skippedLive += 1 + data.tools.length; continue }
   // Category page — real, hand-written content per lib/categoryContent.js,
   // not part of the thin-content pattern, so these stay indexed.
   urls.push(`  <url><loc>${BASE}/${slug}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>`)
@@ -80,12 +70,10 @@ for (const [slug, data] of Object.entries(REGISTRY)) {
 }
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`
-fs.writeFileSync(path.join(__dirname, '../public/sitemap-hub.xml'), xml)
+fs.writeFileSync(path.join(__dirname, '../public/sitemap.xml'), xml)
 
-// /sitemap.xml itself is the index: the hub's own pages + every live network site.
-const sitemaps = [`${BASE}/sitemap-hub.xml`, ...Object.values(LIVE_BY_SLUG).map(d => `https://${d}/sitemap.xml`)]
-const index = `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${
-  sitemaps.map(u => `  <sitemap><loc>${u}</loc><lastmod>${today}</lastmod></sitemap>`).join('\n')}\n</sitemapindex>\n`
-fs.writeFileSync(path.join(__dirname, '../public/sitemap.xml'), index)
-console.log(`sitemap-hub.xml written: ${urls.length} URLs (${skippedDupe} non-canonical duplicates skipped, ${skippedNonCore} non-core tool pages excluded, ${skippedLive} pages of live network sites left to their own sitemaps)`)
-console.log(`sitemap.xml written as a sitemap index: ${sitemaps.length} sitemaps (hub + ${sitemaps.length - 1} network sites)`)
+// The sitemap used to be an index of sitemap-hub.xml + one sitemap per category
+// subdomain. Those subdomains now 301 here, so there is just this one file.
+const legacy = path.join(__dirname, '../public/sitemap-hub.xml')
+if (fs.existsSync(legacy)) fs.unlinkSync(legacy)
+console.log(`sitemap.xml written: ${urls.length} URLs (${skippedDupe} non-canonical duplicates skipped, ${skippedNonCore} non-core tool pages excluded)`)

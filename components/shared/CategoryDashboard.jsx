@@ -15,7 +15,6 @@ import { groupTools } from './ToolNavSidebar';
 import { resolveIcon } from '../../lib/toolIcons';
 import { toolHref, shouldInterceptClick } from './toolLink';
 import { TOOLS_PLUS, TOTAL_CATEGORIES } from '../../lib/siteStats';
-import { SITE } from '../../lib/sites';
 
 // ── Themed tool tile (style varies per anim feel) ───────────────────────────
 function ThemedToolTile({ theme, tool, onClick, index = 0 }) {
@@ -296,7 +295,7 @@ function ExploreOthers({ theme }) {
           <div style={{
             fontSize: 12, fontWeight: 700, letterSpacing: '0.12em',
             textTransform: 'uppercase', color: COLORS.muted, marginBottom: 8,
-          }}>{SITE.isStandalone ? 'More from the ToolsRift network' : 'Explore other categories'}</div>
+          }}>Explore other categories</div>
           <div style={{
             fontFamily: theme.fonts.head, fontSize: FS.xl, fontWeight: 700,
             color: COLORS.textBright, letterSpacing: '-0.015em',
@@ -319,7 +318,7 @@ function ExploreOthers({ theme }) {
                 borderRadius: 12, padding: '12px 14px',
                 color: COLORS.text, textDecoration: 'none',
                 transition: 'border-color .2s, background .2s',
-                fontFamily: o.fonts.body,
+                fontFamily: theme.fonts.body,
               }}
               onMouseEnter={(e) => { e.currentTarget.style.borderColor = o.tint25; e.currentTarget.style.background = o.tint06; }}
               onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; e.currentTarget.style.background = 'rgba(15,23,42,0.5)'; }}

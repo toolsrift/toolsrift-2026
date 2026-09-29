@@ -1,13 +1,6 @@
 import Head from 'next/head'
 import dynamic from 'next/dynamic'
 import HomepageContent from '../components/HomepageContent'
-import { SITE } from '../lib/sites'
-
-// The standalone-site home is a separate chunk (still server-rendered), so the
-// hub's homepage bundle does not carry the category article + widget map.
-const StandaloneHome = dynamic(() => import('../components/site/StandaloneHome'), {
-  loading: () => <div style={{ background: SITE.bgColor, minHeight: '100vh' }} />,
-})
 
 const ToolsRiftMain = dynamic(
   () => import('../components/toolsrift-main').catch(err => {
@@ -20,7 +13,7 @@ const ToolsRiftMain = dynamic(
   }
 )
 
-function HubHome() {
+export default function Home() {
   return (
     <>
       <Head>
@@ -31,10 +24,6 @@ function HubHome() {
         <meta property="og:url" content="https://toolsrift.com" />
         <meta property="og:site_name" content="ToolsRift" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta property="og:image" content="https://toolsrift.com/og-image.png" />
-        <meta property="og:image:width" content="1500" />
-        <meta property="og:image:height" content="782" />
-        <meta name="twitter:image" content="https://toolsrift.com/og-image.png" />
         <link rel="canonical" href="https://toolsrift.com" />
       </Head>
       <ToolsRiftMain />
@@ -42,7 +31,3 @@ function HubHome() {
     </>
   )
 }
-
-// NEXT_PUBLIC_SITE_ID=pdf (etc.) turns this build into a standalone network
-// site whose home IS that category. Unset → the ToolsRift hub, unchanged.
-export default SITE.isStandalone ? StandaloneHome : HubHome

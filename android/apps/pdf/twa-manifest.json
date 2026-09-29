@@ -1,6 +1,6 @@
 {
   "packageId": "com.toolsrift.pdf",
-  "host": "pdf.toolsrift.com",
+  "host": "toolsrift.com",
   "name": "PDF Tools: Merge & Split",
   "launcherName": "PDF Tools",
   "display": "standalone",
@@ -13,7 +13,7 @@
   "navigationDividerColorDark": "#1E1613",
   "backgroundColor": "#0E0A09",
   "enableNotifications": false,
-  "startUrl": "/?source=twa",
+  "startUrl": "/pdf/?source=twa",
   "iconUrl": "https://toolsrift.com/brands/pdf/icon-512.png",
   "maskableIconUrl": "https://toolsrift.com/brands/pdf/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
@@ -27,30 +27,30 @@
     {
       "name": "PDF Viewer",
       "shortName": "PDF Viewer",
-      "url": "/pdf-viewer?source=shortcut",
+      "url": "/pdf/pdf-viewer?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/pdf/icon-192.png"
     },
     {
       "name": "PDF Page Counter",
       "shortName": "PDF Page Co…",
-      "url": "/pdf-page-count?source=shortcut",
+      "url": "/pdf/pdf-page-count?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/pdf/icon-192.png"
     },
     {
       "name": "PDF Metadata Viewer",
       "shortName": "PDF Metadat…",
-      "url": "/pdf-metadata?source=shortcut",
+      "url": "/pdf/pdf-metadata?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/pdf/icon-192.png"
     },
     {
       "name": "PDF Text Extractor",
       "shortName": "PDF Text Ex…",
-      "url": "/pdf-text-extractor?source=shortcut",
+      "url": "/pdf/pdf-text-extractor?source=shortcut",
       "chosenIconUrl": "https://toolsrift.com/brands/pdf/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://pdf.toolsrift.com/manifest.json",
+  "webManifestUrl": "https://toolsrift.com/pdf/manifest.webmanifest",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -59,7 +59,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://pdf.toolsrift.com/",
+  "fullScopeUrl": "https://toolsrift.com/pdf/",
   "minSdkVersion": 21,
   "orientationLock": false,
   "additionalTrustedOrigins": [],

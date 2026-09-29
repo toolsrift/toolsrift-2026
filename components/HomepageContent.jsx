@@ -37,20 +37,20 @@ const FAQS = [
 ]
 
 /* ─────────────────────────────────────────────────────────────────────────
- * Crawlable directory of the whole network.
+ * Crawlable directory of every category section and its indexable tools.
  *
- * This is the hub's ONLY server-rendered link path to the 29 category sites.
- * The interactive homepage (components/toolsrift-main) is loaded with
- * ssr:false, so none of its category tiles exist in the HTML Googlebot
- * receives — which left every subdomain reachable only from sitemap.xml, the
- * lowest-priority crawl class there is. That is the same orphaning the
- * Aug-2026 audit identified, recreated at subdomain level by the migration.
+ * This is the homepage's ONLY server-rendered link path to the 29 category
+ * sections. The interactive homepage (components/toolsrift-main) is loaded
+ * with ssr:false, so none of its category tiles exist in the HTML Googlebot
+ * receives — without this, every category would be reachable only from
+ * sitemap.xml, the lowest-priority crawl class there is (the orphaning the
+ * Aug-2026 audit identified).
  *
- * Plain <a href> to every live category site and every indexable tool on it.
+ * Plain <a href> to every category (/pdf) and every indexable tool (/pdf/x).
  * Keep it server-rendered; do not move it inside a dynamic import.
  * ───────────────────────────────────────────────────────────────────────── */
-function NetworkDirectory() {
-  const sites = BRANDS.filter(b => b.live)
+function CategoryDirectory() {
+  const sites = BRANDS
     .map(b => {
       // Three brands key the registry on slug rather than id (image/images,
       // code/json, gen-content/generators2), so try both or they vanish here.
@@ -76,15 +76,15 @@ function NetworkDirectory() {
         Browse every tool
       </h2>
       <p style={{ fontSize: 15, color: C.muted, lineHeight: 1.8, marginBottom: 28, maxWidth: 680 }}>
-        Each category is its own site, with its own tools. Every link below goes
-        straight to the tool.
+        Every category has its own section of ToolsRift, with its own tools.
+        Every link below goes straight to the tool.
       </p>
 
       <div style={{ display: 'grid', gap: 26, gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))' }}>
         {sites.map(({ brand, catName, tools }) => (
           <div key={brand.id}>
             <h3 style={{ fontSize: 15, fontWeight: 700, marginBottom: 10, fontFamily: "'Sora', sans-serif" }}>
-              <a href={`https://${brand.domain}/`} style={{ color: C.text, textDecoration: 'none' }}>
+              <a href={brand.path} style={{ color: C.text, textDecoration: 'none' }}>
                 {catName}
               </a>
             </h3>
@@ -92,7 +92,7 @@ function NetworkDirectory() {
               {tools.map(t => (
                 <li key={t.id}>
                   <a
-                    href={`https://${brand.domain}/${t.id}`}
+                    href={`${brand.path}/${t.id}`}
                     style={{ fontSize: 13.5, color: C.muted, textDecoration: 'none', lineHeight: 1.55 }}
                   >
                     {t.name}
@@ -260,7 +260,7 @@ export default function HomepageContent() {
 
       </section>
 
-      <NetworkDirectory />
+      <CategoryDirectory />
 
       {/* Single site footer at the very bottom of the homepage (server-rendered). */}
       <SiteFooter />

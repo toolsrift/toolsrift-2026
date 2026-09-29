@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
     inputs:
       sites:
-        description: 'Site ids, space-separated, or "--all"'
+        description: 'App ids (hub pdf image), space-separated, or "--all"'
         default: '--all'
         required: true
       tracks:

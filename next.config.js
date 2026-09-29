@@ -1,17 +1,18 @@
 /** @type {import('next').NextConfig} */
 
-// ── ToolsRift network: which site is this build? ─────────────────────────────
-// Explicit:  NEXT_PUBLIC_SITE_ID=pdf  (set per Vercel project, or via
-//            `npm run build:site -- pdf`).
-// Implicit:  on Vercel, derived from the project's production URL. Projects are
-//            named "toolsrift-<site id>" (scripts/vercel/bootstrap.sh and the
-//            Vercel connector both follow this), so "toolsrift-pdf.vercel.app",
-//            "toolsrift-pdf-xxxx.vercel.app" or a brand's own domain
-//            ("pdf.toolsrift.com") all resolve to the pdf site. Anything else —
-//            including toolsrift.com / toolsrift.vercel.app — is the hub.
-// The resolved value is inlined as NEXT_PUBLIC_SITE_ID into every bundle
-// (client, server and edge middleware), so lib/sites/index.js only ever reads
-// that one variable.
+// ── Legacy per-category Vercel projects ──────────────────────────────────────
+// Every category is served by the hub at toolsrift.com/<slug>. From 2026-09-18
+// each one was briefly its own subdomain, deployed as a separate Vercel
+// project "toolsrift-<id>" built from this repo. Until those projects are
+// deleted (docs/NETWORK-SITES.md), their builds must do nothing but 301 to the
+// hub, so they still resolve a site id:
+// Explicit:  NEXT_PUBLIC_SITE_ID=pdf  (set per project by the old bootstrap).
+// Implicit:  on Vercel, derived from the project's production URL
+//            ("toolsrift-pdf.vercel.app", "toolsrift-pdf-xxxx.vercel.app" or
+//            the old subdomain "pdf.toolsrift.com").
+// Anything else — toolsrift.com, toolsrift.vercel.app, local builds — is the
+// hub. The value is inlined as NEXT_PUBLIC_SITE_ID; lib/sites/index.js turns it
+// into LEGACY_BRAND and middleware.js redirects every request on such a build.
 const { BRANDS } = require('./lib/sites/brands')
 
 function deriveSiteId() {
@@ -21,7 +22,7 @@ function deriveSiteId() {
     .filter(Boolean).map(h => String(h).toLowerCase().replace(/^https?:\/\//, ''))
   for (const host of hosts) {
     for (const b of BRANDS) {
-      if (host === b.domain || host === `www.${b.domain}`) return b.id
+      if (host === b.legacyDomain || host === `www.${b.legacyDomain}`) return b.id
       if (host.startsWith(`toolsrift-${b.id}.`) || host.startsWith(`toolsrift-${b.id}-`)) return b.id
     }
   }
@@ -29,7 +30,7 @@ function deriveSiteId() {
 }
 
 const SITE_ID = deriveSiteId()
-if (SITE_ID !== 'hub') console.log(`▲ ToolsRift network build: site "${SITE_ID}"`)
+if (SITE_ID !== 'hub') console.log(`▲ ToolsRift legacy project "${SITE_ID}": every request 301s to toolsrift.com`)
 
 const nextConfig = {
   reactStrictMode: true,

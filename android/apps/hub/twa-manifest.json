@@ -1,0 +1,68 @@
+{
+  "packageId": "com.toolsrift.main",
+  "host": "toolsrift.com",
+  "name": "ToolsRift: 1,100+ Online Tools",
+  "launcherName": "ToolsRift",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#06090F",
+  "themeColorDark": "#06090F",
+  "navigationColor": "#06090F",
+  "navigationColorDark": "#06090F",
+  "navigationDividerColor": "#111827",
+  "navigationDividerColorDark": "#111827",
+  "backgroundColor": "#06090F",
+  "enableNotifications": false,
+  "startUrl": "/?source=twa",
+  "iconUrl": "https://toolsrift.com/icon-512.png",
+  "maskableIconUrl": "https://toolsrift.com/icon-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "../../keys/upload.keystore",
+    "alias": "upload"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "PDF Viewer",
+      "shortName": "PDF Viewer",
+      "url": "/pdf/pdf-viewer?source=shortcut",
+      "chosenIconUrl": "https://toolsrift.com/icon-192.png"
+    },
+    {
+      "name": "Image Resizer",
+      "shortName": "Image Resiz…",
+      "url": "/images/image-resizer?source=shortcut",
+      "chosenIconUrl": "https://toolsrift.com/icon-192.png"
+    },
+    {
+      "name": "Word Counter Pro",
+      "shortName": "Word Counte…",
+      "url": "/text/word-counter-pro?source=shortcut",
+      "chosenIconUrl": "https://toolsrift.com/icon-192.png"
+    },
+    {
+      "name": "Investment Return Calculator",
+      "shortName": "Investment …",
+      "url": "/financecalc/investment-return-calc?source=shortcut",
+      "chosenIconUrl": "https://toolsrift.com/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://toolsrift.com/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://toolsrift.com/",
+  "minSdkVersion": 21,
+  "orientationLock": false,
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "appVersion": "1.0.0"
+}

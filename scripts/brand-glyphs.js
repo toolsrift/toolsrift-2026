@@ -1,4 +1,4 @@
-// ── Logo glyphs for every ToolsRift network brand ───────────────────────────
+// ── Logo glyphs for every ToolsRift category brand ──────────────────────────
 // Each glyph is an SVG fragment drawn in a 100×100 box (centre 50,50) using
 // only `currentColor`, so the same glyph works on the gradient mark, in the
 // wordmark, on the OG image and as a monochrome favicon. Keep shapes simple:

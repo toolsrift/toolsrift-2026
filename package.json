@@ -9,9 +9,6 @@
     "start": "next start",
     "lint": "next lint",
     "submit:indexnow": "node scripts/submit-indexnow.js",
-    "dev:site": "node scripts/sites/run.js dev",
-    "build:site": "node scripts/sites/run.js build",
-    "start:site": "node scripts/sites/run.js start",
     "sites:list": "node scripts/sites/list.js",
     "sites:check": "node scripts/sites/check.js",
     "sites:live": "node scripts/sites/check-live.js",
@@ -22,8 +19,8 @@
     "android:publish": "node scripts/android/publish.js",
     "vercel:prune": "node scripts/vercel/prune.js",
     "content:report": "node scripts/content-report.js",
-    "vercel:bootstrap": "node scripts/vercel/bootstrap.js",
-    "vercel:deploy": "bash scripts/vercel/deploy.sh"
+    "vercel:consolidate": "node scripts/vercel/consolidate.js",
+    "sites:smoke": "node scripts/sites/smoke.js"
   },
   "dependencies": {
     "framer-motion": "^12.38.0",
