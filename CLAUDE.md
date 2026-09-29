@@ -945,9 +945,10 @@ Full guide: `docs/NETWORK-SITES.md`; apps: `android/README.md`.
   ignored). Apps monetise through the site's AdSense (a TWA is Chrome); AdMob
   does not apply to TWAs.
 - **Deploys**: Vercel does NOT deploy `main` on push (Hobby quota). The
-  `vercel-deploy-unlinked` workflow deploys the hub (and any leftover
-  `toolsrift-<id>` project) when behind main, daily at 17:00 UTC; run it by
-  hand for an urgent change. `vercel-prune` deletes superseded deployments
+  `vercel-deploy-unlinked` workflow deploys the hub when behind main, daily
+  at 17:00 UTC; run it by hand for an urgent change. Never deploy the old
+  `toolsrift-<id>` projects ahead of the hub (redirect loop — see
+  `vercel-rollback-legacy`, which undoes that without using deploy quota). `vercel-prune` deletes superseded deployments
   nightly (10 GB storage cap).
 - **When editing `brands.js`**: colours/fonts/copy need no regeneration; logo
   → `LOGO_ONLY=1 npm run brands:assets`; anything an app shows →
