@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       sites:
-        description: 'App ids (space-separated: hub pdf image fancy generators) or "--all"'
+        description: 'App ids (space-separated: hub pdf image) or "--all"'
         type: string
         default: '--all'
 

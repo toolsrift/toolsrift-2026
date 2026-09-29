@@ -932,7 +932,7 @@ Full guide: `docs/NETWORK-SITES.md`; apps: `android/README.md`.
 - CI: `.github/workflows/build.yml` builds the site and runs `sites:smoke` on
   every PR (plus a legacy `NEXT_PUBLIC_SITE_ID=pdf` build that must redirect).
 - **Android apps:** ONE main app (`com.toolsrift.main`, opens `/`) + the
-  categories in `ANDROID_APPS` (pdf, image, fancy, generators — each opens
+  categories in `ANDROID_APPS` (pdf, image — each opens
   `/<slug>/`). Kept short on purpose: Google Play's spam policy bars many
   near-identical wrapper apps per account. All are TWAs on host
   `toolsrift.com`; `https://toolsrift.com/.well-known/assetlinks.json`

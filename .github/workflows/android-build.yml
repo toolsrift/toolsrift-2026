@@ -20,7 +20,7 @@ on:
   workflow_dispatch:
     inputs:
       sites:
-        description: 'App ids to build (hub pdf image fancy generators), space-separated, or "--all"'
+        description: 'App ids to build (hub pdf image), space-separated, or "--all"'
         type: string
         default: '--all'
       play_track:

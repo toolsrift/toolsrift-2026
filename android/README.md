@@ -11,19 +11,18 @@ website**. There is no second codebase.
 | ToolsRift (main, all 29 categories) | `com.toolsrift.main` | `https://toolsrift.com/` |
 | PDF Tools | `com.toolsrift.pdf` | `https://toolsrift.com/pdf/` |
 | Image Resizer & Compressor | `com.toolsrift.image` | `https://toolsrift.com/images/` |
-| Fancy Text | `com.toolsrift.fancy` | `https://toolsrift.com/fancy/` |
-| Security Generators (QR, passwords) | `com.toolsrift.generators` | `https://toolsrift.com/generators/` |
 
 The list is `ANDROID_APPS` in `lib/sites/brands.js` (plus `HUB_APP` for the
 main app). **Why so few:** Google Play's spam policy ("repetitive content")
 prohibits publishing many apps that are near-identical wrappers of one website,
 and the penalty can hit the whole developer account. One strong main app plus
-a handful of categories with real standalone demand on phones is safe and
-concentrates installs and ratings. The four category apps are ones that
-already exist in Play Console (closed testing); the main app is new — create
-it in the Console before its first upload. To change the list, edit
-`ANDROID_APPS` and run `npm run android:generate` (it removes the folders of
-dropped apps).
+the two categories with real standalone demand on phones is safe and
+concentrates installs and ratings. The PDF and Image apps already exist in Play
+Console (closed testing, no installs); the main app is new — create it in the
+Console before its first upload. The other 13 apps that were created in Play
+Console for the old subdomains are retired: delete them there (see "Retiring
+the other apps" below). To change the list, edit `ANDROID_APPS` and run
+`npm run android:generate` (it removes the folders of dropped apps).
 
 **Ads in the apps:** a TWA *is* Chrome, so the AdSense ads already on
 toolsrift.com show inside the apps as they do on the website — that is how the
@@ -59,6 +58,18 @@ now 301 to `toolsrift.com/<slug>` (docs/NETWORK-SITES.md). What that means:
   shows Chrome's address bar until the tester updates. Nothing breaks.
 - Order: deploy the site → run `android-build` → `android-publish` (or upload
   the `.aab`s by hand) → promote in the Console.
+
+## Retiring the other apps
+
+These packages were created in Play Console for the old subdomains and are no
+longer built: `com.toolsrift.json`, `.encoders`, `.colors`, `.css`, `.html`,
+`.js`, `.formatters`, `.hash`, `.fancy`, `.encoding`, `.everyday`,
+`.generators`, `.content` (check the exact ids in the Console). They are in
+closed testing with no installs, so delete them (App → Settings → Advanced
+settings → Delete app); if the Console only offers **Unpublish**, unpublish
+instead. A deleted app's package id can never be used again — that is fine,
+none of them will be reused. Their entries in `android/fingerprints.json` and
+in assetlinks are harmless and can stay.
 
 
 Regenerate the configs whenever `brands.js` or the tool registry changes:

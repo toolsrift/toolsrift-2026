@@ -31,27 +31,5 @@
     "shortName": "Image Tools",
     "playCategory": "PHOTOGRAPHY",
     "tools": 63
-  },
-  {
-    "id": "fancy",
-    "slug": "fancy",
-    "startUrl": "https://toolsrift.com/fancy/",
-    "siteName": "ToolsRift Fancy",
-    "packageId": "com.toolsrift.fancy",
-    "appName": "Fancy Text & Font Generator",
-    "shortName": "Fancy Text",
-    "playCategory": "ART_AND_DESIGN",
-    "tools": 38
-  },
-  {
-    "id": "generators",
-    "slug": "generators",
-    "startUrl": "https://toolsrift.com/generators/",
-    "siteName": "ToolsRift Generators",
-    "packageId": "com.toolsrift.generators",
-    "appName": "Password & QR Code Maker",
-    "shortName": "Generators",
-    "playCategory": "TOOLS",
-    "tools": 43
   }
 ]
