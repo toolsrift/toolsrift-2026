@@ -3,14 +3,16 @@
  * scripts/vercel/deploy-unlinked.js — production deployments Vercel's git
  * integration does not make for us:
  *
- *   --catch-up   the hub AND every leftover toolsrift-<id> project whose latest
- *                production deployment is not at the current main commit. This
- *                is the production deploy: git-triggered deployments are off
- *                for main (vercel.json), so nothing deploys except through this
- *                script — daily at 17:00 UTC or on demand. The toolsrift-<id>
- *                projects are the old per-category sites; until
- *                scripts/vercel/consolidate.js deletes them, their builds are
- *                pure redirectors (middleware.js) and must stay current.
+ *   --catch-up   the hub, when its production deployment is not at the current
+ *                main commit. This is the production deploy: git-triggered
+ *                deployments are off for main (vercel.json), so nothing deploys
+ *                except through this script — daily at 17:00 UTC or on demand.
+ *                The old per-category projects (toolsrift-<id>) are NOT
+ *                deployed: their subdomains are moved onto the hub by
+ *                scripts/vercel/consolidate.js. Deploying them first once
+ *                caused a redirect loop — they redirected to toolsrift.com/<slug>
+ *                while the quota-starved hub still redirected back — see
+ *                scripts/vercel/rollback-legacy.js.
  *   <site ids>   just those projects (any of them, linked or not).
  *   default      the projects without a git link.
  *
@@ -64,7 +66,7 @@ async function main() {
   let targets;
   if (catchUp) {
     targets = [];
-    for (const p of [...network, ...(hub ? [hub] : [])]) {
+    for (const p of hub ? [hub] : []) {
       const deps = (await api(`/v6/deployments?projectId=${p.id}&target=production&limit=1&teamId=${team.id}`)).deployments || [];
       const d = deps[0];
       const sha = d && d.meta && (d.meta.githubCommitSha || '').toLowerCase();

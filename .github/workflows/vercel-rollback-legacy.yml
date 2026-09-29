@@ -1,0 +1,34 @@
+# Emergency: roll the old per-category projects (toolsrift-<id>) back to the
+# production deployment they had before being deployed from a given commit
+# (scripts/vercel/rollback-legacy.js). Instant Rollback — no new deployment,
+# so it works when the Hobby deployment quota is exhausted. The hub project
+# is never touched. Unticked "apply" only reports. Needs VERCEL_TOKEN.
+name: vercel-rollback-legacy
+
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: 'Roll back projects whose live production deployment was built from this commit'
+        type: string
+        default: '121f353'
+      apply:
+        description: 'Actually roll back (unchecked = report only)'
+        type: boolean
+        default: false
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_TEAM: toolsrifts-projects
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then echo "::error::VERCEL_TOKEN secret is not set"; exit 1; fi
+          ARGS="--sha ${{ inputs.sha }}"
+          if [ "${{ inputs.apply }}" = "true" ]; then ARGS="$ARGS --apply"; fi
+          node scripts/vercel/rollback-legacy.js $ARGS

@@ -96,8 +96,11 @@ The redirects work wherever the subdomain is attached:
 ## 4. Consolidating the Vercel projects (one-time)
 
 1. **Deploy the hub** from main: Actions → `vercel-deploy-unlinked` → Run
-   workflow (no input = everything behind main). This also redeploys any
-   remaining `toolsrift-<id>` project, so its subdomain starts redirecting at once.
+   workflow (no input = the hub, if behind main). Do NOT deploy the old
+   `toolsrift-<id>` projects before the hub is on the new build: they would
+   redirect to `toolsrift.com/<slug>` while the old hub redirects back — a loop.
+   (That happened once when the quota ran out mid-run; `vercel-rollback-legacy`
+   undoes it with Instant Rollback, which costs no deployment quota.)
 2. **Move the subdomains onto the hub**: Actions → `vercel-consolidate` → Run
    workflow with `apply` ticked (`scripts/vercel/consolidate.js`). Unticked it
    only reports. It refuses to run until toolsrift.com serves the new build.

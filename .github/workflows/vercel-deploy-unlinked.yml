@@ -1,18 +1,17 @@
-# THE production deploy: once a day (and on demand) it deploys the hub — and
-# any leftover per-category project (toolsrift-<id>, now a pure redirector
-# until vercel-consolidate deletes it) — whose production deployment is not
-# at main. Git-triggered deployments are OFF for main
-# (vercel.json → git.deploymentEnabled), because on the Hobby plan every push
-# used to fire 25 builds at once and the 100-deployments-per-day quota was
-# gone by noon.
-# Needs the VERCEL_TOKEN secret. Run it by hand after an urgent merge:
-# Actions → vercel-deploy-unlinked → Run workflow → "--catch-up".
+# THE production deploy: once a day (and on demand) it deploys the hub
+# project "toolsrift" when its production deployment is not at main.
+# Git-triggered deployments are OFF for main (vercel.json →
+# git.deploymentEnabled) because of the Hobby plan's 100-deployments-per-day
+# quota. The old per-category projects (toolsrift-<id>) are not deployed by
+# the catch-up any more — vercel-consolidate moves their subdomains onto the
+# hub. Needs the VERCEL_TOKEN secret. Run it by hand after an urgent merge:
+# Actions → vercel-deploy-unlinked → Run workflow (empty input).
 name: vercel-deploy-unlinked
 
 on:
   schedule:
-    # Daily catch-up: deploy every project whose production deployment is not
-    # at main (e.g. after Vercel's daily deployment quota refused some).
+    # Daily catch-up: deploy the hub if its production deployment is not at
+    # main (e.g. after Vercel's daily deployment quota refused it).
     # 17:00 UTC: the Hobby quota is a ROLLING 24-hour window of 100
     # deployments, and the day's merges land during the Indian working day
     # (07:00–13:00 UTC), so an early-morning run would still be inside the
@@ -21,7 +20,7 @@ on:
   workflow_dispatch:
     inputs:
       sites:
-        description: 'Site ids (space-separated), or empty / "--catch-up" for every project behind main'
+        description: 'Site ids (space-separated), or empty / "--catch-up" for the hub if it is behind main'
         type: string
         default: ''
 
